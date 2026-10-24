@@ -19,6 +19,7 @@
 }
 html,body{height:100%;margin:0;overflow:hidden;background:var(--bg);color:var(--fg);font-family:var(--f-ui);-webkit-tap-highlight-color:transparent}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 #app{height:100%;max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:8px;
   padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 header{display:flex;align-items:center;gap:8px;min-height:36px}
@@ -73,6 +74,8 @@ footer{display:flex;gap:8px;align-items:stretch;flex:none}
 .pill button{border:0;background:transparent;padding:5px 12px;color:var(--mut)}
 .pill button.on{background:var(--teal);color:#062421}
 .acts{display:flex;gap:8px;justify-content:flex-end}
+.brand.big{font-size:30px;gap:12px;letter-spacing:.08em}
+.brand.big i{width:26px;height:26px;border-radius:6px;box-shadow:7px -7px 0 -1px var(--orange)}
 .acts .go{background:var(--teal);border-color:var(--teal);color:#062421}
 
 @media (max-width:420px){ .brand span{display:none} }
@@ -104,15 +107,16 @@ footer{display:flex;gap:8px;align-items:stretch;flex:none}
 
 <div class="ov" id="ovNew" hidden>
   <div class="card">
-    <h2>Nova partida</h2>
+    <div class="brand big" id="nBrand" hidden><i></i><span>Dice Wars</span></div>
+    <h2 id="nT">Nova partida</h2>
     <div class="row"><span class="lab">Jogadores</span>
       <div class="step"><button class="icon" id="pMinus" aria-label="Menos jogadores">−</button><output id="pN">6</output><button class="icon" id="pPlus" aria-label="Mais jogadores">+</button></div>
     </div>
     <div class="row"><span class="lab">Velocidade da CPU</span>
       <div class="pill" id="spd"><button data-v="0">Normal</button><button data-v="1">Rápida</button></div>
     </div>
-    <p>Cada jogador começa com o mesmo número de territórios e de dados. A ordem dos turnos é sorteada.</p>
-    <div class="acts"><button id="nCancel">Cancelar</button><button class="go" id="nGo">Começar</button></div>
+    <p id="nP">Cada jogador começa com o mesmo número de territórios e de dados. A ordem dos turnos é sorteada.</p>
+    <div class="acts"><button id="nRules" hidden>Como jogar</button><button id="nCancel">Cancelar</button><button class="go" id="nGo">Começar</button></div>
   </div>
 </div>
 
@@ -194,7 +198,7 @@ function gen(W,H,T){
 }
 
 /* ---------- game setup ---------- */
-function newGame(){
+function newGame(preview){
   gid++;const tok=gid;
   const n=settings.n, k=Math.floor(32/n), T=n*k;
   const A=(board.clientWidth||400)/(board.clientHeight||500);
@@ -218,6 +222,7 @@ function newGame(){
   const players=[...Array(n)].map((_,i)=>({i,n:PL[i].n,c:PL[i].c,human:i===0,alive:true,stock:0}));
   G={W,H,cell,NB,UX,UY,t:terrs,P:players,order:shuffle([...Array(n).keys()]),cur:0,sel:null,hl:null,flash:null,busy:true,over:false,watch:false};
   layout();draw();chips();
+  if(preview){msg('Escolha os jogadores e toque em <b>Jogar</b>.');return}
   setTimeout(()=>{if(tok===gid)startTurn()},250);
 }
 
@@ -358,12 +363,17 @@ function showEnd(w){$('eT').textContent=w.human?'Você venceu!':`${w.n} venceu`;
 function showOut(){$('eT').textContent='Você foi eliminado';$('eP').textContent='Pode assistir a CPU terminar a partida ou começar outra.';
   $('eWatch').hidden=false;$('ovEnd').hidden=false}
 $('eWatch').onclick=()=>{G.watch=true;$('ovEnd').hidden=true};
-$('eNew').onclick=()=>{$('ovEnd').hidden=true;openNew()};
+$('eNew').onclick=()=>{$('ovEnd').hidden=true;openNew(false)};
 
 let draft={...settings};
 function syncNew(){$('pN').textContent=draft.n;[...$('spd').children].forEach(b=>b.classList.toggle('on',+b.dataset.v===draft.fast))}
-function openNew(){draft={...settings};syncNew();$('ovNew').hidden=false}
-$('bNew').onclick=openNew;
+function openNew(start){draft={...settings};syncNew();const o=$('ovNew');o.dataset.lock=start?'1':'';
+  $('nBrand').hidden=!start;$('nT').hidden=!!start;$('nRules').hidden=!start;$('nCancel').hidden=!!start;
+  $('nGo').textContent=start?'Jogar':'Começar';
+  $('nP').textContent=start?'Conquiste o mapa rolando dados contra a CPU. Ataque vizinhos, mantenha seus territórios conectados e ganhe reforços a cada turno.':'Cada jogador começa com o mesmo número de territórios e de dados. A ordem dos turnos é sorteada.';
+  o.hidden=false}
+$('nRules').onclick=()=>{$('ovHelp').hidden=false};
+$('bNew').onclick=()=>openNew(false);
 $('pMinus').onclick=()=>{draft.n=Math.max(2,draft.n-1);syncNew()};
 $('pPlus').onclick=()=>{draft.n=Math.min(8,draft.n+1);syncNew()};
 $('spd').onclick=e=>{const b=e.target.closest('button');if(b){draft.fast=+b.dataset.v;syncNew()}};
@@ -371,10 +381,10 @@ $('nCancel').onclick=()=>{$('ovNew').hidden=true};
 $('nGo').onclick=()=>{settings={...draft};try{localStorage.setItem('dicewars.cfg',JSON.stringify(settings))}catch(e){}$('ovNew').hidden=true;newGame()};
 $('bHelp').onclick=()=>{$('ovHelp').hidden=false};
 $('hOk').onclick=()=>{$('ovHelp').hidden=true};
-document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o&&o.id!=='ovEnd')o.hidden=true}));
+document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o&&o.id!=='ovEnd'&&!o.dataset.lock)o.hidden=true}));
 
 new ResizeObserver(()=>{layout();draw()}).observe(board);
-requestAnimationFrame(()=>{layout();newGame()});
+requestAnimationFrame(()=>{layout();newGame(true);openNew(true)});
 })();
 </script>
 
