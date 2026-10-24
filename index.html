@@ -95,6 +95,21 @@ a.game:hover .ases .ace{left:calc(var(--x) + var(--dx))}
 a.game:hover .dados .d1{transform:rotate(-200deg) translate(-6%,-6%)}
 a.game:hover .dados .d2{transform:rotate(190deg)}
 
+/* arte: Fodinha */
+.art.fod{background:radial-gradient(80% 90% at 50% 100%,#3a1f4f,#1c1430 60%,#120e1f)}
+.fod .fan{position:absolute;left:50%;bottom:16%;width:0;height:0}
+.fod .c{position:absolute;left:0;bottom:0;width:clamp(48px,11vw,66px);aspect-ratio:5/7;margin-left:calc(clamp(48px,11vw,66px) / -2);background:#fbf7ec;border-radius:6px;
+  box-shadow:0 4px 12px rgba(0,0,0,.45);transform-origin:50% 150%;transform:rotate(var(--r));display:grid;place-items:center;
+  font:700 clamp(15px,3.4vw,21px)/1 var(--f-display);color:#1d1a16;transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
+.fod .c.r{color:#c0392b}
+.fod .c i{position:absolute;top:6%;left:9%;font-style:normal;font-size:.62em}
+a.game:hover .fod .c{transform:rotate(calc(var(--r) * 1.35))}
+.fod .bet{position:absolute;right:9%;top:13%;display:flex;flex-direction:column;align-items:center;gap:4px;font:700 11px var(--f-body);letter-spacing:.1em;text-transform:uppercase;color:#cdb8ee}
+.fod .bet b{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:#ff9348;color:#1c1430;font:800 22px var(--f-display);
+  box-shadow:inset 0 0 0 4px #1c1430,inset 0 0 0 6px rgba(255,255,255,.55),0 4px 10px rgba(0,0,0,.4)}
+.fod .ext{position:absolute;left:12px;top:12px;font:700 11px var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:#cdb8ee;
+  border:1px solid rgba(205,184,238,.4);padding:4px 9px;border-radius:999px}
+
 /* em breve */
 .game.soon{border-style:dashed;background:transparent}
 .art.soon{background:repeating-linear-gradient(-45deg,rgba(255,255,255,.025) 0 10px,transparent 10px 20px)}
@@ -161,6 +176,18 @@ const GAMES = [
     art: "dados"
   },
   {
+    title: "Fodinha",
+    url: "https://fodinha.cayzzo.com.br",
+    external: true,
+    desc: "Cada um aposta quantas rodadas vai fazer e precisa acertar na mosca. Errou, acumula erro. Online, com amigos ou contra bots.",
+    category: "Cartas",
+    players: "2–6 jogadores",
+    time: "20 min",
+    extra: ["Online", "Contra bots", "Ranking"],
+    accent: "#a78bf0",
+    art: "fod"
+  },
+  {
     title: "Em breve",
     desc: "O próximo jogo da mesa está sendo preparado.",
     category: null,
@@ -182,6 +209,10 @@ const ARTS = {
     const cells=Array.from({length:36},(_,i)=>`<i class="${t.includes(i)?"t":o.includes(i)?"o":""}"></i>`).join("");
     return `<div class="board">${cells}</div>${die(3,"d1")}${die(5,"d2")}`;
   },
+  fod(){
+    const cs=[["7","♣",0,-26],["Q","♥",1,-13],["A","♠",0,0],["3","♦",1,13],["K","♣",0,26]];
+    return `<span class="ext">↗ Site externo</span><div class="fan">${cs.map(([r,su,red,a])=>`<div class="c${red?" r":""}" style="--r:${a}deg"><i>${r}</i>${su}</div>`).join("")}</div><div class="bet"><b>2</b>Faço</div>`;
+  },
   soon(){return `<span>?</span>`;}
 };
 
@@ -194,10 +225,10 @@ let filter="Todos";
 function card(g){
   const tags=g.soon?"":`<div class="tags"><span class="tag cat">${esc(g.category)}</span><span class="tag">${esc(g.players)}</span><span class="tag">${esc(g.time)}</span>${(g.extra||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div>`;
   const inner=`<div class="art ${g.art}" aria-hidden="true">${ARTS[g.art]?ARTS[g.art]():""}</div>
-    ${g.soon?"":`<span class="play">Jogar →</span>`}
+    ${g.soon?"":`<span class="play">${g.external?"Abrir ↗":"Jogar →"}</span>`}
     <div class="info"><h2>${esc(g.title)}</h2><p>${esc(g.desc)}</p>${tags}</div>`;
   const style=g.accent?` style="--accent:${g.accent};--accent-soft:${hexSoft(g.accent)}"`:"";
-  return g.soon?`<div class="game soon">${inner}</div>`:`<a class="game" href="${g.url}"${style}>${inner}</a>`;
+  return g.soon?`<div class="game soon">${inner}</div>`:`<a class="game" href="${g.url}"${g.external?' target="_blank" rel="noopener"':""}${style}>${inner}</a>`;
 }
 
 function render(){
