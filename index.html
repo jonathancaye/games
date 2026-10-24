@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mesa de Jogos</title>
+<meta name="description" content="Pequenos jogos de mesa para jogar no navegador, sozinho ou com a turma.">
+<link rel="icon" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#0e1615; --bg-2:#131f1d; --surface:#17231f; --line:#273935; --fg:#eaf2ef; --muted:#93a8a3;
+  --teal:#2bc2b3; --orange:#ff9348; --teal-soft:rgba(43,194,179,.14); --orange-soft:rgba(255,147,72,.14);
+  --f-display:"Bricolage Grotesque","Avenir Next",system-ui,sans-serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg)}
+body{
+  color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.45;min-height:100vh;
+  background:
+    radial-gradient(60% 50% at 0% 0%,rgba(43,194,179,.12),transparent 70%),
+    radial-gradient(50% 45% at 100% 10%,rgba(255,147,72,.10),transparent 70%),
+    var(--bg);
+  padding:max(28px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(40px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+a{color:inherit}
+
+/* topo */
+.hero{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(38px,8vw,64px);letter-spacing:-.035em;line-height:.95;margin:.15em 0 0}
+h1 span{color:var(--orange)}
+.lead{margin:12px 0 0;color:var(--muted);max-width:44ch}
+.count{font-family:var(--f-display);font-weight:800;font-size:44px;line-height:1;letter-spacing:-.03em;text-align:right}
+.count small{display:block;font-family:var(--f-body);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+
+/* filtros (pills) */
+.bar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.pills{display:inline-flex;flex-wrap:wrap;background:var(--bg-2);border:1px solid var(--line);border-radius:999px;padding:4px;gap:2px}
+.pills button{appearance:none;border:0;background:transparent;color:var(--muted);font:600 14px var(--f-body);padding:8px 16px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s}
+.pills button:hover{color:var(--fg)}
+.pills button[aria-pressed="true"]{background:var(--teal);color:#06201d}
+.search{flex:0 1 240px;min-width:0;appearance:none;background:var(--bg-2);border:1px solid var(--line);color:var(--fg);font:500 15px var(--f-body);padding:10px 16px;border-radius:999px}
+.search::placeholder{color:var(--muted)}
+.search:focus{outline:2px solid var(--teal);outline-offset:1px}
+
+/* grade de jogos */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:18px}
+.game{position:relative;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:hidden;
+  text-decoration:none;transition:transform .2s cubic-bezier(.3,1.4,.5,1),border-color .2s,box-shadow .2s}
+a.game:hover,a.game:focus-visible{transform:translateY(-4px);border-color:var(--accent,var(--teal));box-shadow:0 16px 40px rgba(0,0,0,.35)}
+a.game:focus-visible{outline:3px solid var(--accent,var(--teal));outline-offset:3px}
+.art{aspect-ratio:16/9;position:relative;overflow:hidden;display:grid;place-items:center}
+.info{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1}
+.info h2{margin:0;font-family:var(--f-display);font-weight:800;font-size:22px;letter-spacing:-.015em;line-height:1.1}
+.info p{margin:0;color:var(--muted);font-size:14px;flex:1}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.tag{font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--bg-2);border:1px solid var(--line);color:var(--muted)}
+.tag.cat{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+.play{position:absolute;right:14px;top:14px;z-index:2;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  background:rgba(0,0,0,.55);color:#fff;padding:6px 12px;border-radius:999px;backdrop-filter:blur(4px);opacity:0;transform:translateY(-4px);transition:.2s}
+a.game:hover .play,a.game:focus-visible .play{opacity:1;transform:none}
+@media (hover:none){.play{opacity:1;transform:none}}
+
+/* arte: Corrida de Ases */
+.art.ases{background:radial-gradient(90% 90% at 50% 0%,#1a5240,#123d30 55%,#0b2a21);box-shadow:inset 0 0 0 7px #3b2616,inset 0 0 0 8px rgba(212,168,76,.45)}
+.ases .lanes{position:absolute;inset:16% 10%;display:grid;grid-template-rows:repeat(4,1fr);gap:4%}
+.ases .lane{position:relative;border-top:1px dashed rgba(244,236,216,.2)}
+.ases .lane:last-child{border-bottom:1px dashed rgba(244,236,216,.2)}
+.ases .lane::after{content:"";position:absolute;right:0;top:0;bottom:0;width:7%;opacity:.25;
+  background:conic-gradient(#f4ecd8 25%,transparent 0 50%,#f4ecd8 0 75%,transparent 0) 0 0/8px 8px}
+.ases .ace{position:absolute;top:50%;height:120%;aspect-ratio:5/7;translate:0 -50%;background:#fbf7ec;border-radius:3px;box-shadow:0 2px 6px rgba(0,0,0,.4);
+  display:grid;place-items:center;font-size:clamp(10px,2.4vw,15px);line-height:1;color:#1d1a16;transition:left .5s cubic-bezier(.3,1.35,.5,1)}
+.ases .ace.r{color:#b8322a}
+.ases .ace{left:var(--x)}
+a.game:hover .ases .ace{left:calc(var(--x) + var(--dx))}
+
+/* arte: Dados 6×6 */
+.art.dados{background:linear-gradient(135deg,#123532,#172221)}
+.dados .board{position:absolute;inset:12% 26%;display:grid;grid-template:repeat(6,1fr)/repeat(6,1fr);gap:4%;transform:rotate(-8deg)}
+.dados .board i{border-radius:22%;background:rgba(255,255,255,.06)}
+.dados .board i.t{background:var(--teal)} .dados .board i.o{background:var(--orange)}
+.dados .die{position:absolute;width:21%;aspect-ratio:1;background:#eef4f3;border-radius:20%;box-shadow:0 6px 16px rgba(0,0,0,.45);
+  display:grid;grid-template:repeat(3,minmax(0,1fr))/repeat(3,minmax(0,1fr));gap:clamp(3px,.7vw,7px);padding:clamp(9px,1.6vw,15px);transition:transform .5s cubic-bezier(.3,1.4,.5,1)}
+.dados .die b{display:block;border-radius:50%;background:#14211f;visibility:hidden;min-width:0;min-height:0}
+.dados .die b.on{visibility:visible}
+.dados .d1{left:7%;bottom:10%;transform:rotate(-14deg)}
+.dados .d2{right:7%;top:10%;transform:rotate(12deg)}
+a.game:hover .dados .d1{transform:rotate(-200deg) translate(-6%,-6%)}
+a.game:hover .dados .d2{transform:rotate(190deg)}
+
+/* em breve */
+.game.soon{border-style:dashed;background:transparent}
+.art.soon{background:repeating-linear-gradient(-45deg,rgba(255,255,255,.025) 0 10px,transparent 10px 20px)}
+.art.soon span{font-family:var(--f-display);font-weight:800;font-size:56px;color:var(--line)}
+
+.empty{color:var(--muted);text-align:center;padding:40px 0}
+footer{color:var(--muted);font-size:13px;text-align:center;border-top:1px solid var(--line);padding-top:20px}
+
+@media (max-width:520px){.count{display:none}.search{flex:1 1 100%}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div>
+      <div class="eyebrow">Jogos rápidos · direto no navegador</div>
+      <h1>Mesa de <span>Jogos</span></h1>
+      <p class="lead">Escolha um jogo, junte a turma em volta do celular e bora. Nada para instalar.</p>
+    </div>
+    <div class="count" id="count">0<small>jogos</small></div>
+  </header>
+
+  <div class="bar">
+    <div class="pills" role="group" aria-label="Filtrar por categoria" id="filters"></div>
+    <input class="search" id="q" type="search" placeholder="Buscar jogo…" aria-label="Buscar jogo">
+  </div>
+
+  <main class="grid" id="grid" aria-live="polite"></main>
+  <p class="empty" id="empty" hidden>Nenhum jogo encontrado.</p>
+
+  <footer>Feito para jogar junto. Novos jogos aparecem aqui.</footer>
+</div>
+
+<script>
+/* =====================================================================
+   CATÁLOGO DE JOGOS
+   Para adicionar um jogo novo:
+   1. crie a pasta jogos/<nome-do-jogo>/ com um index.html dentro;
+   2. acrescente um item aqui embaixo (art pode ser "ases", "dados" ou "soon";
+      para arte nova, crie uma função em ARTS).
+   ===================================================================== */
+const GAMES = [
+  {
+    title: "Corrida de Ases",
+    url: "jogos/corrida-de-ases/",
+    desc: "Os quatro ases disputam a pista carta a carta. Aposte no naipe e torça contra o retrocesso.",
+    category: "Cartas",
+    players: "2–10 jogadores",
+    time: "5 min",
+    extra: ["Apostas", "Goles ou fichas"],
+    accent: "#d4a84c",
+    art: "ases"
+  },
+  {
+    title: "Jogo dos Dados 6×6",
+    url: "jogos/dados-6x6/",
+    desc: "Role 2d6, marque a casa no tabuleiro e feche 3 trincas em linha antes dos outros.",
+    category: "Dados",
+    players: "1–3 jogadores",
+    time: "10 min",
+    extra: ["Contra o bot"],
+    accent: "#2bc2b3",
+    art: "dados"
+  },
+  {
+    title: "Em breve",
+    desc: "O próximo jogo da mesa está sendo preparado.",
+    category: null,
+    soon: true,
+    art: "soon"
+  }
+];
+
+/* ---------- artes dos cards ---------- */
+const PIPS={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
+const die=(v,cls)=>`<div class="die ${cls}">${Array.from({length:9},(_,i)=>`<b class="${PIPS[v].includes(i)?"on":""}"></b>`).join("")}</div>`;
+const ARTS = {
+  ases(){
+    const s=[["♥",1,48,22],["♦",1,30,8],["♠",0,62,-14],["♣",0,18,30]];
+    return `<div class="lanes">${s.map(([sym,red,x,dx])=>`<div class="lane"><div class="ace${red?" r":""}" style="--x:${x}%;--dx:${dx}%">${sym}</div></div>`).join("")}</div>`;
+  },
+  dados(){
+    const t=[0,7,14,21,9,27],o=[5,10,15,30,33];
+    const cells=Array.from({length:36},(_,i)=>`<i class="${t.includes(i)?"t":o.includes(i)?"o":""}"></i>`).join("");
+    return `<div class="board">${cells}</div>${die(3,"d1")}${die(5,"d2")}`;
+  },
+  soon(){return `<span>?</span>`;}
+};
+
+/* ---------- render ---------- */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const hexSoft=h=>{const n=parseInt(h.slice(1),16);return `rgba(${n>>16&255},${n>>8&255},${n&255},.16)`;};
+let filter="Todos";
+
+function card(g){
+  const tags=g.soon?"":`<div class="tags"><span class="tag cat">${esc(g.category)}</span><span class="tag">${esc(g.players)}</span><span class="tag">${esc(g.time)}</span>${(g.extra||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div>`;
+  const inner=`<div class="art ${g.art}" aria-hidden="true">${ARTS[g.art]?ARTS[g.art]():""}</div>
+    ${g.soon?"":`<span class="play">Jogar →</span>`}
+    <div class="info"><h2>${esc(g.title)}</h2><p>${esc(g.desc)}</p>${tags}</div>`;
+  const style=g.accent?` style="--accent:${g.accent};--accent-soft:${hexSoft(g.accent)}"`:"";
+  return g.soon?`<div class="game soon">${inner}</div>`:`<a class="game" href="${g.url}"${style}>${inner}</a>`;
+}
+
+function render(){
+  const q=$("q").value.trim().toLowerCase();
+  const list=GAMES.filter(g=>{
+    if(g.soon)return filter==="Todos"&&!q;
+    if(filter!=="Todos"&&g.category!==filter)return false;
+    return !q||[g.title,g.desc,g.category,...(g.extra||[])].join(" ").toLowerCase().includes(q);
+  });
+  $("grid").innerHTML=list.map(card).join("");
+  $("empty").hidden=list.length>0;
+}
+
+function renderFilters(){
+  const cats=["Todos",...new Set(GAMES.filter(g=>!g.soon).map(g=>g.category))];
+  $("filters").innerHTML=cats.map(c=>`<button type="button" data-c="${esc(c)}" aria-pressed="${c===filter}">${esc(c)}</button>`).join("");
+}
+$("filters").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;filter=b.dataset.c;renderFilters();render();});
+$("q").addEventListener("input",render);
+
+const n=GAMES.filter(g=>!g.soon).length;
+$("count").innerHTML=`${n}<small>${n===1?"jogo":"jogos"}</small>`;
+renderFilters();render();
+</script>
+</body>
+</html>

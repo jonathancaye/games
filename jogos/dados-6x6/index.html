@@ -1,0 +1,582 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Jogo dos Dados 6×6</title>
+<link rel="icon" href="../../favicon.svg">
+</head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: tela única sem rolagem. Paisagem: tabuleiro quadrado + painel lateral. Retrato: cabeçalho fino, tabuleiro, painel compacto embaixo */
+:root{
+  --bg:#eef3f2; --surface:#ffffff; --felt:#dfe9e7; --line:#c6d6d3; --fg:#14211f; --muted:#5d716d;
+  --p0:#0f9488; --p1:#ea7322; --p2:#7656c4;
+  --p0-soft:#cdeee9; --p1-soft:#fde3cf; --p2-soft:#e6ddf7;
+  --die:#ffffff; --pip:#14211f; --ok:#1b8a4a; --scrim:rgba(15,25,23,.45);
+  --f-display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --f-body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --die-size:clamp(38px,8.5vmin,60px);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1716; --surface:#172221; --felt:#1d2b29; --line:#2c3f3c; --fg:#e7f0ee; --muted:#93a8a4;
+  --p0:#2bc2b3; --p1:#ff9348; --p2:#a78bf0;
+  --p0-soft:#173f3b; --p1-soft:#43301f; --p2-soft:#2e2647;
+  --die:#eef4f3; --pip:#14211f; --ok:#4cc97f; --scrim:rgba(0,0,0,.6); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0f1716; --surface:#172221; --felt:#1d2b29; --line:#2c3f3c; --fg:#e7f0ee; --muted:#93a8a4;
+  --p0:#2bc2b3; --p1:#ff9348; --p2:#a78bf0;
+  --p0-soft:#173f3b; --p1-soft:#43301f; --p2-soft:#2e2647;
+  --die:#eef4f3; --pip:#14211f; --ok:#4cc97f; --scrim:rgba(0,0,0,.6); color-scheme:dark }
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.4;
+  padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));padding-block:10px;
+  -webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+.app{height:100%;max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:10px;min-height:0}
+
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex:none}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(20px,3.6vmin,30px);letter-spacing:-.02em;margin:0;line-height:1;white-space:nowrap}
+h1 span{color:var(--p1)}
+.hbtns{display:flex;gap:6px}
+
+.game{flex:1;min-height:0;display:flex;gap:14px}
+.table{flex:1;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center}
+.panel{width:min(330px,38%);flex:none;display:flex;flex-direction:column;gap:10px;min-height:0}
+
+/* tabuleiro: --bs é calculado no script para caber no espaço disponível */
+.grid-area{width:var(--bs,300px);height:var(--bs,300px);display:grid;grid-template-columns:18px 1fr;grid-template-rows:18px 1fr;gap:4px}
+.lab{font-family:var(--f-mono);font-size:10px;font-weight:700;color:var(--muted);display:flex;align-items:center;justify-content:center}
+.cols{grid-column:2;display:grid;grid-template-columns:repeat(6,1fr);gap:var(--g)}
+.rows{grid-column:1;display:grid;grid-template-rows:repeat(6,1fr);gap:var(--g)}
+.corner{font-family:var(--f-mono);font-size:8px;color:var(--muted);display:flex;align-items:center;justify-content:center}
+.board{--g:clamp(3px,1vmin,6px);position:relative;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(6,1fr);gap:var(--g);min-width:0;min-height:0}
+.grid-area{--g:clamp(3px,1vmin,6px)}
+.cell{appearance:none;border:0;border-radius:18%;background:var(--felt);position:relative;cursor:default;padding:0;
+  display:flex;align-items:center;justify-content:center;transition:transform .15s, opacity .2s;touch-action:manipulation}
+.cell .coord{font-family:var(--f-mono);font-size:clamp(9px,1.6vmin,12px);opacity:0}
+.board.choosing .cell:not(.opt){opacity:.5}
+.cell.opt{cursor:pointer;background:var(--cur-soft);outline:3px solid var(--cur);outline-offset:-3px;animation:pulse 1.1s ease-in-out infinite}
+.cell.opt .coord{opacity:1;color:var(--fg);font-weight:700}
+.cell.opt:hover,.cell.opt:focus-visible{transform:scale(1.06)}
+@keyframes pulse{50%{outline-offset:-6px}}
+.chip{width:72%;height:72%;border-radius:50%;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18), inset 0 2px 0 rgba(255,255,255,.25)}
+.chip.new{animation:drop .35s cubic-bezier(.2,1.6,.4,1)}
+@keyframes drop{from{transform:scale(.2)}to{transform:scale(1)}}
+.p0{background:var(--p0)}.p1{background:var(--p1)}.p2{background:var(--p2)}
+svg.trios{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+
+/* painel */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.turn{display:flex;align-items:center;gap:8px;font-family:var(--f-display);font-weight:800;font-size:clamp(17px,2.6vmin,21px);letter-spacing:-.01em;min-width:0}
+.turn #turnName{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dot{width:14px;height:14px;border-radius:50%;flex:none;display:inline-block}
+.hint{color:var(--muted);margin:4px 0 0;font-size:14px;min-height:2.8em}
+.hint b{color:var(--fg);font-family:var(--f-mono)}
+.dice-row{display:flex;align-items:center;gap:10px;margin-top:10px}
+.die{width:var(--die-size);height:var(--die-size);flex:none;border-radius:22%;background:var(--die);border:2px solid var(--line);display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:14%;box-shadow:0 3px 0 var(--line)}
+.die i{width:68%;height:68%;border-radius:50%;background:var(--pip);place-self:center;visibility:hidden}
+.die i.on{visibility:visible}
+.die.blank i{visibility:hidden}
+.die.roll{animation:shake .12s linear infinite}
+@keyframes shake{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+.btn{appearance:none;border:0;border-radius:999px;font:700 15px var(--f-body);padding:12px 18px;cursor:pointer;background:var(--cur);color:#fff;
+  box-shadow:0 3px 0 rgba(0,0,0,.2);transition:transform .1s;touch-action:manipulation;white-space:nowrap}
+.dice-row .btn{flex:1;min-height:var(--die-size)}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.2)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--fg);border:1.5px solid var(--line);box-shadow:none;padding:7px 13px;font-size:13px}
+.btn:focus-visible,.cell:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
+
+.players{display:flex;flex-direction:column;gap:6px}
+.pl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;padding:6px 8px;border-radius:10px;border:1.5px solid transparent}
+.pl.active{border-color:var(--cur);background:var(--cur-soft)}
+.pl .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pips{display:flex;gap:4px}
+.pips span{width:18px;height:7px;border-radius:4px;background:var(--line)}
+.lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 8px}
+
+.logcard{flex:1;min-height:0;display:flex;flex-direction:column}
+.log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;overflow:auto;font-size:13px;min-height:0}
+.log li{display:flex;gap:8px;align-items:baseline;color:var(--muted)}
+.log li .dot{width:8px;height:8px;align-self:center}
+.log li b{color:var(--fg)}
+.log .d{font-family:var(--f-mono);font-size:12px}
+.log .score{color:var(--ok);font-weight:700}
+.last{display:none}
+
+/* sobreposições */
+.overlay{position:fixed;inset:0;z-index:20;background:var(--scrim);display:flex;align-items:center;justify-content:center;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.dialog{background:var(--surface);border-radius:20px;padding:20px;width:min(420px,100%);max-height:100%;overflow:auto;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.dialog h2{font-family:var(--f-display);font-weight:800;margin:0;font-size:24px;letter-spacing:-.01em}
+.dialog p{margin:0}
+.win .dialog{border:3px solid var(--cur)}
+.pill{display:inline-flex;background:var(--felt);border-radius:999px;padding:4px;gap:2px;align-self:flex-start}
+.pill button{appearance:none;border:0;background:transparent;border-radius:999px;padding:8px 16px;font:600 14px var(--f-body);color:var(--muted);cursor:pointer}
+.pill button[aria-pressed="true"]{background:var(--p0);color:#fff}
+.names{display:flex;flex-direction:column;gap:8px}
+.names label{display:flex;align-items:center;gap:10px}
+.names input{flex:1;min-width:0;font:500 16px var(--f-body);padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--fg)}
+.names input:focus{outline:2px solid var(--p0);outline-offset:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.rules ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:14px}
+
+/* retrato (celular em pé, janelas estreitas) */
+@media (orientation:portrait), (max-width:640px){
+  .game{flex-direction:column;gap:10px}
+  .panel{width:100%;gap:8px}
+  .turncard{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"turn dice" "hint dice";column-gap:12px;align-items:center;padding:10px 12px}
+  .turncard .turn{grid-area:turn}
+  .turncard .hint{grid-area:hint;min-height:2.6em;font-size:13px;margin-top:2px}
+  .turncard .dice-row{grid-area:dice;margin:0;flex-direction:column;gap:6px}
+  .turncard .dice-row .dice{display:flex;gap:6px}
+  .turncard .dice-row .btn{min-height:0;padding:10px 14px;font-size:14px;width:100%}
+  .players{flex-direction:row;flex-wrap:wrap;gap:6px}
+  .pl{flex:1 1 0;min-width:0;padding:5px 7px;gap:6px}
+  .pips span{width:12px;height:6px}
+  .scorecard{padding:8px}
+  .scorecard .lbl,.logcard{display:none}
+  .last{display:block;font-size:12px;color:var(--muted);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:1.4em}
+  .last b{color:var(--fg)} .last .d{font-family:var(--f-mono)}
+  .last .score{color:var(--ok);font-weight:700}
+}
+/* tela inicial */
+.home{position:fixed;inset:0;z-index:30;background:var(--bg);overflow:auto;display:flex;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.home-in{margin:auto;width:min(460px,100%);display:flex;flex-direction:column;gap:clamp(14px,3vh,24px)}
+.home-head{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px}
+.logo{display:flex;gap:10px;margin-bottom:4px}
+.die.big{--s:clamp(48px,9vh,68px);width:var(--s);height:var(--s);display:grid}
+.logo .die:first-child{transform:rotate(-10deg)}.logo .die:last-child{transform:rotate(8deg) translateY(4px)}
+.home-title{font-family:var(--f-display);font-weight:800;font-size:clamp(28px,5.5vh,42px);letter-spacing:-.025em;line-height:1;margin:0}
+.home-title span{color:var(--p1)}
+.home-sub{margin:0;color:var(--muted);max-width:34ch}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mode{appearance:none;cursor:pointer;text-align:left;border:2px solid var(--line);background:var(--surface);color:var(--fg);border-radius:18px;
+  padding:clamp(14px,2.6vh,20px) 16px;display:flex;flex-direction:column;gap:4px;transition:border-color .15s, transform .1s;touch-action:manipulation}
+.mode:hover{border-color:var(--muted)}
+.mode:active{transform:scale(.98)}
+.mode[aria-pressed="true"]{border-color:var(--mc);background:var(--mc-soft)}
+#mPvp{--mc:var(--p0);--mc-soft:var(--p0-soft)} #mBot{--mc:var(--p1);--mc-soft:var(--p1-soft)}
+.mode-name{font-family:var(--f-mono);font-weight:700;font-size:clamp(24px,4.5vh,32px);letter-spacing:-.02em;color:var(--mc)}
+.mode-desc{font-size:13px;color:var(--muted);line-height:1.3}
+.mode:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
+.config{display:flex;flex-direction:column;gap:12px}
+.cfg-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.cfg-lbl{font-size:13px;font-weight:600;color:var(--muted)}
+.cfg-row .pill{align-self:auto}
+.home-actions .btn:not(.ghost){flex:1}
+.home-actions .btn:disabled{opacity:.45}
+.botnote{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-left:auto;padding-left:6px}
+
+@media (orientation:portrait), (max-width:640px){:root{--die-size:clamp(40px,11vw,54px)}}
+@media (max-width:440px){
+  h1{font-size:19px}
+  .hbtns .btn.ghost{padding:6px 10px;font-size:12px}
+}
+@media (max-height:480px) and (orientation:landscape){.logcard{display:none}.last{display:block;font-size:12px;color:var(--muted);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.last b{color:var(--fg)}.last .d{font-family:var(--f-mono)}.last .score{color:var(--ok);font-weight:700}.hint{min-height:0}}
+.dice{display:flex;gap:8px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="app">
+  <header>
+    <h1>Jogo dos Dados <span>6×6</span></h1>
+    <div class="hbtns">
+      <a class="btn ghost" href="../../" style="text-decoration:none">← Jogos</a>
+      <button class="btn ghost" id="btnRules" type="button">Regras</button>
+      <button class="btn ghost" id="btnSetup" type="button">Início</button>
+    </div>
+  </header>
+
+  <div class="game">
+    <section class="table" id="table" aria-label="Tabuleiro">
+      <div class="grid-area">
+        <div class="corner">L\C</div>
+        <div class="cols" id="cols"></div>
+        <div class="rows" id="rows"></div>
+        <div class="board" id="board">
+          <svg class="trios" id="trios"></svg>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="card turncard">
+        <div class="turn"><span class="dot" id="turnDot"></span><span id="turnName"></span></div>
+        <p class="hint" id="hint"></p>
+        <div class="dice-row">
+          <div class="dice"><div class="die blank" id="d1"></div><div class="die blank" id="d2"></div></div>
+          <button class="btn" type="button" id="btnRoll">Rolar dados</button>
+        </div>
+      </div>
+
+      <div class="card scorecard">
+        <p class="lbl">Placar · trincas</p>
+        <div class="players" id="players"></div>
+        <div class="last" id="last"></div>
+      </div>
+
+      <div class="card logcard">
+        <p class="lbl">Jogadas</p>
+        <ul class="log" id="log"></ul>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div class="home" id="home">
+  <div class="home-in">
+    <div class="home-head">
+      <div class="logo" aria-hidden="true"><span class="die big" id="logoA"></span><span class="die big" id="logoB"></span></div>
+      <h2 class="home-title">Jogo dos Dados <span>6×6</span></h2>
+      <p class="home-sub">Role 2d6, marque a casa e feche 3 trincas em linha primeiro.</p>
+    </div>
+
+    <div class="modes" role="group" aria-label="Modo de jogo">
+      <button type="button" class="mode" id="mPvp" aria-pressed="false">
+        <span class="mode-name">1×1</span>
+        <span class="mode-desc">Jogadores no mesmo aparelho</span>
+      </button>
+      <button type="button" class="mode" id="mBot" aria-pressed="false">
+        <span class="mode-name">1×BOT</span>
+        <span class="mode-desc">Você contra o computador</span>
+      </button>
+    </div>
+
+    <div class="config" id="cfgPvp" hidden>
+      <div class="pill" role="group" aria-label="Número de jogadores">
+        <button type="button" id="n2" aria-pressed="true">2 jogadores</button>
+        <button type="button" id="n3" aria-pressed="false">3 jogadores</button>
+      </div>
+      <div class="names" id="names"></div>
+    </div>
+
+    <div class="config" id="cfgBot" hidden>
+      <div class="names">
+        <label><span class="dot p0"></span><input id="botMe" maxlength="16" value="Você" aria-label="Seu nome"></label>
+      </div>
+      <div class="cfg-row">
+        <span class="cfg-lbl">Nível do bot</span>
+        <div class="pill" role="group" aria-label="Nível do bot">
+          <button type="button" id="lvEasy" aria-pressed="false">Fácil</button>
+          <button type="button" id="lvHard" aria-pressed="true">Difícil</button>
+        </div>
+      </div>
+      <div class="cfg-row">
+        <span class="cfg-lbl">Quem começa</span>
+        <div class="pill" role="group" aria-label="Quem começa">
+          <button type="button" id="stMe" aria-pressed="true">Você</button>
+          <button type="button" id="stBot" aria-pressed="false">Bot</button>
+          <button type="button" id="stRnd" aria-pressed="false">Sorteio</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row home-actions">
+      <button class="btn" type="button" id="btnStart" disabled style="background:var(--p0)">Escolha um modo</button>
+      <button class="btn ghost" type="button" id="btnCancel" hidden>Voltar ao jogo</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay win" id="win" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+    <h2 id="winTitle"></h2>
+    <p id="winText"></p>
+    <div class="row">
+      <button class="btn" type="button" id="btnAgain">Jogar de novo</button>
+      <button class="btn ghost" type="button" id="btnSeeBoard">Ver tabuleiro</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay rules" id="rules" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="rulesTitle">
+    <h2 id="rulesTitle">Regras</h2>
+    <ul>
+      <li>Na sua vez, role os dois dados juntos. Os valores viram coordenadas: com 3 e 4 você escolhe entre L3·C4 e L4·C3.</li>
+      <li>Dados iguais (ex.: 5 e 5) dão uma única casa: L5·C5.</li>
+      <li>Se só uma das casas estiver livre, você marca ela. Se as duas estiverem ocupadas, passa a vez.</li>
+      <li>Trinca é uma sequência de 3 marcas suas na horizontal, vertical ou diagonal.</li>
+      <li>Uma marca pode valer para trincas em direções diferentes, mas não para duas trincas na mesma direção. Uma linha de 4 conta 1 trinca; uma de 6 conta 2.</li>
+      <li>Ganha quem fechar 3 trincas primeiro. Tabuleiro cheio sem vencedor é empate.</li>
+    </ul>
+    <div class="row"><button class="btn" type="button" id="btnRulesClose" style="background:var(--p0)">Entendi</button></div>
+  </div>
+</div>
+
+<script>
+const COLORS=["var(--p0)","var(--p1)","var(--p2)"], SOFT=["var(--p0-soft)","var(--p1-soft)","var(--p2-soft)"];
+const DEFAULT_NAMES=["Jogador 1","Jogador 2","Jogador 3"];
+const DIRS=[[0,1,"h"],[1,0,"v"],[1,1,"d"],[1,-1,"a"]];
+const PIPS={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
+const $=id=>document.getElementById(id);
+let S, lastPlaced=-1, rolling=false, winSeen=false, botTimer=null, gameId=0;
+let cfg={mode:null,n:2,level:"hard",start:"me"}, lastSetup=null;
+
+/* ---------- partida ---------- */
+function newGame(players,start=0,level="hard"){
+  clearTimeout(botTimer);botTimer=null;gameId++;rolling=false;
+  ["d1","d2"].forEach(id=>$(id).classList.remove("roll"));
+  S={players:players.map(p=>({name:p.name,bot:!!p.bot,score:0})),board:Array(36).fill(-1),cur:start,roll:null,options:[],level,
+     used:{h:new Set(),v:new Set(),d:new Set(),a:new Set()},trios:[],winner:null,draw:false,log:[]};
+  lastPlaced=-1;winSeen=false;$("win").hidden=true;setDie($("d1"),0);setDie($("d2"),0);render();
+}
+const idx=(r,c)=>(r-1)*6+(c-1);
+const isBotTurn=()=>S&&S.winner===null&&!S.draw&&S.players[S.cur].bot;
+
+function buildStatic(){
+  $("cols").innerHTML=[1,2,3,4,5,6].map(c=>`<div class="lab">C${c}</div>`).join("");
+  $("rows").innerHTML=[1,2,3,4,5,6].map(r=>`<div class="lab">L${r}</div>`).join("");
+  const b=$("board");
+  for(let r=1;r<=6;r++)for(let c=1;c<=6;c++){
+    const el=document.createElement("button");
+    el.className="cell";el.type="button";el.id="c"+idx(r,c);el.tabIndex=-1;
+    el.setAttribute("aria-label",`Linha ${r}, coluna ${c}`);
+    el.innerHTML=`<span class="coord">L${r}·C${c}</span>`;
+    el.addEventListener("click",()=>place(r,c,false));
+    b.insertBefore(el,$("trios"));
+  }
+  ["d1","d2","logoA","logoB"].forEach(id=>$(id).innerHTML="<i></i>".repeat(9));
+  setDie($("logoA"),3);setDie($("logoB"),4);
+}
+function setDie(el,v){el.classList.toggle("blank",!v);[...el.children].forEach((p,i)=>p.classList.toggle("on",!!v&&PIPS[v].includes(i)))}
+
+function fit(){
+  const t=$("table"),s=Math.floor(Math.min(t.clientWidth,t.clientHeight));
+  document.documentElement.style.setProperty("--bs",Math.max(160,s)+"px");
+  if(S)requestAnimationFrame(drawTrios);
+}
+
+function roll(fromBot){
+  if(rolling||S.winner!==null||S.draw||S.roll)return;
+  if(isBotTurn()&&!fromBot)return;
+  rolling=true;$("btnRoll").disabled=true;
+  const gid=gameId,d1=$("d1"),d2=$("d2"),reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const a=1+Math.floor(Math.random()*6),b=1+Math.floor(Math.random()*6);
+  const finish=()=>{if(gid!==gameId)return;d1.classList.remove("roll");d2.classList.remove("roll");setDie(d1,a);setDie(d2,b);rolling=false;afterRoll(a,b)};
+  if(reduce){finish();return}
+  d1.classList.add("roll");d2.classList.add("roll");
+  let t=0;const iv=setInterval(()=>{if(gid!==gameId){clearInterval(iv);return}
+    setDie(d1,1+Math.floor(Math.random()*6));setDie(d2,1+Math.floor(Math.random()*6));
+    if(++t>8){clearInterval(iv);finish()}},60);
+}
+function afterRoll(a,b){
+  S.roll=[a,b];
+  const cand=a===b?[[a,b]]:[[a,b],[b,a]];
+  S.options=cand.filter(([r,c])=>S.board[idx(r,c)]===-1);
+  if(!S.options.length)S.log.unshift({p:S.cur,txt:`${a}-${b}, casas ocupadas, passou`,pass:true});
+  render();
+}
+
+// procura trincas novas que a marca em (r,c) fecharia, sem alterar o estado
+function findTrios(r,c,p,board){
+  const found=[];
+  for(const [dr,dc,key] of DIRS){
+    for(let k=0;k<3;k++){
+      const sr=r-k*dr,sc=c-k*dc,cells=[];let ok=true;
+      for(let j=0;j<3;j++){const rr=sr+j*dr,cc=sc+j*dc,ii=idx(rr,cc);
+        if(rr<1||rr>6||cc<1||cc>6||(board[ii]!==p&&!(rr===r&&cc===c))||S.used[key].has(ii)){ok=false;break}
+        cells.push([rr,cc])}
+      if(ok){found.push({key,cells});break}
+    }
+  }
+  return found;
+}
+function place(r,c,fromBot){
+  if(!S.options.some(([rr,cc])=>rr===r&&cc===c))return;
+  if(isBotTurn()&&!fromBot)return;
+  const i=idx(r,c),p=S.cur;
+  const got=findTrios(r,c,p,S.board);
+  S.board[i]=p;lastPlaced=i;
+  got.forEach(t=>{t.cells.forEach(([rr,cc])=>S.used[t.key].add(idx(rr,cc)));S.trios.push({p,cells:t.cells})});
+  S.players[p].score+=got.length;
+  S.log.unshift({p,txt:`${S.roll[0]}-${S.roll[1]} → L${r}·C${c}`,gained:got.length});
+  S.roll=null;S.options=[];
+  if(S.players[p].score>=3)S.winner=p;
+  else if(S.board.every(v=>v!==-1))S.draw=true;
+  else S.cur=(S.cur+1)%S.players.length;
+  render();
+}
+function pass(fromBot){
+  if(isBotTurn()&&!fromBot)return;
+  S.roll=null;S.options=[];S.cur=(S.cur+1)%S.players.length;setDie($("d1"),0);setDie($("d2"),0);render();
+}
+
+/* ---------- bot ---------- */
+// Avalia uma casa: trincas fechadas agora, potencial de trincas futuras e bloqueio dos adversários.
+function evalCell(r,c,p,level){
+  const i=idx(r,c);
+  const gain=findTrios(r,c,p,S.board).length;
+  if(gain&&S.players[p].score+gain>=3)return 1e6;
+  let v=gain*1000;
+  for(const [dr,dc,key] of DIRS){
+    for(let k=0;k<3;k++){
+      const cells=[];let inb=true;
+      for(let j=0;j<3;j++){const rr=r-k*dr+j*dr,cc=c-k*dc+j*dc;if(rr<1||rr>6||cc<1||cc>6){inb=false;break}cells.push(idx(rr,cc))}
+      if(!inb)continue;
+      const others=cells.filter(x=>x!==i);
+      const owners=new Set(others.map(x=>S.board[x]).filter(o=>o>=0));
+      const usedHere=others.some(x=>S.used[key].has(x));
+      // meu potencial
+      if(!usedHere&&(owners.size===0||(owners.size===1&&owners.has(p)))){
+        const mine=others.filter(x=>S.board[x]===p).length;
+        v+=mine===1?8:mine===0?1.5:0;
+      }
+      // bloqueio
+      if(level==="hard"&&owners.size===1&&!owners.has(p)&&!usedHere){
+        const q=[...owners][0],theirs=others.filter(x=>S.board[x]===q).length;
+        const danger=S.players[q].score===2?2:1;
+        v+=theirs===2?400*danger:theirs===1?3:0;
+      }
+    }
+  }
+  return v;
+}
+function botChoose(){
+  const p=S.cur,lv=S.level,opts=S.options;
+  if(opts.length===1)return opts[0];
+  if(lv==="easy"&&Math.random()<.45)return opts[Math.floor(Math.random()*opts.length)];
+  const scored=opts.map(o=>({o,v:evalCell(o[0],o[1],p,lv)+Math.random()*.5}));
+  scored.sort((a,b)=>b.v-a.v);
+  return scored[0].o;
+}
+function scheduleBot(){
+  if(botTimer||!isBotTurn()||!$("home").hidden)return;
+  const gid=gameId,slow=matchMedia("(prefers-reduced-motion: reduce)").matches?300:0;
+  const go=(fn,ms)=>{botTimer=setTimeout(()=>{botTimer=null;if(gid===gameId&&isBotTurn())fn()},ms+slow)};
+  if(!S.roll&&!rolling)go(()=>roll(true),650);
+  else if(S.roll&&S.options.length)go(()=>{const[r,c]=botChoose();place(r,c,true)},900);
+  else if(S.roll&&!S.options.length)go(()=>pass(true),1100);
+}
+
+/* ---------- tela ---------- */
+const logHTML=l=>`<b>${esc(S.players[l.p].name)}</b> <span class="d">${l.txt}</span>${l.gained?` <span class="score">+${l.gained} trinca${l.gained>1?"s":""}</span>`:""}`;
+
+function render(){
+  const p=S.cur,root=document.documentElement.style;
+  const show=S.winner!==null?S.winner:p,botTurn=isBotTurn();
+  root.setProperty("--cur",COLORS[show]);root.setProperty("--cur-soft",SOFT[show]);
+  $("board").classList.toggle("choosing",S.options.length>0);
+  for(let i=0;i<36;i++){
+    const el=$("c"+i),r=Math.floor(i/6)+1,c=i%6+1,o=S.board[i];
+    const isOpt=S.options.some(([rr,cc])=>rr===r&&cc===c);
+    el.classList.toggle("opt",isOpt);el.tabIndex=isOpt&&!botTurn?0:-1;
+    el.style.cursor=isOpt&&botTurn?"default":"";
+    const chip=el.querySelector(".chip");
+    if(o>=0&&!chip){el.innerHTML=`<span class="chip p${o}${i===lastPlaced?" new":""}"></span>`;el.setAttribute("aria-label",`Linha ${r}, coluna ${c}: ${S.players[o].name}`)}
+    if(o<0&&chip){el.innerHTML=`<span class="coord">L${r}·C${c}</span>`;el.setAttribute("aria-label",`Linha ${r}, coluna ${c}`)}
+  }
+  drawTrios();
+  $("turnDot").style.background=COLORS[show];
+  $("turnName").textContent=S.winner!==null?`${S.players[S.winner].name} venceu`:S.draw?"Empate":botTurn?`Vez do ${S.players[p].name}`:`Vez de ${S.players[p].name}`;
+  const hint=$("hint"),btn=$("btnRoll");
+  btn.onclick=()=>roll(false);btn.textContent="Rolar dados";btn.disabled=false;
+  if(S.winner!==null||S.draw){hint.textContent="Partida encerrada.";btn.textContent="Jogar de novo";btn.onclick=replay}
+  else if(botTurn){
+    btn.disabled=true;btn.textContent="Bot jogando…";
+    if(!S.roll)hint.textContent="O bot vai rolar os dados.";
+    else if(S.options.length===2)hint.innerHTML=`O bot está escolhendo: <b>L${S.options[0][0]}·C${S.options[0][1]}</b> ou <b>L${S.options[1][0]}·C${S.options[1][1]}</b>`;
+    else if(S.options.length===1)hint.innerHTML=`O bot vai marcar <b>L${S.options[0][0]}·C${S.options[0][1]}</b>`;
+    else hint.textContent="Casas ocupadas. O bot passa a vez.";
+  }
+  else if(!S.roll){hint.textContent="Role os dois dados para ver suas casas."}
+  else if(S.options.length===2){hint.innerHTML=`Escolha: <b>L${S.options[0][0]}·C${S.options[0][1]}</b> ou <b>L${S.options[1][0]}·C${S.options[1][1]}</b>`;btn.disabled=true}
+  else if(S.options.length===1){const[a,b]=S.roll;hint.innerHTML=`${a===b?"Dados iguais. ":"Uma casa ocupada. "}Marque <b>L${S.options[0][0]}·C${S.options[0][1]}</b>`;btn.disabled=true}
+  else{hint.textContent="Casas ocupadas. Você passa a vez.";btn.textContent="Passar a vez";btn.onclick=()=>pass(false)}
+  $("players").innerHTML=S.players.map((q,i)=>`<div class="pl${i===p&&S.winner===null&&!S.draw?" active":""}">
+    <span class="dot p${i}"></span><span class="nm">${esc(q.name)}</span>
+    <span class="pips" aria-label="${q.score} de 3 trincas">${[0,1,2].map(k=>`<span${k<q.score?` style="background:${COLORS[i]}"`:""}></span>`).join("")}</span></div>`).join("");
+  $("log").innerHTML=S.log.length?S.log.slice(0,40).map(l=>`<li><span class="dot p${l.p}"></span><span>${logHTML(l)}</span></li>`).join(""):`<li>Nenhuma jogada ainda.</li>`;
+  $("last").innerHTML=S.log.length?`Última: ${logHTML(S.log[0])}`:"Nenhuma jogada ainda.";
+  const w=$("win");
+  if((S.winner!==null||S.draw)&&!winSeen){
+    w.hidden=false;
+    const vsBot=S.players.some(q=>q.bot);
+    if(S.winner!==null){
+      const wp=S.players[S.winner],n=S.log.filter(l=>l.p===S.winner&&!l.pass).length;
+      $("winTitle").textContent=wp.bot?"O bot venceu":vsBot?"Você venceu!":`${wp.name} venceu!`;
+      $("winText").textContent=wp.bot?`Ele fechou 3 trincas em ${n} jogadas. Quer a revanche?`:`Fechou 3 trincas em ${n} jogadas.`}
+    else{$("winTitle").textContent="Empate";$("winText").textContent="O tabuleiro encheu e ninguém fechou 3 trincas."}
+  } else if(S.winner===null&&!S.draw) w.hidden=true;
+  if(S.options.length&&!botTurn){const first=$("c"+idx(...S.options[0]));first&&first.focus({preventScroll:true})}
+  scheduleBot();
+}
+function drawTrios(){
+  const b=$("board"),W=b.clientWidth,H=b.clientHeight,svg=$("trios");
+  if(!W)return;
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  const ctr=([r,c])=>{const el=$("c"+idx(r,c));return[el.offsetLeft+el.offsetWidth/2,el.offsetTop+el.offsetHeight/2]};
+  const sw=Math.max(5,W/40);
+  svg.innerHTML=S.trios.map(t=>{const a=ctr(t.cells[0]),z=ctr(t.cells[2]);
+    return `<line x1="${a[0]}" y1="${a[1]}" x2="${z[0]}" y2="${z[1]}" style="stroke:${COLORS[t.p]}" stroke-width="${sw}" stroke-linecap="round" opacity=".55"/>`}).join("");
+}
+const esc=s=>String(s).replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+
+/* ---------- tela inicial ---------- */
+const press=(ids,on)=>ids.forEach(id=>$(id).setAttribute("aria-pressed",id===on));
+function renderNames(){
+  const cur=[...document.querySelectorAll("#names input")].map(i=>i.value);
+  $("names").innerHTML=Array.from({length:cfg.n},(_,i)=>`<label><span class="dot p${i}"></span>
+    <input id="name${i}" maxlength="16" value="${esc(cur[i]??DEFAULT_NAMES[i])}" aria-label="Nome do jogador ${i+1}"></label>`).join("");
+  press(["n2","n3"],"n"+cfg.n);
+}
+function renderHome(){
+  press(["mPvp","mBot"],cfg.mode==="pvp"?"mPvp":cfg.mode==="bot"?"mBot":"");
+  $("cfgPvp").hidden=cfg.mode!=="pvp";$("cfgBot").hidden=cfg.mode!=="bot";
+  press(["lvEasy","lvHard"],cfg.level==="easy"?"lvEasy":"lvHard");
+  press(["stMe","stBot","stRnd"],{me:"stMe",bot:"stBot",rnd:"stRnd"}[cfg.start]);
+  const s=$("btnStart");s.disabled=!cfg.mode;
+  s.textContent=!cfg.mode?"Escolha um modo":cfg.mode==="pvp"?`Começar 1×1${cfg.n===3?"×1":""}`:"Começar contra o bot";
+  s.style.background=cfg.mode==="bot"?"var(--p1)":"var(--p0)";
+}
+function openHome(canCancel){
+  clearTimeout(botTimer);botTimer=null;
+  $("btnCancel").hidden=!canCancel;$("win").hidden=true;$("rules").hidden=true;$("home").hidden=false;renderHome();
+}
+function startFromHome(){
+  let players,start=0,level="hard";
+  if(cfg.mode==="pvp"){
+    players=Array.from({length:cfg.n},(_,i)=>({name:$("name"+i).value.trim()||DEFAULT_NAMES[i]}));
+  }else{
+    players=[{name:$("botMe").value.trim()||"Você"},{name:"Bot",bot:true}];
+    level=cfg.level;start=cfg.start==="bot"?1:cfg.start==="rnd"?Math.floor(Math.random()*2):0;
+  }
+  lastSetup={players,level,start:cfg.start};
+  $("home").hidden=true;newGame(players,start,level);
+}
+function replay(){
+  $("win").hidden=true;
+  if(!lastSetup)return newGame(S.players.map(q=>({name:q.name,bot:q.bot})));
+  const st=lastSetup.start==="bot"?1:lastSetup.start==="rnd"?Math.floor(Math.random()*2):0;
+  newGame(lastSetup.players,lastSetup.players.some(q=>q.bot)?st:0,lastSetup.level);
+}
+$("mPvp").onclick=()=>{cfg.mode="pvp";if(!$("names").children.length)renderNames();renderHome()};
+$("mBot").onclick=()=>{cfg.mode="bot";renderHome()};
+$("n2").onclick=()=>{cfg.n=2;renderNames();renderHome()};$("n3").onclick=()=>{cfg.n=3;renderNames();renderHome()};
+$("lvEasy").onclick=()=>{cfg.level="easy";renderHome()};$("lvHard").onclick=()=>{cfg.level="hard";renderHome()};
+$("stMe").onclick=()=>{cfg.start="me";renderHome()};$("stBot").onclick=()=>{cfg.start="bot";renderHome()};$("stRnd").onclick=()=>{cfg.start="rnd";renderHome()};
+$("btnStart").onclick=startFromHome;
+$("btnCancel").onclick=()=>{$("home").hidden=true;render()};
+$("btnSetup").onclick=()=>openHome(true);
+$("btnAgain").onclick=replay;
+$("btnSeeBoard").onclick=()=>{winSeen=true;$("win").hidden=true};
+$("btnRules").onclick=()=>{$("rules").hidden=false};
+$("btnRulesClose").onclick=()=>{$("rules").hidden=true};
+document.querySelectorAll(".overlay").forEach(o=>o.addEventListener("click",e=>{if(e.target===o&&o.id!=="win")o.hidden=true}));
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){$("rules").hidden=true;if(!$("btnCancel").hidden&&!$("home").hidden){$("home").hidden=true;render()}}});
+
+buildStatic();
+newGame([{name:"Jogador 1"},{name:"Jogador 2"}]);
+renderNames();renderHome();
+fit();
+new ResizeObserver(fit).observe($("table"));
+window.addEventListener("orientationchange",()=>setTimeout(fit,150));
+</script>
+
+
+<a href="../../" class="hub-back" aria-label="Voltar para a lista de jogos">← Jogos</a>
+<style>.hub-back{position:fixed;z-index:50;left:max(10px,env(safe-area-inset-left,0px));bottom:max(10px,env(safe-area-inset-bottom,0px));background:#0f9488;color:#ffffff;font:700 13px system-ui,-apple-system,sans-serif;text-decoration:none;padding:8px 14px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.3);opacity:.85;transition:opacity .2s}.hub-back:hover,.hub-back:focus-visible{opacity:1}.hub-back{display:none}#home:not([hidden])~.hub-back{display:block}</style>
+</body></html>
