@@ -110,6 +110,13 @@ a.game:hover .fod .c{transform:rotate(calc(var(--r) * 1.35))}
 .fod .ext{position:absolute;left:12px;top:12px;font:700 11px var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:#cdb8ee;
   border:1px solid rgba(205,184,238,.4);padding:4px 9px;border-radius:999px}
 
+/* arte: Dice Wars */
+.art.dw{background:radial-gradient(90% 90% at 50% 35%,#16303a,#0d1a20)}
+.dw svg{position:absolute;inset:6% 4%;width:92%;height:88%;transition:transform .5s cubic-bezier(.3,1.4,.5,1)}
+.dw .stk{transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
+a.game:hover .dw .stk.a{transform:translate(0,-6px)}
+a.game:hover .dw svg{transform:scale(1.04)}
+
 /* em breve */
 .game.soon{border-style:dashed;background:transparent}
 .art.soon{background:repeating-linear-gradient(-45deg,rgba(255,255,255,.025) 0 10px,transparent 10px 20px)}
@@ -188,6 +195,17 @@ const GAMES = [
     art: "fod"
   },
   {
+    title: "Dice Wars",
+    url: "jogos/dice-wars/",
+    desc: "Conquiste o mapa de territórios no braço dos dados. Ataque vizinhos, junte territórios conectados e ganhe reforços.",
+    category: "Estratégia",
+    players: "1 jogador vs 1–7 CPUs",
+    time: "15 min",
+    extra: ["Dados", "Contra o bot"],
+    accent: "#e8833a",
+    art: "dw"
+  },
+  {
     title: "Em breve",
     desc: "O próximo jogo da mesa está sendo preparado.",
     category: null,
@@ -212,6 +230,17 @@ const ARTS = {
   fod(){
     const cs=[["7","♣",0,-26],["Q","♥",1,-13],["A","♠",0,0],["3","♦",1,13],["K","♣",0,26]];
     return `<span class="ext">↗ Site externo</span><div class="fan">${cs.map(([r,su,red,a])=>`<div class="c${red?" r":""}" style="--r:${a}deg"><i>${r}</i>${su}</div>`).join("")}</div><div class="bet"><b>2</b>Faço</div>`;
+  },
+  dw(){
+    const C={t:"#2bb3a3",o:"#e8833a",v:"#8b6bd8",g:"#d6b23e"};
+    const map=["..tttooo..","..ttttooo.",".vvttgoooo",".vvvtggoo.","vvvvgggg..",".vvv.ggg.."];
+    const R=10,S=Math.sqrt(3)*R;let hex="";
+    map.forEach((row,r)=>[...row].forEach((ch,c)=>{if(ch===".")return;const x=c*S+(r%2?S/2:0)+S,y=r*R*1.5+R+14;
+      const pts=[0,1,2,3,4,5].map(k=>{const a=(60*k-30)*Math.PI/180;return `${(x+R*Math.cos(a)).toFixed(1)},${(y+R*Math.sin(a)).toFixed(1)}`}).join(" ");
+      hex+=`<polygon points="${pts}" fill="${C[ch]}" stroke="#0b1519" stroke-width="1.6"/>`;}));
+    const cube=(x,y,c)=>`<path d="M${x-7} ${y}L${x} ${y+4}L${x} ${y+11}L${x-7} ${y+7}Z" fill="${c}" stroke="#0b1519" stroke-width=".8"/><path d="M${x} ${y+4}L${x+7} ${y}L${x+7} ${y+7}L${x} ${y+11}Z" fill="${c}" stroke="#0b1519" stroke-width=".8" style="filter:brightness(.7)"/><path d="M${x} ${y-4}L${x+7} ${y}L${x} ${y+4}L${x-7} ${y}Z" fill="#fff" fill-opacity=".45" stroke="#0b1519" stroke-width=".8"/><circle cx="${x}" cy="${y}" r="1.2" fill="#fff"/>`;
+    const stk=(x,y,n,c,cls)=>`<g class="stk ${cls}">${Array.from({length:n},(_,k)=>cube(x,y-k*7,c)).join("")}</g>`;
+    return `<svg viewBox="0 0 200 110" preserveAspectRatio="xMidYMid meet">${hex}${stk(88,30,4,C.t,"a")}${stk(150,40,3,C.o,"")}${stk(44,74,2,C.v,"")}${stk(118,72,3,C.g,"")}</svg>`;
   },
   soon(){return `<span>?</span>`;}
 };

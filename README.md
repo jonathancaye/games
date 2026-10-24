@@ -11,6 +11,7 @@ favicon.svg
 jogos/
   corrida-de-ases/index.html
   dados-6x6/index.html
+  dice-wars/index.html
 ```
 
 ## Publicar no GitHub Pages
