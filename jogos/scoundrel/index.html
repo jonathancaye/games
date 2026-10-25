@@ -16,7 +16,7 @@
   --teal-soft:rgba(43,194,179,.14); --orange-soft:rgba(255,147,72,.14); --red-soft:rgba(240,82,95,.14);
   --f-display:"Bricolage Grotesque","Avenir Next",system-ui,sans-serif;
   --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --cw:min(21.5vw, calc((100dvh - 386px) / 2.55), 116px);
+  --cw:min(21.5vw, calc((100dvh - 404px) / 2.55), 116px);
   --ch:calc(var(--cw) * 1.4);
   --wc:calc(var(--cw) * .82);
   --wh:calc(var(--wc) * 1.4);
@@ -210,6 +210,8 @@ svg.i{width:1em;height:1em;flex:none;vertical-align:-.12em}
 .sgrid b{display:block;font:800 20px var(--f-display)}
 .sgrid small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
 
+.ver{flex:none;text-align:center;font-size:10.5px;line-height:1;color:var(--muted);opacity:.6;letter-spacing:.04em}
+.lic{display:inline-flex;margin-left:2px;vertical-align:-.1em}
 /* modo sem fim */
 .fl{font:800 10.5px/1 var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--orange);white-space:nowrap}
 .fl em{font-style:normal;color:var(--red)}
@@ -300,6 +302,7 @@ svg.i{width:1em;height:1em;flex:none;vertical-align:-.12em}
     <div class="zone-head"><h3>Sua arma</h3><div class="stash" id="stash" hidden></div></div>
     <div class="wpn" id="wpn"></div>
   </section>
+  <footer class="ver">Scoundrel v2.0</footer>
 </div>
 
 <div class="modal" id="mHelp" hidden>
@@ -371,7 +374,7 @@ let MODE=ls.get('scoundrel_mode')==='run'?'run':'classic';
 let S, hist=[];
 
 const role=c=>c.s==='D'?'w':c.s==='H'?'p':'m';
-const lbl=c=>(FACE[c.r]||c.r)+SUIT[c.s];
+const lbl=c=>DECK==='func'?`${c.v}<span class="lic">${ROLE_IC[role(c)]}</span>`:(FACE[c.r]||c.r)+SUIT[c.s];
 
 const fBonus=f=>Math.min(f-1,4);
 const fCut=f=>Math.min(4,Math.floor((f-1)/2));
@@ -444,7 +447,7 @@ function take(i,mode){
   }else if(r==='m'){
     let d;
     if(mode!=='bare'&&wpnOk(c)){ d=Math.max(0,c.v-S.wpn.card.v); S.wpn.kills.push(c); S.msg={t:`Você abateu <b>${lbl(c)}</b> com a arma`+(d?` e perdeu <b>${d}</b>.`:` sem levar dano.`)}; }
-    else { d=c.v; S.msg={t:`Luta de mãos nuas contra <b>${lbl(c)}</b>: <b>−${d}</b>.`}; }
+    else { d=c.v; S.msg={t:`Luta sem arma contra <b>${lbl(c)}</b>: <b>−${d}</b>.`}; }
     S.st.kills++; S.st.dmg+=d;
     if(d){ S.hp-=d; floatTxt('−'+d,'dmg'); shake(); }
     if(S.hp<=0){ S.hp=0; return finish(false); }
@@ -565,7 +568,7 @@ function render(first){
 function renderWpn(){
   const w=$('wpn');
   if(!S.wpn){
-    w.innerHTML=`<div class="no-wpn">${IC.fist}</div><div class="wtxt"><b style="color:var(--fg)">Mãos nuas.</b><br>Pegue uma carta <span style="color:var(--teal)">♦</span> para reduzir o dano dos monstros.</div>`;
+    w.innerHTML=`<div class="no-wpn">${IC.fist}</div><div class="wtxt"><b style="color:var(--fg)">Sem arma.</b><br>Pegue uma carta <span style="color:var(--teal)">${DECK==='func'?IC.sword:'♦'}</span> para reduzir o dano dos monstros.</div>`;
     return;
   }
   const k=S.wpn.kills, lim=k.length?k[k.length-1].v:null;
@@ -603,14 +606,14 @@ function renderAct(){
     const after=v=>Math.max(0,S.hp-v);
     const ops=[];
     if(o.w!==null) ops.push(`<button class="ch teal ${o.w<o.bare?'rec':''}" data-m="weapon"><span class="t">${IC.sword}Com a arma</span><span class="s"><b>−${o.w}</b> · vida ${after(o.w)}</span></button>`);
-    ops.push(`<button class="ch red" data-m="bare"><span class="t">${IC.fist}Mãos nuas</span><span class="s"><b>−${o.bare}</b> · vida ${after(o.bare)}${after(o.bare)===0?' ☠':''}</span></button>`);
+    ops.push(`<button class="ch red" data-m="bare"><span class="t">${IC.fist}Sem arma</span><span class="s"><b>−${o.bare}</b> · vida ${after(o.bare)}${after(o.bare)===0?' ☠':''}</span></button>`);
     body=ops.join('');
     if(S.wpn&&o.w===null) note=`Sua arma só aguenta monstros abaixo de ${S.wpn.kills[S.wpn.kills.length-1].v}.`;
     else if(o.w!==null&&S.wpn&&!S.wpn.kills.length) note='';
     else if(o.w!==null) note=`Depois, a arma só servirá contra monstros abaixo de ${c.v}.`;
     setHP(-(o.w!==null?o.w:o.bare));
   }else if(o.r==='w'){
-    body=`<button class="ch teal" data-m="eq"><span class="t">${IC.sword}Equipar ${lbl(c)}</span><span class="s">bloqueia ${c.v} de dano</span></button>`;
+    body=`<button class="ch teal" data-m="eq"><span class="t">${IC.sword}Equipar ${DECK==='func'?c.v:lbl(c)}</span><span class="s">bloqueia ${c.v} de dano</span></button>`;
     body+=stashBtn(c);
     if(S.wpn) note=`Equipar substitui ${lbl(S.wpn.card)}`+(S.wpn.kills.length?` e zera o limite de alvos.`:'.');
     setHP(0);
