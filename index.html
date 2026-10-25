@@ -131,6 +131,14 @@ a.game:hover .scd .k:nth-child(2){transform:translateY(-10px) rotate(-4deg)}
 .scd .hp i{display:block;height:100%;width:70%;background:linear-gradient(90deg,#0f8f82,#2bc2b3);border-radius:999px;transition:width .5s}
 a.game:hover .scd .hp i{width:45%;background:linear-gradient(90deg,#c2410c,#ff9348)}
 
+/* arte: Asfalto Turbo */
+.art.atb{background:radial-gradient(90% 100% at 50% 40%,#3f8a4c,#2b6639 70%,#21522e)}
+.atb svg{position:absolute;inset:0;width:100%;height:100%}
+.atb .ln{transition:stroke-dashoffset .9s linear}
+a.game:hover .atb .ln{stroke-dashoffset:-54}
+.atb .me{transition:transform .5s cubic-bezier(.3,1.4,.5,1)}
+a.game:hover .atb .me{transform:translate(92px,80px) rotate(-30deg)}
+
 /* em breve */
 .game.soon{border-style:dashed;background:transparent}
 .art.soon{background:repeating-linear-gradient(-45deg,rgba(255,255,255,.025) 0 10px,transparent 10px 20px)}
@@ -231,6 +239,17 @@ const GAMES = [
     art: "scd"
   },
   {
+    title: "Asfalto Turbo",
+    url: "jogos/asfalto-turbo/",
+    desc: "Corrida na estrada vista de cima: desvie do trânsito, derrape nas curvas e vá o mais longe possível antes de acabar a gasolina.",
+    category: "Arcade",
+    players: "1 jogador",
+    time: "5 min",
+    extra: ["Solo", "Corrida", "Recorde"],
+    accent: "#ff9348",
+    art: "atb"
+  },
+  {
     title: "Em breve",
     desc: "O próximo jogo da mesa está sendo preparado.",
     category: null,
@@ -270,6 +289,11 @@ const ARTS = {
   scd(){
     const cs=[["K","♠","m","MONSTRO"],["7","♦","w","ARMA"],["5","♥","p","POÇÃO"],["9","♣","m","MONSTRO"]];
     return `<div class="row">${cs.map(([r,s,t,l])=>`<div class="k ${t}${t!=="m"?" r":""}">${r}${s}<u>${l}</u></div>`).join("")}</div><div class="hp"><i></i></div>`;
+  },
+  atb(){
+    const car=(x,y,c,r,me)=>`<g class="${me?"me":""}" transform="translate(${x} ${y}) rotate(${r})"><rect x="-6.5" y="-11" width="13" height="22" rx="3.5" fill="rgba(0,0,0,.35)" transform="translate(2 2)"/><rect x="-6.5" y="-11" width="13" height="22" rx="3.5" fill="${c}"/>${me?'<rect x="-2.2" y="-11" width="1.5" height="22" fill="#ff9348"/><rect x=".7" y="-11" width="1.5" height="22" fill="#ff9348"/>':""}<rect x="-5" y="-6" width="10" height="3.5" rx="1" fill="#15222a"/><rect x="-4.5" y="3" width="9" height="2.5" rx="1" fill="#15222a"/></g>`;
+    const road="M70 -10 C 70 40, 130 60, 128 122";
+    return `<svg viewBox="0 0 200 112" preserveAspectRatio="xMidYMid slice"><path d="${road}" stroke="#ff9348" stroke-width="82" fill="none" stroke-dasharray="7 7"/><path d="${road}" stroke="#f2f4f5" stroke-width="82" fill="none" stroke-dasharray="7 7" stroke-dashoffset="7"/><path d="${road}" stroke="#3c434b" stroke-width="72" fill="none"/><path class="ln" d="${road}" stroke="#eef2f3" stroke-width="2" fill="none" stroke-dasharray="9 9"/><path class="sk" d="M86 104 C 88 96, 92 90, 97 84" stroke="rgba(10,10,12,.45)" stroke-width="2.5" fill="none"/>${car(118,30,"#5b8def",-22)}${car(80,56,"#f2c94c",-28)}${car(104,86,"#2bc2b3",-12,1)}</svg>`;
   },
   soon(){return `<span>?</span>`;}
 };
