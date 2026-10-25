@@ -16,7 +16,7 @@
   --teal-soft:rgba(43,194,179,.14); --orange-soft:rgba(255,147,72,.14); --red-soft:rgba(240,82,95,.14);
   --f-display:"Bricolage Grotesque","Avenir Next",system-ui,sans-serif;
   --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --cw:min(21.5vw, calc((100dvh - 372px) / 2.55), 116px);
+  --cw:min(21.5vw, calc((100dvh - 386px) / 2.55), 116px);
   --ch:calc(var(--cw) * 1.4);
   --wc:calc(var(--cw) * .82);
   --wh:calc(var(--wc) * 1.4);
@@ -210,7 +210,44 @@ svg.i{width:1em;height:1em;flex:none;vertical-align:-.12em}
 .sgrid b{display:block;font:800 20px var(--f-display)}
 .sgrid small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
 
-@media (max-height:620px){ .zone-head{margin-bottom:5px;min-height:24px} .room-box,.wpn-box{padding-top:6px;padding-bottom:7px} .hud .life,.hud .deck{padding-top:6px;padding-bottom:6px} .ch{padding:7px 8px} }
+/* modo sem fim */
+.fl{font:800 10.5px/1 var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--orange);white-space:nowrap}
+.fl em{font-style:normal;color:var(--red)}
+.life-top small{white-space:nowrap}
+@media (max-width:420px){.flp{display:none}}
+.stash{margin-left:auto;display:flex;align-items:center;gap:6px}
+.stash .lb{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.sl{appearance:none;display:flex;align-items:center;gap:4px;height:28px;padding:0 10px;border-radius:999px;font:800 13px var(--f-body);
+  border:1.5px dashed var(--line);background:transparent;color:var(--muted);cursor:default}
+.sl.on{cursor:pointer;border-style:solid}
+.sl.w.on{border-color:var(--teal);background:var(--teal-soft);color:var(--teal)}
+.sl.p.on{border-color:#4cd18a;background:rgba(76,209,138,.13);color:#5fe09b}
+.sl.sel{box-shadow:0 0 0 2px var(--orange)}
+.sl small{font-size:10.5px;font-weight:700;opacity:.75;margin-left:1px}
+.modes{display:grid;gap:10px;margin:4px 0 12px}
+.mode{appearance:none;text-align:left;display:flex;gap:12px;align-items:center;background:var(--bg-2);border:1.5px solid var(--line);border-radius:16px;padding:12px;cursor:pointer;color:var(--fg);font-family:var(--f-body)}
+.mode:hover,.mode:focus-visible{border-color:var(--teal)}
+.mode.cur{border-color:var(--orange)}
+.mode .mi{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:22px;flex:none}
+.mode .mi.c{background:var(--teal-soft);color:var(--teal)} .mode .mi.r{background:var(--orange-soft);color:var(--orange)}
+.mode b{display:block;font:800 17px var(--f-display)}
+.mode span{display:block;font-size:12.5px;color:var(--muted);line-height:1.35;margin-top:2px}
+.mode small{display:block;font-size:11px;font-weight:700;color:var(--orange);margin-top:4px;text-transform:uppercase;letter-spacing:.05em}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--orange)}
+.pts{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin:10px 0 4px}
+.pts span{font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--bg-2);border:1px solid var(--line);color:var(--muted)}
+.pts span b{color:var(--fg)} .pts .tot{background:var(--orange-soft);border-color:transparent;color:var(--orange)}
+.rew{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;--cw:84px;--ch:calc(84px*1.4)}
+.rw{appearance:none;background:var(--bg-2);border:1.5px solid var(--line);border-radius:16px;padding:12px 8px;cursor:pointer;color:var(--fg);
+  display:flex;flex-direction:column;align-items:center;gap:8px;font-family:var(--f-body)}
+.rw:hover,.rw:focus-visible{border-color:var(--orange)}
+.rw .card{cursor:pointer}
+.rw b{font-size:14px} .rw span{font-size:12px;color:var(--muted);line-height:1.3}
+.rw span.bad{color:var(--red)} .rw span.good{color:var(--teal)}
+.help-run{margin:0 0 14px;padding:10px 12px;border-radius:12px;background:var(--orange-soft);font-size:13px;line-height:1.45;color:#e9d6c6}
+.help-run b{color:var(--orange)}
+
+@media (max-height:620px){ .app{gap:6px} .deck-info b{font-size:15px} .deck-info{gap:1px} .comp{font-size:11px} .act{min-height:106px} .sl{height:24px} .zone-head{margin-bottom:5px;min-height:24px} .room-box,.wpn-box{padding-top:6px;padding-bottom:7px} .hud .life,.hud .deck{padding-top:6px;padding-bottom:6px} .ch{padding:7px 8px} }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -241,6 +278,7 @@ svg.i{width:1em;height:1em;flex:none;vertical-align:-.12em}
     <div class="box deck" title="Cartas restantes na masmorra">
       <div class="pile" id="pile"></div>
       <div class="deck-info">
+        <small class="fl" id="floorL" hidden></small>
         <b id="dun">40 <small>cartas</small></b>
         <div class="comp" id="comp"></div>
       </div>
@@ -259,7 +297,7 @@ svg.i{width:1em;height:1em;flex:none;vertical-align:-.12em}
   <section class="act" id="act" aria-live="polite"></section>
 
   <section class="box wpn-box">
-    <div class="zone-head"><h3>Sua arma</h3></div>
+    <div class="zone-head"><h3>Sua arma</h3><div class="stash" id="stash" hidden></div></div>
     <div class="wpn" id="wpn"></div>
   </section>
 </div>
@@ -275,8 +313,28 @@ svg.i{width:1em;height:1em;flex:none;vertical-align:-.12em}
       <li>Lutar <b>com arma</b> tira só a diferença. Mas cada arma só aguenta monstros <b>mais fracos</b> que o último que ela matou.</li>
       <li>Só <b>uma poção por sala</b> cura. A segunda é jogada fora.</li>
     </ol>
+    <div class="help-run"><b>Modo Sem fim:</b> limpou o andar, desce para outro mais difícil (monstros +1 por andar, até +4; a cada 2 andares sai a poção mais fraca). Ao descer você recupera <b>5 de vida</b> e escolhe uma recompensa para a <b>mochila</b>: 1 arma e 1 poção guardadas. Você também pode guardar uma ♦ ou ♥ da sala (gasta 1 escolha). Usar o que está na mochila não gasta escolha, e a arma da mochila <b>alterna</b> com a equipada: cada uma guarda o próprio limite de alvos. Cada andar vale <b>100 + a vida que sobrou</b>.</div>
     <p class="sub" style="margin-bottom:14px">Embaixo de cada carta aparece o que vai acontecer se você escolhê-la. Toque para ver as opções, toque de novo para confirmar.</p>
     <button class="btn" data-close>Bora pra masmorra</button>
+  </div>
+</div>
+
+<div class="modal" id="mMode" hidden>
+  <div class="sheet">
+    <h2>Novo jogo</h2>
+    <p class="sub" id="modeSub">Escolha o modo.</p>
+    <div class="modes" id="modes"></div>
+    <button class="btn sec" data-close>Cancelar</button>
+  </div>
+</div>
+
+<div class="modal" id="mFloor" data-lock hidden>
+  <div class="sheet end">
+    <div class="eyebrow" id="flEye"></div>
+    <h2 id="flTitle"></h2>
+    <div class="pts" id="flPts"></div>
+    <p class="sub" style="margin:8px 0 0">Escolha uma recompensa para a mochila. Ao descer, você recupera até 5 de vida.</p>
+    <div class="rew" id="flRew"></div>
   </div>
 </div>
 
@@ -301,28 +359,39 @@ const IC={
   heart:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-9.7-9.3C.8 8.4 2.9 4.5 6.6 4.5c2.2 0 3.6 1.2 5.4 3.1 1.8-1.9 3.2-3.1 5.4-3.1 3.7 0 5.8 3.9 4.3 7.2C19.5 16.4 12 21 12 21Z"/></svg>',
   fist:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7.5a1.5 1.5 0 0 1 3 0V6a1.5 1.5 0 0 1 3 0v.5a1.5 1.5 0 0 1 3 0V7a1.5 1.5 0 0 1 3 0v6.5a7 7 0 0 1-7 7h-.5A6.5 6.5 0 0 1 5 14v-1.6a2 2 0 0 1 2-2V7.5Z"/></svg>',
   shield:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Z"/></svg>',
+  bag:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M9 3h6a2 2 0 0 1 2 2v1h1a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V9a3 3 0 0 1 3-3h1V5a2 2 0 0 1 2-2Zm0 3h6V5H9v1Zm-1 7v2h8v-2H8Z"/></svg>',
   target:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg>'
 };
 const ROLE_IC={m:IC.skull,w:IC.sword,p:IC.flask};
 const $=id=>document.getElementById(id);
 const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
-let best=ls.get('scoundrel_best'); best=best===null?null:+best;
+const BKEY={classic:'scoundrel_best',run:'scoundrel_best_run'};
+const getBest=m=>{const v=ls.get(BKEY[m]);return v===null?null:+v};
+let MODE=ls.get('scoundrel_mode')==='run'?'run':'classic';
 let S, hist=[];
 
 const role=c=>c.s==='D'?'w':c.s==='H'?'p':'m';
 const lbl=c=>(FACE[c.r]||c.r)+SUIT[c.s];
 
-function deckNew(){
-  const d=[];
-  for(const s of 'SCDH') for(let r=2;r<=14;r++){ if((s==='D'||s==='H')&&r>10) continue; d.push({s,r}); }
+const fBonus=f=>Math.min(f-1,4);
+const fCut=f=>Math.min(4,Math.floor((f-1)/2));
+function deckNew(f=1){
+  const d=[], b=fBonus(f), cut=fCut(f);
+  for(const s of 'SCDH') for(let r=2;r<=14;r++){
+    if((s==='D'||s==='H')&&r>10) continue;
+    if(s==='H'&&r<2+cut) continue;
+    const m=s==='S'||s==='C'; d.push({s,r,v:r+(m?b:0),b:m?b:0});
+  }
   for(let i=d.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[d[i],d[j]]=[d[j],d[i]]}
   return d;
 }
 
-function newGame(){
-  S={dun:deckNew(),room:[null,null,null,null],hp:20,wpn:null,avoided:false,potion:false,taken:0,sel:-1,over:false,
-     last:null,carry:-1,roomNo:0,msg:null,st:{kills:0,dmg:0,heal:0,rooms:0,flee:0}};
-  hist=[]; $('mEnd').hidden=true;
+function newGame(mode){
+  MODE=mode||MODE; ls.set('scoundrel_mode',MODE);
+  S={mode:MODE,floor:1,score:0,stash:{w:null,p:null},rewards:null,
+     dun:deckNew(1),room:[null,null,null,null],hp:20,wpn:null,avoided:false,potion:false,taken:0,sel:-1,over:false,
+     last:null,carry:-1,roomNo:0,msg:null,st:{kills:0,dmg:0,heal:0,rooms:0,flee:0,floors:0}};
+  hist=[]; $('mEnd').hidden=true; $('mFloor').hidden=true; $('mMode').hidden=true;
   deal(); render(true);
 }
 
@@ -342,16 +411,16 @@ function avoidState(){
   if(!S.dun.length||inRoom()<4) return {ok:false,why:'última sala'};
   return {ok:true};
 }
-function wpnOk(m){ if(!S.wpn) return false; const k=S.wpn.kills; return !k.length||m.r<k[k.length-1].r; }
+function wpnOk(m){ if(!S.wpn) return false; const k=S.wpn.kills; return !k.length||m.v<k[k.length-1].v; }
 
 /* resultado previsto de cada opção */
 function outcome(c){
   const r=role(c);
   if(r==='m'){
-    const bare=c.r, w=wpnOk(c)?Math.max(0,c.r-S.wpn.card.r):null;
+    const bare=c.v, w=wpnOk(c)?Math.max(0,c.v-S.wpn.card.v):null;
     return {r, bare, w};
   }
-  if(r==='p'){ return {r, heal:S.potion?0:Math.min(20-S.hp,c.r), wasted:S.potion}; }
+  if(r==='p'){ return {r, heal:S.potion?0:Math.min(20-S.hp,c.v), wasted:S.potion}; }
   return {r};
 }
 
@@ -368,10 +437,14 @@ function take(i,mode){
   S.room[i]=null; S.taken++; S.avoided=false; S.last=c; S.sel=-1; S.fresh=[];
   if(i===S.carry) S.carry=-1;
   const r=role(c);
-  if(r==='m'){
+  if(mode==='stash'){
+    const cur=sc(r);
+    S.stash[r]=r==='w'?{card:c,kills:[]}:c;
+    S.msg={t:`Guardou <b>${lbl(c)}</b> na mochila`+(cur?` no lugar da ${lbl(cur)}.`:'.')};
+  }else if(r==='m'){
     let d;
-    if(mode!=='bare'&&wpnOk(c)){ d=Math.max(0,c.r-S.wpn.card.r); S.wpn.kills.push(c); S.msg={t:`Você abateu <b>${lbl(c)}</b> com a arma`+(d?` e perdeu <b>${d}</b>.`:` sem levar dano.`)}; }
-    else { d=c.r; S.msg={t:`Luta de mãos nuas contra <b>${lbl(c)}</b>: <b>−${d}</b>.`}; }
+    if(mode!=='bare'&&wpnOk(c)){ d=Math.max(0,c.v-S.wpn.card.v); S.wpn.kills.push(c); S.msg={t:`Você abateu <b>${lbl(c)}</b> com a arma`+(d?` e perdeu <b>${d}</b>.`:` sem levar dano.`)}; }
+    else { d=c.v; S.msg={t:`Luta de mãos nuas contra <b>${lbl(c)}</b>: <b>−${d}</b>.`}; }
     S.st.kills++; S.st.dmg+=d;
     if(d){ S.hp-=d; floatTxt('−'+d,'dmg'); shake(); }
     if(S.hp<=0){ S.hp=0; return finish(false); }
@@ -380,11 +453,11 @@ function take(i,mode){
     S.wpn={card:c,kills:[]};
   }else{
     if(S.potion) S.msg={t:`Segunda poção da sala: <b>${lbl(c)}</b> foi desperdiçada.`};
-    else{ const h=Math.min(20-S.hp,c.r); S.hp+=h; S.potion=true; S.st.heal+=h;
+    else{ const h=Math.min(20-S.hp,c.v); S.hp+=h; S.potion=true; S.st.heal+=h;
       S.msg={t:h?`Bebeu <b>${lbl(c)}</b>: <b>+${h}</b> de vida.`:`Bebeu <b>${lbl(c)}</b>, mas a vida já estava cheia.`}; if(h) floatTxt('+'+h,'heal'); }
   }
   const n=inRoom();
-  if(!n && !S.dun.length) return finish(true);
+  if(!n && !S.dun.length) return S.mode==='run'?floorClear():finish(true);
   if(n<=1 && S.dun.length){ S.st.rooms++; deal(); hist=[]; S.msg.t+=' <b>Nova sala.</b>'; }
   render();
 }
@@ -399,16 +472,19 @@ function avoid(){
 
 function finish(win){
   S.over=true; hist=[]; render();
-  let score;
-  if(win){ score=S.hp; if(S.hp===20&&S.last&&role(S.last)==='p') score+=S.last.r; }
-  else score=-[...S.dun,...S.room.filter(Boolean)].filter(c=>role(c)==='m').reduce((a,c)=>a+c.r,0);
-  const rec=best===null||score>best; if(rec){best=score;ls.set('scoundrel_best',score)}
-  $('endTitle').textContent=win?'Você saiu vivo!':'A masmorra venceu';
-  const e=$('endScore'); e.textContent=(score>0?'+':'')+score; e.className='score '+(win?'win':'lose');
+  let score; const run=S.mode==='run';
+  if(run) score=S.score;
+  else if(win){ score=S.hp; if(S.hp===20&&S.last&&role(S.last)==='p') score+=S.last.v; }
+  else score=-[...S.dun,...S.room.filter(Boolean)].filter(c=>role(c)==='m').reduce((a,c)=>a+c.v,0);
+  let best=getBest(S.mode);
+  const rec=best===null||score>best; if(rec){best=score;ls.set(BKEY[S.mode],score)}
+  $('endTitle').textContent=run?`Você caiu no andar ${S.floor}`:win?'Você saiu vivo!':'A masmorra venceu';
+  const e=$('endScore'); e.textContent=(score>0?'+':'')+score; e.className='score '+(win||(run&&score>0)?'win':'lose');
   $('endRec').innerHTML=rec?'<span class="rec">Novo recorde</span>':`<span style="color:var(--muted);font-size:13px">Recorde: ${best>0?'+':''}${best}</span>`;
   $('endStats').innerHTML=[
+    ...(run?[[S.st.floors,S.st.floors===1?'andar limpo':'andares limpos']]:[]),
     [S.st.kills,'monstros abatidos'],[S.st.dmg,'dano recebido'],[S.st.heal,'vida curada'],
-    [win?S.hp:S.dun.length, win?'vida restante':'cartas restantes']
+    ...(run?[]:[[win?S.hp:S.dun.length, win?'vida restante':'cartas restantes']])
   ].map(([v,l])=>`<div><b>${v}</b><small>${l}</small></div>`).join('');
   setTimeout(()=>{$('mEnd').hidden=false}, win?350:700);
 }
@@ -425,10 +501,10 @@ function setDeck(d){
 }
 document.querySelectorAll('#deckSel button').forEach(b=>b.onclick=()=>setDeck(b.dataset.d));
 function cardHTML(c,cls='',extra=''){
-  if(DECK==='func'){ const r=role(c); return `<div class="card fn ${r} ${cls}"><div class="fnum">${c.r}</div><div class="fic">${ROLE_IC[r]}</div>${extra}</div>`; }
+  if(DECK==='func'){ const r=role(c); return `<div class="card fn ${r} ${cls}"><div class="fnum">${c.v}</div><div class="fic">${ROLE_IC[r]}</div>${extra}</div>`; }
   const r=role(c), red=c.s==='D'||c.s==='H', rk=FACE[c.r]||c.r, s=SUIT[c.s];
   const big=FACE[c.r]?`<div class="big face">${rk}</div>`:`<div class="big">${s}</div>`;
-  return `<div class="card ${r} ${red?'red':''} ${cls}"><div class="rk">${rk}<span>${s}</span></div>${big}<div class="ft">${ROLE_IC[r]}${c.r}</div>${extra}</div>`;
+  return `<div class="card ${r} ${red?'red':''} ${cls}"><div class="rk">${rk}<span>${s}</span></div>${big}<div class="ft">${ROLE_IC[r]}${c.v}</div>${extra}</div>`;
 }
 
 function preview(c){
@@ -439,7 +515,7 @@ function preview(c){
   }
   if(o.r==='p') return o.wasted?`<div class="pv off">desperdiça</div>`:o.heal?`<div class="pv pos">${IC.heart}+${o.heal}</div>`:`<div class="pv off">vida cheia</div>`;
   if(!S.wpn) return `<div class="pv eq">${IC.sword}equipar</div>`;
-  return `<div class="pv eq">${IC.sword}${c.r>S.wpn.card.r?'mais forte':c.r<S.wpn.card.r?'mais fraca':'igual'}</div>`;
+  return `<div class="pv eq">${IC.sword}${c.v>S.wpn.card.v?'mais forte':c.v<S.wpn.card.v?'mais fraca':'igual'}</div>`;
 }
 
 function setHP(prev){
@@ -457,6 +533,8 @@ function render(first){
   setHP(0);
   // masmorra
   const left=S.dun.length; $('dun').innerHTML=`${left} <small>cartas</small>`;
+  const fl=$('floorL'); fl.hidden=S.mode!=='run';
+  if(S.mode==='run') fl.innerHTML=`Andar ${S.floor}`+(fBonus(S.floor)?` · <em>${IC.skull}+${fBonus(S.floor)}</em>`:'')+`<span class="flp"> · ${S.score} pts</span>`;
   $('pile').className='pile'+(left?'':' empty');
   const cnt={m:0,w:0,p:0}; S.dun.forEach(c=>cnt[role(c)]++);
   $('comp').innerHTML=`<span class="c-m" title="Monstros">${IC.skull}${cnt.m}</span><span class="c-w" title="Armas">${IC.sword}${cnt.w}</span><span class="c-p" title="Poções">${IC.flask}${cnt.p}</span>`;
@@ -480,7 +558,7 @@ function render(first){
   room.querySelectorAll('.slot[data-i]').forEach(el=>el.onclick=()=>tap(+el.dataset.i));
   S.fresh=[];
 
-  renderWpn(); renderAct();
+  renderWpn(); renderStash(); renderAct();
   $('bUndo').disabled=!hist.length||S.over;
 }
 
@@ -490,10 +568,10 @@ function renderWpn(){
     w.innerHTML=`<div class="no-wpn">${IC.fist}</div><div class="wtxt"><b style="color:var(--fg)">Mãos nuas.</b><br>Pegue uma carta <span style="color:var(--teal)">♦</span> para reduzir o dano dos monstros.</div>`;
     return;
   }
-  const k=S.wpn.kills, lim=k.length?k[k.length-1].r:null;
+  const k=S.wpn.kills, lim=k.length?k[k.length-1].v:null;
   w.innerHTML=`<div class="stack" id="stack">${cardHTML(S.wpn.card,'sm k')}${k.map(m=>cardHTML(m,'sm k')).join('')}</div>
     <div class="wstats">
-      <div class="stat"><span class="ic t">${IC.shield}</span><span>Bloqueia <b>${S.wpn.card.r}</b></span></div>
+      <div class="stat"><span class="ic t">${IC.shield}</span><span>Bloqueia <b>${S.wpn.card.v}</b></span></div>
       <div class="stat"><span class="ic o">${IC.target}</span><span>${lim===null?'Serve contra <b>qualquer</b> monstro':`Só monstros <b>abaixo de ${lim}</b>`}</span></div>
     </div>`;
   // compacta a pilha para caber
@@ -506,18 +584,20 @@ function renderWpn(){
 
 function renderAct(){
   const a=$('act');
-  if(S.over){ a.innerHTML=`<div class="hint">${S.msg?S.msg.t:''}</div><div class="choices"><button class="ch teal" id="cNew"><span class="t">Novo jogo</span></button></div>`; $('cNew').onclick=newGame; return; }
+  if(S.over){ a.innerHTML=`<div class="hint">${S.msg?S.msg.t:''}</div><div class="choices"><button class="ch teal" id="cNew"><span class="t">Novo jogo</span></button></div>`; $('cNew').onclick=()=>newGame(S.mode); return; }
+  if(S.sel>=10) return renderStashAct();
   const i=S.sel, c=S.room[i];
   if(i<0||!c){
     setHP(0);
     const left=S.dun.length?3-S.taken:inRoom();
     let h=`Toque numa carta da sala. Falta${left>1?'m':''} <b>${left} escolha${left>1?'s':''}</b>.`;
     if(S.taken===0&&avoidState().ok) h+=' Ou <b>fuja</b> se a sala estiver feia.';
+    if(S.mode==='run'&&!S.stash.w&&!S.stash.p&&S.room.some(c=>c&&role(c)!=='m')) h+=' Armas e poções podem ir para a <b>mochila</b>.';
     a.innerHTML=(S.msg?`<div class="last">${S.msg.t}</div>`:'')+`<div class="hint">${h}</div>`;
     return;
   }
   const o=outcome(c);
-  let head=`<div class="sel-head"><span>${{m:'Monstro',w:'Arma',p:'Poção'}[o.r]}</span><b>${lbl(c)}</b><button class="ib x" id="cX" aria-label="Cancelar">✕</button></div>`;
+  let head=`<div class="sel-head"><span>${{m:'Monstro',w:'Arma',p:'Poção'}[o.r]}</span><b>${lbl(c)}</b>${c.b?`<span style="color:var(--red);font-weight:700">força ${c.v}</span>`:''}<button class="ib x" id="cX" aria-label="Cancelar">✕</button></div>`;
   let body='', note='';
   if(o.r==='m'){
     const after=v=>Math.max(0,S.hp-v);
@@ -525,44 +605,151 @@ function renderAct(){
     if(o.w!==null) ops.push(`<button class="ch teal ${o.w<o.bare?'rec':''}" data-m="weapon"><span class="t">${IC.sword}Com a arma</span><span class="s"><b>−${o.w}</b> · vida ${after(o.w)}</span></button>`);
     ops.push(`<button class="ch red" data-m="bare"><span class="t">${IC.fist}Mãos nuas</span><span class="s"><b>−${o.bare}</b> · vida ${after(o.bare)}${after(o.bare)===0?' ☠':''}</span></button>`);
     body=ops.join('');
-    if(S.wpn&&o.w===null) note=`Sua arma só aguenta monstros abaixo de ${S.wpn.kills[S.wpn.kills.length-1].r}.`;
+    if(S.wpn&&o.w===null) note=`Sua arma só aguenta monstros abaixo de ${S.wpn.kills[S.wpn.kills.length-1].v}.`;
     else if(o.w!==null&&S.wpn&&!S.wpn.kills.length) note='';
-    else if(o.w!==null) note=`Depois, a arma só servirá contra monstros abaixo de ${c.r}.`;
+    else if(o.w!==null) note=`Depois, a arma só servirá contra monstros abaixo de ${c.v}.`;
     setHP(-(o.w!==null?o.w:o.bare));
   }else if(o.r==='w'){
-    body=`<button class="ch teal" data-m="eq"><span class="t">${IC.sword}Equipar ${lbl(c)}</span><span class="s">bloqueia ${c.r} de dano</span></button>`;
-    if(S.wpn) note=`Substitui ${lbl(S.wpn.card)}`+(S.wpn.kills.length?` e zera o limite de alvos.`:'.');
+    body=`<button class="ch teal" data-m="eq"><span class="t">${IC.sword}Equipar ${lbl(c)}</span><span class="s">bloqueia ${c.v} de dano</span></button>`;
+    body+=stashBtn(c);
+    if(S.wpn) note=`Equipar substitui ${lbl(S.wpn.card)}`+(S.wpn.kills.length?` e zera o limite de alvos.`:'.');
     setHP(0);
   }else{
     body=o.wasted?`<button class="ch ghost" data-m="p"><span class="t">${IC.flask}Descartar</span><span class="s">já bebeu uma poção nesta sala</span></button>`
       :`<button class="ch pink" data-m="p"><span class="t">${IC.flask}Beber</span><span class="s"><b>+${o.heal}</b> · vida ${S.hp+o.heal}</span></button>`;
-    if(!o.wasted&&o.heal<c.r) note=o.heal?`A vida máxima é 20: ${c.r-o.heal===1?'1 ponto será perdido':(c.r-o.heal)+' pontos serão perdidos'}.`:'Sua vida já está cheia.';
+    body+=stashBtn(c);
+    if(!o.wasted&&o.heal<c.v) note=o.heal?`A vida máxima é 20: ${c.v-o.heal===1?'1 ponto será perdido':(c.v-o.heal)+' pontos serão perdidos'}.`:'Sua vida já está cheia.';
     setHP(o.wasted?0:o.heal);
   }
   a.innerHTML=head+`<div class="choices">${body}</div>`+(note?`<div class="note">${note}</div>`:'');
   $('cX').onclick=()=>{S.sel=-1;markSel();renderAct()};
-  a.querySelectorAll('.ch').forEach(b=>b.onclick=()=>take(i,b.dataset.m==='bare'?'bare':'weapon'));
+  a.querySelectorAll('.ch').forEach(b=>b.onclick=()=>take(i,b.dataset.m==='bare'?'bare':b.dataset.m==='stash'?'stash':'weapon'));
 }
 
+function stashBtn(c){
+  if(S.mode!=='run') return '';
+  const cur=sc(role(c));
+  return `<button class="ch" data-m="stash"><span class="t">${IC.bag}Guardar</span><span class="s">${cur?`substitui a ${cur.v} · `:''}gasta 1 escolha</span></button>`;
+}
 function markSel(){
-  const room=$('room'); room.classList.toggle('picking',S.sel>=0);
+  document.querySelectorAll('#stash .sl').forEach(b=>b.classList.toggle('sel',(b.dataset.k==='w'?10:11)===S.sel));
+  const room=$('room'); room.classList.toggle('picking',S.sel>=0&&S.sel<10);
   room.querySelectorAll('.slot').forEach(el=>{const c=el.querySelector('.card'); if(c) c.classList.toggle('sel',+el.dataset.i===S.sel)});
 }
 function primary(i){ const c=S.room[i]; if(!c) return; const o=outcome(c); take(i, o.r==='m'&&o.w===null?'bare':'weapon'); }
 function tap(i){ if(S.over||!S.room[i]) return; if(S.sel===i) return primary(i); S.sel=i; markSel(); renderAct(); }
 
+/* ---------- modo sem fim ---------- */
+const sc=k=>k==='w'?(S.stash.w&&S.stash.w.card):S.stash.p;
+const wLim=w=>w&&w.kills.length?w.kills[w.kills.length-1].v:null;
+function renderStash(){
+  const el=$('stash'); el.hidden=S.mode!=='run'; if(el.hidden) return;
+  const it=(k,ic,name)=>{const c=sc(k), lim=k==='w'?wLim(S.stash.w):null;
+    return `<button class="sl ${k}${c?' on':''}${S.sel===(k==='w'?10:11)?' sel':''}" data-k="${k}" title="${c?name+' guardada: '+c.v+(lim?' (só monstros abaixo de '+lim+')':''):'Vazio: toque numa '+name+' da sala e escolha Guardar'}" ${c&&!S.over?'':'disabled'}>${ic}${c?c.v:'—'}${lim?`<small>‹${lim}</small>`:''}</button>`;};
+  el.innerHTML=`<span class="lb">Mochila</span>${it('w',IC.sword,'arma')}${it('p',IC.flask,'poção')}`;
+  el.querySelectorAll('.sl.on').forEach(b=>b.onclick=()=>tapStash(b.dataset.k));
+}
+function tapStash(k){
+  if(S.over||!sc(k)) return;
+  const id=k==='w'?10:11;
+  if(S.sel===id) return useStash(k);
+  S.sel=id; markSel(); renderAct();
+}
+function renderStashAct(){
+  const a=$('act'), k=S.sel===10?'w':'p', c=sc(k);
+  if(!c){S.sel=-1;return renderAct()}
+  let body, note='';
+  if(k==='w'){
+    const lim=wLim(S.stash.w);
+    body=`<button class="ch teal" id="cUse"><span class="t">${IC.sword}${S.wpn?'Trocar de arma':'Equipar da mochila'}</span><span class="s">bloqueia ${c.v} · ${lim?`só abaixo de ${lim}`:'qualquer monstro'} · não gasta escolha</span></button>`;
+    if(S.wpn){const ol=wLim(S.wpn); note=`${lbl(S.wpn.card)} vai para a mochila`+(ol?` guardando o limite (abaixo de ${ol}).`:'.')+' Dá para trocar de volta quando quiser.';}
+    setHP(0);
+  }else if(S.potion){
+    body=`<button class="ch ghost" id="cUse" disabled><span class="t">${IC.flask}Beber da mochila</span><span class="s">você já bebeu uma poção nesta sala</span></button>`;
+    note='A poção da mochila também conta como a poção da sala. Ela continua guardada.';
+    setHP(0);
+  }else{
+    const h=Math.min(20-S.hp,c.v);
+    body=`<button class="ch pink" id="cUse"><span class="t">${IC.flask}Beber da mochila</span><span class="s"><b>+${h}</b> · vida ${S.hp+h} · não gasta escolha</span></button>`;
+    if(h<c.v) note=h?`A vida máxima é 20: ${c.v-h===1?'1 ponto será perdido':(c.v-h)+' pontos serão perdidos'}.`:'Sua vida já está cheia.';
+    setHP(h);
+  }
+  a.innerHTML=`<div class="sel-head"><span>Mochila</span><b>${lbl(c)}</b><button class="ib x" id="cX" aria-label="Cancelar">✕</button></div><div class="choices">${body}</div>`+(note?`<div class="note">${note}</div>`:'');
+  $('cX').onclick=()=>{S.sel=-1;markSel();renderAct()};
+  const u=$('cUse'); if(!u.disabled) u.onclick=()=>useStash(k);
+}
+function useStash(k){
+  const c=sc(k); if(!c||S.over) return;
+  if(k==='p'&&S.potion) return;
+  snap(); S.sel=-1; S.fresh=[];
+  if(k==='w'){
+    const old=S.wpn, nw=S.stash.w;
+    S.msg={t:old?`Trocou de arma: <b>${lbl(c)}</b> na mão, ${lbl(old.card)} na mochila.`:`Equipou <b>${lbl(c)}</b> da mochila.`};
+    S.wpn={card:nw.card,kills:nw.kills}; S.stash.w=old?{card:old.card,kills:old.kills}:null;
+  }else{
+    S.stash.p=null;
+    const h=Math.min(20-S.hp,c.v); S.hp+=h; S.potion=true; S.st.heal+=h;
+    S.msg={t:`Bebeu <b>${lbl(c)}</b> da mochila: <b>+${h}</b> de vida.`}; if(h) floatTxt('+'+h,'heal');
+  }
+  render();
+}
+function floorClear(){
+  const pts=100+S.hp; S.score+=pts; S.st.floors++; hist=[]; S.sel=-1;
+  const rnd=()=>5+Math.floor(Math.random()*6);
+  const a=rnd(), b=rnd();
+  S.rewards=[{s:'D',r:a,v:a,b:0},{s:'H',r:b,v:b,b:0}];
+  S.msg={t:`Andar ${S.floor} limpo!`};
+  render();
+  $('flEye').textContent=`Andar ${S.floor} limpo`;
+  $('flTitle').textContent='Escolha seu espólio';
+  $('flPts').innerHTML=`<span>andar <b>+100</b></span><span>vida <b>+${S.hp}</b></span><span class="tot">total ${S.score} pts</span>`;
+  $('flRew').innerHTML=S.rewards.map((c,i)=>{
+    const k=role(c), cur=sc(k), worn=k==='w'&&wLim(S.stash.w);
+    const txt=!cur?'<span class="good">vai para a mochila</span>':(c.v>cur.v||worn)?`<span class="good">substitui a ${cur.v}${worn?' gasta':''} guardada</span>`:`<span class="bad">não supera a ${cur.v} guardada: será descartada</span>`;
+    return `<button class="rw" data-i="${i}">${cardHTML(c)}<b>${k==='w'?'Arma':'Poção'} ${c.v}</b>${txt}</button>`;
+  }).join('');
+  $('flRew').querySelectorAll('.rw').forEach(b=>b.onclick=()=>pickReward(+b.dataset.i));
+  setTimeout(()=>{$('mFloor').hidden=false},350);
+}
+function pickReward(i){
+  const c=S.rewards[i]; if(!c) return;
+  const k=role(c), cur=sc(k), worn=k==='w'&&wLim(S.stash.w); let m;
+  if(!cur||c.v>cur.v||worn){ S.stash[k]=k==='w'?{card:c,kills:[]}:c; m=`Guardou <b>${lbl(c)}</b> na mochila.`; }
+  else m=`${lbl(c)} não superava a ${cur.v} da mochila e foi descartada.`;
+  S.rewards=null; $('mFloor').hidden=true;
+  S.floor++;
+  const h=Math.min(5,20-S.hp); S.hp+=h; S.st.heal+=h;
+  S.dun=deckNew(S.floor); S.room=[null,null,null,null]; S.avoided=false; S.roomNo=0; S.carry=-1;
+  deal(); hist=[];
+  const bn=fBonus(S.floor);
+  S.msg={t:`${m} Você desceu ao <b>andar ${S.floor}</b>`+(h?` e recuperou <b>${h}</b> de vida`:'')+'.'+(bn?` Monstros <b>+${bn}</b>.`:'')};
+  if(h) floatTxt('+'+h,'heal');
+  render();
+}
+function openModes(){
+  const inProg=S&&!S.over&&(S.taken>0||S.roomNo>1||S.floor>1);
+  $('modeSub').textContent=inProg?'A partida atual será abandonada.':'Escolha o modo.';
+  const bc=getBest('classic'), br=getBest('run'), f=v=>v===null?'sem recorde':`recorde ${v>0?'+':''}${v}`;
+  $('modes').innerHTML=`
+    <button class="mode${MODE==='classic'?' cur':''}" data-m="classic"><div class="mi c">${IC.sword}</div><div><b>Clássico</b><span>Uma masmorra de 44 cartas. Saia vivo e pontue com a vida que sobrar.</span><small>${f(bc)}</small></div></button>
+    <button class="mode${MODE==='run'?' cur':''}" data-m="run"><div class="mi r">${IC.skull}</div><div><b>Sem fim</b><span>Desça andar por andar, cada vez mais difícil. Arma reserva na mochila para alternar, poção guardada e recompensa a cada andar.</span><small>${f(br)}</small></div></button>`;
+  $('modes').querySelectorAll('.mode').forEach(b=>b.onclick=()=>newGame(b.dataset.m));
+  $('mMode').hidden=false;
+}
+
 /* ---------- controles ---------- */
 $('bAvoid').onclick=avoid;
 $('bUndo').onclick=undo;
-$('bNew').onclick=()=>{ if(S.over||(S.roomNo<=1&&S.taken===0)||confirm('Abandonar esta partida e começar outra?')) newGame(); };
+$('bNew').onclick=openModes;
 $('bHelp').onclick=()=>$('mHelp').hidden=false;
-$('bAgain').onclick=newGame;
+$('bAgain').onclick=()=>newGame(S.mode);
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('.modal').hidden=true);
-document.querySelectorAll('.modal').forEach(m=>m.onclick=e=>{if(e.target===m)m.hidden=true});
+document.querySelectorAll('.modal:not([data-lock])').forEach(m=>m.onclick=e=>{if(e.target===m)m.hidden=true});
 document.addEventListener('keydown',e=>{
   if(!$('mHelp').hidden){ if(e.key==='Escape'||e.key==='Enter') $('mHelp').hidden=true; return; }
   const k=e.key.toLowerCase();
-  if(k==='n'){newGame();return}
+  if(!$('mFloor').hidden||!$('mMode').hidden) return;
+  if(k==='n'){openModes();return}
   if(S.over) return;
   if('1234'.includes(k)&&k) tap(+k-1);
   else if(k==='enter'&&S.sel>=0) primary(S.sel);
