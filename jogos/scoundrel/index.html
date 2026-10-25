@@ -3,398 +3,586 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<meta name="theme-color" content="#0b1220">
+<meta name="theme-color" content="#0e1615">
 <title>Scoundrel</title>
 <link rel="icon" href="../../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
 :root{
-  --bg:#0b1220; --panel:#111a2e; --panel2:#16213a; --line:#24324f;
-  --text:#e6edf7; --muted:#8a9bb8;
-  --teal:#14b8a6; --teal-d:#0f8f82; --orange:#f97316; --red:#ef4444; --pink:#e11d48;
-  --cw:min(21vw, calc((100dvh - 280px) / 2.9), 118px);
+  --bg:#0e1615; --bg-2:#131f1d; --surface:#17231f; --surface-2:#1c2a26; --line:#273935; --fg:#eaf2ef; --muted:#93a8a3;
+  --teal:#2bc2b3; --teal-d:#14968a; --orange:#ff9348; --red:#f0525f; --pink:#e4485d; --slate:#3b4a5c;
+  --teal-soft:rgba(43,194,179,.14); --orange-soft:rgba(255,147,72,.14); --red-soft:rgba(240,82,95,.14);
+  --f-display:"Bricolage Grotesque","Avenir Next",system-ui,sans-serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --cw:min(21.5vw, calc((100dvh - 372px) / 2.55), 116px);
   --ch:calc(var(--cw) * 1.4);
+  --wc:calc(var(--cw) * .82);
+  --wh:calc(var(--wc) * 1.4);
+  color-scheme:dark;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--text);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+[hidden]{display:none!important}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--fg);font-family:var(--f-body);
   user-select:none;-webkit-user-select:none;touch-action:manipulation}
-body{display:flex;flex-direction:column;height:100vh;height:100dvh;
-  padding:env(safe-area-inset-top) 12px env(safe-area-inset-bottom);
-  background:radial-gradient(ellipse at 50% 0%, #15233f 0%, var(--bg) 70%)}
-.wrap{width:100%;max-width:640px;margin:0 auto;height:100%;display:flex;flex-direction:column}
+body{height:100vh;height:100dvh;
+  padding:max(8px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));
+  background:radial-gradient(60% 40% at 0% 0%,rgba(43,194,179,.10),transparent 70%),radial-gradient(50% 40% at 100% 100%,rgba(228,72,93,.10),transparent 70%),var(--bg)}
+.app{max-width:560px;height:100%;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+svg.i{width:1em;height:1em;flex:none;vertical-align:-.12em}
 
-/* Header */
-header{display:flex;align-items:center;gap:8px;height:48px;flex:none}
-header .back{color:var(--muted);text-decoration:none;font-size:14px;padding:6px 10px;border:1px solid var(--line);border-radius:999px}
-header h1{flex:1;margin:0;font-size:18px;letter-spacing:.5px;text-align:center}
-header h1 span{color:var(--teal)}
-.icon-btn{width:34px;height:34px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--text);font-size:16px;cursor:pointer}
+/* ---------- topo ---------- */
+.top{flex:none;display:flex;align-items:center;gap:6px;height:40px}
+.back{color:var(--fg);text-decoration:none;font-size:13px;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:6px 12px;white-space:nowrap}
+.brand{text-align:center;font-family:var(--f-display);font-weight:800;font-size:20px;letter-spacing:-.02em}
+.brand span{color:var(--pink)}
+.mid{flex:1;display:flex;align-items:center;justify-content:center;gap:12px;min-width:0}
+.seg{display:inline-flex;background:var(--bg-2);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px;flex:none}
+.seg button{appearance:none;border:0;background:transparent;color:var(--muted);font:700 12.5px var(--f-body);padding:6px 11px;border-radius:999px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background .2s,color .2s}
+.seg button[aria-pressed="true"]{background:var(--teal);color:#06201d}
+.seg .mini{width:9px;height:12px;border-radius:2px;display:inline-block;flex:none}
+.seg .mini.cl{background:#f3ece0}
+.seg .mini.fn{background:linear-gradient(90deg,var(--slate) 33%,var(--teal-d) 33% 66%,var(--pink) 66%)}
+@media (max-width:520px){.mid .brand{display:none} .back .tx{display:none} .back{padding:6px 11px} .seg button{padding:6px 9px} .top{gap:5px}}
+@media (max-width:360px){.seg .mini{display:none} .seg button{padding:5px 7px;font-size:11.5px} .ib{width:30px;height:30px} .back{padding:5px 9px}}
+.card.fn.sm{align-items:flex-start;padding-left:calc(var(--k)*.13)}
+.card.fn.sm .fnum{font-size:calc(var(--k)*.44)}
 
-/* Stats */
-.stats{flex:none;display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px 12px;position:relative}
-.hp{flex:1;min-width:0}
-.hp-top{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px}
-.hp-top b{color:var(--text);font-size:15px}
-.bar{height:10px;border-radius:999px;background:#0a1222;overflow:hidden;border:1px solid var(--line)}
-.bar i{display:block;height:100%;width:100%;border-radius:999px;background:linear-gradient(90deg,var(--teal-d),var(--teal));transition:width .35s, background .35s}
-.bar i.mid{background:linear-gradient(90deg,#c2410c,var(--orange))}
-.bar i.low{background:linear-gradient(90deg,#b91c1c,var(--red))}
-.chip{flex:none;text-align:center;padding:4px 10px;border-radius:10px;background:var(--panel2);border:1px solid var(--line);min-width:58px}
-.chip small{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-.chip b{font-size:16px}
-.float{position:absolute;left:30%;top:0;font-weight:800;font-size:22px;pointer-events:none;animation:fl 1s ease-out forwards}
+/* baralho por função */
+.card.fn{background:var(--fnbg);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--k)*.06);
+  box-shadow:inset 0 0 0 calc(var(--k)*.035) rgba(255,255,255,.18),0 6px 14px rgba(0,0,0,.45)}
+.card.fn.m{--fnbg:linear-gradient(160deg,#4d5f75,#2b3645)}
+.card.fn.w{--fnbg:linear-gradient(160deg,#1fb3a4,#0e7a70)}
+.card.fn.p{--fnbg:linear-gradient(160deg,#f0607a,#b3293f)}
+.card.fn .fnum{font:800 calc(var(--k)*.52)/1 var(--f-display);letter-spacing:-.04em;text-shadow:0 2px 0 rgba(0,0,0,.18)}
+.card.fn .fic{display:flex;opacity:.9}
+.card.fn .fic svg{width:calc(var(--k)*.3);height:calc(var(--k)*.3)}
+.card.fn.sel{box-shadow:0 0 0 3px var(--orange),0 12px 22px rgba(0,0,0,.55)}
+.card{--k:var(--cw)} .card.sm{--k:var(--wc)}
+.ib{width:34px;height:34px;border-radius:999px;border:1px solid var(--line);background:var(--bg-2);color:var(--fg);font:700 15px var(--f-body);cursor:pointer;display:grid;place-items:center;padding:0}
+.ib:disabled{opacity:.3;cursor:default}
+
+/* ---------- painel vida + masmorra ---------- */
+.hud{flex:none;display:flex;gap:10px;align-items:stretch}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:16px}
+.life{flex:1;min-width:0;padding:9px 12px;position:relative}
+.life-top{display:flex;align-items:baseline;gap:6px}
+.life-top .heart{color:var(--pink);font-size:18px;align-self:center;display:flex}
+.life-top b{font-family:var(--f-display);font-weight:800;font-size:28px;line-height:1;letter-spacing:-.03em}
+.life-top small{color:var(--muted);font-size:13px;font-weight:600}
+.life-top .prev{margin-left:auto;font-size:13px;font-weight:700}
+.prev.neg{color:var(--red)} .prev.pos{color:var(--teal)}
+.hpbar{margin-top:7px;height:10px;border-radius:999px;background:var(--bg-2);border:1px solid var(--line);position:relative;overflow:hidden}
+.hpbar i{position:absolute;top:0;bottom:0;left:0;border-radius:999px;transition:width .35s,background .35s}
+.hpbar .fill{background:linear-gradient(90deg,var(--teal-d),var(--teal))}
+.hpbar .fill.mid{background:linear-gradient(90deg,#d5671f,var(--orange))}
+.hpbar .fill.low{background:linear-gradient(90deg,#b8323e,var(--red))}
+.hpbar .loss{background:repeating-linear-gradient(-45deg,rgba(240,82,95,.9) 0 4px,rgba(240,82,95,.45) 4px 8px);border-radius:0 999px 999px 0}
+.hpbar .gain{background:rgba(43,194,179,.45);border-radius:0 999px 999px 0}
+.float{position:absolute;left:44%;top:4px;font:800 22px var(--f-display);pointer-events:none;animation:fl 1s ease-out forwards}
 .float.dmg{color:var(--red)} .float.heal{color:var(--teal)}
-@keyframes fl{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-28px)}}
+@keyframes fl{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-26px)}}
 
-/* Main area */
-main{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:space-evenly}
-.label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:0 2px 6px;display:flex;justify-content:space-between}
-.room{display:grid;grid-template-columns:repeat(4,var(--cw));justify-content:center;gap:calc(var(--cw)*.1)}
-.slot{width:var(--cw);height:var(--ch);border-radius:calc(var(--cw)*.1);border:1.5px dashed var(--line)}
+.deck{flex:none;display:flex;align-items:center;gap:9px;padding:8px 10px}
+.pile{width:30px;height:42px;border-radius:5px;position:relative;
+  background:repeating-linear-gradient(45deg,#7a2433 0 4px,#5e1b28 4px 8px);border:2px solid #f3e9dc;box-shadow:2px 2px 0 #c8b9a6,4px 4px 0 rgba(0,0,0,.3)}
+.pile.empty{background:none;border:1.5px dashed var(--line);box-shadow:none}
+.deck-info{display:flex;flex-direction:column;gap:2px;min-width:62px}
+.deck-info b{font:800 18px/1 var(--f-display)}
+.deck-info b small{font:600 11px var(--f-body);color:var(--muted)}
+.comp{display:flex;gap:7px;font-size:12px;font-weight:700}
+.comp span{display:flex;align-items:center;gap:2px}
+.c-m{color:#b7c3d1} .c-w{color:var(--teal)} .c-p{color:var(--pink)}
 
-/* Cards */
-.card{width:var(--cw);height:var(--ch);border-radius:calc(var(--cw)*.1);background:linear-gradient(160deg,#fdfcf8,#ecebe4);
-  color:#1e2533;position:relative;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.45);
-  transition:transform .15s, box-shadow .15s;overflow:hidden}
-.card.red{color:#c8102e}
-.card .c{position:absolute;top:calc(var(--cw)*.06);left:calc(var(--cw)*.08);font-weight:800;line-height:.95;font-size:calc(var(--cw)*.2);text-align:center}
-.card .pip{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding-bottom:calc(var(--cw)*.2);font-size:calc(var(--cw)*.5)}
-.card .face{font-size:calc(var(--cw)*.42);font-weight:800}
-.card .face small{font-size:.6em}
-.card .tag{position:absolute;left:0;right:0;bottom:0;height:calc(var(--cw)*.24);display:flex;align-items:center;justify-content:center;
-  font-size:calc(var(--cw)*.12);font-weight:800;letter-spacing:.5px;color:#fff}
-.card.monster .tag{background:#334155}
-.card.weapon .tag{background:var(--teal-d)}
-.card.potion .tag{background:var(--pink)}
-.card.sel{transform:translateY(-8px);box-shadow:0 0 0 3px var(--orange),0 10px 18px rgba(0,0,0,.5)}
-.card.deal{animation:deal .35s ease-out both}
-@keyframes deal{from{opacity:0;transform:translateY(-20px) scale(.9)}to{opacity:1;transform:none}}
-.card.carry::after{content:"";position:absolute;top:4px;right:4px;width:7px;height:7px;border-radius:50%;background:var(--orange)}
+/* ---------- sala ---------- */
+.room-box{flex:none;padding:9px 10px 10px}
+.zone-head{display:flex;align-items:center;gap:8px;margin-bottom:9px;min-height:28px}
+.zone-head h3{margin:0;font:800 15px var(--f-display);letter-spacing:-.01em}
+.dots{display:flex;gap:4px;align-items:center}
+.dots i{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--muted)}
+.dots i.on{background:var(--orange);border-color:var(--orange)}
+.dots-l{font-size:12px;color:var(--muted);font-weight:600}
+.avoid{margin-left:auto;appearance:none;border:1.5px solid var(--orange);background:var(--orange-soft);color:var(--orange);font:700 13px var(--f-body);
+  padding:6px 13px;border-radius:999px;cursor:pointer;display:flex;align-items:center;gap:5px}
+.avoid:disabled{border-color:var(--line);background:transparent;color:var(--muted);opacity:.6;cursor:default}
+.room{display:grid;grid-template-columns:repeat(4,var(--cw));justify-content:space-between;gap:6px}
+.slot{display:flex;flex-direction:column;align-items:center;gap:6px}
+.hole{width:var(--cw);height:var(--ch);border-radius:calc(var(--cw)*.11);border:1.5px dashed var(--line)}
+.pv{height:22px;min-width:0;max-width:100%;padding:0 8px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:3px;
+  font:800 12px var(--f-body);white-space:nowrap;border:1px solid transparent}
+.pv.neg{background:var(--red-soft);color:var(--red)}
+.pv.zero{background:var(--teal-soft);color:var(--teal)}
+.pv.pos{background:var(--teal-soft);color:var(--teal)}
+.pv.eq{background:var(--teal-soft);color:var(--teal)}
+.pv.off{background:var(--bg-2);color:var(--muted);border-color:var(--line)}
 
-/* Actions */
-.actions{flex:none;min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
-.msg{font-size:13px;color:var(--muted);text-align:center;min-height:18px;padding:0 4px}
-.msg b{color:var(--text)}
-.btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-.btn{border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:9px 16px;border-radius:999px;font-size:14px;font-weight:600;cursor:pointer}
-.btn.pri{background:var(--orange);border-color:var(--orange);color:#fff}
-.btn.tl{background:var(--teal-d);border-color:var(--teal);color:#fff}
-.btn:disabled{opacity:.35;cursor:default}
+/* ---------- cartas ---------- */
+.card{width:var(--cw);height:var(--ch);border-radius:calc(var(--cw)*.11);background:linear-gradient(165deg,#fffdf7,#efe9dd);
+  color:#1d1a16;position:relative;overflow:hidden;cursor:pointer;flex:none;
+  box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 6px 14px rgba(0,0,0,.45);transition:transform .18s cubic-bezier(.3,1.4,.5,1),box-shadow .18s}
+.card.red{color:#c41d33}
+.card .rk{position:absolute;top:calc(var(--cw)*.06);left:calc(var(--cw)*.09);font:800 calc(var(--cw)*.22)/.9 var(--f-display);text-align:center;letter-spacing:-.03em}
+.card .rk span{display:block;font-size:.72em;margin-top:1px}
+.card .big{position:absolute;inset:0 0 calc(var(--cw)*.27) 0;display:grid;place-items:center;font-size:calc(var(--cw)*.52);padding-top:calc(var(--cw)*.08)}
+.card .big.face{font:800 calc(var(--cw)*.46)/1 var(--f-display);letter-spacing:-.04em}
+.card .ft{position:absolute;left:0;right:0;bottom:0;height:calc(var(--cw)*.27);display:flex;align-items:center;justify-content:center;gap:4px;
+  color:#fff;font:800 calc(var(--cw)*.16)/1 var(--f-display)}
+.card .ft svg{width:calc(var(--cw)*.17);height:calc(var(--cw)*.17)}
+.card.m .ft{background:var(--slate)} .card.w .ft{background:var(--teal-d)} .card.p .ft{background:var(--pink)}
+.card.sel{transform:translateY(-7px);box-shadow:0 0 0 3px var(--orange),0 12px 22px rgba(0,0,0,.55)}
+.room.picking .card:not(.sel){opacity:.55}
+.card.deal{animation:deal .38s cubic-bezier(.3,1.3,.5,1) both}
+@keyframes deal{from{opacity:0;transform:translateY(-24px) rotate(-4deg) scale(.9)}to{opacity:1;transform:none}}
+.card .carry{position:absolute;top:calc(var(--cw)*.07);right:calc(var(--cw)*.07);font:700 calc(var(--cw)*.09)/1 var(--f-body);color:#fff;background:var(--orange);
+  padding:2px 4px;border-radius:4px;letter-spacing:.04em}
+.card.sm{width:var(--wc);height:var(--wh);cursor:default}
+.card.sm .rk{font-size:calc(var(--wc)*.22);top:calc(var(--wc)*.06);left:calc(var(--wc)*.09)}
+.card.sm .big{font-size:calc(var(--wc)*.5);inset:0 0 calc(var(--wc)*.27) 0}
+.card.sm .big.face{font-size:calc(var(--wc)*.44)}
+.card.sm .ft{height:calc(var(--wc)*.27);font-size:calc(var(--wc)*.16)}
+.card.sm .ft svg{width:calc(var(--wc)*.17);height:calc(var(--wc)*.17)}
 
-/* Weapon */
-.weapon-row{display:flex;justify-content:center;height:var(--ch)}
-.wstack{display:flex;position:relative}
-.wstack .card{cursor:default;flex:none}
-.wstack .card.m{box-shadow:-3px 0 8px rgba(0,0,0,.35)}
-.empty-w{width:var(--cw);height:var(--ch);border-radius:calc(var(--cw)*.1);border:1.5px dashed var(--line);display:flex;align-items:center;justify-content:center;
-  color:var(--muted);font-size:12px;text-align:center;padding:6px}
-.wlimit{color:var(--orange)}
+/* ---------- painel de ação ---------- */
+.act{flex:1;min-height:118px;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:0 2px;overflow:hidden}
+.hint{text-align:center;font-size:14px;color:var(--muted);line-height:1.35}
+.hint b{color:var(--fg)}
+.last{text-align:center;font-size:12.5px;color:var(--muted);opacity:.85}
+.last b{color:var(--fg)}
+.sel-head{display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;color:var(--muted)}
+.sel-head b{color:var(--fg);font-family:var(--f-display);font-size:16px}
+.sel-head .x{margin-left:4px;width:26px;height:26px;font-size:12px}
+.sel-head{min-height:26px}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px}
+.ch{appearance:none;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:14px;padding:9px 10px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--f-body);transition:transform .12s}
+.ch:active{transform:scale(.97)}
+.ch .t{font-weight:700;font-size:14px;display:flex;align-items:center;gap:5px}
+.ch .s{font-size:12px;color:var(--muted)}
+.ch .s b{font-weight:800}
+.ch.teal{border-color:var(--teal);background:var(--teal-soft)} .ch.teal .t{color:var(--teal)}
+.ch.red{border-color:var(--red);background:var(--red-soft)} .ch.red .t{color:var(--red)}
+.ch.pink{border-color:#4cd18a;background:rgba(76,209,138,.13)} .ch.pink .t{color:#5fe09b}
+.ch.ghost{opacity:.9}
+.ch.rec{position:relative}
+.ch.rec::after{content:"menos dano";position:absolute;top:-8px;right:10px;background:var(--orange);color:#24140a;font:800 10px var(--f-body);padding:2px 6px;border-radius:999px;letter-spacing:.04em;text-transform:uppercase}
+.note{text-align:center;font-size:12px;line-height:1.3;color:var(--orange)}
+
+/* ---------- arma ---------- */
+.wpn-box{flex:none;padding:9px 10px 10px}
+.wpn{display:flex;gap:12px;align-items:center;min-height:var(--wh)}
+.stack{display:flex;flex:none;align-items:flex-start}
+.stack .k{flex:none}
+.stack .k + .k{box-shadow:-4px 0 10px rgba(0,0,0,.35)}
+.no-wpn{width:var(--wc);height:var(--wh);border-radius:calc(var(--wc)*.11);border:1.5px dashed var(--line);display:grid;place-items:center;color:var(--muted);font-size:26px;flex:none}
+.wstats{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.stat{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.stat b{color:var(--fg);font:800 17px var(--f-display)}
+.stat .ic{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;flex:none;font-size:14px}
+.ic.t{background:var(--teal-soft);color:var(--teal)} .ic.o{background:var(--orange-soft);color:var(--orange)}
+.wtxt{font-size:13px;color:var(--muted);line-height:1.4}
 
 .hit{animation:shake .35s}
 @keyframes shake{0%,100%{transform:none}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
 
-/* Modal */
-.modal{position:fixed;inset:0;background:rgba(3,7,15,.75);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
-.modal.on{display:flex}
-.box{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;max-width:420px;width:100%;max-height:90dvh;overflow:auto}
-.box h2{margin:0 0 10px;font-size:20px}
-.box p,.box li{font-size:14px;line-height:1.45;color:#c9d4e6}
-.box ul{padding-left:18px;margin:8px 0}
-.box .t{color:var(--teal);font-weight:700} .box .o{color:var(--orange);font-weight:700} .box .p{color:#fb7185;font-weight:700}
-.score{font-size:44px;font-weight:800;text-align:center;margin:6px 0}
-.score.win{color:var(--teal)} .score.lose{color:var(--red)}
-.center{text-align:center}
+/* ---------- modais ---------- */
+.modal{position:fixed;inset:0;background:rgba(4,9,8,.78);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20;backdrop-filter:blur(3px)}
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:20px;max-width:420px;width:100%;max-height:92dvh;overflow:auto}
+.sheet h2{margin:0 0 4px;font:800 24px var(--f-display);letter-spacing:-.02em}
+.sheet .sub{color:var(--muted);font-size:14px;margin:0 0 14px}
+.legend{display:grid;gap:8px;margin-bottom:14px}
+.lg{display:flex;gap:10px;align-items:center;background:var(--bg-2);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.lg .sw{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:#fff;font-size:17px;flex:none}
+.lg p{margin:0;font-size:13px;color:var(--muted);line-height:1.35}
+.lg p b{color:var(--fg)}
+.steps{margin:0 0 14px;padding:0;list-style:none;display:grid;gap:7px;counter-reset:s}
+.steps li{font-size:13.5px;color:#c8d6d2;line-height:1.4;padding-left:28px;position:relative}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:0;width:20px;height:20px;border-radius:50%;background:var(--orange-soft);color:var(--orange);font:800 11px var(--f-body);display:grid;place-items:center}
+.steps b{color:var(--fg)}
+.btn{appearance:none;border:0;background:var(--orange);color:#24140a;font:800 15px var(--f-body);padding:12px 22px;border-radius:999px;cursor:pointer;width:100%}
+.btn.sec{background:var(--bg-2);color:var(--fg);border:1px solid var(--line);margin-top:8px}
+.end{text-align:center}
+.end .score{font:800 64px/1 var(--f-display);letter-spacing:-.04em;margin:10px 0 2px}
+.end .score.win{color:var(--teal)} .end .score.lose{color:var(--red)}
+.end .rec{display:inline-block;background:var(--orange);color:#24140a;font:800 11px var(--f-body);letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:999px;margin-bottom:6px}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 16px}
+.sgrid div{background:var(--bg-2);border:1px solid var(--line);border-radius:12px;padding:8px}
+.sgrid b{display:block;font:800 20px var(--f-display)}
+.sgrid small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+
+@media (max-height:620px){ .zone-head{margin-bottom:5px;min-height:24px} .room-box,.wpn-box{padding-top:6px;padding-bottom:7px} .hud .life,.hud .deck{padding-top:6px;padding-bottom:6px} .ch{padding:7px 8px} }
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<div class="wrap" id="wrap">
-  <header>
-    <a class="back" href="../../" aria-label="Voltar para a lista de jogos">← Jogos</a>
-    <h1>Scoun<span>drel</span></h1>
-    <button class="icon-btn" id="bRules" title="Regras">?</button>
-    <button class="icon-btn" id="bNew" title="Novo jogo">↻</button>
+<div class="app" id="app">
+  <header class="top">
+    <a href="../../" class="back" aria-label="Voltar para a lista de jogos">←<span class="tx"> Jogos</span></a>
+    <div class="mid">
+      <div class="brand">Scoun<span>drel</span></div>
+      <div class="seg" role="group" aria-label="Estilo do baralho" id="deckSel">
+        <button type="button" data-d="classic"><i class="mini cl"></i>Clássico</button>
+        <button type="button" data-d="func"><i class="mini fn"></i>Funções</button>
+      </div>
+    </div>
+    <button class="ib" id="bUndo" title="Desfazer jogada" aria-label="Desfazer">↶</button>
+    <button class="ib" id="bHelp" title="Como jogar" aria-label="Como jogar">?</button>
+    <button class="ib" id="bNew" title="Novo jogo" aria-label="Novo jogo">↻</button>
   </header>
 
-  <div class="stats" id="stats">
-    <div class="hp">
-      <div class="hp-top"><span>Vida</span><span><b id="hpv">20</b> / 20</span></div>
-      <div class="bar"><i id="hpbar"></i></div>
+  <section class="hud">
+    <div class="box life" id="life">
+      <div class="life-top">
+        <span class="heart" id="heartIc"></span><b id="hp">20</b><small>/ 20 vida</small>
+        <span class="prev" id="hpPrev"></span>
+      </div>
+      <div class="hpbar"><i class="fill" id="hpFill"></i><i class="loss" id="hpLoss"></i><i class="gain" id="hpGain"></i></div>
     </div>
-    <div class="chip"><small>Masmorra</small><b id="dun">44</b></div>
-    <div class="chip"><small>Recorde</small><b id="best">–</b></div>
-  </div>
-
-  <main>
-    <section>
-      <div class="label"><span>Sala</span><span id="roomInfo"></span></div>
-      <div class="room" id="room"></div>
-    </section>
-
-    <div class="actions">
-      <div class="msg" id="msg"></div>
-      <div class="btns" id="btns"></div>
+    <div class="box deck" title="Cartas restantes na masmorra">
+      <div class="pile" id="pile"></div>
+      <div class="deck-info">
+        <b id="dun">40 <small>cartas</small></b>
+        <div class="comp" id="comp"></div>
+      </div>
     </div>
+  </section>
 
-    <section>
-      <div class="label"><span>Arma equipada</span><span id="wInfo"></span></div>
-      <div class="weapon-row" id="wrow"></div>
-    </section>
-  </main>
+  <section class="box room-box">
+    <div class="zone-head">
+      <h3 id="roomTitle">Sala 1</h3>
+      <div class="dots" id="dots"></div><span class="dots-l" id="dotsL"></span>
+      <button class="avoid" id="bAvoid" title="Mandar as 4 cartas para o fundo da masmorra">Fugir ↷</button>
+    </div>
+    <div class="room" id="room"></div>
+  </section>
+
+  <section class="act" id="act" aria-live="polite"></section>
+
+  <section class="box wpn-box">
+    <div class="zone-head"><h3>Sua arma</h3></div>
+    <div class="wpn" id="wpn"></div>
+  </section>
 </div>
 
-<div class="modal" id="mRules">
-  <div class="box">
+<div class="modal" id="mHelp" hidden>
+  <div class="sheet">
     <h2>Como jogar</h2>
-    <p>Atravesse a masmorra (44 cartas) sem zerar sua vida (20).</p>
-    <ul>
-      <li><b>♠ ♣ Monstros</b>: causam dano igual ao valor (J=11, Q=12, K=13, A=14).</li>
-      <li><span class="t">♦ Armas</span> (2–10): equipe para reduzir o dano. Trocar de arma descarta a anterior.</li>
-      <li><span class="p">♥ Poções</span> (2–10): curam até o máximo de 20. Só <b>uma por sala</b> faz efeito.</li>
-    </ul>
-    <p><b>Sala:</b> 4 cartas. Você escolhe 3; a última fica para a próxima sala. Pode <span class="o">evitar a sala</span> (cartas vão para o fundo), mas nunca duas seguidas.</p>
-    <p><b>Lutando com arma:</b> dano = monstro − arma. Depois de usada, a arma só serve contra monstros <b>menores</b> que o último que ela matou. Mãos nuas: dano total.</p>
-    <p><b>Pontuação:</b> vencendo, sua vida (+ valor da poção se terminou com 20 de vida e a última carta foi poção). Morrendo, menos a soma dos monstros restantes.</p>
-    <p style="color:var(--muted);font-size:12px">Toque numa carta para ver as opções; toque de novo para a ação principal. Teclado: 1–4, Enter, B (mãos nuas), E (evitar), N (novo).</p>
-    <div class="center"><button class="btn pri" data-close>Entendi</button></div>
+    <p class="sub">Atravesse a masmorra inteira sem zerar sua vida.</p>
+    <div class="legend" id="legend"></div>
+    <ol class="steps">
+      <li>Cada <b>sala</b> tem 4 cartas. Você resolve <b>3</b> delas; a que sobra fica para a próxima sala.</li>
+      <li>Antes de tocar em qualquer carta você pode <b>fugir</b> da sala (as 4 vão para o fundo), mas nunca duas vezes seguidas.</li>
+      <li>Lutar <b>com arma</b> tira só a diferença. Mas cada arma só aguenta monstros <b>mais fracos</b> que o último que ela matou.</li>
+      <li>Só <b>uma poção por sala</b> cura. A segunda é jogada fora.</li>
+    </ol>
+    <p class="sub" style="margin-bottom:14px">Embaixo de cada carta aparece o que vai acontecer se você escolhê-la. Toque para ver as opções, toque de novo para confirmar.</p>
+    <button class="btn" data-close>Bora pra masmorra</button>
   </div>
 </div>
 
-<div class="modal" id="mEnd">
-  <div class="box center">
+<div class="modal" id="mEnd" hidden>
+  <div class="sheet end">
     <h2 id="endTitle"></h2>
     <div class="score" id="endScore"></div>
-    <p id="endTxt"></p>
-    <button class="btn pri" id="bAgain">Jogar de novo</button>
+    <div id="endRec"></div>
+    <div class="sgrid" id="endStats"></div>
+    <button class="btn" id="bAgain">Jogar de novo</button>
+    <button class="btn sec" data-close>Ver a mesa</button>
   </div>
 </div>
 
 <script>
 (function(){
-const SUITS={S:'♠',C:'♣',D:'♦',H:'♥'};
-const FACE={11:'J',12:'Q',13:'K',14:'A'};
+const SUIT={S:'♠',C:'♣',D:'♦',H:'♥'}, FACE={11:'J',12:'Q',13:'K',14:'A'};
+const IC={
+  sword:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5 9.5 14.5M15 5h4v4M6.5 11.5l6 6M8 16l-4 4"/></svg>',
+  skull:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a8 8 0 0 0-8 8v2.8l2 2V19a1 1 0 0 0 1 1h1.5v-2h1.5v2h4v-2h1.5v2H17a1 1 0 0 0 1-1v-3.7l2-2v-2.8a8 8 0 0 0-8-8Zm-3.2 12a2.2 2.2 0 1 1 0-4.4 2.2 2.2 0 0 1 0 4.4Zm6.4 0a2.2 2.2 0 1 1 0-4.4 2.2 2.2 0 0 1 0 4.4Z"/></svg>',
+  flask:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M9 2h6v2h-1v5.2l5.3 8.9A2.6 2.6 0 0 1 17 22H7a2.6 2.6 0 0 1-2.3-3.9L10 9.2V4H9V2Zm-1.7 13h9.4l-2.4-4h-4.6l-2.4 4Z"/></svg>',
+  heart:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-9.7-9.3C.8 8.4 2.9 4.5 6.6 4.5c2.2 0 3.6 1.2 5.4 3.1 1.8-1.9 3.2-3.1 5.4-3.1 3.7 0 5.8 3.9 4.3 7.2C19.5 16.4 12 21 12 21Z"/></svg>',
+  fist:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7.5a1.5 1.5 0 0 1 3 0V6a1.5 1.5 0 0 1 3 0v.5a1.5 1.5 0 0 1 3 0V7a1.5 1.5 0 0 1 3 0v6.5a7 7 0 0 1-7 7h-.5A6.5 6.5 0 0 1 5 14v-1.6a2 2 0 0 1 2-2V7.5Z"/></svg>',
+  shield:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Z"/></svg>',
+  target:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg>'
+};
+const ROLE_IC={m:IC.skull,w:IC.sword,p:IC.flask};
 const $=id=>document.getElementById(id);
-let S, bestScore=null;
+const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+let best=ls.get('scoundrel_best'); best=best===null?null:+best;
+let S, hist=[];
 
-function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
-function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
-bestScore=lsGet('scoundrel_best'); bestScore = bestScore===null?null:+bestScore;
+const role=c=>c.s==='D'?'w':c.s==='H'?'p':'m';
+const lbl=c=>(FACE[c.r]||c.r)+SUIT[c.s];
 
-function role(c){return c.s==='D'?'weapon':c.s==='H'?'potion':'monster'}
-function buildDeck(){
+function deckNew(){
   const d=[];
-  for(const s of 'SCDH') for(let r=2;r<=14;r++){
-    if((s==='D'||s==='H') && r>10) continue;
-    d.push({s,r,id:s+r});
-  }
+  for(const s of 'SCDH') for(let r=2;r<=14;r++){ if((s==='D'||s==='H')&&r>10) continue; d.push({s,r}); }
   for(let i=d.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[d[i],d[j]]=[d[j],d[i]]}
   return d;
 }
 
 function newGame(){
-  S={dungeon:buildDeck(),room:[null,null,null,null],hp:20,weapon:null,
-     lastAvoided:false,potionUsed:false,taken:0,sel:-1,over:false,lastCard:null,
-     fresh:new Set(),carry:null,msg:'Escolha uma carta — ou evite a sala.'};
-  $('mEnd').classList.remove('on');
-  deal(); render();
+  S={dun:deckNew(),room:[null,null,null,null],hp:20,wpn:null,avoided:false,potion:false,taken:0,sel:-1,over:false,
+     last:null,carry:-1,roomNo:0,msg:null,st:{kills:0,dmg:0,heal:0,rooms:0,flee:0}};
+  hist=[]; $('mEnd').hidden=true;
+  deal(); render(true);
 }
 
 function deal(){
-  S.fresh=new Set(); S.carry=null;
-  S.room.forEach((c,i)=>{ if(c) S.carry=i; });
-  for(let i=0;i<4;i++) if(!S.room[i] && S.dungeon.length){ S.room[i]=S.dungeon.shift(); S.fresh.add(i); }
-  S.potionUsed=false; S.taken=0; S.sel=-1;
+  S.carry=-1; S.room.forEach((c,i)=>{if(c)S.carry=i});
+  S.fresh=[];
+  for(let i=0;i<4;i++) if(!S.room[i]&&S.dun.length){S.room[i]=S.dun.shift();S.fresh.push(i)}
+  S.potion=false; S.taken=0; S.sel=-1; S.roomNo++;
 }
 
-const left=()=>S.room.filter(Boolean).length;
-function canAvoid(){return !S.over && !S.lastAvoided && S.taken===0 && S.dungeon.length>0 && left()===4}
-function canUseWeapon(m){
-  if(!S.weapon) return false;
-  const ms=S.weapon.monsters;
-  return ms.length===0 || m.r < ms[ms.length-1].r;
+const inRoom=()=>S.room.filter(Boolean).length;
+const needPicks=()=>S.dun.length? 3 : Math.max(0,inRoom()+S.taken);
+function avoidState(){
+  if(S.over) return {ok:false};
+  if(S.taken>0) return {ok:false,why:'já começou a sala'};
+  if(S.avoided) return {ok:false,why:'fugiu na sala anterior'};
+  if(!S.dun.length||inRoom()<4) return {ok:false,why:'última sala'};
+  return {ok:true};
+}
+function wpnOk(m){ if(!S.wpn) return false; const k=S.wpn.kills; return !k.length||m.r<k[k.length-1].r; }
+
+/* resultado previsto de cada opção */
+function outcome(c){
+  const r=role(c);
+  if(r==='m'){
+    const bare=c.r, w=wpnOk(c)?Math.max(0,c.r-S.wpn.card.r):null;
+    return {r, bare, w};
+  }
+  if(r==='p'){ return {r, heal:S.potion?0:Math.min(20-S.hp,c.r), wasted:S.potion}; }
+  return {r};
 }
 
-function avoid(){
-  if(!canAvoid()) return;
-  S.room.forEach(c=>S.dungeon.push(c));
-  S.room=[null,null,null,null];
-  deal(); S.lastAvoided=true;
-  S.msg='Sala evitada. A próxima precisa ser enfrentada.';
-  render();
+function snap(){ hist=[JSON.stringify(S)]; }
+function undo(){
+  if(!hist.length||S.over) return;
+  S=JSON.parse(hist.pop()); S.fresh=[]; S.sel=-1; hist=[];
+  S.msg={t:'Jogada desfeita.'}; render();
 }
 
 function take(i,mode){
   const c=S.room[i]; if(!c||S.over) return;
-  S.room[i]=null; S.taken++; S.lastAvoided=false; S.lastCard=c; S.sel=-1; S.fresh=new Set();
-  if(i===S.carry) S.carry=null;
-  const rl=role(c);
-  if(rl==='monster'){
-    let dmg;
-    if(mode==='weapon' && canUseWeapon(c)){
-      dmg=Math.max(0,c.r-S.weapon.card.r); S.weapon.monsters.push(c);
-      S.msg=dmg?`Golpe com a arma: <b>−${dmg}</b> de vida.`:'Monstro abatido sem dano!';
-    }else{
-      dmg=c.r; S.msg=`Luta de mãos nuas: <b>−${dmg}</b> de vida.`;
-    }
-    if(dmg){ S.hp-=dmg; floatTxt('-'+dmg,'dmg'); shake(); }
-    if(S.hp<=0){ S.hp=0; return end(false); }
-  }else if(rl==='weapon'){
-    S.msg = S.weapon ? `Trocou ${label(S.weapon.card)} por <b>${label(c)}</b>.` : `Equipou <b>${label(c)}</b>.`;
-    S.weapon={card:c,monsters:[]};
+  snap();
+  S.room[i]=null; S.taken++; S.avoided=false; S.last=c; S.sel=-1; S.fresh=[];
+  if(i===S.carry) S.carry=-1;
+  const r=role(c);
+  if(r==='m'){
+    let d;
+    if(mode!=='bare'&&wpnOk(c)){ d=Math.max(0,c.r-S.wpn.card.r); S.wpn.kills.push(c); S.msg={t:`Você abateu <b>${lbl(c)}</b> com a arma`+(d?` e perdeu <b>${d}</b>.`:` sem levar dano.`)}; }
+    else { d=c.r; S.msg={t:`Luta de mãos nuas contra <b>${lbl(c)}</b>: <b>−${d}</b>.`}; }
+    S.st.kills++; S.st.dmg+=d;
+    if(d){ S.hp-=d; floatTxt('−'+d,'dmg'); shake(); }
+    if(S.hp<=0){ S.hp=0; return finish(false); }
+  }else if(r==='w'){
+    S.msg={t:S.wpn?`Trocou ${lbl(S.wpn.card)} por <b>${lbl(c)}</b>.`:`Equipou <b>${lbl(c)}</b>.`};
+    S.wpn={card:c,kills:[]};
   }else{
-    if(S.potionUsed){ S.msg='Só uma poção por sala — esta foi desperdiçada.'; }
-    else{
-      const h=Math.min(20-S.hp,c.r); S.hp+=h; S.potionUsed=true;
-      S.msg=h?`Poção: <b>+${h}</b> de vida.`:'Vida já estava cheia.';
-      if(h) floatTxt('+'+h,'heal');
-    }
+    if(S.potion) S.msg={t:`Segunda poção da sala: <b>${lbl(c)}</b> foi desperdiçada.`};
+    else{ const h=Math.min(20-S.hp,c.r); S.hp+=h; S.potion=true; S.st.heal+=h;
+      S.msg={t:h?`Bebeu <b>${lbl(c)}</b>: <b>+${h}</b> de vida.`:`Bebeu <b>${lbl(c)}</b>, mas a vida já estava cheia.`}; if(h) floatTxt('+'+h,'heal'); }
   }
-  const n=left();
-  if(n===0 && S.dungeon.length===0) return end(true);
-  if(n<=1 && S.dungeon.length>0){ deal(); S.msg+=' Nova sala.'; }
+  const n=inRoom();
+  if(!n && !S.dun.length) return finish(true);
+  if(n<=1 && S.dun.length){ S.st.rooms++; deal(); hist=[]; S.msg.t+=' <b>Nova sala.</b>'; }
   render();
 }
 
-function label(c){return (FACE[c.r]||c.r)+SUITS[c.s]}
+function avoid(){
+  if(!avoidState().ok) return;
+  S.room.forEach(c=>S.dun.push(c)); S.room=[null,null,null,null];
+  S.roomNo--; deal(); S.avoided=true; S.st.flee++; hist=[];
+  S.msg={t:'Você fugiu. As 4 cartas foram para o fundo da masmorra.'};
+  render();
+}
 
-function end(win){
-  S.over=true; render();
+function finish(win){
+  S.over=true; hist=[]; render();
   let score;
-  if(win){
-    score=S.hp;
-    if(S.hp===20 && S.lastCard && role(S.lastCard)==='potion') score+=S.lastCard.r;
-  }else{
-    const rest=[...S.dungeon,...S.room.filter(Boolean)].filter(c=>role(c)==='monster');
-    score=-rest.reduce((a,c)=>a+c.r,0);
+  if(win){ score=S.hp; if(S.hp===20&&S.last&&role(S.last)==='p') score+=S.last.r; }
+  else score=-[...S.dun,...S.room.filter(Boolean)].filter(c=>role(c)==='m').reduce((a,c)=>a+c.r,0);
+  const rec=best===null||score>best; if(rec){best=score;ls.set('scoundrel_best',score)}
+  $('endTitle').textContent=win?'Você saiu vivo!':'A masmorra venceu';
+  const e=$('endScore'); e.textContent=(score>0?'+':'')+score; e.className='score '+(win?'win':'lose');
+  $('endRec').innerHTML=rec?'<span class="rec">Novo recorde</span>':`<span style="color:var(--muted);font-size:13px">Recorde: ${best>0?'+':''}${best}</span>`;
+  $('endStats').innerHTML=[
+    [S.st.kills,'monstros abatidos'],[S.st.dmg,'dano recebido'],[S.st.heal,'vida curada'],
+    [win?S.hp:S.dun.length, win?'vida restante':'cartas restantes']
+  ].map(([v,l])=>`<div><b>${v}</b><small>${l}</small></div>`).join('');
+  setTimeout(()=>{$('mEnd').hidden=false}, win?350:700);
+}
+
+function floatTxt(t,c){const f=document.createElement('div');f.className='float '+c;f.textContent=t;$('life').appendChild(f);setTimeout(()=>f.remove(),1000)}
+function shake(){const a=$('life');a.classList.remove('hit');void a.offsetWidth;a.classList.add('hit')}
+
+/* ---------- desenho ---------- */
+let DECK=ls.get('scoundrel_deck')==='func'?'func':'classic';
+function setDeck(d){
+  DECK=d; ls.set('scoundrel_deck',d);
+  document.querySelectorAll('#deckSel button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.d===d));
+  if(S){ render(); if(S.sel>=0) markSel(); }
+}
+document.querySelectorAll('#deckSel button').forEach(b=>b.onclick=()=>setDeck(b.dataset.d));
+function cardHTML(c,cls='',extra=''){
+  if(DECK==='func'){ const r=role(c); return `<div class="card fn ${r} ${cls}"><div class="fnum">${c.r}</div><div class="fic">${ROLE_IC[r]}</div>${extra}</div>`; }
+  const r=role(c), red=c.s==='D'||c.s==='H', rk=FACE[c.r]||c.r, s=SUIT[c.s];
+  const big=FACE[c.r]?`<div class="big face">${rk}</div>`:`<div class="big">${s}</div>`;
+  return `<div class="card ${r} ${red?'red':''} ${cls}"><div class="rk">${rk}<span>${s}</span></div>${big}<div class="ft">${ROLE_IC[r]}${c.r}</div>${extra}</div>`;
+}
+
+function preview(c){
+  const o=outcome(c);
+  if(o.r==='m'){
+    if(o.w!==null) return o.w?`<div class="pv neg">${IC.sword}−${o.w}</div>`:`<div class="pv zero">${IC.sword}0 dano</div>`;
+    return `<div class="pv neg">${IC.fist}−${o.bare}</div>`;
   }
-  const rec = bestScore===null || score>bestScore;
-  if(rec){ bestScore=score; lsSet('scoundrel_best',score); }
-  $('endTitle').textContent = win?'Você escapou da masmorra!':'Você caiu na masmorra';
-  const sc=$('endScore'); sc.textContent=(score>0?'+':'')+score; sc.className='score '+(win?'win':'lose');
-  $('endTxt').innerHTML = (win?`Saiu com ${S.hp} de vida.`:`Restavam ${S.dungeon.length} cartas na masmorra.`)
-    + (rec?'<br><b style="color:var(--orange)">Novo recorde!</b>':`<br>Recorde: ${bestScore}`);
-  setTimeout(()=>$('mEnd').classList.add('on'), win?300:650);
-  renderStats();
+  if(o.r==='p') return o.wasted?`<div class="pv off">desperdiça</div>`:o.heal?`<div class="pv pos">${IC.heart}+${o.heal}</div>`:`<div class="pv off">vida cheia</div>`;
+  if(!S.wpn) return `<div class="pv eq">${IC.sword}equipar</div>`;
+  return `<div class="pv eq">${IC.sword}${c.r>S.wpn.card.r?'mais forte':c.r<S.wpn.card.r?'mais fraca':'igual'}</div>`;
 }
 
-function floatTxt(t,cls){
-  const f=document.createElement('div'); f.className='float '+cls; f.textContent=t;
-  $('stats').appendChild(f); setTimeout(()=>f.remove(),1000);
-}
-function shake(){const w=$('wrap'); w.classList.remove('hit'); void w.offsetWidth; w.classList.add('hit');}
-
-function cardHTML(c,extra=''){
-  const rl=role(c), red=(c.s==='D'||c.s==='H');
-  const rk=FACE[c.r]||c.r, sym=SUITS[c.s];
-  const tag={monster:'MONSTRO',weapon:'ARMA',potion:'POÇÃO'}[rl]+' '+c.r;
-  const center = FACE[c.r] ? `<span class="face">${rk}<small>${sym}</small></span>` : sym;
-  return `<div class="card ${rl} ${red?'red':''} ${extra}"><div class="c">${rk}<br>${sym}</div><div class="pip">${center}</div><div class="tag">${tag}</div></div>`;
-}
-
-function renderStats(){
-  $('hpv').textContent=S.hp;
-  const b=$('hpbar'); b.style.width=(S.hp/20*100)+'%';
-  b.className = S.hp<=5?'low':S.hp<=10?'mid':'';
-  $('dun').textContent=S.dungeon.length;
-  $('best').textContent = bestScore===null?'–':bestScore;
-}
-
-function render(){
-  renderStats();
-  // Room
-  const room=$('room'); room.innerHTML='';
-  S.room.forEach((c,i)=>{
-    if(!c){ room.insertAdjacentHTML('beforeend','<div class="slot"></div>'); return; }
-    const cls=[S.sel===i?'sel':'', S.fresh.has(i)?'deal':'', S.carry===i?'carry':''].join(' ');
-    room.insertAdjacentHTML('beforeend',cardHTML(c,cls));
-    const el=room.lastElementChild;
-    if(S.fresh.has(i)) el.style.animationDelay=(i*70)+'ms';
-    el.onclick=()=>tap(i);
-  });
-  S.fresh=new Set();
-  $('roomInfo').textContent = S.over?'':`${S.taken}/3 escolhidas` + (S.potionUsed?' · poção usada':'');
-
-  // Weapon
-  const wr=$('wrow'); wr.innerHTML='';
-  if(!S.weapon){
-    wr.innerHTML='<div class="empty-w">Sem arma<br>(mãos nuas)</div>'; $('wInfo').textContent='';
-  }else{
-    const st=document.createElement('div'); st.className='wstack'; wr.appendChild(st);
-    st.insertAdjacentHTML('beforeend',cardHTML(S.weapon.card));
-    const ms=S.weapon.monsters;
-    const cw=st.firstElementChild.offsetWidth;
-    const avail=wr.clientWidth-cw;
-    const off=ms.length?Math.min(cw*.34, avail/ms.length):0;
-    ms.forEach(m=>{ st.insertAdjacentHTML('beforeend',cardHTML(m,'m')); st.lastElementChild.style.marginLeft=(off-cw)+'px'; });
-    $('wInfo').innerHTML = ms.length?`<span class="wlimit">só contra &lt; ${ms[ms.length-1].r}</span>`:'arma nova · qualquer monstro';
+function setHP(prev){
+  const hp=S.hp; $('hp').textContent=hp;
+  const f=$('hpFill'); f.style.width=hp*5+'%'; f.className='fill '+(hp<=5?'low':hp<=10?'mid':'');
+  const L=$('hpLoss'),G=$('hpGain'),P=$('hpPrev');
+  L.style.width=G.style.width='0'; P.textContent=''; P.className='prev';
+  if(prev){
+    if(prev<0){ const d=Math.min(hp,-prev); f.style.width=(hp-d)*5+'%'; L.style.left=(hp-d)*5+'%'; L.style.width=d*5+'%'; P.textContent=`→ ${Math.max(0,hp+prev)}`; P.classList.add('neg'); }
+    else { G.style.left=hp*5+'%'; G.style.width=prev*5+'%'; P.textContent=`→ ${hp+prev}`; P.classList.add('pos'); }
   }
-
-  renderActions();
 }
 
-function renderActions(){
-  const btns=$('btns'); btns.innerHTML='';
-  const add=(t,cls,fn,dis)=>{const b=document.createElement('button'); b.className='btn '+(cls||''); b.innerHTML=t; b.disabled=!!dis; b.onclick=fn; btns.appendChild(b);};
-  if(S.over){ $('msg').innerHTML=S.msg; add('Novo jogo','pri',newGame); return; }
-  const i=S.sel, c=S.room[i];
-  if(i<0||!c){
-    $('msg').innerHTML=S.msg;
-    add('Evitar sala','',avoid,!canAvoid());
+function render(first){
+  setHP(0);
+  // masmorra
+  const left=S.dun.length; $('dun').innerHTML=`${left} <small>cartas</small>`;
+  $('pile').className='pile'+(left?'':' empty');
+  const cnt={m:0,w:0,p:0}; S.dun.forEach(c=>cnt[role(c)]++);
+  $('comp').innerHTML=`<span class="c-m" title="Monstros">${IC.skull}${cnt.m}</span><span class="c-w" title="Armas">${IC.sword}${cnt.w}</span><span class="c-p" title="Poções">${IC.flask}${cnt.p}</span>`;
+
+  // cabeçalho da sala
+  const total=S.dun.length?3:S.taken+inRoom();
+  $('roomTitle').textContent=S.dun.length?`Sala ${S.roomNo}`:'Última sala';
+  $('dots').innerHTML=Array.from({length:total},(_,k)=>`<i class="${k<S.taken?'on':''}"></i>`).join('');
+  $('dotsL').textContent=S.over?'':`${S.taken} de ${total}`;
+  const av=avoidState(), b=$('bAvoid'); b.disabled=!av.ok; b.title=av.ok?'Mandar as 4 cartas para o fundo da masmorra':'Não dá para fugir: '+(av.why||'');
+
+  // cartas da sala
+  const room=$('room'); room.className='room'+(S.sel>=0?' picking':'');
+  room.innerHTML=S.room.map((c,i)=>{
+    if(!c) return `<div class="slot"><div class="hole"></div><div class="pv" style="visibility:hidden">·</div></div>`;
+    const cls=[S.sel===i?'sel':'',(S.fresh||[]).includes(i)?'deal':''].join(' ');
+    const carry=S.carry===i?'<span class="carry">FICOU</span>':'';
+    return `<div class="slot" data-i="${i}">${cardHTML(c,cls,carry)}${S.over?'':preview(c)}</div>`;
+  }).join('');
+  [...room.querySelectorAll('.card.deal')].forEach((el,k)=>el.style.animationDelay=k*70+'ms');
+  room.querySelectorAll('.slot[data-i]').forEach(el=>el.onclick=()=>tap(+el.dataset.i));
+  S.fresh=[];
+
+  renderWpn(); renderAct();
+  $('bUndo').disabled=!hist.length||S.over;
+}
+
+function renderWpn(){
+  const w=$('wpn');
+  if(!S.wpn){
+    w.innerHTML=`<div class="no-wpn">${IC.fist}</div><div class="wtxt"><b style="color:var(--fg)">Mãos nuas.</b><br>Pegue uma carta <span style="color:var(--teal)">♦</span> para reduzir o dano dos monstros.</div>`;
     return;
   }
-  const rl=role(c);
-  if(rl==='monster'){
-    const wOk=canUseWeapon(c);
-    $('msg').innerHTML=`Enfrentar <b>${label(c)}</b> (força ${c.r})` + (S.weapon&&!wOk?' — arma não serve contra ele':'');
-    if(wOk) add(`Com arma · −${Math.max(0,c.r-S.weapon.card.r)}`,'tl',()=>take(i,'weapon'));
-    add(`Mãos nuas · −${c.r}`, wOk?'':'pri',()=>take(i,'bare'));
-  }else if(rl==='weapon'){
-    $('msg').innerHTML = S.weapon?`Trocar ${label(S.weapon.card)} por <b>${label(c)}</b>? A arma atual será descartada.`:`Equipar <b>${label(c)}</b>?`;
-    add('Equipar','tl',()=>take(i));
-  }else{
-    const h=Math.min(20-S.hp,c.r);
-    $('msg').innerHTML = S.potionUsed?'Você já bebeu uma poção nesta sala — esta será desperdiçada.':`Beber <b>${label(c)}</b>: cura ${h}.`;
-    add(S.potionUsed?'Descartar':`Beber · +${h}`,'pri',()=>take(i));
+  const k=S.wpn.kills, lim=k.length?k[k.length-1].r:null;
+  w.innerHTML=`<div class="stack" id="stack">${cardHTML(S.wpn.card,'sm k')}${k.map(m=>cardHTML(m,'sm k')).join('')}</div>
+    <div class="wstats">
+      <div class="stat"><span class="ic t">${IC.shield}</span><span>Bloqueia <b>${S.wpn.card.r}</b></span></div>
+      <div class="stat"><span class="ic o">${IC.target}</span><span>${lim===null?'Serve contra <b>qualquer</b> monstro':`Só monstros <b>abaixo de ${lim}</b>`}</span></div>
+    </div>`;
+  // compacta a pilha para caber
+  const st=$('stack'), cards=[...st.children]; if(cards.length<2) return;
+  const cw=cards[0].offsetWidth||60;
+  const room=Math.max(cw*1.4,w.clientWidth*.52);
+  const off=Math.min(cw*.5,(room-cw)/(cards.length-1));
+  cards.slice(1).forEach(el=>el.style.marginLeft=(off-cw)+'px');
+}
+
+function renderAct(){
+  const a=$('act');
+  if(S.over){ a.innerHTML=`<div class="hint">${S.msg?S.msg.t:''}</div><div class="choices"><button class="ch teal" id="cNew"><span class="t">Novo jogo</span></button></div>`; $('cNew').onclick=newGame; return; }
+  const i=S.sel, c=S.room[i];
+  if(i<0||!c){
+    setHP(0);
+    const left=S.dun.length?3-S.taken:inRoom();
+    let h=`Toque numa carta da sala. Falta${left>1?'m':''} <b>${left} escolha${left>1?'s':''}</b>.`;
+    if(S.taken===0&&avoidState().ok) h+=' Ou <b>fuja</b> se a sala estiver feia.';
+    a.innerHTML=(S.msg?`<div class="last">${S.msg.t}</div>`:'')+`<div class="hint">${h}</div>`;
+    return;
   }
-  add('Cancelar','',()=>{S.sel=-1;renderActions();markSel();});
+  const o=outcome(c);
+  let head=`<div class="sel-head"><span>${{m:'Monstro',w:'Arma',p:'Poção'}[o.r]}</span><b>${lbl(c)}</b><button class="ib x" id="cX" aria-label="Cancelar">✕</button></div>`;
+  let body='', note='';
+  if(o.r==='m'){
+    const after=v=>Math.max(0,S.hp-v);
+    const ops=[];
+    if(o.w!==null) ops.push(`<button class="ch teal ${o.w<o.bare?'rec':''}" data-m="weapon"><span class="t">${IC.sword}Com a arma</span><span class="s"><b>−${o.w}</b> · vida ${after(o.w)}</span></button>`);
+    ops.push(`<button class="ch red" data-m="bare"><span class="t">${IC.fist}Mãos nuas</span><span class="s"><b>−${o.bare}</b> · vida ${after(o.bare)}${after(o.bare)===0?' ☠':''}</span></button>`);
+    body=ops.join('');
+    if(S.wpn&&o.w===null) note=`Sua arma só aguenta monstros abaixo de ${S.wpn.kills[S.wpn.kills.length-1].r}.`;
+    else if(o.w!==null&&S.wpn&&!S.wpn.kills.length) note='';
+    else if(o.w!==null) note=`Depois, a arma só servirá contra monstros abaixo de ${c.r}.`;
+    setHP(-(o.w!==null?o.w:o.bare));
+  }else if(o.r==='w'){
+    body=`<button class="ch teal" data-m="eq"><span class="t">${IC.sword}Equipar ${lbl(c)}</span><span class="s">bloqueia ${c.r} de dano</span></button>`;
+    if(S.wpn) note=`Substitui ${lbl(S.wpn.card)}`+(S.wpn.kills.length?` e zera o limite de alvos.`:'.');
+    setHP(0);
+  }else{
+    body=o.wasted?`<button class="ch ghost" data-m="p"><span class="t">${IC.flask}Descartar</span><span class="s">já bebeu uma poção nesta sala</span></button>`
+      :`<button class="ch pink" data-m="p"><span class="t">${IC.flask}Beber</span><span class="s"><b>+${o.heal}</b> · vida ${S.hp+o.heal}</span></button>`;
+    if(!o.wasted&&o.heal<c.r) note=o.heal?`A vida máxima é 20: ${c.r-o.heal===1?'1 ponto será perdido':(c.r-o.heal)+' pontos serão perdidos'}.`:'Sua vida já está cheia.';
+    setHP(o.wasted?0:o.heal);
+  }
+  a.innerHTML=head+`<div class="choices">${body}</div>`+(note?`<div class="note">${note}</div>`:'');
+  $('cX').onclick=()=>{S.sel=-1;markSel();renderAct()};
+  a.querySelectorAll('.ch').forEach(b=>b.onclick=()=>take(i,b.dataset.m==='bare'?'bare':'weapon'));
 }
 
 function markSel(){
-  [...$('room').children].forEach((el,k)=>el.classList.toggle('sel',k===S.sel && el.classList.contains('card')));
+  const room=$('room'); room.classList.toggle('picking',S.sel>=0);
+  room.querySelectorAll('.slot').forEach(el=>{const c=el.querySelector('.card'); if(c) c.classList.toggle('sel',+el.dataset.i===S.sel)});
 }
+function primary(i){ const c=S.room[i]; if(!c) return; const o=outcome(c); take(i, o.r==='m'&&o.w===null?'bare':'weapon'); }
+function tap(i){ if(S.over||!S.room[i]) return; if(S.sel===i) return primary(i); S.sel=i; markSel(); renderAct(); }
 
-function primary(i){
-  const c=S.room[i]; if(!c) return;
-  if(role(c)==='monster') take(i, canUseWeapon(c)?'weapon':'bare'); else take(i);
-}
-
-function tap(i){
-  if(S.over||!S.room[i]) return;
-  if(S.sel===i){ primary(i); return; }
-  S.sel=i; markSel(); renderActions();
-}
-
-// Keyboard
-document.addEventListener('keydown',e=>{
-  if($('mRules').classList.contains('on')){ if(e.key==='Escape'||e.key==='Enter') $('mRules').classList.remove('on'); return; }
-  const k=e.key.toLowerCase();
-  if(k==='n'){ newGame(); return; }
-  if(S.over) return;
-  if('1234'.includes(k)&&k){ tap(+k-1); }
-  else if(k==='enter' && S.sel>=0){ primary(S.sel); }
-  else if(k==='b' && S.sel>=0 && S.room[S.sel] && role(S.room[S.sel])==='monster'){ take(S.sel,'bare'); }
-  else if(k==='e'){ avoid(); }
-  else if(k==='escape'){ S.sel=-1; markSel(); renderActions(); }
-});
-
-$('bNew').onclick=()=>{ if(S.over||S.taken===0&&S.dungeon.length===40||confirm('Começar um novo jogo?')) newGame(); };
-$('bRules').onclick=()=>$('mRules').classList.add('on');
-document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('.modal').classList.remove('on'));
-$('mRules').onclick=e=>{ if(e.target.id==='mRules') $('mRules').classList.remove('on'); };
+/* ---------- controles ---------- */
+$('bAvoid').onclick=avoid;
+$('bUndo').onclick=undo;
+$('bNew').onclick=()=>{ if(S.over||(S.roomNo<=1&&S.taken===0)||confirm('Abandonar esta partida e começar outra?')) newGame(); };
+$('bHelp').onclick=()=>$('mHelp').hidden=false;
 $('bAgain').onclick=newGame;
-window.addEventListener('resize',()=>{ if(S) render(); });
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('.modal').hidden=true);
+document.querySelectorAll('.modal').forEach(m=>m.onclick=e=>{if(e.target===m)m.hidden=true});
+document.addEventListener('keydown',e=>{
+  if(!$('mHelp').hidden){ if(e.key==='Escape'||e.key==='Enter') $('mHelp').hidden=true; return; }
+  const k=e.key.toLowerCase();
+  if(k==='n'){newGame();return}
+  if(S.over) return;
+  if('1234'.includes(k)&&k) tap(+k-1);
+  else if(k==='enter'&&S.sel>=0) primary(S.sel);
+  else if(k==='b'&&S.sel>=0&&S.room[S.sel]&&role(S.room[S.sel])==='m') take(S.sel,'bare');
+  else if(k==='f') avoid();
+  else if(k==='z'||(k==='backspace')) undo();
+  else if(k==='escape'){S.sel=-1;markSel();renderAct()}
+});
+window.addEventListener('resize',()=>S&&renderWpn());
+
+$('heartIc').innerHTML=IC.heart;
+setDeck(DECK);
+$('legend').innerHTML=[
+  ['var(--slate)',IC.skull,'<b>Monstros ♠ ♣</b> · dano igual ao valor (J 11, Q 12, K 13, A 14)'],
+  ['var(--teal-d)',IC.sword,'<b>Armas ♦ 2–10</b> · tiram esse valor do dano de cada luta'],
+  ['var(--pink)',IC.flask,'<b>Poções ♥ 2–10</b> · curam até o máximo de 20']
+].map(([c,i,t])=>`<div class="lg"><div class="sw" style="background:${c}">${i}</div><p>${t}</p></div>`).join('');
 
 newGame();
-if(!lsGet('scoundrel_seen')){ $('mRules').classList.add('on'); lsSet('scoundrel_seen','1'); }
+if(!ls.get('scoundrel_seen_v2')){ $('mHelp').hidden=false; ls.set('scoundrel_seen_v2','1'); }
 })();
 </script>
 </body>
