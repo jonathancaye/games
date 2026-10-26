@@ -62,12 +62,16 @@ svg.i{width:1em;height:1em;flex:none}
 .par{font-size:11px;color:var(--muted);font-weight:600}
 
 /* tripulação (seleção de personagem) */
-.crew{flex:none;display:flex;justify-content:center}
+.crew{flex:none;display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap}
+.tidechip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--bg-2);color:#8fd3e0;font-variant-numeric:tabular-nums}
+.tidechip.hi{color:#7fb1ff;background:rgba(80,130,220,.14);border-color:rgba(127,177,255,.4)}
+.tidechip i{width:9px;height:9px;border-radius:50%;background:currentColor}
 .crew .seg{display:inline-flex;background:var(--bg-2);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px}
 .crew button{appearance:none;border:0;background:transparent;color:var(--muted);font:700 13px var(--f-body);padding:4px 12px 4px 5px;border-radius:999px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .2s,color .2s}
 .crew button svg{width:26px;height:26px;border-radius:50%;background:var(--surface-2)}
 .crew button[aria-pressed="true"]{background:var(--teal);color:#06201d}
 .crew button[aria-pressed="true"].b{background:var(--orange)}
+.crew button[aria-pressed="true"].k{background:var(--gold)}
 .crew button[aria-pressed="true"] svg{background:rgba(255,255,255,.35)}
 
 /* tabuleiro */
@@ -97,6 +101,8 @@ svg.i{width:1em;height:1em;flex:none}
 .side .btn:not(.ghost){flex-direction:column;gap:3px;width:84px;padding:8px 6px;font-size:12.5px}
 .side .btn:not(.ghost) svg.i{width:20px;height:20px}
 .btn.rock{background:var(--orange);border-color:var(--orange);color:#2a1406}
+.btn.axe{background:var(--gold);border-color:var(--gold);color:#2a1e04}
+.btn.axe[aria-pressed="true"]{background:transparent;color:var(--gold);border-style:dashed}
 .btn.rock[aria-pressed="true"]{background:transparent;color:var(--orange);border-style:dashed}
 .btn.ghost{background:transparent;color:var(--muted);font-weight:600;font-size:13px;min-height:36px;padding:7px 12px}
 .pad{display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(3,46px);gap:4px}
@@ -159,7 +165,7 @@ details[open] summary{margin-bottom:10px}
     <div class="stat"><small>Tique</small><b id="tick">0 <em>/ 28</em></b><div class="clockbar" id="clockbar"><i id="clockfill"></i></div><span class="par" id="parLbl">par 23</span></div>
   </section>
 
-  <div class="crew" id="crew" hidden><div class="seg" id="crewSeg"></div></div>
+  <div class="crew" id="crew" hidden><div class="seg" id="crewSeg"></div><span class="tidechip" id="tideChip" hidden><i></i><span id="tideTxt"></span></span></div>
   <p class="hint" id="hint"></p>
 
   <div class="stage"><svg id="board" role="img" aria-label="Tabuleiro da ilha"></svg></div>
@@ -179,6 +185,7 @@ details[open] summary{margin-bottom:10px}
     <div class="side r">
       <button class="btn wait" id="btnWait" type="button" title="Esperar (espaço)"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M10 2h4"/></svg>Esperar</button>
       <button class="btn rock" id="btnRock" type="button" title="Jogar pedra (P)" hidden><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M5 17.5 7 10l5-3.5 5.5 2 2 8.5-6 2.5z"/></svg><span id="rockLbl">Pedra ×1</span></button>
+      <button class="btn axe" id="btnAxe" type="button" title="Machado (X)" hidden><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20 15 10"/><path d="M13 4c3 0 6 2 7 6l-4 1-4-4z" fill="currentColor"/></svg><span id="axeLbl">Machado</span></button>
     </div>
   </div>
 </div>
@@ -200,8 +207,10 @@ details[open] summary{margin-bottom:10px}
         <span><i style="background:#a8703c"></i>Madeira: colete todas</span>
         <span><i style="background:repeating-linear-gradient(90deg,#7d8784 0 5px,#cfae74 5px 11px)"></i>Fresta: só a Batedora</span>
         <span><i style="background:#ff9348"></i>Pedra: distrai 3 tiques</span>
+        <span><i style="background:#f2c14e"></i>Machado: árvore vira madeira</span>
+        <span><i style="background:#5fa6a8"></i>Água rasa: só na maré baixa</span>
       </div>
-      <p style="margin-top:10px">Deslize no tabuleiro, toque numa casa vizinha ou use o direcional. Toque num personagem para controlá-lo. Teclado: setas, espaço espera, Tab troca de personagem, P mira a pedra, Z desfaz, R reinicia. As estrelas valem por fugir, por fugir dentro do par de tiques e por pegar o coco.</p>
+      <p style="margin-top:10px">Deslize no tabuleiro, toque numa casa vizinha ou use o direcional. Toque num personagem para controlá-lo. Teclado: setas, espaço espera, Tab troca de personagem, P mira a pedra, X usa o machado, Z desfaz, R reinicia. As estrelas valem por fugir, por fugir dentro do par de tiques e por pegar o coco.</p>
     </details>
   </div>
 </div>
@@ -214,17 +223,20 @@ details[open] summary{margin-bottom:10px}
 <script>
 /*ENGINE-START*/
 const DIRS={U:[0,-1],D:[0,1],L:[-1,0],R:[1,0]};
-const BLOCK=new Set(["T","O"]);            // bloqueiam passo e visão
-const WALK=new Set([".",",","R"]);          // areia, mato, local da jangada
 const RANGE=3;        // alcance da visão
 const THROW=3;        // alcance do arremesso (casas, em passos)
 const HEAR=4;         // guardas a até 4 casas ouvem a pedra
 const DISTRACT=3;     // tiques olhando para o barulho
-const CHARS={M:{name:"Marujo"},B:{name:"Batedora",throws:true,slips:true}};
+const CHARS={
+  M:{name:"Marujo"},
+  B:{name:"Batedora",throws:true,slips:true},
+  K:{name:"Carpinteiro",chops:true},
+};
+/* tiles: ~ mar · . areia · , mato alto · T árvore · O rocha · R jangada · f fresta · = água rasa (maré) */
 
 function parseLevel(def){
   const rows=def.map, H=rows.length, W=rows[0].length;
-  const tiles=[], items=[], chars=[];
+  const tiles=[], items=[], chars=[], trees=[];
   for(let y=0;y<H;y++){
     const r=[];
     for(let x=0;x<W;x++){
@@ -234,82 +246,108 @@ function parseLevel(def){
       else if(c==="c"){items.push({x,y,k:"coco"});c=".";}
       else if(c==="C"){items.push({x,y,k:"coco"});c=",";}
       else if(CHARS[c]){chars.push({x,y,id:c,f:"D"});c=".";}
+      if(c==="T")trees.push({x,y});
       r.push(c);
     }
     tiles.push(r);
   }
-  const lv={...def,W,H,tiles,items,chars0:chars,guards:def.guards||[],stones0:def.stones||0};
+  const lv={...def,W,H,tiles,items,trees,chars0:chars,guards:def.guards||[],stones0:def.stones||0};
+  lv.treeIdx={};trees.forEach((t,i)=>lv.treeIdx[t.x+","+t.y]=i);
   lv.woodMask=items.reduce((m,it,i)=>it.k==="wood"?m|(1<<i):m,0);
   lv.cocoMask=items.reduce((m,it,i)=>it.k==="coco"?m|(1<<i):m,0);
+  lv.need=def.need!=null?def.need:popc(lv.woodMask);
   return lv;
 }
+function popc(n){let c=0;while(n){c+=n&1;n>>>=1;}return c;}
+/* tile considerando árvores cortadas (viram toco "s") */
+function tileS(lv,s,x,y){
+  if(x<0||y<0||x>=lv.W||y>=lv.H)return "~";
+  const t=lv.tiles[y][x];
+  if(t==="T"&&s.cut&&(s.cut&(1<<lv.treeIdx[x+","+y])))return "s";
+  return t;
+}
 function tileAt(lv,x,y){return (x<0||y<0||x>=lv.W||y>=lv.H)?"~":lv.tiles[y][x];}
-function canWalk(lv,id,x,y){const t=tileAt(lv,x,y);return WALK.has(t)||(t==="f"&&!!CHARS[id].slips);}
+const blocks=t=>t==="T"||t==="O";
+/* maré: lv.tide={low,high,off}; alta = água rasa intransponível */
+function tideHigh(lv,t){if(!lv.tide)return false;const {low,high,off=0}=lv.tide;return ((t+off)%(low+high))>=low;}
+function canWalk(lv,s,id,x,y,t){
+  const tl=tileS(lv,s,x,y);
+  if(tl==="."||tl===","||tl==="R"||tl==="s")return true;
+  if(tl==="f")return !!CHARS[id].slips;
+  if(tl==="=")return !tideHigh(lv,t);
+  return false;
+}
 const face=g=>g.dz>0?g.lf:g.f;
 const dist=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
+function woodCount(lv,s){return popc(s.got&lv.woodMask)+popc(s.cut||0);}
 
 function initState(lv){
-  return {t:0,chars:lv.chars0.map(c=>({...c})),got:0,st:lv.stones0,
+  return {t:0,chars:lv.chars0.map(c=>({...c})),got:0,st:lv.stones0,cut:0,
     gs:lv.guards.map(g=>({x:g.x,y:g.y,f:g.f,ph:0,dz:0,lf:g.f}))};
 }
-/* próximo comando de rota do guarda (para a seta de dica) */
 function guardNext(lv,i,g){if(g.dz>0)return "?";const mv=lv.guards[i].moves||".";return mv[g.ph%mv.length];}
 
-function visionCells(lv,g){
+function visionCells(lv,s,g){
   const out=[];const[dx,dy]=DIRS[face(g)];
   for(let k=1;k<=RANGE;k++){
     const x=g.x+dx*k,y=g.y+dy*k;
     if(x<0||y<0||x>=lv.W||y>=lv.H)break;
-    if(BLOCK.has(lv.tiles[y][x]))break;
+    if(blocks(tileS(lv,s,x,y)))break;
     out.push({x,y});
   }
   return out;
 }
-function seenBy(lv,gs,chars){
-  for(let i=0;i<gs.length;i++)for(const c of visionCells(lv,gs[i]))for(const ch of chars)
+function seenBy(lv,s,gs,chars){
+  for(let i=0;i<gs.length;i++)for(const c of visionCells(lv,s,gs[i]))for(const ch of chars)
     if(ch.x===c.x&&ch.y===c.y&&lv.tiles[c.y][c.x]!==",")return {guard:i,x:c.x,y:c.y};
   return null;
 }
-/* casas onde a pedra pode cair */
 function throwTargets(lv,s,ci){
   const ch=s.chars[ci];if(!CHARS[ch.id].throws||s.st<=0)return [];
   const out=[];
   for(let y=0;y<lv.H;y++)for(let x=0;x<lv.W;x++){
     const d=Math.abs(x-ch.x)+Math.abs(y-ch.y);
     if(d<1||d>THROW)continue;
-    const t=lv.tiles[y][x];if(t==="~"||BLOCK.has(t))continue;
+    const t=tileS(lv,s,x,y);if(t==="~"||blocks(t))continue;
     if(s.gs.some(g=>g.x===x&&g.y===y))continue;
     out.push({x,y});
   }
   return out;
 }
+function chopTargets(lv,s,ci){
+  const ch=s.chars[ci];if(!CHARS[ch.id].chops)return [];
+  const out=[];
+  for(const d in DIRS){const x=ch.x+DIRS[d][0],y=ch.y+DIRS[d][1];if(tileS(lv,s,x,y)==="T")out.push({x,y,d});}
+  return out;
+}
 const lookToward=(g,p)=>{const dx=p.x-g.x,dy=p.y-g.y;return Math.abs(dx)>=Math.abs(dy)?(dx>0?"R":"L"):(dy>0?"D":"U");};
 
-/* aplica uma ação {c, d:"U|D|L|R|W|P", x,y (só P)}.
-   retorna null se inválida, ou {state, result, info, noise, heard}
-   result: "ok" | "win" | "seen" | "bump" | "time" */
+/* aplica uma ação {c, d:"U|D|L|R|W|P|X", x,y (P e X)}.
+   retorna null se inválida, ou {state, result, info, noise, heard, chop}
+   result: "ok" | "win" | "seen" | "bump" | "tide" | "time" */
 function step(lv,s,a){
   const chars=s.chars.map(c=>({...c}));
-  let got=s.got, st=s.st, noise=null;
-  const ch=chars[a.c];
+  let got=s.got, st=s.st, cut=s.cut, noise=null, chop=null;
+  const ch=chars[a.c];const t=s.t+1;
   if(a.d==="P"){
     if(!throwTargets(lv,s,a.c).some(p=>p.x===a.x&&p.y===a.y))return null;
-    st--;noise={x:a.x,y:a.y};
-    ch.f=lookToward(ch,noise);
+    st--;noise={x:a.x,y:a.y};ch.f=lookToward(ch,noise);
+  }else if(a.d==="X"){
+    const tg=chopTargets(lv,s,a.c).find(p=>p.x===a.x&&p.y===a.y);if(!tg)return null;
+    cut|=1<<lv.treeIdx[a.x+","+a.y];ch.f=tg.d;chop={x:a.x,y:a.y};
   }else if(a.d!=="W"){
     const[dx,dy]=DIRS[a.d];const nx=ch.x+dx,ny=ch.y+dy;
     ch.f=a.d;
-    if(!canWalk(lv,ch.id,nx,ny))return null;
+    if(!canWalk(lv,s,ch.id,nx,ny,t))return null;
     if(chars.some((o,j)=>j!==a.c&&o.x===nx&&o.y===ny))return null;
     if(s.gs.some(g=>g.x===nx&&g.y===ny))return null;
     ch.x=nx;ch.y=ny;
     lv.items.forEach((it,i)=>{if(!(got&(1<<i))&&it.x===nx&&it.y===ny)got|=1<<i;});
   }
-  const t=s.t+1;
-  let seen=seenBy(lv,s.gs,chars);
-  if(seen)return {state:{t,chars,got,st,gs:s.gs},result:"seen",info:seen,noise};
-  const allWood=(got&lv.woodMask)===lv.woodMask;
-  if(allWood&&chars.every(c=>lv.tiles[c.y][c.x]==="R"))return {state:{t,chars,got,st,gs:s.gs},result:"win",noise};
+  const mid={t,chars,got,st,cut,gs:s.gs};
+  let seen=seenBy(lv,mid,s.gs,chars);
+  if(seen)return {state:mid,result:"seen",info:seen,noise,chop};
+  if(woodCount(lv,mid)>=lv.need&&chars.every(c=>lv.tiles[c.y][c.x]==="R"))return {state:mid,result:"win",noise,chop};
   const heard=[];
   const gs=s.gs.map((g,i)=>{
     g={...g};
@@ -322,18 +360,20 @@ function step(lv,s,a){
     g.f=up;g.lf=up;
     return g;
   });
-  const ns={t,chars,got,st,gs};
+  const ns={t,chars,got,st,cut,gs};
   for(let i=0;i<gs.length;i++)for(const c of chars)if(gs[i].x===c.x&&gs[i].y===c.y)
-    return {state:ns,result:"bump",info:{guard:i,x:c.x,y:c.y},noise,heard};
-  seen=seenBy(lv,gs,chars);
-  if(seen)return {state:ns,result:"seen",info:seen,noise,heard};
-  if(t>=lv.limit)return {state:ns,result:"time",noise,heard};
-  return {state:ns,result:"ok",noise,heard};
+    return {state:ns,result:"bump",info:{guard:i,x:c.x,y:c.y},noise,heard,chop};
+  seen=seenBy(lv,ns,gs,chars);
+  if(seen)return {state:ns,result:"seen",info:seen,noise,heard,chop};
+  if(lv.tide&&tideHigh(lv,t)){const wet=chars.find(c=>lv.tiles[c.y][c.x]==="=");
+    if(wet)return {state:ns,result:"tide",info:{x:wet.x,y:wet.y},noise,heard,chop};}
+  if(t>=lv.limit)return {state:ns,result:"time",noise,heard,chop};
+  return {state:ns,result:"ok",noise,heard,chop};
 }
 
 /* BFS: menor nº de tiques para fugir (opcionalmente exigindo o coco) */
-function solve(lv,needCoco){
-  const key=s=>s.t+"|"+s.got+"|"+s.st+"|"+s.chars.map(c=>c.x+","+c.y).join(";")+"|"+s.gs.map(g=>[g.x,g.y,g.f,g.ph,g.dz,g.lf].join(",")).join(";");
+function solve(lv,needCoco,maxStates=4e6){
+  const key=s=>s.t+"|"+s.got+"|"+s.st+"|"+s.cut+"|"+s.chars.map(c=>c.x+","+c.y).join(";")+"|"+s.gs.map(g=>[g.x,g.y,g.f,g.ph,g.dz,g.lf].join(",")).join(";");
   const s0=initState(lv);
   let frontier=[{s:s0,path:[]}];const seen=new Set([key(s0)]);
   while(frontier.length){
@@ -343,17 +383,19 @@ function solve(lv,needCoco){
       s.chars.forEach((ch,c)=>{
         for(const d of ["U","D","L","R"])acts.push({c,d});
         for(const p of throwTargets(lv,s,c))acts.push({c,d:"P",x:p.x,y:p.y});
+        for(const p of chopTargets(lv,s,c))acts.push({c,d:"X",x:p.x,y:p.y});
       });
       acts.push({c:0,d:"W"});
       for(const a of acts){
         const r=step(lv,s,a);if(!r)continue;
-        const lab=(s.chars.length>1?s.chars[a.c].id:"")+(a.d==="P"?`P${a.x},${a.y}`:a.d);
+        const lab=(s.chars.length>1?s.chars[a.c].id:"")+(a.d==="P"||a.d==="X"?`${a.d}${a.x},${a.y}`:a.d);
         if(r.result==="win"){
           if(needCoco&&(r.state.got&lv.cocoMask)!==lv.cocoMask)continue;
           return {ticks:r.state.t,path:[...path,lab]};
         }
         if(r.result!=="ok")continue;
         const k=key(r.state);if(seen.has(k))continue;seen.add(k);
+        if(seen.size>maxStates)return {ticks:-1,path:["LIMITE"]};
         next.push({s:r.state,path:[...path,lab]});
       }
     }
@@ -429,6 +471,38 @@ const LEVELS=[
     ],
     guards:[{x:5,y:7,f:"U",moves:"."}],
   },
+  {
+    name:"O machado",
+    hint:"Selecione o Carpinteiro e use o Machado: cada árvore cortada vira 1 madeira e abre caminho. Também abre a visão do guarda.",
+    limit:26, par:22, need:3,
+    map:[
+      "~~~~~~~~~~",
+      "~K..w..,.~",
+      "~M.....,.~",
+      "~OOOTOOOO~",
+      "~......T.~",
+      "~T...,,..~",
+      "~...RR..c~",
+      "~~~~~~~~~~",
+    ],
+    guards:[{x:8,y:4,f:"L",moves:"."}],
+  },
+  {
+    name:"A maré",
+    hint:"A água rasa só dá passagem com a maré baixa. Acompanhe a maré no placar e o guarda que vira de lado.",
+    limit:30, par:26, tide:{low:3,high:3},
+    map:[
+      "~~~~~~~~~~~",
+      "~M.,.~~~..~",
+      "~..T.===.w~",
+      "~.w..===..~",
+      "~.,.T===.T~",
+      "~...~~~~..~",
+      "~c..~~~~.R~",
+      "~~~~~~~~~~~",
+    ],
+    guards:[{x:9,y:3,f:"L",moves:"llllrrrr"}],
+  },
 ];
 /*LEVELS-END*/
 
@@ -436,7 +510,7 @@ const LEVELS=[
 const $=id=>document.getElementById(id);
 const NS="http://www.w3.org/2000/svg";
 const S=10; // tamanho da casa no viewBox
-const COMING=["O machado","Dividir o grupo","A armadilha","Vigias cruzados","Pegadas na areia","A grande fuga"];
+const COMING=["Dividir o grupo","A armadilha","O cachorro","Vigias cruzados","Pegadas na areia","A grande fuga"];
 const STORE="naufragos.v1";
 let progress={};
 try{progress=JSON.parse(localStorage.getItem(STORE)||"{}")||{};}catch(e){progress={};}
@@ -456,7 +530,7 @@ function drawTile(g,x,y,t){
   }
   const grassy=t===",";
   el("rect",{x:X,y:Y,width:S,height:S,fill:grassy?"#3f7d3c":"#cfae74"},g);
-  if(!grassy&&t!=="T"&&t!=="O"){ // grãos de areia
+  if(!grassy&&t!=="T"&&t!=="O"&&t!=="="){ // grãos de areia
     for(let k=0;k<3;k++)el("circle",{cx:X+1.5+hash(x,y,k)*7,cy:Y+1.5+hash(x,y,k+7)*7,r:.35,fill:"#b8955a"},g);
   }
   if(grassy){
@@ -464,12 +538,10 @@ function drawTile(g,x,y,t){
       el("path",{d:`M${bx} ${by} l-.9 -2.6 M${bx} ${by} l.2 -3.2 M${bx} ${by} l1 -2.4`,stroke:"#5fa257","stroke-width":.55,"stroke-linecap":"round",fill:"none"},g);}
   }
   if(t==="T"){
-    el("rect",{x:X,y:Y,width:S,height:S,fill:"#3a7136"},g);
-    el("ellipse",{cx:X+5.4,cy:Y+7.6,rx:3.6,ry:1.4,fill:"rgba(0,0,0,.25)"},g);
-    el("rect",{x:X+4.4,y:Y+5,width:1.4,height:3,rx:.5,fill:"#6b4a2b"},g);
-    el("circle",{cx:X+5,cy:Y+4.4,r:3.6,fill:"#245a2d"},g);
-    el("circle",{cx:X+4,cy:Y+3.6,r:2.2,fill:"#2f7238"},g);
-    el("circle",{cx:X+6.2,cy:Y+3.4,r:1.6,fill:"#3a8743"},g);
+    el("rect",{x:X,y:Y,width:S,height:S,fill:"#c4a36a"},g);
+  }
+  if(t==="="){ // água rasa: base; o estado da maré é desenhado por cima
+    el("rect",{x:X,y:Y,width:S,height:S,fill:"#b89c66"},g);
   }
   if(t==="O"){
     el("rect",{x:X,y:Y,width:S,height:S,fill:"#cfae74"},g);
@@ -487,6 +559,21 @@ function drawTile(g,x,y,t){
     el("rect",{x:X+1.2,y:Y+1.6,width:7.6,height:6.8,rx:1,fill:"none",stroke:"#8a6a3c","stroke-width":.5,"stroke-dasharray":"1 .8"},g);
   }
 }
+function drawTree(g,x,y){
+  const X=x*S,Y=y*S;
+  el("ellipse",{cx:X+5.4,cy:Y+8,rx:3.8,ry:1.3,fill:"rgba(0,0,0,.25)"},g);
+  el("rect",{x:X+4.3,y:Y+5,width:1.4,height:3.2,rx:.5,fill:"#6b4a2b"},g);
+  el("circle",{cx:X+5,cy:Y+4.2,r:4,fill:"#245a2d"},g);
+  el("circle",{cx:X+3.9,cy:Y+3.4,r:2.4,fill:"#2f7238"},g);
+  el("circle",{cx:X+6.3,cy:Y+3.2,r:1.8,fill:"#3a8743"},g);
+}
+function drawStump(g,x,y){
+  const X=x*S,Y=y*S;
+  el("ellipse",{cx:X+5,cy:Y+6.6,rx:2.3,ry:.9,fill:"rgba(0,0,0,.2)"},g);
+  el("rect",{x:X+3.3,y:Y+4.6,width:3.4,height:2,rx:.6,fill:"#7a5230"},g);
+  el("ellipse",{cx:X+5,cy:Y+4.6,rx:1.7,ry:.75,fill:"#d9b07a",stroke:"#8a5f36","stroke-width":.3},g);
+  el("circle",{cx:X+3,cy:Y+7.6,r:.35,fill:"#d9b07a"},g);el("circle",{cx:X+7.2,cy:Y+7.2,r:.3,fill:"#d9b07a"},g);
+}
 function drawShore(g){ // espuma: contorno claro entre terra e água
   for(let y=0;y<L.H;y++)for(let x=0;x<L.W;x++){
     if(L.tiles[y][x]==="~")continue;
@@ -503,6 +590,7 @@ function drawShore(g){ // espuma: contorno claro entre terra e água
 const PAL={
   M:{skin:"#f0c193",hair:"#4a2f1d",top:"#eef1f4",stripe:"#2c4a7a",legs:"#34465e",acc:"#2bc2b3",ring:"#2bc2b3"},
   B:{skin:"#c98a5e",hair:"#2a1810",top:"#ff9348",stripe:"#7a5a3a",legs:"#5b4636",acc:"#f2c14e",ring:"#ff9348"},
+  K:{skin:"#d9a07a",hair:"#6b4a2b",top:"#4f7a4a",stripe:"#8a5a34",legs:"#3d3a33",acc:"#f2c14e",ring:"#f2c14e"},
   G:{skin:"#e2a77e",hair:"#1d1414",top:"#c8333f",stripe:"#1d1414",legs:"#2d2626",acc:"#f2c14e",ring:"#f0525f"}
 };
 function sprite(k,f){
@@ -516,10 +604,15 @@ function sprite(k,f){
   s+=`<rect x="${bx}" y="4.8" width="${bw}" height="3.1" rx="1.2" fill="${P.top}"/>`;
   if(k==="M")s+=`<rect x="${bx+.2}" y="5.75" width="${bw-.4}" height=".42" fill="${P.stripe}"/><rect x="${bx+.2}" y="6.75" width="${bw-.4}" height=".42" fill="${P.stripe}"/>`;
   if(k==="B")s+=side?`<circle cx="4.1" cy="6.9" r=".75" fill="${P.stripe}"/>`:`<path d="M${bx+.3} 5 L${bx+bw-.4} 7.4" stroke="${P.stripe}" stroke-width=".45"/>`+(front?`<circle cx="6.3" cy="7.3" r=".7" fill="${P.stripe}"/>`:"");
+  if(k==="K"){s+=front?`<rect x="${bx+.5}" y="5.6" width="${bw-1}" height="2.3" rx=".6" fill="${P.stripe}"/>`:side?`<rect x="${bx+bw-1.1}" y="5.6" width="1.1" height="2.2" rx=".4" fill="${P.stripe}"/>`:"";
+    // machado: cabo nas costas ou na mão
+    s+=back?`<path d="M3.6 4.8 L6.6 7.6" stroke="#8a5f36" stroke-width=".55" stroke-linecap="round"/><path d="M3.1 4.2 L4.4 3.9 L4.4 5.3 Z" fill="#c9ced1"/>`
+      :side?``:`<path d="M6.9 7.6 L7.9 4.4" stroke="#8a5f36" stroke-width=".55" stroke-linecap="round"/><path d="M7.5 4 L9 4.4 L8.4 5.6 Z" fill="#c9ced1"/>`;}
   if(k==="G"){s+=`<rect x="${bx}" y="6.3" width="${bw}" height=".55" fill="${P.stripe}"/><rect x="${bx+bw/2-.35}" y="6.25" width=".7" height=".65" fill="${P.acc}"/>`;
     if(front)s+=`<circle cx="5" cy="5.5" r=".26" fill="${P.acc}"/><circle cx="5" cy="7.3" r=".26" fill="${P.acc}"/>`;
     if(side)s+=`<rect x="3.2" y="6.6" width="1.6" height=".45" rx=".2" fill="#c9ced1"/>`;}
   if(side)s+=`<rect x="4.6" y="5.2" width="1.2" height="2.3" rx=".6" fill="${k==="G"?P.top:P.skin}"/><circle cx="5.2" cy="7.5" r=".5" fill="${P.skin}"/>`;
+  if(side&&k==="K")s+=`<path d="M5.3 7.6 L7.4 5.4" stroke="#8a5f36" stroke-width=".55" stroke-linecap="round"/><path d="M7 4.8 L8.5 5.6 L7.6 6.5 Z" fill="#c9ced1"/>`;
   const hx=side?5.1:5;
   s+=`<circle cx="${hx}" cy="3.4" r="2.1" fill="${back&&k!=="G"?P.hair:P.skin}"/>`;
   if(k==="M"){
@@ -531,6 +624,11 @@ function sprite(k,f){
     if(!back)s+=`<path d="M${hx-2.12} 3.5 A2.12 2.12 0 0 1 ${hx+2.12} 3.5 Q${hx+1} 2.3 ${hx} 2.6 Q${hx-1} 2.3 ${hx-2.12} 3.5Z" fill="${P.hair}"/>`;
     if(front)s+=`<rect x="2.85" y="3.3" width=".55" height="1.6" rx=".27" fill="${P.hair}"/><rect x="6.6" y="3.3" width=".55" height="1.6" rx=".27" fill="${P.hair}"/>`;
     s+=`<path d="M${hx-1.9} 2.5 Q${hx} 1.2 ${hx+1.9} 2.5" stroke="${P.acc}" stroke-width=".45" fill="none"/>`;
+  }
+  if(k==="K"){
+    if(!back)s+=`<path d="M${hx-2.12} 3.1 A2.12 2.12 0 0 1 ${hx+2.12} 3.1 Q${hx} 2.2 ${hx-2.12} 3.1Z" fill="${P.hair}"/>`;
+    if(front)s+=`<path d="M3.2 4 Q5 6.9 6.8 4 Q5 4.9 3.2 4Z" fill="${P.hair}"/>`;
+    if(side)s+=`<path d="M4.9 4.1 Q6.2 6.4 7.1 4.2 Q6.1 4.7 4.9 4.1Z" fill="${P.hair}"/>`;
   }
   if(k==="G"){
     if(front)s+=`<path d="M3.5 4.3 Q5 6.4 6.5 4.3 Q5 5 3.5 4.3Z" fill="#5a3a26"/>`;
@@ -547,7 +645,7 @@ function sprite(k,f){
 }
 function miniSvg(k){return `<svg viewBox="1 0 8 8" aria-hidden="true">${sprite(k,"D")}</svg>`;}
 
-let gVision,gItems,gRaft,gTokens,gArrows,gFx,tokEls=[],guardEls=[];
+let gVision,gItems,gRaft,gTokens,gArrows,gFx,gTrees,gTide,tokEls=[],guardEls=[];
 function buildBoard(){
   const svg=$("board");svg.innerHTML="";
   svg.setAttribute("viewBox",`0 0 ${L.W*S} ${L.H*S}`);
@@ -555,10 +653,12 @@ function buildBoard(){
   const gT=el("g",{},svg);
   for(let y=0;y<L.H;y++)for(let x=0;x<L.W;x++)drawTile(gT,x,y,L.tiles[y][x]);
   drawShore(gT);
+  gTide=el("g",{},svg);
   gRaft=el("g",{},svg);
   gVision=el("g",{},svg);
   gItems=el("g",{},svg);
   gArrows=el("g",{},svg);
+  gTrees=el("g",{},svg);
   gTokens=el("g",{},svg);
   gFx=el("g",{},svg);
   const mk=(k)=>{
@@ -598,19 +698,35 @@ function renderDynamic(){
       el("path",{d:`M${X+5} ${Y+3} q1.5 -2 3 -1.2 M${X+5} ${Y+3} q-1 -2 -2.6 -1.6`,stroke:"#4f9a48","stroke-width":.7,fill:"none","stroke-linecap":"round"},g);
     }
   });
+  // árvores e tocos
+  gTrees.innerHTML="";
+  L.trees.forEach((t,i)=>{if(state.cut&(1<<i))drawStump(gItems,t.x,t.y);else drawTree(gTrees,t.x,t.y);});
+  // maré (o estado mostrado vale para o próximo passo)
+  gTide.innerHTML="";
+  if(L.tide){
+    const hi=tideHigh(L,state.t+1);
+    for(let y=0;y<L.H;y++)for(let x=0;x<L.W;x++)if(L.tiles[y][x]==="="){
+      const X=x*S,Y=y*S;
+      el("rect",{x:X,y:Y,width:S,height:S,fill:hi?"#1d6470":"#5fa6a8","fill-opacity":hi?1:.75},gTide);
+      el("path",{d:`M${X+1.5} ${Y+3.5+hash(x,y)*2} q1.5 -1 3 0 t3 0 M${X+2.5} ${Y+6.5+hash(x,y,3)*1.5} q1.5 -1 3 0 t3 0`,stroke:hi?"#3f8f99":"#d6efe9","stroke-width":.5,fill:"none","stroke-linecap":"round",opacity:.8},gTide);
+    }
+    let n=1;while(n<20&&tideHigh(L,state.t+1+n)===hi)n++;
+    $("tideChip").hidden=false;$("tideChip").classList.toggle("hi",hi);
+    $("tideTxt").textContent=hi?`Maré alta · baixa em ${n}`:`Maré baixa · ${n} ${n===1?"passo":"passos"}`;
+  }else $("tideChip").hidden=true;
   // jangada
   gRaft.innerHTML="";
-  const ready=(state.got&L.woodMask)===L.woodMask;
+  const ready=woodCount(L,state)>=L.need;
   for(let y=0;y<L.H;y++)for(let x=0;x<L.W;x++)if(L.tiles[y][x]==="R"){
     const X=x*S,Y=y*S,g=el("g",{},gRaft);
-    const n=popcount(state.got&L.woodMask);
-    for(let k=0;k<n;k++)el("rect",{x:X+1.6,y:Y+2+k*(6/Math.max(1,popcount(L.woodMask))),width:6.8,height:5.6/Math.max(1,popcount(L.woodMask)),rx:.6,fill:"#a8703c",stroke:"#6b4626","stroke-width":.3},g);
+    const n=Math.min(L.need,woodCount(L,state)),N=Math.max(1,L.need);
+    for(let k=0;k<n;k++)el("rect",{x:X+1.6,y:Y+2+k*(6/N),width:6.8,height:5.6/N,rx:.6,fill:"#a8703c",stroke:"#6b4626","stroke-width":.3},g);
     if(ready)el("rect",{x:X+.8,y:Y+.8,width:8.4,height:8.4,rx:1.4,fill:"none",stroke:"#2bc2b3","stroke-width":.7},g);
   }
   // visão
   gVision.innerHTML="";gArrows.innerHTML="";
   gs.forEach((g,i)=>{
-    for(const c of visionCells(L,g)){
+    for(const c of visionCells(L,state,g)){
       const grass=L.tiles[c.y][c.x]===",";
       el("rect",{x:c.x*S+.4,y:c.y*S+.4,width:S-.8,height:S-.8,rx:1,fill:grass?"rgba(240,82,95,.14)":"rgba(240,82,95,.38)",stroke:"rgba(240,82,95,.7)","stroke-width":.35,"stroke-dasharray":grass?"1 1":"none"},gVision);
     }
@@ -631,25 +747,31 @@ function renderDynamic(){
   [...tokEls.map((t,i)=>[t,state.chars[i].y]),...guardEls.map((t,i)=>[t,gs[i].y])].sort((a,b)=>a[1]-b[1]).forEach(([t])=>gTokens.appendChild(t));
   // mira da pedra
   if(aiming){
-    for(const p of throwTargets(L,state,sel))el("circle",{cx:p.x*S+5,cy:p.y*S+5,r:1.5,fill:"rgba(255,147,72,.35)",stroke:"#ff9348","stroke-width":.45,class:"aimdot"},gArrows);
+    const col=aiming==="X"?"#f2c14e":"#ff9348";
+    for(const p of aimTargets())el("circle",{cx:p.x*S+5,cy:p.y*S+5,r:aiming==="X"?2.2:1.5,fill:aiming==="X"?"rgba(242,193,78,.3)":"rgba(255,147,72,.35)",stroke:col,"stroke-width":.5,class:"aimdot"},gArrows);
   }
   // tripulação e pedra
   const multi=state.chars.length>1;
-  $("crew").hidden=!multi;
+  $("crew").hidden=!multi&&!L.tide;$("crewSeg").parentElement&&($("crewSeg").hidden=!multi);
   if(multi)$("crewSeg").querySelectorAll("button").forEach((b,i)=>b.setAttribute("aria-pressed",i===sel?"true":"false"));
   const thrower=CHARS[state.chars[sel].id].throws&&L.stones0>0;
   $("btnRock").hidden=!thrower;
-  $("rockLbl").textContent=aiming?"Cancelar":`Pedra ×${state.st}`;
-  $("btnRock").disabled=!aiming&&state.st<=0;
-  $("btnRock").setAttribute("aria-pressed",aiming?"true":"false");
-  $("hint").textContent=aiming?"Toque numa casa marcada para jogar a pedra.":LEVELS[li].hint;
+  $("rockLbl").textContent=aiming==="P"?"Cancelar":`Pedra ×${state.st}`;
+  $("btnRock").disabled=aiming!=="P"&&state.st<=0;
+  $("btnRock").setAttribute("aria-pressed",aiming==="P"?"true":"false");
+  const chopper=!!CHARS[state.chars[sel].id].chops;
+  $("btnAxe").hidden=!chopper;
+  $("axeLbl").textContent=aiming==="X"?"Cancelar":"Machado";
+  $("btnAxe").disabled=aiming!=="X"&&!chopTargets(L,state,sel).length;
+  $("btnAxe").setAttribute("aria-pressed",aiming==="X"?"true":"false");
+  $("hint").textContent=aiming==="P"?"Toque numa casa marcada para jogar a pedra.":aiming==="X"?"Toque na árvore marcada para cortar.":LEVELS[li].hint;
   $("hint").classList.toggle("aim",aiming);
   // placar
   const left=L.limit-state.t;
   $("tick").innerHTML=`${state.t} <em>/ ${L.limit}</em>`;
   $("clockfill").style.width=`${Math.max(0,100*left/L.limit)}%`;
   $("clockbar").classList.toggle("low",left<=5);
-  const nW=popcount(L.woodMask),hW=popcount(state.got&L.woodMask);
+  const nW=L.need,hW=Math.min(nW,woodCount(L,state));
   $("logs").innerHTML=Array.from({length:nW},(_,k)=>`<i class="${k<hW?"on":""}"></i>`).join("");
   $("cocoDot").classList.toggle("on",(state.got&L.cocoMask)===L.cocoMask&&L.cocoMask!==0);
   $("btnUndo").disabled=hist.length===0;
@@ -669,7 +791,7 @@ function loadLevel(i){
 }
 function act(d,x,y){
   if(over||!L)return;
-  if(aiming&&d!=="P"){aiming=false;renderDynamic();return;}
+  if(aiming&&d!=="P"&&d!=="X"){aiming=false;renderDynamic();return;}
   const from=state.chars[sel];
   const r=step(L,state,{c:sel,d,x,y});
   if(!r){if(DIRS[d]){state.chars[sel].f=d;renderDynamic();nudge(d);}return;}
@@ -677,6 +799,7 @@ function act(d,x,y){
   gFx.innerHTML="";
   state=r.state;
   if(r.noise)throwFx(from,r.noise,r.heard||[]);
+  if(r.chop)chopFx(r.chop);
   renderDynamic();
   if(r.result==="ok")return;
   if(r.result==="win"){finishWin();return;}
@@ -698,8 +821,15 @@ function throwFx(a,p,heard){
   setTimeout(()=>{el("circle",{cx:p.x*S+5,cy:p.y*S+6,r:1.6,fill:"none",stroke:"#ff9348","stroke-width":.5,class:"ripple"},gFx);
     heard.forEach(i=>{const g=state.gs[i];if(g)el("circle",{cx:g.x*S+5,cy:g.y*S+5,r:2.6,fill:"none",stroke:"#fff4e6","stroke-width":.4,class:"ripple"},gFx);});},300);
 }
+function chopFx(p){
+  for(let k=0;k<6;k++){const a=k*Math.PI/3+.3;
+    const c=el("rect",{x:p.x*S+4.6,y:p.y*S+4.6,width:.9,height:.6,rx:.2,fill:k%2?"#d9b07a":"#a8703c",class:"stone"},gFx);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{c.style.transform=`translate(${Math.cos(a)*3.5}px,${Math.sin(a)*3.5}px)`;c.style.opacity="0";c.style.transition="transform .45s ease-out,opacity .45s ease-in";}));}
+}
+function aimTargets(){return aiming==="X"?chopTargets(L,state,sel):aiming==="P"?throwTargets(L,state,sel):[];}
 function select(i){if(!L||i===sel||i<0||i>=state.chars.length)return;sel=i;aiming=false;renderDynamic();}
-function toggleAim(){if(over||!L)return;if(!aiming&&!throwTargets(L,state,sel).length)return;aiming=!aiming;renderDynamic();}
+function toggleAim(kind="P"){if(over||!L)return;if(aiming===kind){aiming=false;renderDynamic();return;}
+  aiming=kind;if(!aimTargets().length)aiming=false;renderDynamic();}
 function reset(){loadLevel(li);}
 
 function starSvg(){return `<svg viewBox="0 0 24 24"><path class="sf" stroke-width="1.4" stroke-linejoin="round" d="M12 2.6l2.8 6 6.5.7-4.9 4.4 1.4 6.4L12 16.8l-5.8 3.3 1.4-6.4-4.9-4.4 6.5-.7z"/></svg>`;}
@@ -722,12 +852,13 @@ function finishWin(){
       <button class="btn" type="button" data-a="retry">Jogar de novo</button>
       ${last?`<button class="btn pri" type="button" data-a="levels">Ver fases</button>`:`<button class="btn pri" type="button" data-a="next">Próxima fase →</button>`}
     </div>
-    ${last?`<p>Essa é a última fase pronta. A próxima traz o Carpinteiro e o machado.</p>`:""}`;
+    ${last?`<p>Essa é a última fase pronta. A próxima divide o grupo.</p>`:""}`;
   setTimeout(()=>showOv("ovResult"),380);
 }
 function showLoss(kind){
   const T={seen:["Você foi visto!","Um guarda te avistou. Fique fora da área vermelha ou atravesse pelo mato alto."],
            bump:["Trombou com o guarda!","O guarda entrou na sua casa. Observe a seta clara: ela mostra o próximo passo dele."],
+           tide:["A maré subiu!","A água rasa encobriu o caminho. Atravesse só enquanto a maré estiver baixa."],
            time:["O navio voltou.","Os piratas chegaram antes da jangada ficar pronta. Procure um caminho mais curto."]}[kind];
   $("resultPanel").innerHTML=`
     <div><div class="eyebrow bad">Fase ${li+1} · ${LEVELS[li].name}</div><h2>${T[0]}</h2></div>
@@ -761,7 +892,8 @@ $("levelGrid").addEventListener("click",e=>{const b=e.target.closest("button[dat
 $("ovLevels").addEventListener("click",e=>{if(e.target.id==="ovLevels"&&L)hideOv();});
 document.querySelectorAll(".pad button").forEach(b=>b.addEventListener("click",()=>act(b.dataset.d)));
 $("btnWait").onclick=()=>act("W");
-$("btnRock").onclick=toggleAim;
+$("btnRock").onclick=()=>toggleAim("P");
+$("btnAxe").onclick=()=>toggleAim("X");
 $("crewSeg").addEventListener("click",e=>{const b=e.target.closest("button[data-c]");if(b)select(+b.dataset.c);});
 $("btnUndo").onclick=undo;
 $("btnReset").onclick=reset;
@@ -775,7 +907,8 @@ document.addEventListener("keydown",e=>{
   else if(k===" "||k==="."){act("W");e.preventDefault();}
   else if(k==="Tab"){if(state&&state.chars.length>1){select((sel+1)%state.chars.length);e.preventDefault();}}
   else if(k==="1"||k==="2"||k==="3"){select(+k-1);}
-  else if(k==="p"||k==="P"){toggleAim();}
+  else if(k==="p"||k==="P"){toggleAim("P");}
+  else if(k==="x"||k==="X"){toggleAim("X");}
   else if(k==="Escape"&&aiming){aiming=false;renderDynamic();}
   else if(k==="z"||k==="Z"||k==="Backspace"){undo();e.preventDefault();}
   else if(k==="r"||k==="R"){reset();}
@@ -791,7 +924,7 @@ function onPointerDown(e){
     const p=pt.matrixTransform(svg.getScreenCTM().inverse());
     const cx=Math.floor(p.x/S),cy=Math.floor(p.y/S);
     if(aiming&&Math.hypot(dx,dy)<=22){
-      if(throwTargets(L,state,sel).some(q=>q.x===cx&&q.y===cy))act("P",cx,cy);else{aiming=false;renderDynamic();}
+      if(aimTargets().some(q=>q.x===cx&&q.y===cy))act(aiming,cx,cy);else{aiming=false;renderDynamic();}
       return;
     }
     if(Math.hypot(dx,dy)>22){act(Math.abs(dx)>Math.abs(dy)?(dx>0?"R":"L"):(dy>0?"D":"U"));return;}
@@ -800,7 +933,9 @@ function onPointerDown(e){
     if(other>=0){select(other);return;}
     const c=state.chars[sel];
     const ddx=cx-c.x,ddy=cy-c.y;
-    if(Math.abs(ddx)+Math.abs(ddy)===1)act(ddx===1?"R":ddx===-1?"L":ddy===1?"D":"U");
+    if(Math.abs(ddx)+Math.abs(ddy)===1){
+      if(chopTargets(L,state,sel).some(q=>q.x===cx&&q.y===cy)){act("X",cx,cy);return;}
+      act(ddx===1?"R":ddx===-1?"L":ddy===1?"D":"U");}
     else if(ddx===0&&ddy===0)act("W");
   };
   window.addEventListener("pointerup",up);
