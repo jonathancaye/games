@@ -117,7 +117,14 @@ h3{font-family:var(--f-disp);font-weight:400;font-size:13px;letter-spacing:.08em
 .prize{text-align:right}.prize b{font-family:var(--f-mono);font-size:20px;font-weight:400}
 .cmp{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:6px;background:var(--panel2);border-radius:10px;padding:9px 11px}
 .cmp b{font-size:15px;font-weight:600}.cmp b.mono{font-size:17px;font-weight:400}
-.tip{grid-column:1/-1;color:var(--amber)!important}.tip.hot{color:var(--green)!important}
+.it.up{grid-template-columns:1fr auto}
+.tipbtn{grid-column:1;grid-row:1/3;text-align:left;display:grid;gap:4px;padding:0;min-width:0}
+.tipbtn .sub{font-size:12px;color:var(--mut)}
+.ii{margin-left:7px;font-size:13px;color:var(--mut);vertical-align:1px}
+.ii.warn{color:var(--amber)}.ii.hot{color:var(--green)}
+.it.up.open{border-color:#3a4458}
+.tip{grid-column:1/-1;color:#c9d2e0!important;line-height:1.4;padding-top:6px;border-top:1px solid var(--line)}
+.tip.warn{color:var(--amber)!important}.tip.hot{color:var(--green)!important}
 .rung .ico{width:40px;text-align:center;color:var(--mut);font-size:14px}
 .rung.cur .ico{color:var(--orange)}
 .champ{border-color:var(--green)}
@@ -494,14 +501,27 @@ function vGarage(){
   </div>
   <p class="note">${S.wins} vitórias em ${S.races} corridas. Venda paga 60% do carro e das peças.</p>`;
 }
+function upgTip(k,o,m,sp,e){
+  const pat=e.spun>0.05;
+  switch(k){
+    case'motor':return {t:'Mais força em todas as marchas e velocidade final maior. Costuma ser o melhor primeiro upgrade.'};
+    case'turbo':return {t:'Força extra só na parte alta do giro. Rende mais quando você troca na faixa verde do conta-giros.'};
+    case'cambio':return {t:`Menos tempo sem força em cada troca. Seu carro troca ${m.gears-1} vezes por corrida, então cada nível reduz em ${(70*(m.gears-1)/1000).toFixed(2).replace('.',',')} s o tempo total sem tração.`};
+    case'pneus':return pat?{t:`Seu carro patina ${e.spun.toFixed(1).replace('.',',')} s na largada: pneu é prioridade.`,c:'hot'}:{t:'Seu carro não patina: o pneu só melhora a saída e a rolagem. Com mais potência ele rende muito mais.',c:'warn'};
+    case'peso':return pat?{t:'Carro mais leve acelera mais, mas também patina mais. Como o seu já patina, combine com pneus.',c:'warn'}:{t:'Carro mais leve acelera mais em todas as marchas, com a mesma potência.'};
+    case'nitro':return {t:sp.nitroCh?`Dispara sozinho nas trocas PERFEITAS (faixa verde). Você tem ${sp.nitroCh} carga${sp.nitroCh>1?'s':''} por corrida.`:'Dispara sozinho nas trocas PERFEITAS (faixa verde). Sem kit, nenhuma carga.'};
+  }
+}
+let openTip=null;
 function vShop(){
-  const o=cur(),m=CAR[o.m],e=est(m,o.lv);
-  return `<div class="card it"><b>${m.name}</b><span class="act mono">${e.et.toFixed(2)}s</span><span class="sub">Tempo estimado nos 402 m com trocas perfeitas</span></div>
+  const o=cur(),m=CAR[o.m],e=est(m,o.lv),sp=spec(m,o.lv);
+  return `<div class="card it"><b>${m.name}</b><span class="act mono">${e.et.toFixed(2)}s</span><span class="sub">Tempo estimado nos 402 m com trocas perfeitas. Toque num item para ver a dica.</span></div>
   <div class="list">${UPG.map(u=>{const L=o.lv[u.k],max=L>=5,c=max?0:upgCost(m,L);
-    const nx={...o.lv,[u.k]:L+1};const d=max?0:est(m,o.lv).et-est(m,nx).et;
-    return `<div class="card it"><b>${u.n}<span class="pips">${[0,1,2,3,4].map(i=>`<i class="${i<L?'f':''}"></i>`).join('')}</span></b>
+    const nx={...o.lv,[u.k]:L+1};const d=max?0:e.et-est(m,nx).et;const tp=upgTip(u.k,o,m,sp,e),op=openTip===u.k;
+    return `<div class="card it up ${op?'open':''}"><button class="tipbtn" data-act="tip" data-k="${u.k}" aria-expanded="${op}"><b>${u.n}<span class="pips">${[0,1,2,3,4].map(i=>`<i class="${i<L?'f':''}"></i>`).join('')}</span><span class="ii ${tp.c||''}">ⓘ</span></b>
+    <span class="sub">${u.e(L)}${max?'':` → ${u.e(L+1)}${d>0.005?` · −${d.toFixed(2)}s`:''}`}</span></button>
     <button class="btn ${max?'':'pri'} act" data-act="up" data-k="${u.k}" ${max||S.cash<c?'disabled':''}>${max?'Máximo':fmt(c)}</button>
-    <span class="sub">${u.e(L)}${max?'':` → ${u.e(L+1)}${d>0.005?` · −${d.toFixed(2)}s`:''}`}</span>${u.k==='pneus'?`<span class="sub tip ${e.spun>0.05?'hot':''}">${e.spun>0.05?`Seu carro patina ${e.spun.toFixed(1)} s na largada: pneu é prioridade.`:'Seu carro não patina: o pneu só melhora a saída e a rolagem. Com mais potência ele rende muito mais.'}</span>`:''}</div>`}).join('')}</div>`;
+    ${op?`<span class="sub tip ${tp.c||''}">${tp.t}</span>`:''}</div>`}).join('')}</div>`;
 }
 function vStore(){
   return `<div class="list">${CARS.map(m=>{const has=S.owned.some(o=>o.m===m.id);const e=est(m,lvAll(0));
@@ -621,6 +641,7 @@ $('#main').addEventListener('click',e=>{
   else if(a==='buy'){const m=CAR[b.dataset.id];if(S.cash>=m.price&&!S.owned.some(o=>o.m===m.id)){S.cash-=m.price;S.owned.push({m:m.id,lv:lvAll(0),spent:0,best:null,km:0});S.active=S.owned.length-1;tab='garagem'}}
   else if(a==='bet'){S.bet=+b.dataset.b}
   else if(a==='mode'){S.mode=b.dataset.m}
+  else if(a==='tip'){openTip=openTip===b.dataset.k?null:b.dataset.k;const y=$('#main').scrollTop;render();$('#main').scrollTop=y;return}
   else if(a==='racha'){startRacha();return}
   else if(a==='rival'){startRival(+b.dataset.i);return}
   save();render();
