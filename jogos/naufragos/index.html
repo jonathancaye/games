@@ -104,6 +104,11 @@ svg.i{width:1em;height:1em;flex:none}
 .btn.axe{background:var(--gold);border-color:var(--gold);color:#2a1e04}
 .btn.axe[aria-pressed="true"]{background:transparent;color:var(--gold);border-style:dashed}
 .btn.rock[aria-pressed="true"]{background:transparent;color:var(--orange);border-style:dashed}
+.side.many .btn:not(.ghost){min-height:36px;padding:5px 6px;font-size:11.5px;gap:1px}
+.side.many .btn:not(.ghost) svg.i{width:16px;height:16px}
+.side.many{gap:5px}
+.lv.locked{border-style:dashed}
+.lv .lk{font-size:12px;color:var(--muted);font-weight:600}
 .btn.ghost{background:transparent;color:var(--muted);font-weight:600;font-size:13px;min-height:36px;padding:7px 12px}
 .pad{display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(3,46px);gap:4px}
 .pad button{appearance:none;border:1px solid var(--line);background:var(--surface-2);border-radius:12px;cursor:pointer;display:grid;place-items:center;font-size:20px;color:var(--fg)}
@@ -186,6 +191,7 @@ details[open] summary{margin-bottom:10px}
       <button class="btn wait" id="btnWait" type="button" title="Esperar (espaço)"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M10 2h4"/></svg>Esperar</button>
       <button class="btn rock" id="btnRock" type="button" title="Jogar pedra (P)" hidden><svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M5 17.5 7 10l5-3.5 5.5 2 2 8.5-6 2.5z"/></svg><span id="rockLbl">Pedra ×1</span></button>
       <button class="btn axe" id="btnAxe" type="button" title="Machado (X)" hidden><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20 15 10"/><path d="M13 4c3 0 6 2 7 6l-4 1-4-4z" fill="currentColor"/></svg><span id="axeLbl">Machado</span></button>
+      <button class="btn axe" id="btnTrap" type="button" title="Armadilha (Q)" hidden><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h18"/><path d="M5 15l2-6 2 6 2-6 2 6 2-6 2 6 2-6 1 6"/></svg><span id="trapLbl">Armadilha</span></button>
     </div>
   </div>
 </div>
@@ -209,8 +215,9 @@ details[open] summary{margin-bottom:10px}
         <span><i style="background:#ff9348"></i>Pedra: distrai 3 tiques</span>
         <span><i style="background:#f2c14e"></i>Machado: árvore vira madeira</span>
         <span><i style="background:#5fa6a8"></i>Água rasa: só na maré baixa</span>
+        <span><i style="background:#8a948f"></i>Armadilha: prende 4 tiques</span>
       </div>
-      <p style="margin-top:10px">Deslize no tabuleiro, toque numa casa vizinha ou use o direcional. Toque num personagem para controlá-lo. Teclado: setas, espaço espera, Tab troca de personagem, P mira a pedra, X usa o machado, Z desfaz, R reinicia. As estrelas valem por fugir, por fugir dentro do par de tiques e por pegar o coco.</p>
+      <p style="margin-top:10px">Deslize no tabuleiro, toque numa casa vizinha ou use o direcional. Toque num personagem para controlá-lo. Teclado: setas, espaço espera, Tab troca de personagem, P mira a pedra, X usa o machado, Q arma a armadilha, Z desfaz, R reinicia. As estrelas valem por fugir, por pegar o coco e pela fuga perfeita: coco e jangada dentro do par de tiques. Dá para fazer as três numa jogada só.</p>
     </details>
   </div>
 </div>
@@ -227,10 +234,11 @@ const RANGE=3;        // alcance da visão
 const THROW=3;        // alcance do arremesso (casas, em passos)
 const HEAR=4;         // guardas a até 4 casas ouvem a pedra
 const DISTRACT=3;     // tiques olhando para o barulho
+const TRAP=4;         // tiques que o guarda fica preso na armadilha
 const CHARS={
   M:{name:"Marujo"},
   B:{name:"Batedora",throws:true,slips:true},
-  K:{name:"Carpinteiro",chops:true},
+  K:{name:"Carpinteiro",chops:true,traps:true},
 };
 /* tiles: ~ mar · . areia · , mato alto · T árvore · O rocha · R jangada · f fresta · = água rasa (maré) */
 
@@ -251,7 +259,7 @@ function parseLevel(def){
     }
     tiles.push(r);
   }
-  const lv={...def,W,H,tiles,items,trees,chars0:chars,guards:def.guards||[],stones0:def.stones||0};
+  const lv={...def,W,H,tiles,items,trees,chars0:chars,guards:def.guards||[],stones0:def.stones||0,traps0:def.traps||0};
   lv.treeIdx={};trees.forEach((t,i)=>lv.treeIdx[t.x+","+t.y]=i);
   lv.woodMask=items.reduce((m,it,i)=>it.k==="wood"?m|(1<<i):m,0);
   lv.cocoMask=items.reduce((m,it,i)=>it.k==="coco"?m|(1<<i):m,0);
@@ -282,10 +290,10 @@ const dist=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
 function woodCount(lv,s){return popc(s.got&lv.woodMask)+popc(s.cut||0);}
 
 function initState(lv){
-  return {t:0,chars:lv.chars0.map(c=>({...c})),got:0,st:lv.stones0,cut:0,
-    gs:lv.guards.map(g=>({x:g.x,y:g.y,f:g.f,ph:0,dz:0,lf:g.f}))};
+  return {t:0,chars:lv.chars0.map(c=>({...c})),got:0,st:lv.stones0,cut:0,tp:lv.traps0,trs:[],
+    gs:lv.guards.map(g=>({x:g.x,y:g.y,f:g.f,ph:0,dz:0,lf:g.f,hold:0}))};
 }
-function guardNext(lv,i,g){if(g.dz>0)return "?";const mv=lv.guards[i].moves||".";return mv[g.ph%mv.length];}
+function guardNext(lv,i,g){if(g.dz>0)return "?";if(g.hold>0)return "!";const mv=lv.guards[i].moves||".";return mv[g.ph%mv.length];}
 
 function visionCells(lv,s,g){
   const out=[];const[dx,dy]=DIRS[face(g)];
@@ -320,6 +328,15 @@ function chopTargets(lv,s,ci){
   for(const d in DIRS){const x=ch.x+DIRS[d][0],y=ch.y+DIRS[d][1];if(tileS(lv,s,x,y)==="T")out.push({x,y,d});}
   return out;
 }
+function trapTargets(lv,s,ci){
+  const ch=s.chars[ci];if(!CHARS[ch.id].traps||s.tp<=0)return [];
+  const out=[];
+  for(const d in DIRS){const x=ch.x+DIRS[d][0],y=ch.y+DIRS[d][1];const t=tileS(lv,s,x,y);
+    if(!(t==="."||t===","||t==="s"||t==="R"))continue;
+    if(s.gs.some(g=>g.x===x&&g.y===y)||s.chars.some(c=>c.x===x&&c.y===y)||s.trs.includes(x+","+y))continue;
+    out.push({x,y,d});}
+  return out;
+}
 const lookToward=(g,p)=>{const dx=p.x-g.x,dy=p.y-g.y;return Math.abs(dx)>=Math.abs(dy)?(dx>0?"R":"L"):(dy>0?"D":"U");};
 
 /* aplica uma ação {c, d:"U|D|L|R|W|P|X", x,y (P e X)}.
@@ -327,7 +344,7 @@ const lookToward=(g,p)=>{const dx=p.x-g.x,dy=p.y-g.y;return Math.abs(dx)>=Math.a
    result: "ok" | "win" | "seen" | "bump" | "tide" | "time" */
 function step(lv,s,a){
   const chars=s.chars.map(c=>({...c}));
-  let got=s.got, st=s.st, cut=s.cut, noise=null, chop=null;
+  let got=s.got, st=s.st, cut=s.cut, tp=s.tp, trs=s.trs, noise=null, chop=null;
   const ch=chars[a.c];const t=s.t+1;
   if(a.d==="P"){
     if(!throwTargets(lv,s,a.c).some(p=>p.x===a.x&&p.y===a.y))return null;
@@ -335,6 +352,9 @@ function step(lv,s,a){
   }else if(a.d==="X"){
     const tg=chopTargets(lv,s,a.c).find(p=>p.x===a.x&&p.y===a.y);if(!tg)return null;
     cut|=1<<lv.treeIdx[a.x+","+a.y];ch.f=tg.d;chop={x:a.x,y:a.y};
+  }else if(a.d==="A"){
+    const tg=trapTargets(lv,s,a.c).find(p=>p.x===a.x&&p.y===a.y);if(!tg)return null;
+    tp--;trs=[...trs,a.x+","+a.y].sort();ch.f=tg.d;
   }else if(a.d!=="W"){
     const[dx,dy]=DIRS[a.d];const nx=ch.x+dx,ny=ch.y+dy;
     ch.f=a.d;
@@ -344,36 +364,38 @@ function step(lv,s,a){
     ch.x=nx;ch.y=ny;
     lv.items.forEach((it,i)=>{if(!(got&(1<<i))&&it.x===nx&&it.y===ny)got|=1<<i;});
   }
-  const mid={t,chars,got,st,cut,gs:s.gs};
+  const mid={t,chars,got,st,cut,tp,trs,gs:s.gs};
   let seen=seenBy(lv,mid,s.gs,chars);
   if(seen)return {state:mid,result:"seen",info:seen,noise,chop};
   if(woodCount(lv,mid)>=lv.need&&chars.every(c=>lv.tiles[c.y][c.x]==="R"))return {state:mid,result:"win",noise,chop};
-  const heard=[];
+  const heard=[],caught=[];
   const gs=s.gs.map((g,i)=>{
     g={...g};
-    if(noise&&dist(g,noise)<=HEAR){g.dz=DISTRACT;g.lf=lookToward(g,noise);heard.push(i);return g;}
-    if(g.dz>0){g.dz--;return g;}
+    if(noise&&dist(g,noise)<=HEAR){g.dz=DISTRACT;g.lf=lookToward(g,noise);heard.push(i);if(g.hold>0)g.hold--;return g;}
+    if(g.dz>0){g.dz--;if(g.hold>0)g.hold--;return g;}
+    if(g.hold>0){g.hold--;return g;}
     const mv=lv.guards[i].moves||".";const c=mv[g.ph%mv.length];g.ph=(g.ph+1)%mv.length;
     if(c===".")return g;
     const up=c.toUpperCase();
-    if(c===up){const[dx,dy]=DIRS[up];g.x+=dx;g.y+=dy;}
+    if(c===up){const[dx,dy]=DIRS[up];g.x+=dx;g.y+=dy;
+      const k=g.x+","+g.y;if(trs.includes(k)){trs=trs.filter(q=>q!==k);g.hold=TRAP;caught.push(i);}}
     g.f=up;g.lf=up;
     return g;
   });
-  const ns={t,chars,got,st,cut,gs};
+  const ns={t,chars,got,st,cut,tp,trs,gs};
   for(let i=0;i<gs.length;i++)for(const c of chars)if(gs[i].x===c.x&&gs[i].y===c.y)
-    return {state:ns,result:"bump",info:{guard:i,x:c.x,y:c.y},noise,heard,chop};
+    return {state:ns,result:"bump",info:{guard:i,x:c.x,y:c.y},noise,heard,chop,caught};
   seen=seenBy(lv,ns,gs,chars);
-  if(seen)return {state:ns,result:"seen",info:seen,noise,heard,chop};
+  if(seen)return {state:ns,result:"seen",info:seen,noise,heard,chop,caught};
   if(lv.tide&&tideHigh(lv,t)){const wet=chars.find(c=>lv.tiles[c.y][c.x]==="=");
     if(wet)return {state:ns,result:"tide",info:{x:wet.x,y:wet.y},noise,heard,chop};}
   if(t>=lv.limit)return {state:ns,result:"time",noise,heard,chop};
-  return {state:ns,result:"ok",noise,heard,chop};
+  return {state:ns,result:"ok",noise,heard,chop,caught};
 }
 
 /* BFS: menor nº de tiques para fugir (opcionalmente exigindo o coco) */
 function solve(lv,needCoco,maxStates=4e6){
-  const key=s=>s.t+"|"+s.got+"|"+s.st+"|"+s.cut+"|"+s.chars.map(c=>c.x+","+c.y).join(";")+"|"+s.gs.map(g=>[g.x,g.y,g.f,g.ph,g.dz,g.lf].join(",")).join(";");
+  const key=s=>s.t+"|"+s.got+"|"+s.st+"|"+s.cut+"|"+s.tp+"|"+s.trs.join(";")+"|"+s.chars.map(c=>c.x+","+c.y).join(";")+"|"+s.gs.map(g=>[g.x,g.y,g.f,g.ph,g.dz,g.lf,g.hold].join(",")).join(";");
   const s0=initState(lv);
   let frontier=[{s:s0,path:[]}];const seen=new Set([key(s0)]);
   while(frontier.length){
@@ -384,11 +406,12 @@ function solve(lv,needCoco,maxStates=4e6){
         for(const d of ["U","D","L","R"])acts.push({c,d});
         for(const p of throwTargets(lv,s,c))acts.push({c,d:"P",x:p.x,y:p.y});
         for(const p of chopTargets(lv,s,c))acts.push({c,d:"X",x:p.x,y:p.y});
+        for(const p of trapTargets(lv,s,c))acts.push({c,d:"A",x:p.x,y:p.y});
       });
       acts.push({c:0,d:"W"});
       for(const a of acts){
         const r=step(lv,s,a);if(!r)continue;
-        const lab=(s.chars.length>1?s.chars[a.c].id:"")+(a.d==="P"||a.d==="X"?`${a.d}${a.x},${a.y}`:a.d);
+        const lab=(s.chars.length>1?s.chars[a.c].id:"")+("PXA".includes(a.d)?`${a.d}${a.x},${a.y}`:a.d);
         if(r.result==="win"){
           if(needCoco&&(r.state.got&lv.cocoMask)!==lv.cocoMask)continue;
           return {ticks:r.state.t,path:[...path,lab]};
@@ -409,7 +432,7 @@ const LEVELS=[
   {
     name:"A praia",
     hint:"Junte as 3 madeiras e leve o Marujo até a jangada. O navio pirata volta em poucos tiques.",
-    limit:28, par:23,
+    limit:28, par:25,
     map:[
       "~~~~~~~~",
       "~M..T.w~",
@@ -424,7 +447,7 @@ const LEVELS=[
   {
     name:"O vigia",
     hint:"O guarda vê 3 casas à frente. No mato alto ninguém te vê.",
-    limit:20, par:13,
+    limit:20, par:17,
     map:[
       "~~~~~~~~",
       "~M...T.~",
@@ -440,7 +463,7 @@ const LEVELS=[
   {
     name:"A ronda",
     hint:"Guardas em ronda são previsíveis. A seta mostra o próximo passo. Use Esperar para acertar o tempo.",
-    limit:36, par:29,
+    limit:36, par:35,
     map:[
       "~~~~~~~~~",
       "~M..T.w.~",
@@ -456,7 +479,7 @@ const LEVELS=[
   {
     name:"A pedra",
     hint:"Selecione a Batedora e use Pedra: o guarda vira para o barulho por 3 tiques. Só ela passa pela fresta.",
-    limit:36, par:32, stones:1,
+    limit:40, par:36, stones:1,
     map:[
       "~~~~~~~~~~",
       "~M.,,..B.~",
@@ -474,7 +497,7 @@ const LEVELS=[
   {
     name:"O machado",
     hint:"Selecione o Carpinteiro e use o Machado: cada árvore cortada vira 1 madeira e abre caminho. Também abre a visão do guarda.",
-    limit:26, par:22, need:3,
+    limit:26, par:24, need:3,
     map:[
       "~~~~~~~~~~",
       "~K..w..,.~",
@@ -490,7 +513,7 @@ const LEVELS=[
   {
     name:"A maré",
     hint:"A água rasa só dá passagem com a maré baixa. Acompanhe a maré no placar e o guarda que vira de lado.",
-    limit:30, par:26, tide:{low:3,high:3},
+    limit:30, par:28, tide:{low:3,high:3},
     map:[
       "~~~~~~~~~~~",
       "~M.,.~~~..~",
@@ -506,7 +529,7 @@ const LEVELS=[
   {
     name:"Dividir o grupo",
     hint:"Cada um começa preso. A Batedora sai pela fresta e distrai o guarda, o Carpinteiro passa e corta a árvore que prende o Marujo.",
-    limit:34, par:30, stones:1,
+    limit:34, par:32, stones:1,
     map:[
       "~~~~~~~~~~~",
       "~BwOO.COwK~",
@@ -520,6 +543,22 @@ const LEVELS=[
     ],
     guards:[{x:9,y:7,f:"U",moves:"."}],
   },
+  {
+    name:"A armadilha",
+    hint:"O Carpinteiro arma uma armadilha numa casa vizinha. O guarda que pisar nela fica preso por 4 tiques, mas continua olhando.",
+    limit:38, par:35, traps:1,
+    map:[
+      "~~~~~~~~~~",
+      "~K..w,,..~",
+      "~.......c~",
+      "~OOOOO.OO~",
+      "~........~",
+      "~O.OOOOOO~",
+      "~M......w~",
+      "~~~~RR~~~~",
+    ],
+    guards:[{x:1,y:4,f:"R",moves:"RRRRRRRLLLLLLL"}],
+  },
 ];
 /*LEVELS-END*/
 
@@ -527,10 +566,19 @@ const LEVELS=[
 const $=id=>document.getElementById(id);
 const NS="http://www.w3.org/2000/svg";
 const S=10; // tamanho da casa no viewBox
-const COMING=["A armadilha","O cachorro","Vigias cruzados","Pegadas na areia","A grande fuga"];
-const STORE="naufragos.v1";
+const COMING=["O cachorro","Vigias cruzados","Pegadas na areia"];
+const FINAL="A grande fuga";
+const TOTAL_LEVELS=12;
+const STORE="naufragos.v2";
 let progress={};
-try{progress=JSON.parse(localStorage.getItem(STORE)||"{}")||{};}catch(e){progress={};}
+try{
+  const raw=localStorage.getItem(STORE);
+  if(raw)progress=JSON.parse(raw)||{};
+  else{ // v1 guardava [fugiu, par, coco]; v2 guarda [fugiu, coco, perfeita]
+    const old=JSON.parse(localStorage.getItem("naufragos.v1")||"{}")||{};
+    for(const k in old)progress[k]=[!!old[k][0],!!old[k][2],false];
+  }
+}catch(e){progress={};}
 const saveProgress=()=>{try{localStorage.setItem(STORE,JSON.stringify(progress));}catch(e){}};
 
 let L=null, li=0, state=null, hist=[], over=null, sel=0, aiming=false;
@@ -690,6 +738,8 @@ function buildBoard(){
     const g=mk("G");
     g._bub=el("g",{class:"bubble"},g);
     g._bub.innerHTML=`<rect x="5.6" y="-2.6" width="3.6" height="3" rx="1.1" fill="#fff4e6"/><path d="M6.2 .3 L6 1.3 L7.1 .3Z" fill="#fff4e6"/><text x="7.4" y="-.3" text-anchor="middle" font-size="2.5" font-weight="800" fill="#c8333f" font-family="Figtree,system-ui,sans-serif">?</text>`;
+    g._bubTxt=g._bub.querySelector("text");
+    g._rope=el("g",{},g);g._rope.innerHTML=`<path d="M2.2 9.2 L4 7.6 L5 9.4 L6 7.6 L7.8 9.2" stroke="#c9ced1" stroke-width=".55" fill="none" stroke-linejoin="round"/>`;
     return g;
   });
   svg.onpointerdown=onPointerDown;
@@ -748,7 +798,7 @@ function renderDynamic(){
       el("rect",{x:c.x*S+.4,y:c.y*S+.4,width:S-.8,height:S-.8,rx:1,fill:grass?"rgba(240,82,95,.14)":"rgba(240,82,95,.38)",stroke:"rgba(240,82,95,.7)","stroke-width":.35,"stroke-dasharray":grass?"1 1":"none"},gVision);
     }
     const nx=guardNext(L,i,g);
-    if(nx!=="."&&nx!=="?"){
+    if(nx!=="."&&nx!=="?"&&nx!=="!"){
       const up=nx.toUpperCase(),[dx,dy]=DIRS[up];
       const moving=nx===up;
       const cx=(g.x+(moving?dx*.92:dx*.5))*S+5,cy=(g.y+(moving?dy*.92:dy*.5))*S+5;
@@ -759,7 +809,11 @@ function renderDynamic(){
   const setTok=(t,x,y,f)=>{t.style.transform=`translate(${x*S}px,${y*S}px)`;if(t._f!==f){t._body.innerHTML=sprite(t._k,f);t._f=f;}};
   state.chars.forEach((c,i)=>{setTok(tokEls[i],c.x,c.y,c.f);
     const on=i===sel&&state.chars.length>1;tokEls[i]._ring.setAttribute("class",on?"selring":"");tokEls[i]._ring.setAttribute("stroke-width",on?.8:.5);});
-  gs.forEach((g,i)=>{setTok(guardEls[i],g.x,g.y,g.dz>0?g.lf:g.f);guardEls[i]._bub.style.display=g.dz>0?"":"none";});
+  gs.forEach((g,i)=>{setTok(guardEls[i],g.x,g.y,g.dz>0?g.lf:g.f);const B=guardEls[i];B._bub.style.display=g.dz>0||g.hold>0?"":"none";B._bubTxt.textContent=g.dz>0?"?":String(g.hold);B._rope.style.display=g.hold>0?"":"none";});
+  // armadilhas armadas
+  for(const k of state.trs){const[x,y]=k.split(",").map(Number),X=x*S,Y=y*S;
+    el("path",{d:`M${X+2} ${Y+6.4} L${X+3} ${Y+4.6} L${X+4} ${Y+6.4} L${X+5} ${Y+4.6} L${X+6} ${Y+6.4} L${X+7} ${Y+4.6} L${X+8} ${Y+6.4}`,stroke:"#c9ced1","stroke-width":.55,fill:"none","stroke-linejoin":"round"},gItems);
+    el("ellipse",{cx:X+5,cy:Y+6.6,rx:3.3,ry:1,fill:"none",stroke:"#6f7a76","stroke-width":.5},gItems);}
   // ordem de desenho por linha (quem está mais abaixo fica na frente)
   [...tokEls.map((t,i)=>[t,state.chars[i].y]),...guardEls.map((t,i)=>[t,gs[i].y])].sort((a,b)=>a[1]-b[1]).forEach(([t])=>gTokens.appendChild(t));
   // mira da pedra
@@ -781,7 +835,14 @@ function renderDynamic(){
   $("axeLbl").textContent=aiming==="X"?"Cancelar":"Machado";
   $("btnAxe").disabled=aiming!=="X"&&!chopTargets(L,state,sel).length;
   $("btnAxe").setAttribute("aria-pressed",aiming==="X"?"true":"false");
-  $("hint").textContent=aiming==="P"?"Toque numa casa marcada para jogar a pedra.":aiming==="X"?"Toque na árvore marcada para cortar.":LEVELS[li].hint;
+  $("btnAxe").hidden=!chopper||!L.trees.length;
+  const trapper=!!CHARS[state.chars[sel].id].traps&&L.traps0>0;
+  $("btnTrap").hidden=!trapper;
+  $("trapLbl").textContent=aiming==="A"?"Cancelar":`Armadilha ×${state.tp}`;
+  $("btnTrap").disabled=aiming!=="A"&&!trapTargets(L,state,sel).length;
+  $("btnTrap").setAttribute("aria-pressed",aiming==="A"?"true":"false");
+  const side=$("btnWait").parentElement;side.classList.toggle("many",[...side.querySelectorAll(".btn")].filter(b=>!b.hidden).length>2);
+  $("hint").textContent=aiming==="P"?"Toque numa casa marcada para jogar a pedra.":aiming==="X"?"Toque na árvore marcada para cortar.":aiming==="A"?"Toque na casa marcada para armar a armadilha.":LEVELS[li].hint;
   $("hint").classList.toggle("aim",aiming);
   // placar
   const left=L.limit-state.t;
@@ -808,7 +869,7 @@ function loadLevel(i){
 }
 function act(d,x,y){
   if(over||!L)return;
-  if(aiming&&d!=="P"&&d!=="X"){aiming=false;renderDynamic();return;}
+  if(aiming&&!"PXA".includes(d)){aiming=false;renderDynamic();return;}
   const from=state.chars[sel];
   const r=step(L,state,{c:sel,d,x,y});
   if(!r){if(DIRS[d]){state.chars[sel].f=d;renderDynamic();nudge(d);}return;}
@@ -817,6 +878,7 @@ function act(d,x,y){
   state=r.state;
   if(r.noise)throwFx(from,r.noise,r.heard||[]);
   if(r.chop)chopFx(r.chop);
+  (r.caught||[]).forEach(i=>{const g=state.gs[i];el("circle",{cx:g.x*S+5,cy:g.y*S+6,r:2.4,fill:"none",stroke:"#c9ced1","stroke-width":.5,class:"ripple"},gFx);});
   renderDynamic();
   if(r.result==="ok")return;
   if(r.result==="win"){finishWin();return;}
@@ -843,7 +905,7 @@ function chopFx(p){
     const c=el("rect",{x:p.x*S+4.6,y:p.y*S+4.6,width:.9,height:.6,rx:.2,fill:k%2?"#d9b07a":"#a8703c",class:"stone"},gFx);
     requestAnimationFrame(()=>requestAnimationFrame(()=>{c.style.transform=`translate(${Math.cos(a)*3.5}px,${Math.sin(a)*3.5}px)`;c.style.opacity="0";c.style.transition="transform .45s ease-out,opacity .45s ease-in";}));}
 }
-function aimTargets(){return aiming==="X"?chopTargets(L,state,sel):aiming==="P"?throwTargets(L,state,sel):[];}
+function aimTargets(){return aiming==="X"?chopTargets(L,state,sel):aiming==="P"?throwTargets(L,state,sel):aiming==="A"?trapTargets(L,state,sel):[];}
 function select(i){if(!L||i===sel||i<0||i>=state.chars.length)return;sel=i;aiming=false;renderDynamic();}
 function toggleAim(kind="P"){if(over||!L)return;if(aiming===kind){aiming=false;renderDynamic();return;}
   aiming=kind;if(!aimTargets().length)aiming=false;renderDynamic();}
@@ -853,23 +915,24 @@ function starSvg(){return `<svg viewBox="0 0 24 24"><path class="sf" stroke-widt
 function finishWin(){
   over="win";
   const lv=LEVELS[li];
-  const s=[true,state.t<=lv.par,(state.got&L.cocoMask)===L.cocoMask&&L.cocoMask!==0];
+  const coco=(state.got&L.cocoMask)===L.cocoMask&&L.cocoMask!==0;
+  const s=[true,coco,coco&&state.t<=lv.par];
   const prev=progress[li]||[false,false,false];
   progress[li]=prev.map((v,k)=>v||s[k]);saveProgress();
   const last=li>=LEVELS.length-1;
   $("resultPanel").innerHTML=`
     <div><div class="eyebrow">Fase ${li+1} · ${lv.name}</div><h2>A jangada zarpou!</h2></div>
-    <p>Fuga em ${state.t} tiques. O par desta fase é ${lv.par}.</p>
+    <p>Fuga em ${state.t} tiques. A fuga perfeita pega o coco em até ${lv.par}.</p>
     <div class="stars">
       <div class="star on">${starSvg()}Fugiu da ilha</div>
-      <div class="star ${s[1]?"on":""}">${starSvg()}Fuga em até ${lv.par} tiques</div>
-      <div class="star ${s[2]?"on":""}">${starSvg()}Pegou o coco</div>
+      <div class="star ${s[1]?"on":""}">${starSvg()}Pegou o coco</div>
+      <div class="star ${s[2]?"on":""}">${starSvg()}Fuga perfeita: coco em até ${lv.par} tiques</div>
     </div>
     <div class="row">
       <button class="btn" type="button" data-a="retry">Jogar de novo</button>
       ${last?`<button class="btn pri" type="button" data-a="levels">Ver fases</button>`:`<button class="btn pri" type="button" data-a="next">Próxima fase →</button>`}
     </div>
-    ${last?`<p>Essa é a última fase pronta. A próxima traz a armadilha.</p>`:""}`;
+    ${last?`<p>Essa é a última fase pronta. A próxima traz o cachorro.</p>`:""}`;
   setTimeout(()=>showOv("ovResult"),380);
 }
 function showLoss(kind){
@@ -896,6 +959,8 @@ function openLevels(){
     return `<button class="lv" type="button" data-l="${i}"><span class="n">Fase ${i+1}</span><b>${lv.name}</b><span class="ss">${[0,1,2].map(k=>`<i class="${st[k]?"on":""}"></i>`).join("")}</span></button>`;
   });
   COMING.forEach((n,k)=>items.push(`<button class="lv" type="button" disabled><span class="n">Fase ${LEVELS.length+k+1} · em breve</span><b>${n}</b></button>`));
+  const cocos=Object.values(progress).filter(p=>p&&p[1]).length, need=TOTAL_LEVELS-1;
+  items.push(`<button class="lv locked" type="button" disabled><span class="n">Fase ${TOTAL_LEVELS} · final</span><b>${FINAL}</b><span class="lk">Bloqueada · cocos ${cocos}/${need}</span></button>`);
   grid.innerHTML=items.join("");
   $("ovLevels").hidden=false;
 }
@@ -911,6 +976,7 @@ document.querySelectorAll(".pad button").forEach(b=>b.addEventListener("click",(
 $("btnWait").onclick=()=>act("W");
 $("btnRock").onclick=()=>toggleAim("P");
 $("btnAxe").onclick=()=>toggleAim("X");
+$("btnTrap").onclick=()=>toggleAim("A");
 $("crewSeg").addEventListener("click",e=>{const b=e.target.closest("button[data-c]");if(b)select(+b.dataset.c);});
 $("btnUndo").onclick=undo;
 $("btnReset").onclick=reset;
@@ -926,6 +992,7 @@ document.addEventListener("keydown",e=>{
   else if(k==="1"||k==="2"||k==="3"){select(+k-1);}
   else if(k==="p"||k==="P"){toggleAim("P");}
   else if(k==="x"||k==="X"){toggleAim("X");}
+  else if(k==="q"||k==="Q"){toggleAim("A");}
   else if(k==="Escape"&&aiming){aiming=false;renderDynamic();}
   else if(k==="z"||k==="Z"||k==="Backspace"){undo();e.preventDefault();}
   else if(k==="r"||k==="R"){reset();}
