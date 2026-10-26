@@ -13,6 +13,8 @@ jogos/
   dados-6x6/index.html
   dice-wars/index.html
   scoundrel/index.html
+  asfalto-turbo/index.html
+  arrancada-402/index.html
 ```
 
 ## Publicar no GitHub Pages

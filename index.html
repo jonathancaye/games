@@ -139,6 +139,15 @@ a.game:hover .atb .ln{stroke-dashoffset:-54}
 .atb .me{transition:transform .5s cubic-bezier(.3,1.4,.5,1)}
 a.game:hover .atb .me{transform:translate(92px,80px) rotate(-30deg)}
 
+/* arte: Arrancada 402 */
+.art.arr{background:linear-gradient(180deg,#2a1640 0%,#6b2f5e 38%,#e0664f 62%,#ffb168 70%,#9a5844 71%,#4c2a2c 100%)}
+.arr svg{position:absolute;inset:0;width:100%;height:100%}
+.arr .c1,.arr .c2{transition:transform .7s cubic-bezier(.3,1.2,.5,1)}
+a.game:hover .arr .c1{transform:translate(0,-16px) scale(.9)}
+a.game:hover .arr .c2{transform:translate(0,-8px) scale(.95)}
+.arr .tl{transition:fill .2s .15s}
+a.game:hover .arr .tl{fill:#3ddc84}
+
 /* em breve */
 .game.soon{border-style:dashed;background:transparent}
 .art.soon{background:repeating-linear-gradient(-45deg,rgba(255,255,255,.025) 0 10px,transparent 10px 20px)}
@@ -250,6 +259,17 @@ const GAMES = [
     art: "atb"
   },
   {
+    title: "Arrancada 402",
+    url: "jogos/arrancada-402/",
+    desc: "Arrancada de 402 m com um botão só: largue no verde, troque a marcha na hora certa e use o prêmio para comprar carros e fazer upgrades.",
+    category: "Arcade",
+    players: "1 jogador",
+    time: "5 min",
+    extra: ["Solo", "Corrida", "Garagem"],
+    accent: "#2dd4bf",
+    art: "arr"
+  },
+  {
     title: "Em breve",
     desc: "O próximo jogo da mesa está sendo preparado.",
     category: null,
@@ -294,6 +314,10 @@ const ARTS = {
     const car=(x,y,c,r,me)=>`<g class="${me?"me":""}" transform="translate(${x} ${y}) rotate(${r})"><rect x="-6.5" y="-11" width="13" height="22" rx="3.5" fill="rgba(0,0,0,.35)" transform="translate(2 2)"/><rect x="-6.5" y="-11" width="13" height="22" rx="3.5" fill="${c}"/>${me?'<rect x="-2.2" y="-11" width="1.5" height="22" fill="#ff9348"/><rect x=".7" y="-11" width="1.5" height="22" fill="#ff9348"/>':""}<rect x="-5" y="-6" width="10" height="3.5" rx="1" fill="#15222a"/><rect x="-4.5" y="3" width="9" height="2.5" rx="1" fill="#15222a"/></g>`;
     const road="M70 -10 C 70 40, 130 60, 128 122";
     return `<svg viewBox="0 0 200 112" preserveAspectRatio="xMidYMid slice"><path d="${road}" stroke="#ff9348" stroke-width="82" fill="none" stroke-dasharray="7 7"/><path d="${road}" stroke="#f2f4f5" stroke-width="82" fill="none" stroke-dasharray="7 7" stroke-dashoffset="7"/><path d="${road}" stroke="#3c434b" stroke-width="72" fill="none"/><path class="ln" d="${road}" stroke="#eef2f3" stroke-width="2" fill="none" stroke-dasharray="9 9"/><path class="sk" d="M86 104 C 88 96, 92 90, 97 84" stroke="rgba(10,10,12,.45)" stroke-width="2.5" fill="none"/>${car(118,30,"#5b8def",-22)}${car(80,56,"#f2c94c",-28)}${car(104,86,"#2bc2b3",-12,1)}</svg>`;
+  },
+  arr(){
+    const car=(x,col,cls)=>`<g class="${cls}" style="transform-origin:${x}px 96px"><rect x="${x-17}" y="92" width="34" height="6" rx="2" fill="rgba(20,8,20,.5)"/><rect x="${x-15}" y="78" width="30" height="16" rx="3" fill="${col}"/><rect x="${x-11}" y="70" width="22" height="10" rx="3" fill="${col}" opacity=".85"/><rect x="${x-9}" y="72" width="18" height="6" rx="1.5" fill="#1c2233"/><rect x="${x-13}" y="83" width="7" height="3" rx="1" fill="#ff3048"/><rect x="${x+6}" y="83" width="7" height="3" rx="1" fill="#ff3048"/><rect x="${x-5}" y="88" width="10" height="3" fill="#efeee6"/><rect x="${x-16}" y="91" width="5" height="6" rx="1" fill="#111"/><rect x="${x+11}" y="91" width="5" height="6" rx="1" fill="#111"/></g>`;
+    return `<svg viewBox="0 0 200 112" preserveAspectRatio="xMidYMid slice"><circle cx="140" cy="76" r="12" fill="#ffe2a6"/><path d="M0 80 L30 70 L52 76 L80 66 L110 76 L150 68 L176 75 L200 70 L200 80Z" fill="#3e2140"/><path d="M92 79 L108 79 L170 112 L30 112Z" fill="#423b48"/><path d="M99.4 79 L100.6 79 L101.5 112 L98.5 112Z" fill="#f2c14e"/><rect x="96" y="40" width="8" height="26" rx="2" fill="#140c18"/><circle cx="100" cy="45" r="2.2" fill="#ffb020"/><circle cx="100" cy="52" r="2.2" fill="#ffb020"/><circle class="tl" cx="100" cy="59" r="2.2" fill="#22332a"/><rect x="99.3" y="66" width="1.4" height="13" fill="#140c18"/>${car(72,"#f2c94c","c1")}${car(128,"#2dd4bf","c2")}</svg>`;
   },
   soon(){return `<span>?</span>`;}
 };
