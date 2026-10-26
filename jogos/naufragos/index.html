@@ -503,6 +503,23 @@ const LEVELS=[
     ],
     guards:[{x:9,y:3,f:"L",moves:"llllrrrr"}],
   },
+  {
+    name:"Dividir o grupo",
+    hint:"Cada um começa preso. A Batedora sai pela fresta e distrai o guarda, o Carpinteiro passa e corta a árvore que prende o Marujo.",
+    limit:34, par:30, stones:1,
+    map:[
+      "~~~~~~~~~~~",
+      "~BwOO.COwK~",
+      "~..f.,.O..~",
+      "~OOO...OO.~",
+      "~TT.....O.~",
+      "~M.T..,...~",
+      "~..T......~",
+      "~~~.RRR...~",
+      "~~~~~~~~~~~",
+    ],
+    guards:[{x:9,y:7,f:"U",moves:"."}],
+  },
 ];
 /*LEVELS-END*/
 
@@ -510,7 +527,7 @@ const LEVELS=[
 const $=id=>document.getElementById(id);
 const NS="http://www.w3.org/2000/svg";
 const S=10; // tamanho da casa no viewBox
-const COMING=["Dividir o grupo","A armadilha","O cachorro","Vigias cruzados","Pegadas na areia","A grande fuga"];
+const COMING=["A armadilha","O cachorro","Vigias cruzados","Pegadas na areia","A grande fuga"];
 const STORE="naufragos.v1";
 let progress={};
 try{progress=JSON.parse(localStorage.getItem(STORE)||"{}")||{};}catch(e){progress={};}
@@ -852,7 +869,7 @@ function finishWin(){
       <button class="btn" type="button" data-a="retry">Jogar de novo</button>
       ${last?`<button class="btn pri" type="button" data-a="levels">Ver fases</button>`:`<button class="btn pri" type="button" data-a="next">Próxima fase →</button>`}
     </div>
-    ${last?`<p>Essa é a última fase pronta. A próxima divide o grupo.</p>`:""}`;
+    ${last?`<p>Essa é a última fase pronta. A próxima traz a armadilha.</p>`:""}`;
   setTimeout(()=>showOv("ovResult"),380);
 }
 function showLoss(kind){
