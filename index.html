@@ -148,6 +148,12 @@ a.game:hover .arr .c2{transform:translate(0,-8px) scale(.95)}
 .arr .tl{transition:fill .2s .15s}
 a.game:hover .arr .tl{fill:#3ddc84}
 
+/* arte: Náufragos */
+.art.nfg{background:#0d3a40}
+.nfg svg{position:absolute;inset:0;width:100%;height:100%}
+.nfg .m{transition:transform .6s cubic-bezier(.3,1.2,.5,1)}
+a.game:hover .nfg .m{transform:translate(0,10px)}
+
 /* em breve */
 .game.soon{border-style:dashed;background:transparent}
 .art.soon{background:repeating-linear-gradient(-45deg,rgba(255,255,255,.025) 0 10px,transparent 10px 20px)}
@@ -270,6 +276,17 @@ const GAMES = [
     art: "arr"
   },
   {
+    title: "Náufragos",
+    url: "jogos/naufragos/",
+    desc: "Puzzle tático por tiques: junte madeira, construa a jangada e fuja da ilha sem cair no campo de visão dos piratas.",
+    category: "Puzzle",
+    players: "1 jogador",
+    time: "10 min",
+    extra: ["Solo", "Furtividade", "Fases"],
+    accent: "#2bc2b3",
+    art: "nfg"
+  },
+  {
     title: "Em breve",
     desc: "O próximo jogo da mesa está sendo preparado.",
     category: null,
@@ -318,6 +335,21 @@ const ARTS = {
   arr(){
     const car=(x,col,cls)=>`<g class="${cls}" style="transform-origin:${x}px 96px"><rect x="${x-17}" y="92" width="34" height="6" rx="2" fill="rgba(20,8,20,.5)"/><rect x="${x-15}" y="78" width="30" height="16" rx="3" fill="${col}"/><rect x="${x-11}" y="70" width="22" height="10" rx="3" fill="${col}" opacity=".85"/><rect x="${x-9}" y="72" width="18" height="6" rx="1.5" fill="#1c2233"/><rect x="${x-13}" y="83" width="7" height="3" rx="1" fill="#ff3048"/><rect x="${x+6}" y="83" width="7" height="3" rx="1" fill="#ff3048"/><rect x="${x-5}" y="88" width="10" height="3" fill="#efeee6"/><rect x="${x-16}" y="91" width="5" height="6" rx="1" fill="#111"/><rect x="${x+11}" y="91" width="5" height="6" rx="1" fill="#111"/></g>`;
     return `<svg viewBox="0 0 200 112" preserveAspectRatio="xMidYMid slice"><circle cx="140" cy="76" r="12" fill="#ffe2a6"/><path d="M0 80 L30 70 L52 76 L80 66 L110 76 L150 68 L176 75 L200 70 L200 80Z" fill="#3e2140"/><path d="M92 79 L108 79 L170 112 L30 112Z" fill="#423b48"/><path d="M99.4 79 L100.6 79 L101.5 112 L98.5 112Z" fill="#f2c14e"/><rect x="96" y="40" width="8" height="26" rx="2" fill="#140c18"/><circle cx="100" cy="45" r="2.2" fill="#ffb020"/><circle cx="100" cy="52" r="2.2" fill="#ffb020"/><circle class="tl" cx="100" cy="59" r="2.2" fill="#22332a"/><rect x="99.3" y="66" width="1.4" height="13" fill="#140c18"/>${car(72,"#f2c94c","c1")}${car(128,"#2dd4bf","c2")}</svg>`;
+  },
+  nfg(){
+    const map=["~~~~~~~~~~~~~~~~","~~~..,,.T..~~~~~","~~.T.,,..O..T.~~","~~..w.....,,..~~","~~.T..O...,,.~~~","~~~~...R...~~~~~"];
+    const C={".":"#cfae74",",":"#3f7d3c",T:"#3a7136",O:"#cfae74",w:"#cfae74",R:"#cfae74"};
+    const s=12.5;let t="";
+    map.forEach((row,y)=>[...row].forEach((c,x)=>{if(c==="~")return;const X=x*s,Y=y*s+18;
+      t+=`<rect x="${X}" y="${Y}" width="${s}" height="${s}" fill="${C[c]}"/>`;
+      if(c==="T")t+=`<circle cx="${X+6.2}" cy="${Y+5.6}" r="4.6" fill="#245a2d"/><circle cx="${X+5}" cy="${Y+4.6}" r="2.6" fill="#3a8743"/>`;
+      if(c==="O")t+=`<path d="M${X+2} ${Y+9.5}L${X+3.4} ${Y+4.4}L${X+6.4} ${Y+2.4}L${X+9.6} ${Y+4}L${X+10.8} ${Y+9.2}Z" fill="#8a948f"/>`;
+      if(c==="w")t+=`<rect x="${X+2.4}" y="${Y+5.6}" width="8" height="2.6" rx="1.3" fill="#9a6232"/><rect x="${X+3.2}" y="${Y+3.2}" width="7" height="2.6" rx="1.3" fill="#ad7140"/>`;
+      if(c==="R")t+=`<rect x="${X+1.5}" y="${Y+2}" width="9.5" height="8.5" rx="1" fill="none" stroke="#2bc2b3" stroke-width="1"/>`;}));
+    const vis=[8,9,10].map(x=>`<rect x="${x*s+.6}" y="${3*s+18.6}" width="${s-1.2}" height="${s-1.2}" rx="1.5" fill="rgba(240,82,95,${x===10?.18:.42})" stroke="#f0525f" stroke-width=".5"/>`).join("");
+    const guard=`<g transform="translate(${11*s} ${3*s+18})"><path d="M0 6.2L3.2 3.6V8.8Z" fill="#ffd7c2"/><circle cx="6.2" cy="6.2" r="4.4" fill="#f0525f" stroke="#3a0c12" stroke-width=".8"/></g>`;
+    const me=`<g class="m" transform="translate(${6*s} ${2*s+18})"><circle cx="6.2" cy="6.2" r="4.6" fill="#2bc2b3" stroke="#06201d" stroke-width=".8"/><text x="6.2" y="8.1" text-anchor="middle" font-size="5.6" font-weight="800" fill="#06201d" font-family="Figtree,sans-serif">M</text></g>`;
+    return `<svg viewBox="0 0 200 112" preserveAspectRatio="xMidYMid slice">${t}${vis}${guard}${me}</svg>`;
   },
   soon(){return `<span>?</span>`;}
 };

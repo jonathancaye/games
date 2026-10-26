@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<link rel="icon" href="../../favicon.svg">
+<title>Náufragos</title>
+<meta name="theme-color" content="#0e1615">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: uma tela sem rolagem — topo, placar, tabuleiro (flex), controles. Visual do hub Mesa de Jogos (escuro, teal/laranja). */
+:root{
+  --bg:#0e1615; --bg-2:#131f1d; --surface:#17231f; --surface-2:#1c2a26; --line:#273935; --fg:#eaf2ef; --muted:#93a8a3;
+  --teal:#2bc2b3; --orange:#ff9348; --red:#f0525f; --gold:#f2c14e;
+  --teal-soft:rgba(43,194,179,.14); --orange-soft:rgba(255,147,72,.16); --red-soft:rgba(240,82,95,.16);
+  --f-display:"Bricolage Grotesque","Avenir Next",system-ui,sans-serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0;overflow:hidden;background:var(--bg);color:var(--fg);font-family:var(--f-body);
+  user-select:none;-webkit-user-select:none;touch-action:manipulation}
+body{
+  padding-block:8px;
+  padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));
+  background:radial-gradient(60% 40% at 0% 0%,rgba(43,194,179,.10),transparent 70%),radial-gradient(50% 40% at 100% 100%,rgba(255,147,72,.09),transparent 70%),var(--bg)}
+.app{max-width:560px;height:100%;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+button{font-family:inherit;color:inherit}
+button:focus-visible,a:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+svg.i{width:1em;height:1em;flex:none}
+
+/* topo */
+.top{flex:none;display:flex;align-items:center;gap:8px;height:40px}
+.back,.chip-btn{color:var(--fg);text-decoration:none;font-size:13px;font-weight:600;border:1px solid var(--line);background:transparent;border-radius:999px;padding:6px 12px;white-space:nowrap;cursor:pointer}
+.brand{flex:1;text-align:center;font-family:var(--f-display);font-weight:800;font-size:21px;letter-spacing:-.02em}
+.brand span{color:var(--orange)}
+
+/* placar */
+.hud{flex:none;display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:9px 12px}
+.lvl{min-width:0}
+.lvl small{display:block;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.lvl b{display:block;font-family:var(--f-display);font-size:18px;font-weight:800;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat{display:flex;flex-direction:column;align-items:flex-end;gap:3px;font-variant-numeric:tabular-nums}
+.stat small{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.stat b{font-size:16px;font-weight:700}
+.stat b em{font-style:normal;color:var(--muted);font-weight:600;font-size:13px}
+.clockbar{width:74px;height:5px;border-radius:9px;background:var(--bg-2);overflow:hidden}
+.clockbar i{display:block;height:100%;background:var(--teal);border-radius:9px;transition:width .2s,background .2s}
+.clockbar.low i{background:var(--orange)}
+.logs{display:flex;gap:3px}
+.logs i{width:15px;height:9px;border-radius:5px;background:var(--bg-2);border:1px solid var(--line)}
+.logs i.on{background:#a8703c;border-color:#d9a86a}
+.coco{width:11px;height:11px;border-radius:50%;border:1px dashed var(--muted);display:inline-block;vertical-align:-1px;margin-left:6px}
+.coco.on{background:#7a4a26;border:1px solid #c79466}
+
+.hint{flex:none;margin:0;font-size:13.5px;line-height:1.35;color:var(--muted);text-align:center;min-height:2.7em;display:flex;align-items:center;justify-content:center;padding:0 6px;text-wrap:balance}
+.hint b{color:var(--fg)}
+
+/* tabuleiro */
+.stage{flex:1;min-height:0;display:grid;place-items:center;position:relative}
+#board{width:100%;height:100%;display:block;touch-action:none}
+.tok{transition:transform .16s cubic-bezier(.3,1.2,.5,1)}
+@media (prefers-reduced-motion:reduce){.tok{transition:none}}
+.caught{animation:pulse .5s ease-in-out 3}
+@keyframes pulse{50%{opacity:.25}}
+
+/* controles */
+.ctrl{flex:none;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:10px;padding-bottom:2px}
+.side{display:flex;flex-direction:column;gap:8px}
+.side.l{align-items:flex-start}.side.r{align-items:flex-end}
+.btn{appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:10px 14px;font:700 14px var(--f-body);cursor:pointer;display:inline-flex;align-items:center;gap:7px;min-height:44px}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.wait{background:var(--orange-soft);border-color:rgba(255,147,72,.45);color:var(--orange)}
+.side .btn:not(.ghost){flex-direction:column;gap:3px;width:84px;padding:8px 6px;font-size:12.5px}
+.side .btn:not(.ghost) svg.i{width:20px;height:20px}
+.btn.ghost{background:transparent;color:var(--muted);font-weight:600;font-size:13px;min-height:36px;padding:7px 12px}
+.pad{display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(3,46px);gap:4px}
+.pad button{appearance:none;border:1px solid var(--line);background:var(--surface-2);border-radius:12px;cursor:pointer;display:grid;place-items:center;font-size:20px;color:var(--fg)}
+.pad button:active{background:var(--teal);color:#06201d}
+.pad .u{grid-area:1/2}.pad .l{grid-area:2/1}.pad .r{grid-area:2/3}.pad .d{grid-area:3/2}
+.pad .hub{grid-area:2/2;border-radius:50%;background:transparent;border:1px dashed var(--line);pointer-events:none}
+
+/* telas sobrepostas */
+.ov{position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:rgba(6,12,11,.72);backdrop-filter:blur(4px);
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.panel{width:min(100%,440px);max-height:100%;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.panel h2{margin:0;font-family:var(--f-display);font-weight:800;font-size:28px;letter-spacing:-.025em;line-height:1;text-wrap:balance}
+.panel p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.45}
+.eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+.eyebrow.bad{color:var(--red)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row .btn{flex:1;justify-content:center}
+.btn.pri{background:var(--teal);border-color:var(--teal);color:#06201d}
+.stars{display:flex;flex-direction:column;gap:8px}
+.star{display:flex;align-items:center;gap:10px;font-size:14.5px;font-weight:600;color:var(--muted)}
+.star svg{width:22px;height:22px;flex:none}
+.star.on{color:var(--fg)}
+.star .sf{fill:var(--bg-2);stroke:var(--line)}
+.star.on .sf{fill:var(--gold);stroke:#b98a1f}
+
+.levels{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lv{appearance:none;text-align:left;border:1px solid var(--line);background:var(--bg-2);border-radius:14px;padding:10px 12px;cursor:pointer;display:flex;flex-direction:column;gap:3px;min-height:64px}
+.lv:not(:disabled):hover{border-color:var(--teal)}
+.lv:disabled{cursor:default;opacity:.45}
+.lv .n{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal)}
+.lv:disabled .n{color:var(--muted)}
+.lv b{font-size:14.5px;font-weight:700}
+.lv .ss{display:flex;gap:2px;margin-top:2px}
+.lv .ss i{width:10px;height:10px;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);background:var(--line)}
+.lv .ss i.on{background:var(--gold)}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:13px;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:7px}
+.legend i{width:16px;height:16px;border-radius:4px;flex:none}
+details{border-top:1px solid var(--line);padding-top:10px}
+summary{cursor:pointer;font-weight:700;font-size:14px}
+details[open] summary{margin-bottom:10px}
+
+@media (max-height:700px){.pad{grid-template-columns:repeat(3,44px);grid-template-rows:repeat(3,40px)}.hint{font-size:12.5px;min-height:2.5em}.hud{padding:7px 10px}}
+@media (max-height:600px){.hint{display:none}}
+</style>
+
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <a class="back" href="../../">← Mesa</a>
+    <div class="brand">Náufra<span>gos</span></div>
+    <button class="chip-btn" id="btnLevels" type="button">Fases</button>
+  </header>
+
+  <section class="hud" aria-live="polite">
+    <div class="lvl"><small id="lvlNum">Fase 1</small><b id="lvlName">A praia</b></div>
+    <div class="stat"><small>Madeira <span class="coco" id="cocoDot" title="Coco bônus"></span></small><div class="logs" id="logs"></div></div>
+    <div class="stat"><small>Tique</small><b id="tick">0 <em>/ 28</em></b><div class="clockbar" id="clockbar"><i id="clockfill"></i></div></div>
+  </section>
+
+  <p class="hint" id="hint"></p>
+
+  <div class="stage"><svg id="board" role="img" aria-label="Tabuleiro da ilha"></svg></div>
+
+  <div class="ctrl">
+    <div class="side l">
+      <button class="btn" id="btnUndo" type="button" title="Desfazer (Z)"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>Desfazer</button>
+      <button class="btn ghost" id="btnReset" type="button" title="Reiniciar (R)">Reiniciar</button>
+    </div>
+    <div class="pad" aria-label="Direcional">
+      <button class="u" data-d="U" type="button" aria-label="Cima">▲</button>
+      <button class="l" data-d="L" type="button" aria-label="Esquerda">◀</button>
+      <span class="hub"></span>
+      <button class="r" data-d="R" type="button" aria-label="Direita">▶</button>
+      <button class="d" data-d="D" type="button" aria-label="Baixo">▼</button>
+    </div>
+    <div class="side r">
+      <button class="btn wait" id="btnWait" type="button" title="Esperar (espaço)"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M10 2h4"/></svg>Esperar</button>
+      <span style="font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap" id="parLbl">Par 23</span>
+    </div>
+  </div>
+</div>
+
+<!-- seleção de fases -->
+<div class="ov" id="ovLevels" hidden>
+  <div class="panel">
+    <div><div class="eyebrow">Fuja da ilha</div><h2>Náufragos</h2></div>
+    <p>Três náufragos numa ilha tomada por piratas. Junte madeira, construa a jangada e fuja sem ser visto. Cada passo seu é um tique, e a cada tique os guardas andam.</p>
+    <div class="levels" id="levelGrid"></div>
+    <details>
+      <summary>Como jogar</summary>
+      <div class="legend">
+        <span><i style="background:#cfae74"></i>Areia: livre</span>
+        <span><i style="background:#3f7d3c"></i>Mato alto: esconde</span>
+        <span><i style="background:#2a5d33"></i>Árvore: bloqueia</span>
+        <span><i style="background:#7d8784"></i>Pedra: bloqueia</span>
+        <span><i style="background:rgba(240,82,95,.55)"></i>Visão do guarda</span>
+        <span><i style="background:#a8703c"></i>Madeira: colete todas</span>
+      </div>
+      <p style="margin-top:10px">Deslize no tabuleiro, toque numa casa vizinha ou use o direcional. Teclado: setas, espaço para esperar, Z desfaz, R reinicia. As estrelas valem por fugir, por fugir dentro do par de tiques e por pegar o coco.</p>
+    </details>
+  </div>
+</div>
+
+<!-- resultado -->
+<div class="ov" id="ovResult" hidden>
+  <div class="panel" id="resultPanel"></div>
+</div>
+
+<script>
+/*ENGINE-START*/
+const DIRS={U:[0,-1],D:[0,1],L:[-1,0],R:[1,0]};
+const BLOCK=new Set(["T","O"]);          // bloqueiam passo e visão
+const WALK=new Set([".",",","R"]);        // areia, mato, local da jangada
+const RANGE=3;
+
+function parseLevel(def){
+  const rows=def.map, H=rows.length, W=rows[0].length;
+  const tiles=[], items=[], chars=[];
+  for(let y=0;y<H;y++){
+    const r=[];
+    for(let x=0;x<W;x++){
+      let c=rows[y][x];
+      if(c==="w"){items.push({x,y,k:"wood"});c=".";}
+      else if(c==="W"){items.push({x,y,k:"wood"});c=",";}
+      else if(c==="c"){items.push({x,y,k:"coco"});c=".";}
+      else if(c==="C"){items.push({x,y,k:"coco"});c=",";}
+      else if(c==="M"){chars.push({x,y,id:"M"});c=".";}
+      r.push(c);
+    }
+    tiles.push(r);
+  }
+  const lv={...def,W,H,tiles,items,chars0:chars,guards:def.guards||[]};
+  lv.woodMask=items.reduce((m,it,i)=>it.k==="wood"?m|(1<<i):m,0);
+  lv.cocoMask=items.reduce((m,it,i)=>it.k==="coco"?m|(1<<i):m,0);
+  lv._g=[];
+  return lv;
+}
+
+function tileAt(lv,x,y){return (x<0||y<0||x>=lv.W||y>=lv.H)?"~":lv.tiles[y][x];}
+
+/* estado dos guardas no tique t (determinístico, em cache) */
+function guardsAt(lv,t){
+  while(lv._g.length<=t){
+    const n=lv._g.length;
+    if(n===0){lv._g.push(lv.guards.map(g=>({x:g.x,y:g.y,f:g.f})));continue;}
+    const prev=lv._g[n-1];
+    lv._g.push(prev.map((p,i)=>{
+      const mv=lv.guards[i].moves||".";
+      const c=mv[(n-1)%mv.length];
+      if(c===".")return {...p};
+      const up=c.toUpperCase();
+      if(c===up){const[dx,dy]=DIRS[up];return {x:p.x+dx,y:p.y+dy,f:up};}
+      return {...p,f:up};
+    }));
+  }
+  return lv._g[t];
+}
+/* direção do próximo movimento do guarda (para a seta de dica) */
+function guardNext(lv,i,t){const mv=lv.guards[i].moves||".";return mv[t%mv.length];}
+
+function visionCells(lv,g){
+  const out=[];const[dx,dy]=DIRS[g.f];
+  for(let k=1;k<=RANGE;k++){
+    const x=g.x+dx*k,y=g.y+dy*k;
+    if(x<0||y<0||x>=lv.W||y>=lv.H)break;
+    if(BLOCK.has(lv.tiles[y][x]))break;
+    out.push({x,y});
+  }
+  return out;
+}
+function seenBy(lv,gs,chars){
+  for(let i=0;i<gs.length;i++){
+    for(const c of visionCells(lv,gs[i])){
+      for(const ch of chars){
+        if(ch.x===c.x&&ch.y===c.y&&lv.tiles[c.y][c.x]!==",")return {guard:i,x:c.x,y:c.y};
+      }
+    }
+  }
+  return null;
+}
+
+function initState(lv){return {t:0,chars:lv.chars0.map(c=>({...c})),got:0};}
+
+/* aplica uma ação. retorna {state, result} ou null se inválida.
+   result: "ok" | "win" | "seen" | "bump" | "time" */
+function step(lv,s,a){
+  const chars=s.chars.map(c=>({...c}));
+  let got=s.got;
+  const gsNow=guardsAt(lv,s.t);
+  if(a.d!=="W"){
+    const ch=chars[a.c];const[dx,dy]=DIRS[a.d];
+    const nx=ch.x+dx,ny=ch.y+dy;
+    if(!WALK.has(tileAt(lv,nx,ny)))return null;
+    if(chars.some((o,j)=>j!==a.c&&o.x===nx&&o.y===ny))return null;
+    if(gsNow.some(g=>g.x===nx&&g.y===ny))return null;
+    ch.x=nx;ch.y=ny;
+    lv.items.forEach((it,i)=>{if(!(got&(1<<i))&&it.x===nx&&it.y===ny)got|=1<<i;});
+  }
+  let seen=seenBy(lv,gsNow,chars);
+  if(seen)return {state:{t:s.t+1,chars,got},result:"seen",info:seen,gt:s.t};
+  const allWood=(got&lv.woodMask)===lv.woodMask;
+  if(allWood&&chars.every(c=>lv.tiles[c.y][c.x]==="R"))return {state:{t:s.t+1,chars,got},result:"win"};
+  const t=s.t+1;const gs=guardsAt(lv,t);
+  for(let i=0;i<gs.length;i++)for(const ch of chars)if(gs[i].x===ch.x&&gs[i].y===ch.y)
+    return {state:{t,chars,got},result:"bump",info:{guard:i,x:ch.x,y:ch.y},gt:t};
+  seen=seenBy(lv,gs,chars);
+  if(seen)return {state:{t,chars,got},result:"seen",info:seen,gt:t};
+  if(t>=lv.limit)return {state:{t,chars,got},result:"time"};
+  return {state:{t,chars,got},result:"ok"};
+}
+
+/* BFS: menor nº de tiques para fugir (opcionalmente exigindo o coco) */
+function solve(lv,needCoco){
+  const acts=[];lv.chars0.forEach((_,c)=>{for(const d of ["U","D","L","R","W"])acts.push({c,d});});
+  const key=s=>s.t+"|"+s.got+"|"+s.chars.map(c=>c.x+","+c.y).join(";");
+  let frontier=[{s:initState(lv),path:[]}];const seen=new Set([key(frontier[0].s)]);
+  while(frontier.length){
+    const next=[];
+    for(const {s,path} of frontier){
+      for(const a of acts){
+        const r=step(lv,s,a);if(!r)continue;
+        if(r.result==="win"){
+          if(needCoco&&(r.state.got&lv.cocoMask)!==lv.cocoMask)continue;
+          return {ticks:r.state.t,path:[...path,a.d]};
+        }
+        if(r.result!=="ok")continue;
+        const k=key(r.state);if(seen.has(k))continue;seen.add(k);
+        next.push({s:r.state,path:[...path,a.d]});
+      }
+    }
+    frontier=next;
+  }
+  return null;
+}
+/*ENGINE-END*/
+/*LEVELS-START*/
+const LEVELS=[
+  {
+    name:"A praia",
+    hint:"Junte as 3 madeiras e leve o Marujo até a jangada. O navio pirata volta em poucos tiques.",
+    limit:28, par:23,
+    map:[
+      "~~~~~~~~",
+      "~M..T.w~",
+      "~.,,..T~",
+      "~..O,,.~",
+      "~T.,,.c~",
+      "~w..O..~",
+      "~..T.w.~",
+      "~~~~R~~~",
+    ],
+  },
+  {
+    name:"O vigia",
+    hint:"O guarda vê 3 casas à frente. No mato alto ninguém te vê.",
+    limit:20, par:13,
+    map:[
+      "~~~~~~~~",
+      "~M...T.~",
+      "~.TT,,.~",
+      "~w..W,.~",
+      "~TT...T~",
+      "~..O.,.~",
+      "~.c..T.~",
+      "~~~~R~~~",
+    ],
+    guards:[{x:6,y:3,f:"L",moves:"."}],
+  },
+  {
+    name:"A ronda",
+    hint:"Guardas em ronda são previsíveis. A seta mostra o próximo passo. Use Esperar para acertar o tempo.",
+    limit:36, par:29,
+    map:[
+      "~~~~~~~~~",
+      "~M..T.w.~",
+      "~.,..,T.~",
+      "~TT.TT.T~",
+      "~O.....w~",
+      "~TT.TT.,~",
+      "~c.....,~",
+      "~~~~R~~~~",
+    ],
+    guards:[{x:2,y:4,f:"R",moves:"RRRLLL"}],
+  },
+];
+/*LEVELS-END*/
+
+/* ---------- interface ---------- */
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+const S=10; // tamanho da casa no viewBox
+const COMING=["Faca e pedra","O machado","Dividir o grupo","A armadilha","Vigias cruzados","Pegadas na areia","A grande fuga"];
+const STORE="naufragos.v1";
+let progress={};
+try{progress=JSON.parse(localStorage.getItem(STORE)||"{}")||{};}catch(e){progress={};}
+const saveProgress=()=>{try{localStorage.setItem(STORE,JSON.stringify(progress));}catch(e){}};
+
+let L=null, li=0, state=null, hist=[], over=null, sel=0;
+
+const hash=(x,y,k=0)=>{let h=(x*374761393+y*668265263+k*2147483647)|0;h=(h^(h>>>13))*1274126177|0;return ((h^(h>>>16))>>>0)/4294967295;};
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+
+/* ---------- desenho estático da ilha ---------- */
+function drawTile(g,x,y,t){
+  const X=x*S,Y=y*S;
+  if(t==="~"){
+    if(hash(x,y)>.55)el("path",{d:`M${X+2} ${Y+4+hash(x,y,1)*3} q2 -1.4 4 0 t4 0`,stroke:"#2a6d73","stroke-width":.6,fill:"none","stroke-linecap":"round",opacity:.7},g);
+    return;
+  }
+  const grassy=t===",";
+  el("rect",{x:X,y:Y,width:S,height:S,fill:grassy?"#3f7d3c":"#cfae74"},g);
+  if(!grassy&&t!=="T"&&t!=="O"){ // grãos de areia
+    for(let k=0;k<3;k++)el("circle",{cx:X+1.5+hash(x,y,k)*7,cy:Y+1.5+hash(x,y,k+7)*7,r:.35,fill:"#b8955a"},g);
+  }
+  if(grassy){
+    for(let k=0;k<5;k++){const bx=X+1.2+hash(x,y,k)*7.6,by=Y+3+hash(x,y,k+9)*6;
+      el("path",{d:`M${bx} ${by} l-.9 -2.6 M${bx} ${by} l.2 -3.2 M${bx} ${by} l1 -2.4`,stroke:"#5fa257","stroke-width":.55,"stroke-linecap":"round",fill:"none"},g);}
+  }
+  if(t==="T"){
+    el("rect",{x:X,y:Y,width:S,height:S,fill:"#3a7136"},g);
+    el("ellipse",{cx:X+5.4,cy:Y+7.6,rx:3.6,ry:1.4,fill:"rgba(0,0,0,.25)"},g);
+    el("rect",{x:X+4.4,y:Y+5,width:1.4,height:3,rx:.5,fill:"#6b4a2b"},g);
+    el("circle",{cx:X+5,cy:Y+4.4,r:3.6,fill:"#245a2d"},g);
+    el("circle",{cx:X+4,cy:Y+3.6,r:2.2,fill:"#2f7238"},g);
+    el("circle",{cx:X+6.2,cy:Y+3.4,r:1.6,fill:"#3a8743"},g);
+  }
+  if(t==="O"){
+    el("rect",{x:X,y:Y,width:S,height:S,fill:"#cfae74"},g);
+    el("ellipse",{cx:X+5.3,cy:Y+7.7,rx:3.8,ry:1.2,fill:"rgba(0,0,0,.22)"},g);
+    el("path",{d:`M${X+1.6} ${Y+7.4} L${X+2.6} ${Y+3.6} L${X+5} ${Y+2} L${X+7.6} ${Y+3.2} L${X+8.6} ${Y+7.2} Z`,fill:"#7d8784"},g);
+    el("path",{d:`M${X+2.6} ${Y+3.6} L${X+5} ${Y+2} L${X+7.6} ${Y+3.2} L${X+5.4} ${Y+4.4} Z`,fill:"#9aa4a0"},g);
+  }
+  if(t==="R"){
+    el("rect",{x:X+1.2,y:Y+1.6,width:7.6,height:6.8,rx:1,fill:"none",stroke:"#8a6a3c","stroke-width":.5,"stroke-dasharray":"1 .8"},g);
+  }
+}
+function drawShore(g){ // espuma: contorno claro entre terra e água
+  for(let y=0;y<L.H;y++)for(let x=0;x<L.W;x++){
+    if(L.tiles[y][x]==="~")continue;
+    const X=x*S,Y=y*S;
+    const seg=(x1,y1,x2,y2)=>el("line",{x1,y1,x2,y2,stroke:"#e9f4ef","stroke-width":.7,"stroke-linecap":"round",opacity:.55},g);
+    if(tileAt(L,x,y-1)==="~")seg(X,Y,X+S,Y);
+    if(tileAt(L,x,y+1)==="~")seg(X,Y+S,X+S,Y+S);
+    if(tileAt(L,x-1,y)==="~")seg(X,Y,X,Y+S);
+    if(tileAt(L,x+1,y)==="~")seg(X+S,Y,X+S,Y+S);
+  }
+}
+
+let gVision,gItems,gRaft,gTokens,gArrows,tokEls=[],guardEls=[];
+function buildBoard(){
+  const svg=$("board");svg.innerHTML="";
+  svg.setAttribute("viewBox",`0 0 ${L.W*S} ${L.H*S}`);
+  el("rect",{x:0,y:0,width:L.W*S,height:L.H*S,fill:"#0d3a40",rx:3},svg);
+  const gT=el("g",{},svg);
+  for(let y=0;y<L.H;y++)for(let x=0;x<L.W;x++)drawTile(gT,x,y,L.tiles[y][x]);
+  drawShore(gT);
+  gRaft=el("g",{},svg);
+  gVision=el("g",{},svg);
+  gItems=el("g",{},svg);
+  gArrows=el("g",{},svg);
+  gTokens=el("g",{},svg);
+  tokEls=L.chars0.map((c,i)=>{
+    const g=el("g",{class:"tok"},gTokens);
+    el("ellipse",{cx:5,cy:8.3,rx:3,ry:.9,fill:"rgba(0,0,0,.3)"},g);
+    el("circle",{cx:5,cy:5,r:3.4,fill:"#2bc2b3",stroke:"#06201d","stroke-width":.6},g);
+    const t=el("text",{x:5,y:6.35,"text-anchor":"middle","font-size":3.8,"font-weight":800,fill:"#06201d","font-family":"Figtree,system-ui,sans-serif"},g);t.textContent=c.id;
+    return g;
+  });
+  guardEls=L.guards.map(()=>{
+    const g=el("g",{class:"tok"},gTokens);
+    el("ellipse",{cx:5,cy:8.3,rx:3,ry:.9,fill:"rgba(0,0,0,.3)"},g);
+    const body=el("g",{},g);
+    el("path",{d:"M5 .9 L7.2 3.4 L2.8 3.4 Z",fill:"#ffd7c2"},body); // nariz = direção
+    el("circle",{cx:5,cy:5,r:3.3,fill:"#f0525f",stroke:"#3a0c12","stroke-width":.6},body);
+    el("path",{d:"M2.4 4.2 Q5 1.6 7.6 4.2 Z",fill:"#2b1a1d"},body); // chapéu pirata
+    el("circle",{cx:5,cy:3.6,r:.45,fill:"#eaf2ef"},body);
+    g._body=body;
+    return g;
+  });
+  svg.onpointerdown=onPointerDown;
+}
+
+const ROT={U:0,R:90,D:180,L:270};
+function renderDynamic(){
+  const gs=guardsAt(L,state.t);
+  // itens
+  gItems.innerHTML="";
+  L.items.forEach((it,i)=>{
+    if(state.got&(1<<i))return;
+    const X=it.x*S,Y=it.y*S,g=el("g",{},gItems);
+    if(it.k==="wood"){
+      el("ellipse",{cx:X+5,cy:Y+7.4,rx:3.4,ry:.8,fill:"rgba(0,0,0,.25)"},g);
+      el("rect",{x:X+1.8,y:Y+4.6,width:6.4,height:2,rx:1,fill:"#9a6232"},g);
+      el("rect",{x:X+2.6,y:Y+2.8,width:5.6,height:2,rx:1,fill:"#ad7140"},g);
+      el("circle",{cx:X+8,cy:Y+5.6,r:1,fill:"#d9a86a"},g);el("circle",{cx:X+8,cy:Y+3.8,r:1,fill:"#d9a86a"},g);
+    }else{
+      el("ellipse",{cx:X+5,cy:Y+7.2,rx:2.6,ry:.7,fill:"rgba(0,0,0,.25)"},g);
+      el("circle",{cx:X+5,cy:Y+5.2,r:2.2,fill:"#6b4226"},g);
+      el("circle",{cx:X+4.3,cy:Y+4.5,r:.35,fill:"#2b190d"},g);el("circle",{cx:X+5.6,cy:Y+4.5,r:.35,fill:"#2b190d"},g);
+      el("path",{d:`M${X+5} ${Y+3} q1.5 -2 3 -1.2 M${X+5} ${Y+3} q-1 -2 -2.6 -1.6`,stroke:"#4f9a48","stroke-width":.7,fill:"none","stroke-linecap":"round"},g);
+    }
+  });
+  // jangada
+  gRaft.innerHTML="";
+  const ready=(state.got&L.woodMask)===L.woodMask;
+  for(let y=0;y<L.H;y++)for(let x=0;x<L.W;x++)if(L.tiles[y][x]==="R"){
+    const X=x*S,Y=y*S,g=el("g",{},gRaft);
+    const n=popcount(state.got&L.woodMask);
+    for(let k=0;k<n;k++)el("rect",{x:X+1.6,y:Y+2+k*(6/Math.max(1,popcount(L.woodMask))),width:6.8,height:5.6/Math.max(1,popcount(L.woodMask)),rx:.6,fill:"#a8703c",stroke:"#6b4626","stroke-width":.3},g);
+    if(ready)el("rect",{x:X+.8,y:Y+.8,width:8.4,height:8.4,rx:1.4,fill:"none",stroke:"#2bc2b3","stroke-width":.7},g);
+  }
+  // visão
+  gVision.innerHTML="";gArrows.innerHTML="";
+  gs.forEach((g,i)=>{
+    for(const c of visionCells(L,g)){
+      const grass=L.tiles[c.y][c.x]===",";
+      el("rect",{x:c.x*S+.4,y:c.y*S+.4,width:S-.8,height:S-.8,rx:1,fill:grass?"rgba(240,82,95,.14)":"rgba(240,82,95,.38)",stroke:"rgba(240,82,95,.7)","stroke-width":.35,"stroke-dasharray":grass?"1 1":"none"},gVision);
+    }
+    const nx=guardNext(L,i,state.t);
+    if(nx!=="."){
+      const up=nx.toUpperCase(),[dx,dy]=DIRS[up];
+      const moving=nx===up;
+      const cx=(g.x+(moving?dx*.92:dx*.5))*S+5,cy=(g.y+(moving?dy*.92:dy*.5))*S+5;
+      el("path",{d:"M-1.6 1 L0 -.8 L1.6 1",transform:`translate(${cx} ${cy}) rotate(${ROT[up]})`,stroke:"#ff9348","stroke-width":.9,fill:"none","stroke-linecap":"round","stroke-linejoin":"round",opacity:moving?.95:.6},gArrows);
+    }
+  });
+  // fichas
+  state.chars.forEach((c,i)=>{tokEls[i].style.transform=`translate(${c.x*S}px,${c.y*S}px)`;});
+  gs.forEach((g,i)=>{guardEls[i].style.transform=`translate(${g.x*S}px,${g.y*S}px)`;guardEls[i]._body.setAttribute("transform",`rotate(${ROT[g.f]} 5 5)`);});
+  // placar
+  const left=L.limit-state.t;
+  $("tick").innerHTML=`${state.t} <em>/ ${L.limit}</em>`;
+  $("clockfill").style.width=`${Math.max(0,100*left/L.limit)}%`;
+  $("clockbar").classList.toggle("low",left<=5);
+  const nW=popcount(L.woodMask),hW=popcount(state.got&L.woodMask);
+  $("logs").innerHTML=Array.from({length:nW},(_,k)=>`<i class="${k<hW?"on":""}"></i>`).join("");
+  $("cocoDot").classList.toggle("on",(state.got&L.cocoMask)===L.cocoMask&&L.cocoMask!==0);
+  $("btnUndo").disabled=hist.length===0;
+}
+function popcount(n){let c=0;while(n){c+=n&1;n>>>=1;}return c;}
+
+/* ---------- fluxo ---------- */
+function loadLevel(i){
+  li=i;L=parseLevel(LEVELS[i]);state=initState(L);hist=[];over=null;sel=0;
+  $("lvlNum").textContent=`Fase ${i+1}`;$("lvlName").textContent=LEVELS[i].name;
+  $("hint").textContent=LEVELS[i].hint;
+  $("parLbl").textContent=`Par ${LEVELS[i].par} tiques`;
+  buildBoard();renderDynamic();
+  hideOv();
+}
+function act(d){
+  if(over||!L)return;
+  const r=step(L,state,{c:sel,d});
+  if(!r){nudge(d);return;}
+  hist.push(state);
+  if(r.result==="ok"){state=r.state;renderDynamic();return;}
+  state=r.state;
+  if(r.result==="win"){renderDynamic();finishWin();return;}
+  // derrota: mostra o tabuleiro no momento em que aconteceu
+  if(r.gt!==undefined){const keep=state.t;state={...state,t:r.gt};renderDynamic();state.t=keep;}else renderDynamic();
+  over=r.result;
+  if(r.info){const m=el("rect",{x:r.info.x*S+.3,y:r.info.y*S+.3,width:S-.6,height:S-.6,rx:1.2,fill:"none",stroke:"#f0525f","stroke-width":1,class:"caught"},gArrows);}
+  setTimeout(()=>showLoss(r.result),r.info?650:150);
+}
+function nudge(d){
+  const t=tokEls[sel];if(!t)return;const[dx,dy]=DIRS[d],c=state.chars[sel];
+  t.style.transform=`translate(${c.x*S+dx*1.2}px,${c.y*S+dy*1.2}px)`;
+  setTimeout(()=>{t.style.transform=`translate(${c.x*S}px,${c.y*S}px)`;},110);
+}
+function undo(){if(!hist.length)return;state=hist.pop();over=null;hideOv();renderDynamic();}
+function reset(){loadLevel(li);}
+
+function starSvg(){return `<svg viewBox="0 0 24 24"><path class="sf" stroke-width="1.4" stroke-linejoin="round" d="M12 2.6l2.8 6 6.5.7-4.9 4.4 1.4 6.4L12 16.8l-5.8 3.3 1.4-6.4-4.9-4.4 6.5-.7z"/></svg>`;}
+function finishWin(){
+  over="win";
+  const lv=LEVELS[li];
+  const s=[true,state.t<=lv.par,(state.got&L.cocoMask)===L.cocoMask&&L.cocoMask!==0];
+  const prev=progress[li]||[false,false,false];
+  progress[li]=prev.map((v,k)=>v||s[k]);saveProgress();
+  const last=li>=LEVELS.length-1;
+  $("resultPanel").innerHTML=`
+    <div><div class="eyebrow">Fase ${li+1} · ${lv.name}</div><h2>A jangada zarpou!</h2></div>
+    <p>Fuga em ${state.t} tiques. O par desta fase é ${lv.par}.</p>
+    <div class="stars">
+      <div class="star on">${starSvg()}Fugiu da ilha</div>
+      <div class="star ${s[1]?"on":""}">${starSvg()}Fuga em até ${lv.par} tiques</div>
+      <div class="star ${s[2]?"on":""}">${starSvg()}Pegou o coco</div>
+    </div>
+    <div class="row">
+      <button class="btn" type="button" data-a="retry">Jogar de novo</button>
+      ${last?`<button class="btn pri" type="button" data-a="levels">Ver fases</button>`:`<button class="btn pri" type="button" data-a="next">Próxima fase →</button>`}
+    </div>
+    ${last?`<p>Essa é a última fase da v0.1. As próximas trazem a Batedora e o Carpinteiro.</p>`:""}`;
+  setTimeout(()=>showOv("ovResult"),380);
+}
+function showLoss(kind){
+  const T={seen:["Você foi visto!","Um guarda te avistou. Fique fora da área vermelha ou atravesse pelo mato alto."],
+           bump:["Trombou com o guarda!","O guarda entrou na sua casa. Observe a seta laranja: ela mostra o próximo passo dele."],
+           time:["O navio voltou.","Os piratas chegaram antes da jangada ficar pronta. Procure um caminho mais curto."]}[kind];
+  $("resultPanel").innerHTML=`
+    <div><div class="eyebrow bad">Fase ${li+1} · ${LEVELS[li].name}</div><h2>${T[0]}</h2></div>
+    <p>${T[1]}</p>
+    <div class="row">
+      <button class="btn pri" type="button" data-a="undo">Desfazer o passo</button>
+      <button class="btn" type="button" data-a="retry">Reiniciar</button>
+    </div>`;
+  showOv("ovResult");
+}
+function showOv(id){$(id).hidden=false;const b=$(id).querySelector("button");b&&b.focus({preventScroll:true});}
+function hideOv(){$("ovResult").hidden=true;$("ovLevels").hidden=true;}
+
+function openLevels(){
+  const grid=$("levelGrid");
+  const items=LEVELS.map((lv,i)=>{
+    const st=progress[i]||[];
+    return `<button class="lv" type="button" data-l="${i}"><span class="n">Fase ${i+1}</span><b>${lv.name}</b><span class="ss">${[0,1,2].map(k=>`<i class="${st[k]?"on":""}"></i>`).join("")}</span></button>`;
+  });
+  COMING.forEach((n,k)=>items.push(`<button class="lv" type="button" disabled><span class="n">Fase ${LEVELS.length+k+1} · em breve</span><b>${n}</b></button>`));
+  grid.innerHTML=items.join("");
+  $("ovLevels").hidden=false;
+}
+
+/* ---------- entrada ---------- */
+$("resultPanel").addEventListener("click",e=>{
+  const a=e.target.closest("button")?.dataset.a;if(!a)return;
+  if(a==="undo")undo();else if(a==="retry")reset();else if(a==="next")loadLevel(li+1);else if(a==="levels"){hideOv();openLevels();}
+});
+$("levelGrid").addEventListener("click",e=>{const b=e.target.closest("button[data-l]");if(b)loadLevel(+b.dataset.l);});
+$("ovLevels").addEventListener("click",e=>{if(e.target.id==="ovLevels"&&L)hideOv();});
+document.querySelectorAll(".pad button").forEach(b=>b.addEventListener("click",()=>act(b.dataset.d)));
+$("btnWait").onclick=()=>act("W");
+$("btnUndo").onclick=undo;
+$("btnReset").onclick=reset;
+$("btnLevels").onclick=openLevels;
+document.addEventListener("keydown",e=>{
+  const k=e.key;
+  if(!$("ovResult").hidden&&over&&over!=="win"&&(k==="z"||k==="Z"||k==="Backspace")){undo();e.preventDefault();return;}
+  if(!$("ovResult").hidden||!$("ovLevels").hidden)return;
+  const map={ArrowUp:"U",ArrowDown:"D",ArrowLeft:"L",ArrowRight:"R",w:"U",s:"D",a:"L",d:"R",W:"U",S:"D",A:"L",D:"R"};
+  if(map[k]){act(map[k]);e.preventDefault();}
+  else if(k===" "||k==="."){act("W");e.preventDefault();}
+  else if(k==="z"||k==="Z"||k==="Backspace"){undo();e.preventDefault();}
+  else if(k==="r"||k==="R"){reset();}
+});
+let pStart=null;
+function onPointerDown(e){
+  pStart={x:e.clientX,y:e.clientY};
+  const up=ev=>{
+    window.removeEventListener("pointerup",up);
+    if(!pStart)return;
+    const dx=ev.clientX-pStart.x,dy=ev.clientY-pStart.y;pStart=null;
+    if(Math.hypot(dx,dy)>22){act(Math.abs(dx)>Math.abs(dy)?(dx>0?"R":"L"):(dy>0?"D":"U"));return;}
+    // toque: casa vizinha
+    const svg=$("board"),pt=svg.createSVGPoint();pt.x=ev.clientX;pt.y=ev.clientY;
+    const p=pt.matrixTransform(svg.getScreenCTM().inverse());
+    const cx=Math.floor(p.x/S),cy=Math.floor(p.y/S),c=state.chars[sel];
+    const ddx=cx-c.x,ddy=cy-c.y;
+    if(Math.abs(ddx)+Math.abs(ddy)===1)act(ddx===1?"R":ddx===-1?"L":ddy===1?"D":"U");
+    else if(ddx===0&&ddy===0)act("W");
+  };
+  window.addEventListener("pointerup",up);
+}
+
+/* ---------- início ---------- */
+function start(data){
+  const firstUnplayed=LEVELS.findIndex((_,i)=>!progress[i]);
+  loadLevel(data&&Number.isInteger(data.li)?data.li:Math.max(0,firstUnplayed===-1?0:firstUnplayed));
+  if(!(data&&Number.isInteger(data.li)))openLevels();
+}
+window.claude?.hot?.snapshot?.(()=>({li}));
+window.claude?.hot?.ready?window.claude.hot.ready(start):start(window.claude?.hot?.data??{});
+</script>
+
+</body>
+</html>
