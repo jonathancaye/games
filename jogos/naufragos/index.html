@@ -108,6 +108,7 @@ svg.i{width:1em;height:1em;flex:none}
 .side.many .btn:not(.ghost) svg.i{width:16px;height:16px}
 .side.many{gap:5px}
 .lv.locked{border-style:dashed}
+.secret{font-size:12px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.04em;opacity:.8}
 .lv .lk{font-size:12px;color:var(--muted);font-weight:600}
 .btn.ghost{background:transparent;color:var(--muted);font-weight:600;font-size:13px;min-height:36px;padding:7px 12px}
 .pad{display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(3,46px);gap:4px}
@@ -202,6 +203,7 @@ details[open] summary{margin-bottom:10px}
     <div><div class="eyebrow">Fuja da ilha</div><h2>Náufragos</h2></div>
     <p>Náufragos numa ilha tomada por piratas. Junte madeira, construa a jangada e fuja sem ser visto. Cada passo seu é um tique, e a cada tique os guardas andam.</p>
     <div class="levels" id="levelGrid"></div>
+    <p class="secret" id="perfectCount"></p>
     <details>
       <summary>Como jogar</summary>
       <div class="legend">
@@ -216,6 +218,8 @@ details[open] summary{margin-bottom:10px}
         <span><i style="background:#f2c14e"></i>Machado: árvore vira madeira</span>
         <span><i style="background:#5fa6a8"></i>Água rasa: só na maré baixa</span>
         <span><i style="background:#8a948f"></i>Armadilha: prende 4 tiques</span>
+        <span><i style="background:rgba(255,147,72,.45)"></i>Faro do cachorro: 2 casas</span>
+        <span><i style="background:#b8955a"></i>Pegada: dura 3 tiques</span>
       </div>
       <p style="margin-top:10px">Deslize no tabuleiro, toque numa casa vizinha ou use o direcional. Toque num personagem para controlá-lo. Teclado: setas, espaço espera, Tab troca de personagem, P mira a pedra, X usa o machado, Q arma a armadilha, Z desfaz, R reinicia. As estrelas valem por fugir, por pegar o coco e pela fuga perfeita: coco e jangada dentro do par de tiques. Dá para fazer as três numa jogada só.</p>
     </details>
@@ -234,6 +238,8 @@ const RANGE=3;        // alcance da visão
 const THROW=3;        // alcance do arremesso (casas, em passos)
 const HEAR=4;         // guardas a até 4 casas ouvem a pedra
 const DISTRACT=3;     // tiques olhando para o barulho
+const DOG=2;          // faro do cachorro (casas, em passos; atravessa mato e árvores)
+const FP=3;           // tiques que uma pegada fica fresca na areia
 const TRAP=4;         // tiques que o guarda fica preso na armadilha
 const CHARS={
   M:{name:"Marujo"},
@@ -290,13 +296,21 @@ const dist=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
 function woodCount(lv,s){return popc(s.got&lv.woodMask)+popc(s.cut||0);}
 
 function initState(lv){
-  return {t:0,chars:lv.chars0.map(c=>({...c})),got:0,st:lv.stones0,cut:0,tp:lv.traps0,trs:[],
-    gs:lv.guards.map(g=>({x:g.x,y:g.y,f:g.f,ph:0,dz:0,lf:g.f,hold:0}))};
+  return {t:0,chars:lv.chars0.map(c=>({...c})),got:0,st:lv.stones0,cut:0,tp:lv.traps0,trs:[],pr:[],
+    gs:lv.guards.map(g=>({x:g.x,y:g.y,f:g.f,ph:0,dz:0,lf:g.f,hold:0,k:g.kind==="dog"?"dog":"man"}))};
 }
 function guardNext(lv,i,g){if(g.dz>0)return "?";if(g.hold>0)return "!";const mv=lv.guards[i].moves||".";return mv[g.ph%mv.length];}
 
 function visionCells(lv,s,g){
-  const out=[];const[dx,dy]=DIRS[face(g)];
+  const out=[];
+  if(g.k==="dog"){
+    for(let y=g.y-DOG;y<=g.y+DOG;y++)for(let x=g.x-DOG;x<=g.x+DOG;x++){
+      const d=Math.abs(x-g.x)+Math.abs(y-g.y);
+      if(d<1||d>DOG||x<0||y<0||x>=lv.W||y>=lv.H||lv.tiles[y][x]==="~")continue;
+      out.push({x,y});
+    }
+    return out;
+  }const[dx,dy]=DIRS[face(g)];
   for(let k=1;k<=RANGE;k++){
     const x=g.x+dx*k,y=g.y+dy*k;
     if(x<0||y<0||x>=lv.W||y>=lv.H)break;
@@ -306,8 +320,13 @@ function visionCells(lv,s,g){
   return out;
 }
 function seenBy(lv,s,gs,chars){
-  for(let i=0;i<gs.length;i++)for(const c of visionCells(lv,s,gs[i]))for(const ch of chars)
-    if(ch.x===c.x&&ch.y===c.y&&lv.tiles[c.y][c.x]!==",")return {guard:i,x:c.x,y:c.y};
+  for(let i=0;i<gs.length;i++){
+    const dog=gs[i].k==="dog";
+    for(const c of visionCells(lv,s,gs[i])){
+      for(const ch of chars)if(ch.x===c.x&&ch.y===c.y&&(dog||lv.tiles[c.y][c.x]!==","))return {guard:i,x:c.x,y:c.y,dog};
+      if(!dog&&s.pr&&s.pr.length&&s.pr.some(q=>q.startsWith(c.x+","+c.y+",")))return {guard:i,x:c.x,y:c.y,print:true};
+    }
+  }
   return null;
 }
 function throwTargets(lv,s,ci){
@@ -345,6 +364,7 @@ const lookToward=(g,p)=>{const dx=p.x-g.x,dy=p.y-g.y;return Math.abs(dx)>=Math.a
 function step(lv,s,a){
   const chars=s.chars.map(c=>({...c}));
   let got=s.got, st=s.st, cut=s.cut, tp=s.tp, trs=s.trs, noise=null, chop=null;
+  let pr=lv.prints?s.pr.map(q=>{const[a,b,l]=q.split(",");return a+","+b+","+(l-1);}).filter(q=>!q.endsWith(",0")):s.pr;
   const ch=chars[a.c];const t=s.t+1;
   if(a.d==="P"){
     if(!throwTargets(lv,s,a.c).some(p=>p.x===a.x&&p.y===a.y))return null;
@@ -362,16 +382,17 @@ function step(lv,s,a){
     if(chars.some((o,j)=>j!==a.c&&o.x===nx&&o.y===ny))return null;
     if(s.gs.some(g=>g.x===nx&&g.y===ny))return null;
     ch.x=nx;ch.y=ny;
+    if(lv.prints&&lv.tiles[ny][nx]==="."){const k=nx+","+ny+",";pr=[...pr.filter(q=>!q.startsWith(k)),k+FP].sort();}
     lv.items.forEach((it,i)=>{if(!(got&(1<<i))&&it.x===nx&&it.y===ny)got|=1<<i;});
   }
-  const mid={t,chars,got,st,cut,tp,trs,gs:s.gs};
+  const mid={t,chars,got,st,cut,tp,trs,pr,gs:s.gs};
   let seen=seenBy(lv,mid,s.gs,chars);
   if(seen)return {state:mid,result:"seen",info:seen,noise,chop};
   if(woodCount(lv,mid)>=lv.need&&chars.every(c=>lv.tiles[c.y][c.x]==="R"))return {state:mid,result:"win",noise,chop};
   const heard=[],caught=[];
   const gs=s.gs.map((g,i)=>{
     g={...g};
-    if(noise&&dist(g,noise)<=HEAR){g.dz=DISTRACT;g.lf=lookToward(g,noise);heard.push(i);if(g.hold>0)g.hold--;return g;}
+    if(noise&&g.k!=="dog"&&dist(g,noise)<=HEAR){g.dz=DISTRACT;g.lf=lookToward(g,noise);heard.push(i);if(g.hold>0)g.hold--;return g;}
     if(g.dz>0){g.dz--;if(g.hold>0)g.hold--;return g;}
     if(g.hold>0){g.hold--;return g;}
     const mv=lv.guards[i].moves||".";const c=mv[g.ph%mv.length];g.ph=(g.ph+1)%mv.length;
@@ -382,7 +403,7 @@ function step(lv,s,a){
     g.f=up;g.lf=up;
     return g;
   });
-  const ns={t,chars,got,st,cut,tp,trs,gs};
+  const ns={t,chars,got,st,cut,tp,trs,pr,gs};
   for(let i=0;i<gs.length;i++)for(const c of chars)if(gs[i].x===c.x&&gs[i].y===c.y)
     return {state:ns,result:"bump",info:{guard:i,x:c.x,y:c.y},noise,heard,chop,caught};
   seen=seenBy(lv,ns,gs,chars);
@@ -395,7 +416,7 @@ function step(lv,s,a){
 
 /* BFS: menor nº de tiques para fugir (opcionalmente exigindo o coco) */
 function solve(lv,needCoco,maxStates=4e6){
-  const key=s=>s.t+"|"+s.got+"|"+s.st+"|"+s.cut+"|"+s.tp+"|"+s.trs.join(";")+"|"+s.chars.map(c=>c.x+","+c.y).join(";")+"|"+s.gs.map(g=>[g.x,g.y,g.f,g.ph,g.dz,g.lf,g.hold].join(",")).join(";");
+  const key=s=>s.t+"|"+s.got+"|"+s.st+"|"+s.cut+"|"+s.tp+"|"+s.trs.join(";")+"|"+s.pr.join(";")+"|"+s.chars.map(c=>c.x+","+c.y).join(";")+"|"+s.gs.map(g=>[g.x,g.y,g.f,g.ph,g.dz,g.lf,g.hold].join(",")).join(";");
   const s0=initState(lv);
   let frontier=[{s:s0,path:[]}];const seen=new Set([key(s0)]);
   while(frontier.length){
@@ -559,6 +580,57 @@ const LEVELS=[
     ],
     guards:[{x:1,y:4,f:"R",moves:"RRRRRRRLLLLLLL"}],
   },
+  {
+    name:"O cachorro",
+    hint:"O cachorro não enxerga longe, mas fareja quem estiver a até 2 casas, mesmo no mato. Pedra não engana o faro.",
+    limit:38, par:35,
+    map:[
+      "~~~~~~~~~~",
+      "~M..,,..w~",
+      "~..,,,...~",
+      "~........~",
+      "~..OOO...~",
+      "~.cOOO...~",
+      "~........~",
+      "~w.,,....~",
+      "~~~~RR~~~~",
+    ],
+    guards:[{x:2,y:3,f:"R",moves:"RRRRDDDLLLLUUU",kind:"dog"}],
+  },
+  {
+    name:"Vigias cruzados",
+    hint:"Os dois guardas cobrem a mesma passagem. Uma pedra só distrai um deles: a Batedora precisa encaixar as duas.",
+    limit:30, par:27, stones:2,
+    map:[
+      "~~~~~~~~~~",
+      "~M..w...c~",
+      "~.,.....,~",
+      "~OOOO.OOO~",
+      "~O.......~",
+      "~OOOO.OOO~",
+      "~...B....~",
+      "~w.......~",
+      "~~~~RR~~~~",
+    ],
+    guards:[{x:2,y:4,f:"R",moves:"."},{x:8,y:4,f:"L",moves:"."}],
+  },
+  {
+    name:"Pegadas na areia",
+    hint:"Cada passo na areia deixa uma pegada por 3 tiques. Se o guarda vir a pegada, ele dá o alarme. No mato não fica rastro.",
+    limit:36, par:33, prints:true,
+    map:[
+      "~~~~~~~~~~",
+      "~M..w....~",
+      "~...,....~",
+      "~OOO.O.OO~",
+      "~O....c..~",
+      "~OOOO.O.O~",
+      "~.....,..~",
+      "~w.......~",
+      "~~~~RR~~~~",
+    ],
+    guards:[{x:8,y:4,f:"L",moves:"llllrrrr"}],
+  },
 ];
 /*LEVELS-END*/
 
@@ -566,7 +638,7 @@ const LEVELS=[
 const $=id=>document.getElementById(id);
 const NS="http://www.w3.org/2000/svg";
 const S=10; // tamanho da casa no viewBox
-const COMING=["O cachorro","Vigias cruzados","Pegadas na areia"];
+const COMING=[];
 const FINAL="A grande fuga";
 const TOTAL_LEVELS=12;
 const STORE="naufragos.v2";
@@ -656,9 +728,35 @@ const PAL={
   M:{skin:"#f0c193",hair:"#4a2f1d",top:"#eef1f4",stripe:"#2c4a7a",legs:"#34465e",acc:"#2bc2b3",ring:"#2bc2b3"},
   B:{skin:"#c98a5e",hair:"#2a1810",top:"#ff9348",stripe:"#7a5a3a",legs:"#5b4636",acc:"#f2c14e",ring:"#ff9348"},
   K:{skin:"#d9a07a",hair:"#6b4a2b",top:"#4f7a4a",stripe:"#8a5a34",legs:"#3d3a33",acc:"#f2c14e",ring:"#f2c14e"},
+  D:{ring:"#ff9348"},
   G:{skin:"#e2a77e",hair:"#1d1414",top:"#c8333f",stripe:"#1d1414",legs:"#2d2626",acc:"#f2c14e",ring:"#f0525f"}
 };
+function spriteDog(f){
+  const side=f==="L"||f==="R",back=f==="U";
+  const fur="#a8743f",dark="#5c3a1e",belly="#d9b07a";
+  let s="";
+  if(side){
+    s+=`<path d="M2.3 5.8 Q1.4 4.3 2 3.6" stroke="${fur}" stroke-width=".7" fill="none" stroke-linecap="round"/>`;
+    s+=`<rect x="2.8" y="7" width=".8" height="1.9" rx=".35" fill="${dark}"/><rect x="6.1" y="7" width=".8" height="1.9" rx=".35" fill="${dark}"/>`;
+    s+=`<ellipse cx="4.7" cy="6.6" rx="2.6" ry="1.5" fill="${fur}"/><ellipse cx="4.8" cy="7.2" rx="1.6" ry=".6" fill="${belly}"/>`;
+    s+=`<rect x="3.5" y="7.2" width=".8" height="1.7" rx=".35" fill="${fur}"/><rect x="5.4" y="7.2" width=".8" height="1.7" rx=".35" fill="${fur}"/>`;
+    s+=`<path d="M6.3 5.6 L7.2 5.2" stroke="#c8333f" stroke-width=".6"/>`;
+    s+=`<circle cx="7.4" cy="4.6" r="1.5" fill="${fur}"/><ellipse cx="8.8" cy="5" rx=".9" ry=".65" fill="${belly}"/><circle cx="9.5" cy="4.85" r=".33" fill="#111"/>`;
+    s+=`<ellipse cx="6.8" cy="4.4" rx=".55" ry="1.1" fill="${dark}" transform="rotate(18 6.8 4.4)"/><circle cx="7.9" cy="4.2" r=".25" fill="#111"/>`;
+  }else{
+    if(back)s+=`<path d="M5 5.6 Q5.4 3.6 6.2 3.4" stroke="${fur}" stroke-width=".7" fill="none" stroke-linecap="round"/>`;
+    s+=`<rect x="3.4" y="7.3" width=".8" height="1.6" rx=".35" fill="${dark}"/><rect x="5.8" y="7.3" width=".8" height="1.6" rx=".35" fill="${dark}"/>`;
+    s+=`<ellipse cx="5" cy="6.7" rx="2" ry="1.9" fill="${fur}"/>`;
+    if(!back)s+=`<ellipse cx="5" cy="7.2" rx="1.1" ry="1.1" fill="${belly}"/>`;
+    s+=`<path d="M3.6 5.4 Q5 6 6.4 5.4" stroke="#c8333f" stroke-width=".55" fill="none"/>`;
+    s+=`<circle cx="5" cy="4.3" r="1.8" fill="${fur}"/>`;
+    s+=`<ellipse cx="3.3" cy="4.4" rx=".6" ry="1.2" fill="${dark}"/><ellipse cx="6.7" cy="4.4" rx=".6" ry="1.2" fill="${dark}"/>`;
+    if(!back)s+=`<ellipse cx="5" cy="5" rx=".85" ry=".6" fill="${belly}"/><circle cx="5" cy="4.75" r=".32" fill="#111"/><circle cx="4.3" cy="3.9" r=".24" fill="#111"/><circle cx="5.7" cy="3.9" r=".24" fill="#111"/>`;
+  }
+  return f==="L"?`<g transform="translate(10 0) scale(-1 1)">${s}</g>`:s;
+}
 function sprite(k,f){
+  if(k==="D")return spriteDog(f);
   const P=PAL[k],side=f==="L"||f==="R",back=f==="U",front=f==="D";
   const bx=side?3.6:3.2,bw=side?2.8:3.6;
   let s="";
@@ -734,8 +832,8 @@ function buildBoard(){
     return g;
   };
   tokEls=L.chars0.map(c=>mk(c.id));
-  guardEls=L.guards.map(()=>{
-    const g=mk("G");
+  guardEls=L.guards.map(gd=>{
+    const g=mk(gd.kind==="dog"?"D":"G");
     g._bub=el("g",{class:"bubble"},g);
     g._bub.innerHTML=`<rect x="5.6" y="-2.6" width="3.6" height="3" rx="1.1" fill="#fff4e6"/><path d="M6.2 .3 L6 1.3 L7.1 .3Z" fill="#fff4e6"/><text x="7.4" y="-.3" text-anchor="middle" font-size="2.5" font-weight="800" fill="#c8333f" font-family="Figtree,system-ui,sans-serif">?</text>`;
     g._bubTxt=g._bub.querySelector("text");
@@ -792,9 +890,13 @@ function renderDynamic(){
   }
   // visão
   gVision.innerHTML="";gArrows.innerHTML="";
+  for(const q of state.pr||[]){const[x,y,l]=q.split(",").map(Number),X=x*S,Y=y*S,o=.25+.25*l;
+    el("ellipse",{cx:X+3.8,cy:Y+4.2,rx:.75,ry:1.1,fill:"#8a6a3c",opacity:o},gVision);
+    el("ellipse",{cx:X+6.2,cy:Y+6,rx:.75,ry:1.1,fill:"#8a6a3c",opacity:o},gVision);}
   gs.forEach((g,i)=>{
     for(const c of visionCells(L,state,g)){
       const grass=L.tiles[c.y][c.x]===",";
+      if(g.k==="dog"){el("rect",{x:c.x*S+.6,y:c.y*S+.6,width:S-1.2,height:S-1.2,rx:2.2,fill:"rgba(255,147,72,.2)",stroke:"rgba(255,147,72,.75)","stroke-width":.35,"stroke-dasharray":"1.2 .8"},gVision);continue;}
       el("rect",{x:c.x*S+.4,y:c.y*S+.4,width:S-.8,height:S-.8,rx:1,fill:grass?"rgba(240,82,95,.14)":"rgba(240,82,95,.38)",stroke:"rgba(240,82,95,.7)","stroke-width":.35,"stroke-dasharray":grass?"1 1":"none"},gVision);
     }
     const nx=guardNext(L,i,g);
@@ -884,7 +986,8 @@ function act(d,x,y){
   if(r.result==="win"){finishWin();return;}
   over=r.result;
   if(r.info){const m=el("rect",{x:r.info.x*S+.3,y:r.info.y*S+.3,width:S-.6,height:S-.6,rx:1.2,fill:"none",stroke:"#f0525f","stroke-width":1,class:"caught"},gArrows);}
-  setTimeout(()=>showLoss(r.result),r.info?650:150);
+  const kind=r.result==="seen"&&r.info&&r.info.dog?"dog":r.result==="seen"&&r.info&&r.info.print?"print":r.result;
+  setTimeout(()=>showLoss(kind),r.info?650:150);
 }
 function nudge(d){
   const t=tokEls[sel];if(!t)return;const[dx,dy]=DIRS[d],c=state.chars[sel];
@@ -932,12 +1035,14 @@ function finishWin(){
       <button class="btn" type="button" data-a="retry">Jogar de novo</button>
       ${last?`<button class="btn pri" type="button" data-a="levels">Ver fases</button>`:`<button class="btn pri" type="button" data-a="next">Próxima fase →</button>`}
     </div>
-    ${last?`<p>Essa é a última fase pronta. A próxima traz o cachorro.</p>`:""}`;
+    ${last?`<p>Pegue o coco em todas as fases para liberar ${FINAL}.</p>`:""}`;
   setTimeout(()=>showOv("ovResult"),380);
 }
 function showLoss(kind){
   const T={seen:["Você foi visto!","Um guarda te avistou. Fique fora da área vermelha ou atravesse pelo mato alto."],
            bump:["Trombou com o guarda!","O guarda entrou na sua casa. Observe a seta clara: ela mostra o próximo passo dele."],
+           dog:["O cachorro te farejou!","O faro alcança 2 casas em qualquer direção, mesmo no mato e atrás de árvores. Espere ele se afastar."],
+           print:["Viram suas pegadas!","O guarda viu uma pegada fresca na areia. Ande pelo mato ou espere 3 tiques antes de ele olhar para lá."],
            tide:["A maré subiu!","A água rasa encobriu o caminho. Atravesse só enquanto a maré estiver baixa."],
            time:["O navio voltou.","Os piratas chegaram antes da jangada ficar pronta. Procure um caminho mais curto."]}[kind];
   $("resultPanel").innerHTML=`
@@ -960,6 +1065,8 @@ function openLevels(){
   });
   COMING.forEach((n,k)=>items.push(`<button class="lv" type="button" disabled><span class="n">Fase ${LEVELS.length+k+1} · em breve</span><b>${n}</b></button>`));
   const cocos=Object.values(progress).filter(p=>p&&p[1]).length, need=TOTAL_LEVELS-1;
+  const perf=Object.values(progress).filter(p=>p&&p[2]).length;
+  $("perfectCount").textContent=`Fugas perfeitas ${perf}/${TOTAL_LEVELS}`;
   items.push(`<button class="lv locked" type="button" disabled><span class="n">Fase ${TOTAL_LEVELS} · final</span><b>${FINAL}</b><span class="lk">Bloqueada · cocos ${cocos}/${need}</span></button>`);
   grid.innerHTML=items.join("");
   $("ovLevels").hidden=false;
