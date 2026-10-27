@@ -108,6 +108,19 @@ svg.i{width:1em;height:1em;flex:none}
 .side.many .btn:not(.ghost) svg.i{width:16px;height:16px}
 .side.many{gap:5px}
 .lv.locked{border-style:dashed}
+.lv.skull{border-color:#6b3a4a;background:linear-gradient(160deg,#1d1420,#131f1d)}
+.lv.skull .n{color:#e4485d}
+.reveal svg,.ending svg{width:100%;height:auto;display:block;border-radius:14px}
+.mapline{stroke-dasharray:4 3;animation:draw 2.4s ease-out forwards}
+@keyframes draw{from{stroke-dashoffset:120}to{stroke-dashoffset:0}}
+.mapx{opacity:0;animation:pop .4s 2.2s forwards}
+@keyframes pop{to{opacity:1}}
+.sail{animation:sail 6s ease-in-out forwards}
+@keyframes sail{from{transform:translateX(0)}to{transform:translateX(150px)}}
+.bob{animation:bob2 1.6s ease-in-out infinite}
+@keyframes bob2{50%{transform:translateY(1.5px)}}
+@media (prefers-reduced-motion:reduce){.mapline,.mapx,.sail,.bob{animation:none;opacity:1;stroke-dashoffset:0}}
+.mestre{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;background:linear-gradient(135deg,#f2c14e,#d99a1f);color:#2a1e04;font-weight:800;font-size:13px;padding:6px 12px;border-radius:999px}
 .secret{font-size:12px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.04em;opacity:.8}
 .lv .lk{font-size:12px;color:var(--muted);font-weight:600}
 .btn.ghost{background:transparent;color:var(--muted);font-weight:600;font-size:13px;min-height:36px;padding:7px 12px}
@@ -167,11 +180,11 @@ details[open] summary{margin-bottom:10px}
 
   <section class="hud" aria-live="polite">
     <div class="lvl"><small id="lvlNum">Fase 1</small><b id="lvlName">A praia</b></div>
-    <div class="stat"><small>Madeira <span class="coco" id="cocoDot" title="Coco bônus"></span></small><div class="logs" id="logs"></div></div>
+    <div class="stat"><small><span id="woodLbl">Madeira</span> <span class="coco" id="cocoDot" title="Coco bônus"></span></small><div class="logs" id="logs"></div></div>
     <div class="stat"><small>Tique</small><b id="tick">0 <em>/ 28</em></b><div class="clockbar" id="clockbar"><i id="clockfill"></i></div><span class="par" id="parLbl">par 23</span></div>
   </section>
 
-  <div class="crew" id="crew" hidden><div class="seg" id="crewSeg"></div><span class="tidechip" id="tideChip" hidden><i></i><span id="tideTxt"></span></span></div>
+  <div class="crew" id="crew" hidden><div class="seg" id="crewSeg"></div><span class="tidechip" id="tideChip" hidden><i></i><span id="tideTxt"></span></span><span class="tidechip" id="chestChip" hidden style="color:#f2c14e"><i></i><span id="chestTxt"></span></span></div>
   <p class="hint" id="hint"></p>
 
   <div class="stage"><svg id="board" role="img" aria-label="Tabuleiro da ilha"></svg></div>
@@ -242,16 +255,19 @@ const DISTRACT=3;     // tiques olhando para o barulho
 const DOG=2;          // faro do cachorro (casas, em passos; atravessa mato e árvores)
 const FP=3;           // tiques que uma pegada fica fresca na areia
 const TRAP=4;         // tiques que o guarda fica preso na armadilha
+const NIGHT=1;        // à noite, sem tocha, o guarda só enxerga 1 casa
+const TORCH=2;        // uma tocha acesa ilumina até 2 casas em volta
 const CHARS={
   M:{name:"Marujo"},
   B:{name:"Batedora",throws:true,slips:true},
   K:{name:"Carpinteiro",chops:true,traps:true},
 };
-/* tiles: ~ mar · . areia · , mato alto · T árvore · O rocha · R jangada · f fresta · = água rasa (maré) */
+/* tiles: ~ mar · . areia · , mato alto · T árvore · O rocha · R jangada (N = navio) · f fresta · = água rasa (maré)
+   : areia molhada · Y tocha · Q papagaio · H baú do capitão */
 
 function parseLevel(def){
   const rows=def.map, H=rows.length, W=rows[0].length;
-  const tiles=[], items=[], chars=[], trees=[];
+  const tiles=[], items=[], chars=[], trees=[], torches=[], parrots=[];let ship=false;
   for(let y=0;y<H;y++){
     const r=[];
     for(let x=0;x<W;x++){
@@ -260,18 +276,23 @@ function parseLevel(def){
       else if(c==="W"){items.push({x,y,k:"wood"});c=",";}
       else if(c==="c"){items.push({x,y,k:"coco"});c=".";}
       else if(c==="C"){items.push({x,y,k:"coco"});c=",";}
+      else if(c==="H"){items.push({x,y,k:"chest"});c=".";}
+      else if(c==="N"){ship=true;c="R";}
       else if(CHARS[c]){chars.push({x,y,id:c,f:"D"});c=".";}
+      if(c==="Y")torches.push({x,y});
+      if(c==="Q")parrots.push({x,y});
       if(c==="T")trees.push({x,y});
       r.push(c);
     }
     tiles.push(r);
   }
-  const lv={...def,W,H,tiles,items,trees,chars0:chars,guards:def.guards||[],stones0:def.stones||0,traps0:def.traps||0};
+  const lv={...def,W,H,tiles,items,trees,torches,parrots,ship,chars0:chars,guards:def.guards||[],stones0:def.stones||0,traps0:def.traps||0};
   lv.treeIdx={};trees.forEach((t,i)=>lv.treeIdx[t.x+","+t.y]=i);
   lv.woodMask=items.reduce((m,it,i)=>it.k==="wood"?m|(1<<i):m,0);
   lv.cocoMask=items.reduce((m,it,i)=>it.k==="coco"?m|(1<<i):m,0);
   lv.need=def.need!=null?def.need:popc(lv.woodMask);
   lv.wet=tiles.some(r=>r.includes(":"));
+  lv.chestIdx=items.findIndex(it=>it.k==="chest");
   return lv;
 }
 function popc(n){let c=0;while(n){c+=n&1;n>>>=1;}return c;}
@@ -288,7 +309,7 @@ const blocks=t=>t==="T"||t==="O";
 function tideHigh(lv,t){if(!lv.tide)return false;const {low,high,off=0}=lv.tide;return ((t+off)%(low+high))>=low;}
 function canWalk(lv,s,id,x,y,t){
   const tl=tileS(lv,s,x,y);
-  if(tl==="."||tl===","||tl==="R"||tl==="s"||tl===":")return true;
+  if(tl==="."||tl===","||tl==="R"||tl==="s"||tl===":")return true; // Y tocha e Q poleiro não são passáveis
   if(tl==="f")return !!CHARS[id].slips;
   if(tl==="=")return !tideHigh(lv,t);
   return false;
@@ -298,11 +319,15 @@ const dist=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
 function woodCount(lv,s){return popc(s.got&lv.woodMask)+popc(s.cut||0);}
 
 function initState(lv){
-  return {t:0,chars:lv.chars0.map(c=>({...c})),got:0,st:lv.stones0,cut:0,tp:lv.traps0,trs:[],pr:[],
+  return {t:0,chars:lv.chars0.map(c=>({...c})),got:0,st:lv.stones0,cut:0,tp:lv.traps0,trs:[],pr:[],off:0,mm:0,pq:0,
     gs:lv.guards.map(g=>({x:g.x,y:g.y,f:g.f,ph:0,dz:0,lf:g.f,hold:0,k:g.kind==="dog"?"dog":"man"}))};
 }
 function guardNext(lv,i,g){if(g.dz>0)return "?";if(g.hold>0)return "!";const mv=lv.guards[i].moves||".";return mv[g.ph%mv.length];}
 
+function lit(lv,s,x,y){return lv.torches.some((tc,i)=>!(s.off&(1<<i))&&Math.abs(tc.x-x)+Math.abs(tc.y-y)<=TORCH);}
+const hasChest=(lv,s)=>lv.chestIdx>=0&&!!(s.got&(1<<lv.chestIdx));
+/* casas vigiadas pelo papagaio: as 8 em volta do poleiro */
+function parrotArea(lv,x,y){return lv.parrots.some(p=>Math.max(Math.abs(p.x-x),Math.abs(p.y-y))===1);}
 function visionCells(lv,s,g){
   const out=[];
   if(g.k==="dog"){
@@ -317,6 +342,7 @@ function visionCells(lv,s,g){
     const x=g.x+dx*k,y=g.y+dy*k;
     if(x<0||y<0||x>=lv.W||y>=lv.H)break;
     if(blocks(tileS(lv,s,x,y)))break;
+    if(lv.night&&k>NIGHT&&!lit(lv,s,x,y))continue; // escuro: não vê, mas a visão segue até uma casa iluminada
     out.push({x,y});
   }
   return out;
@@ -337,7 +363,9 @@ function throwTargets(lv,s,ci){
   for(let y=0;y<lv.H;y++)for(let x=0;x<lv.W;x++){
     const d=Math.abs(x-ch.x)+Math.abs(y-ch.y);
     if(d<1||d>THROW)continue;
-    const t=tileS(lv,s,x,y);if(t==="~"||blocks(t))continue;
+    const t=tileS(lv,s,x,y);
+    if(t==="Y"){const i=lv.torches.findIndex(tc=>tc.x===x&&tc.y===y);if(!(s.off&(1<<i)))out.push({x,y,torch:true});continue;}
+    if(t==="~"||blocks(t)||t==="Q")continue;
     if(s.gs.some(g=>g.x===x&&g.y===y))continue;
     out.push({x,y});
   }
@@ -365,12 +393,13 @@ const lookToward=(g,p)=>{const dx=p.x-g.x,dy=p.y-g.y;return Math.abs(dx)>=Math.a
    result: "ok" | "win" | "seen" | "bump" | "tide" | "time" */
 function step(lv,s,a){
   const chars=s.chars.map(c=>({...c}));
-  let got=s.got, st=s.st, cut=s.cut, tp=s.tp, trs=s.trs, noise=null, chop=null;
+  let got=s.got, st=s.st, cut=s.cut, tp=s.tp, trs=s.trs, off=s.off||0, mm=0, noise=null, chop=null;
   let pr=(lv.prints||lv.wet)?s.pr.map(q=>{const[a,b,l]=q.split(",");return a+","+b+","+(l-1);}).filter(q=>!q.endsWith(",0")):s.pr;
   const ch=chars[a.c];const t=s.t+1;
   if(a.d==="P"){
     if(!throwTargets(lv,s,a.c).some(p=>p.x===a.x&&p.y===a.y))return null;
     st--;noise={x:a.x,y:a.y};ch.f=lookToward(ch,noise);
+    const ti=lv.torches.findIndex(tc=>tc.x===a.x&&tc.y===a.y);if(ti>=0)off|=1<<ti;
   }else if(a.d==="X"){
     const tg=chopTargets(lv,s,a.c).find(p=>p.x===a.x&&p.y===a.y);if(!tg)return null;
     cut|=1<<lv.treeIdx[a.x+","+a.y];ch.f=tg.d;chop={x:a.x,y:a.y};
@@ -380,17 +409,20 @@ function step(lv,s,a){
   }else if(a.d!=="W"){
     const[dx,dy]=DIRS[a.d];const nx=ch.x+dx,ny=ch.y+dy;
     ch.f=a.d;
+    if(ch.id==="M"&&hasChest(lv,s)&&s.mm)return null; // com o baú, o Marujo descansa um tique entre os passos
     if(!canWalk(lv,s,ch.id,nx,ny,t))return null;
     if(chars.some((o,j)=>j!==a.c&&o.x===nx&&o.y===ny))return null;
     if(s.gs.some(g=>g.x===nx&&g.y===ny))return null;
     ch.x=nx;ch.y=ny;
     if((lv.prints&&lv.tiles[ny][nx]===".")||lv.tiles[ny][nx]===":"){const k=nx+","+ny+",";pr=[...pr.filter(q=>!q.startsWith(k)),k+FP].sort();}
-    lv.items.forEach((it,i)=>{if(!(got&(1<<i))&&it.x===nx&&it.y===ny)got|=1<<i;});
+    lv.items.forEach((it,i)=>{if(!(got&(1<<i))&&it.x===nx&&it.y===ny&&(it.k!=="chest"||ch.id==="M"))got|=1<<i;});
+    if(ch.id==="M"&&lv.chestIdx>=0&&(got&(1<<lv.chestIdx)))mm=1;
   }
-  const mid={t,chars,got,st,cut,tp,trs,pr,gs:s.gs};
+  const pq=lv.parrots.length?chars.reduce((m,c,i)=>parrotArea(lv,c.x,c.y)?m|(1<<i):m,0):0;
+  const mid={t,chars,got,st,cut,tp,trs,pr,off,mm,pq,gs:s.gs};
   let seen=seenBy(lv,mid,s.gs,chars);
   if(seen)return {state:mid,result:"seen",info:seen,noise,chop};
-  if(woodCount(lv,mid)>=lv.need&&chars.every(c=>lv.tiles[c.y][c.x]==="R"))return {state:mid,result:"win",noise,chop};
+  if(woodCount(lv,mid)>=lv.need&&(lv.chestIdx<0||hasChest(lv,mid))&&chars.every(c=>lv.tiles[c.y][c.x]==="R"))return {state:mid,result:"win",noise,chop};
   const heard=[],caught=[];
   const gs=s.gs.map((g,i)=>{
     g={...g};
@@ -405,11 +437,13 @@ function step(lv,s,a){
     g.f=up;g.lf=up;
     return g;
   });
-  const ns={t,chars,got,st,cut,tp,trs,pr,gs};
+  const ns={t,chars,got,st,cut,tp,trs,pr,off,mm,pq,gs};
   for(let i=0;i<gs.length;i++)for(const c of chars)if(gs[i].x===c.x&&gs[i].y===c.y)
     return {state:ns,result:"bump",info:{guard:i,x:c.x,y:c.y},noise,heard,chop,caught};
   seen=seenBy(lv,ns,gs,chars);
   if(seen)return {state:ns,result:"seen",info:seen,noise,heard,chop,caught};
+  if(pq&(s.pq||0)){const i=[...Array(chars.length).keys()].find(i=>pq&(s.pq||0)&(1<<i));
+    return {state:ns,result:"parrot",info:{x:chars[i].x,y:chars[i].y},noise,heard,chop};}
   if(lv.tide&&tideHigh(lv,t)){const wet=chars.find(c=>lv.tiles[c.y][c.x]==="=");
     if(wet)return {state:ns,result:"tide",info:{x:wet.x,y:wet.y},noise,heard,chop};}
   if(t>=lv.limit)return {state:ns,result:"time",noise,heard,chop};
@@ -421,7 +455,7 @@ function solve(lv,needCoco,maxStates=6e6){
   // o estado dos guardas já guarda a fase da rota, então o tique só importa pela maré e pelo limite:
   // o mesmo estado alcançado mais cedo domina o alcançado mais tarde.
   const cyc=lv.tide?lv.tide.low+lv.tide.high:0;
-  const key=s=>(cyc?s.t%cyc:0)+"|"+s.got+"|"+s.st+"|"+s.cut+"|"+s.tp+"|"+s.trs.join(";")+"|"+s.pr.join(";")+"|"+s.chars.map(c=>c.x+","+c.y).join(";")+"|"+s.gs.map(g=>g.x+","+g.y+","+g.f+","+g.ph+","+g.dz+","+g.lf+","+g.hold).join(";");
+  const key=s=>(cyc?s.t%cyc:0)+"|"+s.got+"|"+s.st+"|"+s.cut+"|"+s.tp+"|"+s.trs.join(";")+"|"+s.pr.join(";")+"|"+s.off+s.mm+"|"+s.pq+"|"+s.chars.map(c=>c.x+","+c.y).join(";")+"|"+s.gs.map(g=>g.x+","+g.y+","+g.f+","+g.ph+","+g.dz+","+g.lf+","+g.hold).join(";");
   const s0=initState(lv);
   const seen=new Set([key(s0)]);
   let frontier=[{s:s0,p:null,lab:""}];
@@ -659,6 +693,27 @@ const LEVELS=[
     ],
     guards:[{x:1,y:5,f:"R",moves:"RRRLLL.."},{x:6,y:4,f:"R",moves:"RRRDDDLLLUUU",kind:"dog"},{x:13,y:7,f:"L",moves:"llllrrrr"},{x:9,y:10,f:"L",moves:"."}],
   },
+  {
+    name:"Ilha da Caveira",
+    secret:true,
+    hint:"Noite: fora da luz, guardas só veem 1 casa. A pedra apaga tochas. Com o baú, o Marujo descansa a cada passo. Não pare ao lado do papagaio.",
+    limit:70, par:61, stones:1, night:true, need:0,
+    map:[
+      "~~~~~~~~~~~~",
+      "~....OOOOO.~",
+      "~....OH.QO.~",
+      "~....T..,O.~",
+      "~.c..OO.YO.~",
+      "~..........~",
+      "~....O.....~",
+      "~.Y..OOfOO.~",
+      "~....O...O.~",
+      "~....O.B.OK~",
+      "~NNN.OOOOOM~",
+      "~~~~~~~~~~~~",
+    ],
+    guards:[{x:10,y:5,f:"L",moves:"."},{x:2,y:1,f:"D",moves:"DDDDDUUUUU"}],
+  },
 ];
 /*LEVELS-END*/
 
@@ -673,6 +728,10 @@ const FINAL_IDX=11;
 /* a fase final libera com o coco em todas as anteriores */
 const cocosBefore=()=>Array.from({length:FINAL_IDX},(_,i)=>progress[i]&&progress[i][1]).filter(Boolean).length;
 const finalOpen=()=>cocosBefore()>=FINAL_IDX;
+const SECRET_IDX=12;
+const perfectCount=()=>Array.from({length:TOTAL_LEVELS},(_,i)=>progress[i]&&progress[i][2]).filter(Boolean).length;
+const secretOpen=()=>perfectCount()>=TOTAL_LEVELS;
+const MESTRE="naufragos.mestre";
 const STORE="naufragos.v2";
 let progress={};
 try{
@@ -729,8 +788,35 @@ function drawTile(g,x,y,t){
     el("path",{d:`M${X+10} ${Y+1} L${X+7} ${Y+.6} L${X+6.4} ${Y+5} L${X+7} ${Y+9.4} L${X+10} ${Y+9}Z`,fill:"#7d8784"},g);
     el("path",{d:`M${X} ${Y+1} L${X+3} ${Y+.6} L${X+3.6} ${Y+5} L${X} ${Y+4}Z M${X+10} ${Y+1} L${X+7} ${Y+.6} L${X+6.4} ${Y+5} L${X+10} ${Y+4}Z`,fill:"#9aa4a0"},g);
   }
-  if(t==="R"){
+  if(t==="R"&&L.ship){ // navio pirata atracado
+    el("rect",{x:X,y:Y,width:S,height:S,fill:"#0d3a40"},g);
+    el("rect",{x:X,y:Y+1.5,width:S,height:7,fill:"#6b4626"},g);
+    for(let k=0;k<3;k++)el("rect",{x:X,y:Y+2.2+k*2.2,width:S,height:.35,fill:"#4a2f18"},g);
+    if(tileAt(L,x-1,y)!=="R")el("path",{d:`M${X} ${Y+1.5} L${X-2.5} ${Y+5} L${X} ${Y+8.5}Z`,fill:"#6b4626"},g);
+    if(tileAt(L,x+1,y)!=="R")el("path",{d:`M${X+10} ${Y+1.5} L${X+12} ${Y+2} L${X+10} ${Y+8.5}Z`,fill:"#5a3a1f"},g);
+    if(tileAt(L,x-1,y)==="R"&&tileAt(L,x+1,y)==="R"){
+      el("rect",{x:X+4.6,y:Y-6,width:.8,height:11,fill:"#3d2614"},g);
+      el("path",{d:`M${X+5.4} ${Y-5.4} Q${X+9.5} ${Y-2.6} ${X+5.4} ${Y+.6}Z`,fill:"#eae2cf"},g);
+      el("rect",{x:X+5.2,y:Y-7.4,width:2.6,height:1.5,fill:"#1d1414"},g);
+    }
+  }else if(t==="R"){
     el("rect",{x:X+1.2,y:Y+1.6,width:7.6,height:6.8,rx:1,fill:"none",stroke:"#8a6a3c","stroke-width":.5,"stroke-dasharray":"1 .8"},g);
+  }
+  if(t==="Y"){ // tocha (a chama é desenhada por cima, conforme acesa ou apagada)
+    el("rect",{x:X,y:Y,width:S,height:S,fill:"#cfae74"},g);
+    el("ellipse",{cx:X+5,cy:Y+8.4,rx:1.8,ry:.6,fill:"rgba(0,0,0,.3)"},g);
+    el("rect",{x:X+4.5,y:Y+3.6,width:1,height:4.9,rx:.3,fill:"#5c3a1e"},g);
+    el("rect",{x:X+3.9,y:Y+3,width:2.2,height:1.2,rx:.4,fill:"#3d2614"},g);
+  }
+  if(t==="Q"){ // poleiro do papagaio
+    el("rect",{x:X,y:Y,width:S,height:S,fill:"#c4a36a"},g);
+    el("rect",{x:X+4.6,y:Y+4,width:.8,height:4.6,fill:"#5c3a1e"},g);
+    el("rect",{x:X+2.6,y:Y+4,width:4.8,height:.7,rx:.3,fill:"#5c3a1e"},g);
+    el("ellipse",{cx:X+5,cy:Y+2.6,rx:1.5,ry:1.9,fill:"#2fa84f"},g);
+    el("circle",{cx:X+5.2,cy:Y+1.1,r:1.1,fill:"#e4485d"},g);
+    el("path",{d:`M${X+6.1} ${Y+1} l1 .5 l-1 .4z`,fill:"#f2c14e"},g);
+    el("circle",{cx:X+5.5,cy:Y+.9,r:.22,fill:"#111"},g);
+    el("path",{d:`M${X+4.2} ${Y+4.2} L${X+3.6} ${Y+6.4} L${X+4.8} ${Y+4.4}Z`,fill:"#2b6fd6"},g);
   }
 }
 function drawTree(g,x,y){
@@ -845,7 +931,7 @@ function sprite(k,f){
 }
 function miniSvg(k){return `<svg viewBox="1 0 8 8" aria-hidden="true">${sprite(k,"D")}</svg>`;}
 
-let gVision,gItems,gRaft,gTokens,gArrows,gFx,gTrees,gTide,tokEls=[],guardEls=[];
+let gVision,gItems,gRaft,gTokens,gArrows,gFx,gTrees,gTide,gNight,tokEls=[],guardEls=[];
 function buildBoard(){
   const svg=$("board");svg.innerHTML="";
   svg.setAttribute("viewBox",`0 0 ${L.W*S} ${L.H*S}`);
@@ -854,6 +940,7 @@ function buildBoard(){
   for(let y=0;y<L.H;y++)for(let x=0;x<L.W;x++)drawTile(gT,x,y,L.tiles[y][x]);
   drawShore(gT);
   gTide=el("g",{},svg);
+  gNight=el("g",{},svg);
   gRaft=el("g",{},svg);
   gVision=el("g",{},svg);
   gItems=el("g",{},svg);
@@ -868,7 +955,9 @@ function buildBoard(){
     g._body=el("g",{transform:"translate(5 9) scale(1.22) translate(-5 -9)"},g);g._k=k;g._f=null;
     return g;
   };
-  tokEls=L.chars0.map(c=>mk(c.id));
+  tokEls=L.chars0.map(c=>{const g=mk(c.id);
+    if(c.id==="M"){g._chest=el("g",{},g);g._chest.innerHTML=`<rect x="5.4" y="-1.8" width="4" height="2.8" rx=".5" fill="#7a4a26" stroke="#3d2614" stroke-width=".3"/><rect x="5.4" y="-.7" width="4" height=".5" fill="#f2c14e"/><text x="7.4" y="3.6" text-anchor="middle" font-size="2" font-weight="800" fill="#f2c14e" font-family="Figtree,system-ui,sans-serif"></text>`;g._chestTxt=g._chest.querySelector("text");}
+    return g;});
   guardEls=L.guards.map(gd=>{
     const g=mk(gd.kind==="dog"?"D":"G");
     g._bub=el("g",{class:"bubble"},g);
@@ -893,6 +982,13 @@ function renderDynamic(){
       el("rect",{x:X+1.8,y:Y+4.6,width:6.4,height:2,rx:1,fill:"#9a6232"},g);
       el("rect",{x:X+2.6,y:Y+2.8,width:5.6,height:2,rx:1,fill:"#ad7140"},g);
       el("circle",{cx:X+8,cy:Y+5.6,r:1,fill:"#d9a86a"},g);el("circle",{cx:X+8,cy:Y+3.8,r:1,fill:"#d9a86a"},g);
+    }else if(it.k==="chest"){
+      el("ellipse",{cx:X+5,cy:Y+7.8,rx:3.4,ry:.8,fill:"rgba(0,0,0,.3)"},g);
+      el("rect",{x:X+1.8,y:Y+3.6,width:6.4,height:4,rx:.6,fill:"#7a4a26",stroke:"#3d2614","stroke-width":.4},g);
+      el("path",{d:`M${X+1.8} ${Y+4.4} Q${X+5} ${Y+1.4} ${X+8.2} ${Y+4.4}Z`,fill:"#8f5a30",stroke:"#3d2614","stroke-width":.4},g);
+      el("rect",{x:X+1.8,y:Y+4.6,width:6.4,height:.7,fill:"#f2c14e"},g);
+      el("rect",{x:X+4.4,y:Y+4.3,width:1.2,height:1.6,rx:.2,fill:"#f2c14e"},g);
+      el("text",{x:X+5,y:Y+7.3,"text-anchor":"middle","font-size":1.8,fill:"#eae2cf","font-family":"Figtree,sans-serif"},g).textContent="☠";
     }else{
       el("ellipse",{cx:X+5,cy:Y+7.2,rx:2.6,ry:.7,fill:"rgba(0,0,0,.25)"},g);
       el("circle",{cx:X+5,cy:Y+5.2,r:2.2,fill:"#6b4226"},g);
@@ -900,6 +996,26 @@ function renderDynamic(){
       el("path",{d:`M${X+5} ${Y+3} q1.5 -2 3 -1.2 M${X+5} ${Y+3} q-1 -2 -2.6 -1.6`,stroke:"#4f9a48","stroke-width":.7,fill:"none","stroke-linecap":"round"},g);
     }
   });
+  // noite: casas fora da luz das tochas ficam escuras
+  gNight.innerHTML="";
+  if(L.night){
+    for(let y=0;y<L.H;y++)for(let x=0;x<L.W;x++){
+      if(L.tiles[y][x]==="~"&&!(L.ship&&false))continue;
+      if(!lit(L,state,x,y))el("rect",{x:x*S,y:y*S,width:S,height:S,fill:"rgba(6,14,34,.5)"},gNight);
+    }
+    L.torches.forEach((tc,i)=>{const X=tc.x*S,Y=tc.y*S,on=!(state.off&(1<<i));
+      if(on){el("circle",{cx:X+5,cy:Y+5,r:24,fill:"rgba(255,170,70,.07)"},gNight);
+        const f=el("g",{class:"bob"},gNight);
+        el("path",{d:`M${X+5} ${Y+.2} Q${X+7} ${Y+2.2} ${X+5} ${Y+3.4} Q${X+3} ${Y+2.2} ${X+5} ${Y+.2}Z`,fill:"#ff9348"},f);
+        el("path",{d:`M${X+5} ${Y+1.2} Q${X+6} ${Y+2.4} ${X+5} ${Y+3.1} Q${X+4} ${Y+2.4} ${X+5} ${Y+1.2}Z`,fill:"#ffe08a"},f);}
+      else el("path",{d:`M${X+5} ${Y+2.8} q-1 -1.4 .3 -2.4 q1 -.9 -.2 -2`,stroke:"#9aa4a0","stroke-width":.5,fill:"none",opacity:.8},gNight);
+    });
+  }
+  // área do papagaio
+  if(L.parrots.length)for(const p of L.parrots)for(let y=p.y-1;y<=p.y+1;y++)for(let x=p.x-1;x<=p.x+1;x++){
+    if(x===p.x&&y===p.y)continue;const t=tileAt(L,x,y);if(t==="~"||t==="O")continue;
+    el("rect",{x:x*S+.7,y:y*S+.7,width:S-1.4,height:S-1.4,rx:1.6,fill:"rgba(47,168,79,.12)",stroke:"rgba(80,200,110,.7)","stroke-width":.35,"stroke-dasharray":".8 .8"},gNight);
+  }
   // árvores e tocos
   gTrees.innerHTML="";
   L.trees.forEach((t,i)=>{if(state.cut&(1<<i))drawStump(gItems,t.x,t.y);else drawTree(gTrees,t.x,t.y);});
@@ -916,6 +1032,13 @@ function renderDynamic(){
     $("tideChip").hidden=false;$("tideChip").classList.toggle("hi",hi);
     $("tideTxt").textContent=hi?`Maré alta · baixa em ${n}`:`Maré baixa · ${n} ${n===1?"passo":"passos"}`;
   }else $("tideChip").hidden=true;
+  if(L.chestIdx>=0){
+    const has=hasChest(L,state);
+    $("chestChip").hidden=false;
+    $("chestTxt").textContent=!has?"Baú no barraco":state.mm?"Marujo descansando":"Marujo com o baú";
+    const mi=state.chars.findIndex(c=>c.id==="M");
+    if(mi>=0&&tokEls[mi]._chest){tokEls[mi]._chest.style.display=has?"":"none";tokEls[mi]._chestTxt.textContent=has&&state.mm?"z":"";}
+  }else $("chestChip").hidden=true;
   // jangada
   gRaft.innerHTML="";
   const ready=woodCount(L,state)>=L.need;
@@ -962,7 +1085,7 @@ function renderDynamic(){
   }
   // tripulação e pedra
   const multi=state.chars.length>1;
-  $("crew").hidden=!multi&&!L.tide;$("crewSeg").parentElement&&($("crewSeg").hidden=!multi);
+  $("crew").hidden=!multi&&!L.tide&&L.chestIdx<0;$("crewSeg").parentElement&&($("crewSeg").hidden=!multi);
   if(multi)$("crewSeg").querySelectorAll("button").forEach((b,i)=>b.setAttribute("aria-pressed",i===sel?"true":"false"));
   const thrower=CHARS[state.chars[sel].id].throws&&L.stones0>0;
   $("btnRock").hidden=!thrower;
@@ -989,6 +1112,7 @@ function renderDynamic(){
   $("clockfill").style.width=`${Math.max(0,100*left/L.limit)}%`;
   $("clockbar").classList.toggle("low",left<=5);
   const nW=L.need,hW=Math.min(nW,woodCount(L,state));
+  $("woodLbl").textContent=nW?"Madeira":"Coco";
   $("logs").innerHTML=Array.from({length:nW},(_,k)=>`<i class="${k<hW?"on":""}"></i>`).join("");
   $("cocoDot").classList.toggle("on",(state.got&L.cocoMask)===L.cocoMask&&L.cocoMask!==0);
   $("btnUndo").disabled=hist.length===0;
@@ -1057,9 +1181,12 @@ function finishWin(){
   const lv=LEVELS[li];
   const coco=(state.got&L.cocoMask)===L.cocoMask&&L.cocoMask!==0;
   const s=[true,coco,coco&&state.t<=lv.par];
+  const wasSecret=secretOpen();
   const prev=progress[li]||[false,false,false];
   progress[li]=prev.map((v,k)=>v||s[k]);saveProgress();
-  const last=li>=LEVELS.length-1;
+  if(li===SECRET_IDX){showEnding(s);return;}
+  if(!wasSecret&&secretOpen()){showWinThenReveal(lv,s);return;}
+  const last=li>=LEVELS.length-1||(li===FINAL_IDX&&!secretOpen());
   $("resultPanel").innerHTML=`
     <div><div class="eyebrow">Fase ${li+1} · ${lv.name}</div><h2>${li===FINAL_IDX?"Vocês escaparam da ilha!":"A jangada zarpou!"}</h2></div>
     <p>Fuga em ${state.t} tiques. A fuga perfeita pega o coco em até ${lv.par}.</p>
@@ -1076,11 +1203,61 @@ function finishWin(){
     ${last?`<p>Os três estão a salvo. Ainda há segredos para quem fizer todas as fugas perfeitas.</p>`:""}`;
   setTimeout(()=>showOv("ovResult"),380);
 }
+function showWinThenReveal(lv,s){
+  $("resultPanel").innerHTML=`
+    <div><div class="eyebrow">Fase ${li+1} · ${lv.name} · fuga perfeita</div><h2>O coco tinha um mapa!</h2></div>
+    <p>Dentro da casca, um pedaço de pergaminho dobrado. Doze fugas perfeitas revelaram a última ilha.</p>
+    <div class="reveal"><svg viewBox="0 0 200 120" aria-label="Mapa do tesouro">
+      <rect x="4" y="4" width="192" height="112" rx="8" fill="#e8d6a8" stroke="#a5814a" stroke-width="2"/>
+      <path d="M30 80 Q40 40 80 46 Q120 30 150 52 Q176 70 160 92 Q120 106 80 98 Q40 104 30 80Z" fill="#cfae74" stroke="#8a6a3c" stroke-width="1.5"/>
+      <path d="M60 60 q10 -8 20 0 M120 50 q8 -6 16 0" stroke="#3a7136" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path class="mapline" d="M44 84 Q70 70 92 78 T138 66" stroke="#b8322a" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <g class="mapx"><path d="M132 60 l12 12 M144 60 l-12 12" stroke="#b8322a" stroke-width="3" stroke-linecap="round"/>
+      <text x="100" y="24" text-anchor="middle" font-size="12" font-weight="800" fill="#5c3a1e" font-family="Bricolage Grotesque,Figtree,serif">Ilha da Caveira</text></g>
+    </svg></div>
+    <div class="row">
+      <button class="btn" type="button" data-a="levels">Ver fases</button>
+      <button class="btn pri" type="button" data-a="secret">Navegar até lá →</button>
+    </div>`;
+  setTimeout(()=>showOv("ovResult"),380);
+}
+function showEnding(s){
+  const perfect=s[2];
+  if(perfect){try{localStorage.setItem(MESTRE,"1");}catch(e){}}
+  $("resultPanel").innerHTML=`
+    <div><div class="eyebrow">Ilha da Caveira</div><h2>O navio pirata zarpou!</h2></div>
+    <div class="ending"><svg viewBox="0 0 200 110" aria-label="O navio partindo">
+      <rect width="200" height="110" fill="#0b2a3a"/>
+      <circle cx="160" cy="24" r="10" fill="#f4ecd8"/><circle cx="164" cy="21" r="10" fill="#0b2a3a"/>
+      <path d="M0 80 L30 64 L50 72 L60 80Z" fill="#2a3a26"/><text x="30" y="72" font-size="9" fill="#eae2cf">☠</text>
+      <g class="sail"><g class="bob">
+        <path d="M30 78 L76 78 L68 90 L38 90Z" fill="#6b4626"/>
+        <rect x="52" y="44" width="2" height="34" fill="#3d2614"/>
+        <path d="M54 46 Q72 58 54 72Z" fill="#eae2cf"/><rect x="54" y="40" width="9" height="5" fill="#1d1414"/>
+        <circle cx="42" cy="74" r="3" fill="#2bc2b3"/><circle cx="50" cy="74" r="3" fill="#ff9348"/><circle cx="64" cy="74" r="3" fill="#f2c14e"/>
+      </g></g>
+      <path d="M0 90 Q25 86 50 90 T100 90 T150 90 T200 90 V110 H0Z" fill="#14506a"/>
+      <circle cx="8" cy="76" r="2.4" fill="#f0525f"/><circle cx="16" cy="77" r="2.4" fill="#f0525f"/>
+    </svg></div>
+    <p>Com o baú do capitão a bordo, os três deixam a ilha no navio dos piratas, que ficam na praia vendo a vela sumir. Fuga em ${state.t} tiques.</p>
+    <div class="stars">
+      <div class="star on">${starSvg()}Fugiu com o baú</div>
+      <div class="star ${s[1]?"on":""}">${starSvg()}Pegou o coco</div>
+      <div class="star ${s[2]?"on":""}">${starSvg()}Fuga perfeita: coco em até ${LEVELS[li].par} tiques</div>
+    </div>
+    ${perfect?`<span class="mestre">★ Mestre da Fuga</span><p>O selo agora aparece no card do Náufragos, no Mesa de Jogos.</p>`:`<p>Faça a fuga perfeita aqui para ganhar o selo de Mestre da Fuga.</p>`}
+    <div class="row">
+      <button class="btn" type="button" data-a="retry">Jogar de novo</button>
+      <button class="btn pri" type="button" data-a="levels">Ver fases</button>
+    </div>`;
+  setTimeout(()=>showOv("ovResult"),380);
+}
 function showLoss(kind){
   const T={seen:["Você foi visto!","Um guarda te avistou. Fique fora da área vermelha ou atravesse pelo mato alto."],
            bump:["Trombou com o guarda!","O guarda entrou na sua casa. Observe a seta clara: ela mostra o próximo passo dele."],
            dog:["O cachorro te farejou!","O faro alcança 2 casas em qualquer direção, mesmo no mato e atrás de árvores. Espere ele se afastar."],
            print:["Viram suas pegadas!","O guarda viu uma pegada fresca na areia. Ande pelo mato ou espere 3 tiques antes de ele olhar para lá."],
+           parrot:["O papagaio deu o alarme!","Alguém ficou 2 tiques seguidos ao lado do poleiro. Passe pela área verde num tique só e não pare nela."],
            tide:["A maré subiu!","A água rasa encobriu o caminho. Atravesse só enquanto a maré estiver baixa."],
            time:["O navio voltou.","Os piratas chegaram antes da jangada ficar pronta. Procure um caminho mais curto."]}[kind];
   $("resultPanel").innerHTML=`
@@ -1099,12 +1276,12 @@ function openLevels(){
   const grid=$("levelGrid");
   const items=LEVELS.map((lv,i)=>{
     const st=progress[i]||[];
+    if(i===SECRET_IDX){if(!secretOpen())return "";return `<button class="lv skull" type="button" data-l="${i}"><span class="n">☠ Secreta</span><b>${lv.name}</b><span class="ss">${[0,1,2].map(k=>`<i class="${st[k]?"on":""}"></i>`).join("")}</span></button>`;}
     if(i===FINAL_IDX&&!finalOpen())return `<button class="lv locked" type="button" disabled><span class="n">Fase ${i+1} · final</span><b>${lv.name}</b><span class="lk">Bloqueada · cocos ${cocosBefore()}/${FINAL_IDX}</span></button>`;
     return `<button class="lv" type="button" data-l="${i}"><span class="n">Fase ${i+1}</span><b>${lv.name}</b><span class="ss">${[0,1,2].map(k=>`<i class="${st[k]?"on":""}"></i>`).join("")}</span></button>`;
   });
   COMING.forEach((n,k)=>items.push(`<button class="lv" type="button" disabled><span class="n">Fase ${LEVELS.length+k+1} · em breve</span><b>${n}</b></button>`));
-  const perf=Object.values(progress).filter(p=>p&&p[2]).length;
-  $("perfectCount").textContent=`Fugas perfeitas ${perf}/${TOTAL_LEVELS}`;
+  $("perfectCount").textContent=`Fugas perfeitas ${perfectCount()}/${TOTAL_LEVELS}`;
   grid.innerHTML=items.join("");
   $("ovLevels").hidden=false;
 }
@@ -1112,7 +1289,7 @@ function openLevels(){
 /* ---------- entrada ---------- */
 $("resultPanel").addEventListener("click",e=>{
   const a=e.target.closest("button")?.dataset.a;if(!a)return;
-  if(a==="undo")undo();else if(a==="retry")reset();else if(a==="next")loadLevel(li+1);else if(a==="levels"){hideOv();openLevels();}
+  if(a==="undo")undo();else if(a==="retry")reset();else if(a==="next")loadLevel(li+1);else if(a==="levels"){hideOv();openLevels();}else if(a==="secret")loadLevel(SECRET_IDX);
 });
 $("levelGrid").addEventListener("click",e=>{const b=e.target.closest("button[data-l]");if(b)loadLevel(+b.dataset.l);});
 $("ovLevels").addEventListener("click",e=>{if(e.target.id==="ovLevels"&&L)hideOv();});
@@ -1171,7 +1348,7 @@ function onPointerDown(e){
 
 /* ---------- início ---------- */
 function start(data){
-  const firstUnplayed=LEVELS.findIndex((_,i)=>!progress[i]&&(i!==FINAL_IDX||finalOpen()));
+  const firstUnplayed=LEVELS.findIndex((_,i)=>!progress[i]&&(i!==FINAL_IDX||finalOpen())&&(i!==SECRET_IDX||secretOpen()));
   loadLevel(data&&Number.isInteger(data.li)?data.li:Math.max(0,firstUnplayed===-1?0:firstUnplayed));
   if(!(data&&Number.isInteger(data.li)))openLevels();
 }

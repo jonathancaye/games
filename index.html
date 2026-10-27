@@ -63,6 +63,7 @@ a.game:focus-visible{outline:3px solid var(--accent,var(--teal));outline-offset:
 .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .tag{font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--bg-2);border:1px solid var(--line);color:var(--muted)}
 .tag.cat{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+.selo{position:absolute;left:14px;top:14px;z-index:2;font-size:12px;font-weight:800;background:linear-gradient(135deg,#f2c14e,#d99a1f);color:#2a1e04;padding:6px 12px;border-radius:999px;box-shadow:0 6px 16px rgba(0,0,0,.35)}
 .play{position:absolute;right:14px;top:14px;z-index:2;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
   background:rgba(0,0,0,.55);color:#fff;padding:6px 12px;border-radius:999px;backdrop-filter:blur(4px);opacity:0;transform:translateY(-4px);transition:.2s}
 a.game:hover .play,a.game:focus-visible .play{opacity:1;transform:none}
@@ -360,10 +361,13 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 const hexSoft=h=>{const n=parseInt(h.slice(1),16);return `rgba(${n>>16&255},${n>>8&255},${n&255},.16)`;};
 let filter="Todos";
 
+/* selo do Náufragos: gravado pelo jogo (mesmo site) ao fazer a fuga perfeita na fase secreta */
+const mestre=(()=>{try{return localStorage.getItem("naufragos.mestre")==="1";}catch(e){return false;}})();
 function card(g){
   const tags=g.soon?"":`<div class="tags"><span class="tag cat">${esc(g.category)}</span><span class="tag">${esc(g.players)}</span><span class="tag">${esc(g.time)}</span>${(g.extra||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div>`;
   const inner=`<div class="art ${g.art}" aria-hidden="true">${ARTS[g.art]?ARTS[g.art]():""}</div>
     ${g.soon?"":`<span class="play">${g.external?"Abrir ↗":"Jogar →"}</span>`}
+    ${g.art==="nfg"&&mestre?`<span class="selo">★ Mestre da Fuga</span>`:""}
     <div class="info"><h2>${esc(g.title)}</h2><p>${esc(g.desc)}</p>${tags}</div>`;
   const style=g.accent?` style="--accent:${g.accent};--accent-soft:${hexSoft(g.accent)}"`:"";
   return g.soon?`<div class="game soon">${inner}</div>`:`<a class="game" href="${g.url}"${g.external?' target="_blank" rel="noopener"':""}${style}>${inner}</a>`;
