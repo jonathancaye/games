@@ -158,12 +158,21 @@ svg.i{width:1em;height:1em;flex:none}
 .lv .ss{display:flex;gap:2px;margin-top:2px}
 .lv .ss i{width:10px;height:10px;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);background:var(--line)}
 .lv .ss i.on{background:var(--gold)}
-.legend{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:13px;color:var(--muted)}
-.legend span{display:flex;align-items:center;gap:7px}
-.legend i{width:16px;height:16px;border-radius:4px;flex:none}
-details{border-top:1px solid var(--line);padding-top:10px}
-summary{cursor:pointer;font-weight:700;font-size:14px}
-details[open] summary{margin-bottom:10px}
+/* tela inicial */
+.ov.home{background:radial-gradient(70% 45% at 0% 0%,rgba(43,194,179,.16),transparent 70%),radial-gradient(60% 45% at 100% 100%,rgba(255,147,72,.14),transparent 70%),var(--bg);backdrop-filter:none}
+.home-wrap{width:min(100%,420px);max-height:100%;display:flex;flex-direction:column;align-items:stretch;gap:16px;text-align:center}
+.home-art{width:100%;max-height:34vh;height:auto;display:block}
+.home-title{margin:0;font-family:var(--f-display);font-weight:800;font-size:clamp(44px,13vw,64px);letter-spacing:-.04em;line-height:.9}
+.home-title span{color:var(--orange)}
+.home-tag{margin:0;color:var(--muted);font-size:15px;line-height:1.45;text-wrap:balance}
+.home-stats{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.home-stats span{font-size:12.5px;font-weight:700;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--bg-2);color:var(--muted);font-variant-numeric:tabular-nums}
+.home-stats b{color:var(--gold)}
+.home-btns{display:flex;flex-direction:column;gap:8px}
+.home-btns .btn{justify-content:center;min-height:50px;font-size:15.5px}
+.home-hub{align-self:center;color:var(--muted);text-decoration:none;font-size:13.5px;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:8px 16px;margin-top:4px}
+.home-hub:hover{color:var(--fg);border-color:var(--teal)}
+@media (max-height:620px){.home-art{max-height:24vh}.home-wrap{gap:11px}}
 
 @media (max-height:700px){.pad{grid-template-columns:repeat(3,44px);grid-template-rows:repeat(3,40px)}.hint{font-size:12.5px;min-height:2.5em}.hud{padding:7px 10px}}
 @media (max-height:600px){.hint{display:none}}
@@ -173,7 +182,7 @@ details[open] summary{margin-bottom:10px}
 <body>
 <div class="app">
   <header class="top">
-    <a class="back" href="../../">← Mesa</a>
+    <button class="chip-btn" id="btnHome" type="button">Início</button>
     <div class="brand">Náufra<span>gos</span></div>
     <button class="chip-btn" id="btnLevels" type="button">Fases</button>
   </header>
@@ -210,33 +219,41 @@ details[open] summary{margin-bottom:10px}
   </div>
 </div>
 
+<!-- tela inicial -->
+<div class="ov home" id="ovHome" hidden>
+  <div class="home-wrap">
+    <svg class="home-art" viewBox="0 0 240 130" aria-hidden="true">
+      <defs><radialGradient id="hsea" cx="50%" cy="60%" r="65%"><stop offset="0" stop-color="#1f6b70"/><stop offset="1" stop-color="#0e1615" stop-opacity="0"/></radialGradient></defs>
+      <ellipse cx="120" cy="78" rx="118" ry="50" fill="url(#hsea)"/>
+      <g stroke="#3a8f93" stroke-width="1.3" fill="none" stroke-linecap="round" opacity=".7"><path d="M22 70q5-3 10 0t10 0"/><path d="M196 58q5-3 10 0t10 0"/><path d="M186 104q5-3 10 0t10 0"/><path d="M30 104q5-3 10 0t10 0"/></g>
+      <ellipse cx="112" cy="84" rx="58" ry="17" fill="#cfae74"/>
+      <ellipse cx="112" cy="82" rx="58" ry="15" fill="#dcc08a"/>
+      <ellipse cx="92" cy="80" rx="20" ry="6" fill="#3f7d3c"/>
+      <path d="M120 80q-2-26 8-46" stroke="#7a5432" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <g fill="#2f7a44"><path d="M128 34q-20-6-30 6q14-8 30-6z"/><path d="M128 34q18-10 32-2q-16-2-32 2z"/><path d="M128 34q-6-16-20-18q12 6 20 18z"/><path d="M128 34q8-18 24-18q-14 6-24 18z"/><path d="M128 34q2 14 14 22q-8-12-14-22z"/></g>
+      <circle cx="126" cy="38" r="2.6" fill="#7a4a26"/><circle cx="131" cy="37" r="2.6" fill="#7a4a26"/>
+      <g class="bob"><rect x="150" y="90" width="34" height="9" rx="2" fill="#a8703c"/><path d="M155 90v9M161 90v9M167 90v9M173 90v9M179 90v9" stroke="#7a5432" stroke-width="1"/><path d="M167 90V68" stroke="#7a5432" stroke-width="1.8"/><path d="M167 69l13 10h-13z" fill="#eaf2ef"/></g>
+      <g transform="translate(200 30)"><path d="M0 8h22l-3 6H3z" fill="#3a2a22"/><path d="M10 8V-6" stroke="#3a2a22" stroke-width="1.4"/><path d="M10-5l8 5-8 3z" fill="#1c1c1c"/><circle cx="14" cy="-1.5" r="1" fill="#eaf2ef"/></g>
+    </svg>
+    <div>
+      <h1 class="home-title">Náufra<span>gos</span></h1>
+    </div>
+    <p class="home-tag">Uma ilha tomada por piratas. Junte madeira, construa a jangada e fuja sem ser visto. Cada passo é um tique, e a cada tique os guardas andam.</p>
+    <div class="home-stats" id="homeStats"></div>
+    <div class="home-btns">
+      <button class="btn pri" id="btnPlay" type="button">Começar</button>
+      <button class="btn" id="btnHomeLevels" type="button">Escolher fase</button>
+    </div>
+    <a class="home-hub" href="../../">← Voltar à Mesa de Jogos</a>
+  </div>
+</div>
+
 <!-- seleção de fases -->
 <div class="ov" id="ovLevels" hidden>
   <div class="panel">
-    <div><div class="eyebrow">Fuja da ilha</div><h2>Náufragos</h2></div>
-    <p>Náufragos numa ilha tomada por piratas. Junte madeira, construa a jangada e fuja sem ser visto. Cada passo seu é um tique, e a cada tique os guardas andam.</p>
+    <div><div class="eyebrow">Escolha a fase</div><h2>Fases</h2></div>
     <div class="levels" id="levelGrid"></div>
     <p class="secret" id="perfectCount"></p>
-    <details>
-      <summary>Como jogar</summary>
-      <div class="legend">
-        <span><i style="background:#cfae74"></i>Areia: livre</span>
-        <span><i style="background:#3f7d3c"></i>Mato alto: esconde</span>
-        <span><i style="background:#2a5d33"></i>Árvore: bloqueia</span>
-        <span><i style="background:#7d8784"></i>Pedra: bloqueia</span>
-        <span><i style="background:rgba(240,82,95,.55)"></i>Visão do guarda</span>
-        <span><i style="background:#a8703c"></i>Madeira: colete todas</span>
-        <span><i style="background:repeating-linear-gradient(90deg,#7d8784 0 5px,#cfae74 5px 11px)"></i>Fresta: só a Batedora</span>
-        <span><i style="background:#ff9348"></i>Pedra: distrai 3 tiques</span>
-        <span><i style="background:#f2c14e"></i>Machado: árvore vira madeira</span>
-        <span><i style="background:#5fa6a8"></i>Água rasa: só na maré baixa</span>
-        <span><i style="background:#8a948f"></i>Armadilha: prende 4 tiques</span>
-        <span><i style="background:rgba(255,147,72,.45)"></i>Faro do cachorro: 2 casas</span>
-        <span><i style="background:#b8955a"></i>Pegada: dura 3 tiques</span>
-        <span><i style="background:#a98b58"></i>Areia molhada: sempre deixa pegada</span>
-      </div>
-      <p style="margin-top:10px">Deslize no tabuleiro, toque numa casa vizinha ou use o direcional. Toque num personagem para controlá-lo. Teclado: setas, espaço espera, Tab troca de personagem, P mira a pedra, X usa o machado, Q arma a armadilha, Z desfaz, R reinicia. As estrelas valem por fugir, por pegar o coco e pela fuga perfeita: coco e jangada dentro do par de tiques. Dá para fazer as três numa jogada só.</p>
-    </details>
   </div>
 </div>
 
@@ -591,7 +608,7 @@ const LEVELS=[
   },
   {
     name:"Dividir o grupo",
-    hint:"Cada um começa preso. A Batedora sai pela fresta e distrai o guarda, o Carpinteiro passa e corta a árvore que prende o Marujo.",
+    hint:"Cada um começa preso num canto da ilha. Sozinho ninguém sai: descubra como um abre caminho para o outro.",
     limit:34, par:32, stones:1,
     map:[
       "~~~~~~~~~~~",
@@ -675,7 +692,7 @@ const LEVELS=[
   },
   {
     name:"A grande fuga",
-    hint:"Os três juntos, tudo que você aprendeu. Cada um abre o próprio caminho. A pedra fica para o fim: um guarda vigia a jangada.",
+    hint:"Os três juntos, tudo que você aprendeu. Cada um abre o próprio caminho.",
     limit:64, par:56, stones:1, traps:1, need:3, tide:{low:3,high:3},
     map:[
       "~~~~~~~~~~~~~~~",
@@ -1270,7 +1287,15 @@ function showLoss(kind){
   showOv("ovResult");
 }
 function showOv(id){$(id).hidden=false;const b=$(id).querySelector("button");b&&b.focus({preventScroll:true});}
-function hideOv(){$("ovResult").hidden=true;$("ovLevels").hidden=true;}
+function hideOv(){$("ovResult").hidden=true;$("ovLevels").hidden=true;$("ovHome").hidden=true;}
+function openHome(midGame){
+  hideOv();aiming=false;
+  const played=Object.keys(progress).length>0;
+  const stars=Object.values(progress).reduce((n,a)=>n+(a||[]).filter(Boolean).length,0);
+  $("homeStats").innerHTML=played?`<span><b>★</b> ${stars} estrelas</span><span>Fugas perfeitas ${perfectCount()}/${TOTAL_LEVELS}</span>`:"";
+  $("btnPlay").textContent=(played||midGame)?`Continuar · Fase ${li+1}`:"Começar";
+  showOv("ovHome");
+}
 
 function openLevels(){
   const grid=$("levelGrid");
@@ -1302,10 +1327,13 @@ $("crewSeg").addEventListener("click",e=>{const b=e.target.closest("button[data-
 $("btnUndo").onclick=undo;
 $("btnReset").onclick=reset;
 $("btnLevels").onclick=openLevels;
+$("btnHome").onclick=()=>openHome(true);
+$("btnPlay").onclick=hideOv;
+$("btnHomeLevels").onclick=()=>{hideOv();openLevels();};
 document.addEventListener("keydown",e=>{
   const k=e.key;
   if(!$("ovResult").hidden&&over&&over!=="win"&&(k==="z"||k==="Z"||k==="Backspace")){undo();e.preventDefault();return;}
-  if(!$("ovResult").hidden||!$("ovLevels").hidden)return;
+  if(!$("ovResult").hidden||!$("ovLevels").hidden||!$("ovHome").hidden)return;
   const map={ArrowUp:"U",ArrowDown:"D",ArrowLeft:"L",ArrowRight:"R",w:"U",s:"D",a:"L",d:"R",W:"U",S:"D",A:"L",D:"R"};
   if(map[k]){act(map[k]);e.preventDefault();}
   else if(k===" "||k==="."){act("W");e.preventDefault();}
@@ -1350,7 +1378,7 @@ function onPointerDown(e){
 function start(data){
   const firstUnplayed=LEVELS.findIndex((_,i)=>!progress[i]&&(i!==FINAL_IDX||finalOpen())&&(i!==SECRET_IDX||secretOpen()));
   loadLevel(data&&Number.isInteger(data.li)?data.li:Math.max(0,firstUnplayed===-1?0:firstUnplayed));
-  if(!(data&&Number.isInteger(data.li)))openLevels();
+  if(!(data&&Number.isInteger(data.li)))openHome();
 }
 window.claude?.hot?.snapshot?.(()=>({li}));
 window.claude?.hot?.ready?window.claude.hot.ready(start):start(window.claude?.hot?.data??{});
