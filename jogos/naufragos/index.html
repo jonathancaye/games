@@ -220,6 +220,7 @@ details[open] summary{margin-bottom:10px}
         <span><i style="background:#8a948f"></i>Armadilha: prende 4 tiques</span>
         <span><i style="background:rgba(255,147,72,.45)"></i>Faro do cachorro: 2 casas</span>
         <span><i style="background:#b8955a"></i>Pegada: dura 3 tiques</span>
+        <span><i style="background:#a98b58"></i>Areia molhada: sempre deixa pegada</span>
       </div>
       <p style="margin-top:10px">Deslize no tabuleiro, toque numa casa vizinha ou use o direcional. Toque num personagem para controlá-lo. Teclado: setas, espaço espera, Tab troca de personagem, P mira a pedra, X usa o machado, Q arma a armadilha, Z desfaz, R reinicia. As estrelas valem por fugir, por pegar o coco e pela fuga perfeita: coco e jangada dentro do par de tiques. Dá para fazer as três numa jogada só.</p>
     </details>
@@ -270,6 +271,7 @@ function parseLevel(def){
   lv.woodMask=items.reduce((m,it,i)=>it.k==="wood"?m|(1<<i):m,0);
   lv.cocoMask=items.reduce((m,it,i)=>it.k==="coco"?m|(1<<i):m,0);
   lv.need=def.need!=null?def.need:popc(lv.woodMask);
+  lv.wet=tiles.some(r=>r.includes(":"));
   return lv;
 }
 function popc(n){let c=0;while(n){c+=n&1;n>>>=1;}return c;}
@@ -286,7 +288,7 @@ const blocks=t=>t==="T"||t==="O";
 function tideHigh(lv,t){if(!lv.tide)return false;const {low,high,off=0}=lv.tide;return ((t+off)%(low+high))>=low;}
 function canWalk(lv,s,id,x,y,t){
   const tl=tileS(lv,s,x,y);
-  if(tl==="."||tl===","||tl==="R"||tl==="s")return true;
+  if(tl==="."||tl===","||tl==="R"||tl==="s"||tl===":")return true;
   if(tl==="f")return !!CHARS[id].slips;
   if(tl==="=")return !tideHigh(lv,t);
   return false;
@@ -351,7 +353,7 @@ function trapTargets(lv,s,ci){
   const ch=s.chars[ci];if(!CHARS[ch.id].traps||s.tp<=0)return [];
   const out=[];
   for(const d in DIRS){const x=ch.x+DIRS[d][0],y=ch.y+DIRS[d][1];const t=tileS(lv,s,x,y);
-    if(!(t==="."||t===","||t==="s"||t==="R"))continue;
+    if(!(t==="."||t===","||t==="s"||t==="R"||t===":"))continue;
     if(s.gs.some(g=>g.x===x&&g.y===y)||s.chars.some(c=>c.x===x&&c.y===y)||s.trs.includes(x+","+y))continue;
     out.push({x,y,d});}
   return out;
@@ -364,7 +366,7 @@ const lookToward=(g,p)=>{const dx=p.x-g.x,dy=p.y-g.y;return Math.abs(dx)>=Math.a
 function step(lv,s,a){
   const chars=s.chars.map(c=>({...c}));
   let got=s.got, st=s.st, cut=s.cut, tp=s.tp, trs=s.trs, noise=null, chop=null;
-  let pr=lv.prints?s.pr.map(q=>{const[a,b,l]=q.split(",");return a+","+b+","+(l-1);}).filter(q=>!q.endsWith(",0")):s.pr;
+  let pr=(lv.prints||lv.wet)?s.pr.map(q=>{const[a,b,l]=q.split(",");return a+","+b+","+(l-1);}).filter(q=>!q.endsWith(",0")):s.pr;
   const ch=chars[a.c];const t=s.t+1;
   if(a.d==="P"){
     if(!throwTargets(lv,s,a.c).some(p=>p.x===a.x&&p.y===a.y))return null;
@@ -382,7 +384,7 @@ function step(lv,s,a){
     if(chars.some((o,j)=>j!==a.c&&o.x===nx&&o.y===ny))return null;
     if(s.gs.some(g=>g.x===nx&&g.y===ny))return null;
     ch.x=nx;ch.y=ny;
-    if(lv.prints&&lv.tiles[ny][nx]==="."){const k=nx+","+ny+",";pr=[...pr.filter(q=>!q.startsWith(k)),k+FP].sort();}
+    if((lv.prints&&lv.tiles[ny][nx]===".")||lv.tiles[ny][nx]===":"){const k=nx+","+ny+",";pr=[...pr.filter(q=>!q.startsWith(k)),k+FP].sort();}
     lv.items.forEach((it,i)=>{if(!(got&(1<<i))&&it.x===nx&&it.y===ny)got|=1<<i;});
   }
   const mid={t,chars,got,st,cut,tp,trs,pr,gs:s.gs};
@@ -415,13 +417,19 @@ function step(lv,s,a){
 }
 
 /* BFS: menor nº de tiques para fugir (opcionalmente exigindo o coco) */
-function solve(lv,needCoco,maxStates=4e6){
-  const key=s=>s.t+"|"+s.got+"|"+s.st+"|"+s.cut+"|"+s.tp+"|"+s.trs.join(";")+"|"+s.pr.join(";")+"|"+s.chars.map(c=>c.x+","+c.y).join(";")+"|"+s.gs.map(g=>[g.x,g.y,g.f,g.ph,g.dz,g.lf,g.hold].join(",")).join(";");
+function solve(lv,needCoco,maxStates=6e6){
+  // o estado dos guardas já guarda a fase da rota, então o tique só importa pela maré e pelo limite:
+  // o mesmo estado alcançado mais cedo domina o alcançado mais tarde.
+  const cyc=lv.tide?lv.tide.low+lv.tide.high:0;
+  const key=s=>(cyc?s.t%cyc:0)+"|"+s.got+"|"+s.st+"|"+s.cut+"|"+s.tp+"|"+s.trs.join(";")+"|"+s.pr.join(";")+"|"+s.chars.map(c=>c.x+","+c.y).join(";")+"|"+s.gs.map(g=>g.x+","+g.y+","+g.f+","+g.ph+","+g.dz+","+g.lf+","+g.hold).join(";");
   const s0=initState(lv);
-  let frontier=[{s:s0,path:[]}];const seen=new Set([key(s0)]);
+  const seen=new Set([key(s0)]);
+  let frontier=[{s:s0,p:null,lab:""}];
+  const trace=n=>{const out=[];while(n&&n.p){out.push(n.lab);n=n.p;}return out.reverse();};
   while(frontier.length){
     const next=[];
-    for(const {s,path} of frontier){
+    for(const node of frontier){
+      const s=node.s;
       const acts=[];
       s.chars.forEach((ch,c)=>{
         for(const d of ["U","D","L","R"])acts.push({c,d});
@@ -435,12 +443,12 @@ function solve(lv,needCoco,maxStates=4e6){
         const lab=(s.chars.length>1?s.chars[a.c].id:"")+("PXA".includes(a.d)?`${a.d}${a.x},${a.y}`:a.d);
         if(r.result==="win"){
           if(needCoco&&(r.state.got&lv.cocoMask)!==lv.cocoMask)continue;
-          return {ticks:r.state.t,path:[...path,lab]};
+          return {ticks:r.state.t,path:[...trace(node),lab],states:seen.size};
         }
         if(r.result!=="ok")continue;
         const k=key(r.state);if(seen.has(k))continue;seen.add(k);
-        if(seen.size>maxStates)return {ticks:-1,path:["LIMITE"]};
-        next.push({s:r.state,path:[...path,lab]});
+        if(seen.size>maxStates)return {ticks:-1,path:["LIMITE"],states:seen.size};
+        next.push({s:r.state,p:node,lab});
       }
     }
     frontier=next;
@@ -631,6 +639,26 @@ const LEVELS=[
     ],
     guards:[{x:8,y:4,f:"L",moves:"llllrrrr"}],
   },
+  {
+    name:"A grande fuga",
+    hint:"Os três juntos, tudo que você aprendeu. Cada um abre o próprio caminho. A pedra fica para o fim: um guarda vigia a jangada.",
+    limit:64, par:56, stones:1, traps:1, need:3, tide:{low:3,high:3},
+    map:[
+      "~~~~~~~~~~~~~~~",
+      "~.K..OwB..O.Mw~",
+      "~TTTTOOfOOO,,.~",
+      "~....O....O...~",
+      "~OO.OO....O===~",
+      "~....O.OO.O===~",
+      "~.OOOO.OO.O...~",
+      "~....O.c..O::.~",
+      "~....O....O...~",
+      "~.............~",
+      "~~~~~~RRR.~~~~~",
+      "~~~~~~~~~~~~~~~",
+    ],
+    guards:[{x:1,y:5,f:"R",moves:"RRRLLL.."},{x:6,y:4,f:"R",moves:"RRRDDDLLLUUU",kind:"dog"},{x:13,y:7,f:"L",moves:"llllrrrr"},{x:9,y:10,f:"L",moves:"."}],
+  },
 ];
 /*LEVELS-END*/
 
@@ -641,6 +669,10 @@ const S=10; // tamanho da casa no viewBox
 const COMING=[];
 const FINAL="A grande fuga";
 const TOTAL_LEVELS=12;
+const FINAL_IDX=11;
+/* a fase final libera com o coco em todas as anteriores */
+const cocosBefore=()=>Array.from({length:FINAL_IDX},(_,i)=>progress[i]&&progress[i][1]).filter(Boolean).length;
+const finalOpen=()=>cocosBefore()>=FINAL_IDX;
 const STORE="naufragos.v2";
 let progress={};
 try{
@@ -667,7 +699,7 @@ function drawTile(g,x,y,t){
   }
   const grassy=t===",";
   el("rect",{x:X,y:Y,width:S,height:S,fill:grassy?"#3f7d3c":"#cfae74"},g);
-  if(!grassy&&t!=="T"&&t!=="O"&&t!=="="){ // grãos de areia
+  if(!grassy&&t!=="T"&&t!=="O"&&t!=="="&&t!==":"){ // grãos de areia
     for(let k=0;k<3;k++)el("circle",{cx:X+1.5+hash(x,y,k)*7,cy:Y+1.5+hash(x,y,k+7)*7,r:.35,fill:"#b8955a"},g);
   }
   if(grassy){
@@ -676,6 +708,11 @@ function drawTile(g,x,y,t){
   }
   if(t==="T"){
     el("rect",{x:X,y:Y,width:S,height:S,fill:"#c4a36a"},g);
+  }
+  if(t===":"){ // areia molhada: guarda pegadas
+    el("rect",{x:X,y:Y,width:S,height:S,fill:"#a98b58"},g);
+    for(let k=0;k<4;k++)el("circle",{cx:X+1.5+hash(x,y,k)*7,cy:Y+1.5+hash(x,y,k+5)*7,r:.4,fill:"#8f7448"},g);
+    el("path",{d:`M${X+1} ${Y+8.6} q2 -.8 4 0 t4 0`,stroke:"#c7ad7c","stroke-width":.4,fill:"none",opacity:.7},g);
   }
   if(t==="="){ // água rasa: base; o estado da maré é desenhado por cima
     el("rect",{x:X,y:Y,width:S,height:S,fill:"#b89c66"},g);
@@ -1024,7 +1061,7 @@ function finishWin(){
   progress[li]=prev.map((v,k)=>v||s[k]);saveProgress();
   const last=li>=LEVELS.length-1;
   $("resultPanel").innerHTML=`
-    <div><div class="eyebrow">Fase ${li+1} · ${lv.name}</div><h2>A jangada zarpou!</h2></div>
+    <div><div class="eyebrow">Fase ${li+1} · ${lv.name}</div><h2>${li===FINAL_IDX?"Vocês escaparam da ilha!":"A jangada zarpou!"}</h2></div>
     <p>Fuga em ${state.t} tiques. A fuga perfeita pega o coco em até ${lv.par}.</p>
     <div class="stars">
       <div class="star on">${starSvg()}Fugiu da ilha</div>
@@ -1033,9 +1070,10 @@ function finishWin(){
     </div>
     <div class="row">
       <button class="btn" type="button" data-a="retry">Jogar de novo</button>
-      ${last?`<button class="btn pri" type="button" data-a="levels">Ver fases</button>`:`<button class="btn pri" type="button" data-a="next">Próxima fase →</button>`}
+      ${last||(li+1===FINAL_IDX&&!finalOpen())?`<button class="btn pri" type="button" data-a="levels">Ver fases</button>`:`<button class="btn pri" type="button" data-a="next">Próxima fase →</button>`}
     </div>
-    ${last?`<p>Pegue o coco em todas as fases para liberar ${FINAL}.</p>`:""}`;
+    ${li+1===FINAL_IDX&&!finalOpen()?`<p>Pegue o coco em todas as fases para liberar ${FINAL}. Você tem ${cocosBefore()} de ${FINAL_IDX}.</p>`:""}
+    ${last?`<p>Os três estão a salvo. Ainda há segredos para quem fizer todas as fugas perfeitas.</p>`:""}`;
   setTimeout(()=>showOv("ovResult"),380);
 }
 function showLoss(kind){
@@ -1061,13 +1099,12 @@ function openLevels(){
   const grid=$("levelGrid");
   const items=LEVELS.map((lv,i)=>{
     const st=progress[i]||[];
+    if(i===FINAL_IDX&&!finalOpen())return `<button class="lv locked" type="button" disabled><span class="n">Fase ${i+1} · final</span><b>${lv.name}</b><span class="lk">Bloqueada · cocos ${cocosBefore()}/${FINAL_IDX}</span></button>`;
     return `<button class="lv" type="button" data-l="${i}"><span class="n">Fase ${i+1}</span><b>${lv.name}</b><span class="ss">${[0,1,2].map(k=>`<i class="${st[k]?"on":""}"></i>`).join("")}</span></button>`;
   });
   COMING.forEach((n,k)=>items.push(`<button class="lv" type="button" disabled><span class="n">Fase ${LEVELS.length+k+1} · em breve</span><b>${n}</b></button>`));
-  const cocos=Object.values(progress).filter(p=>p&&p[1]).length, need=TOTAL_LEVELS-1;
   const perf=Object.values(progress).filter(p=>p&&p[2]).length;
   $("perfectCount").textContent=`Fugas perfeitas ${perf}/${TOTAL_LEVELS}`;
-  items.push(`<button class="lv locked" type="button" disabled><span class="n">Fase ${TOTAL_LEVELS} · final</span><b>${FINAL}</b><span class="lk">Bloqueada · cocos ${cocos}/${need}</span></button>`);
   grid.innerHTML=items.join("");
   $("ovLevels").hidden=false;
 }
@@ -1134,7 +1171,7 @@ function onPointerDown(e){
 
 /* ---------- início ---------- */
 function start(data){
-  const firstUnplayed=LEVELS.findIndex((_,i)=>!progress[i]);
+  const firstUnplayed=LEVELS.findIndex((_,i)=>!progress[i]&&(i!==FINAL_IDX||finalOpen()));
   loadLevel(data&&Number.isInteger(data.li)?data.li:Math.max(0,firstUnplayed===-1?0:firstUnplayed));
   if(!(data&&Number.isInteger(data.li)))openLevels();
 }
