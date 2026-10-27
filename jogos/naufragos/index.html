@@ -956,7 +956,7 @@ function buildBoard(){
     return g;
   };
   tokEls=L.chars0.map(c=>{const g=mk(c.id);
-    if(c.id==="M"){g._chest=el("g",{},g);g._chest.innerHTML=`<rect x="5.4" y="-1.8" width="4" height="2.8" rx=".5" fill="#7a4a26" stroke="#3d2614" stroke-width=".3"/><rect x="5.4" y="-.7" width="4" height=".5" fill="#f2c14e"/><text x="7.4" y="3.6" text-anchor="middle" font-size="2" font-weight="800" fill="#f2c14e" font-family="Figtree,system-ui,sans-serif"></text>`;g._chestTxt=g._chest.querySelector("text");}
+    if(c.id==="M"){g._chest=el("g",{},g);g._chest.style.display="none";g._chest.innerHTML=`<rect x="5.4" y="-1.8" width="4" height="2.8" rx=".5" fill="#7a4a26" stroke="#3d2614" stroke-width=".3"/><rect x="5.4" y="-.7" width="4" height=".5" fill="#f2c14e"/><text x="7.4" y="3.6" text-anchor="middle" font-size="2" font-weight="800" fill="#f2c14e" font-family="Figtree,system-ui,sans-serif"></text>`;g._chestTxt=g._chest.querySelector("text");}
     return g;});
   guardEls=L.guards.map(gd=>{
     const g=mk(gd.kind==="dog"?"D":"G");
