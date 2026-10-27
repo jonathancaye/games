@@ -69,19 +69,6 @@ a.game:focus-visible{outline:3px solid var(--accent,var(--teal));outline-offset:
 a.game:hover .play,a.game:focus-visible .play{opacity:1;transform:none}
 @media (hover:none){.play{opacity:1;transform:none}}
 
-/* arte: Corrida de Ases */
-.art.ases{background:radial-gradient(90% 90% at 50% 0%,#1a5240,#123d30 55%,#0b2a21);box-shadow:inset 0 0 0 7px #3b2616,inset 0 0 0 8px rgba(212,168,76,.45)}
-.ases .lanes{position:absolute;inset:16% 10%;display:grid;grid-template-rows:repeat(4,1fr);gap:4%}
-.ases .lane{position:relative;border-top:1px dashed rgba(244,236,216,.2)}
-.ases .lane:last-child{border-bottom:1px dashed rgba(244,236,216,.2)}
-.ases .lane::after{content:"";position:absolute;right:0;top:0;bottom:0;width:7%;opacity:.25;
-  background:conic-gradient(#f4ecd8 25%,transparent 0 50%,#f4ecd8 0 75%,transparent 0) 0 0/8px 8px}
-.ases .ace{position:absolute;top:50%;height:120%;aspect-ratio:5/7;translate:0 -50%;background:#fbf7ec;border-radius:3px;box-shadow:0 2px 6px rgba(0,0,0,.4);
-  display:grid;place-items:center;font-size:clamp(10px,2.4vw,15px);line-height:1;color:#1d1a16;transition:left .5s cubic-bezier(.3,1.35,.5,1)}
-.ases .ace.r{color:#b8322a}
-.ases .ace{left:var(--x)}
-a.game:hover .ases .ace{left:calc(var(--x) + var(--dx))}
-
 /* arte: Dados 6×6 */
 .art.dados{background:linear-gradient(135deg,#123532,#172221)}
 .dados .board{position:absolute;inset:12% 26%;display:grid;grid-template:repeat(6,1fr)/repeat(6,1fr);gap:4%;transform:rotate(-8deg)}
@@ -137,8 +124,8 @@ a.game:hover .scd .hp i{width:45%;background:linear-gradient(90deg,#c2410c,#ff93
 .atb svg{position:absolute;inset:0;width:100%;height:100%}
 .atb .ln{transition:stroke-dashoffset .9s linear}
 a.game:hover .atb .ln{stroke-dashoffset:-54}
-.atb .me{transition:transform .5s cubic-bezier(.3,1.4,.5,1)}
-a.game:hover .atb .me{transform:translate(92px,80px) rotate(-30deg)}
+.atb .me{transition:transform .6s cubic-bezier(.3,1.2,.5,1)}
+a.game:hover .atb .me{transform:translate(2px,-28px) rotate(-22deg)}
 
 /* arte: Arrancada 402 */
 .art.arr{background:linear-gradient(180deg,#2a1640 0%,#6b2f5e 38%,#e0664f 62%,#ffb168 70%,#9a5844 71%,#4c2a2c 100%)}
@@ -153,7 +140,7 @@ a.game:hover .arr .tl{fill:#3ddc84}
 .art.nfg{background:#0d3a40}
 .nfg svg{position:absolute;inset:0;width:100%;height:100%}
 .nfg .m{transition:transform .6s cubic-bezier(.3,1.2,.5,1)}
-a.game:hover .nfg .m{transform:translate(0,10px)}
+a.game:hover .nfg .m{transform:translate(0,12.5px)}
 
 /* em breve */
 .game.soon{border-style:dashed;background:transparent}
@@ -194,21 +181,10 @@ footer{color:var(--muted);font-size:13px;text-align:center;border-top:1px solid 
    CATÁLOGO DE JOGOS
    Para adicionar um jogo novo:
    1. crie a pasta jogos/<nome-do-jogo>/ com um index.html dentro;
-   2. acrescente um item aqui embaixo (art pode ser "ases", "dados", "fod", "dw", "scd" ou "soon";
+   2. acrescente um item aqui embaixo (art pode ser "dados", "fod", "dw", "scd", "atb", "arr", "nfg" ou "soon";
       para arte nova, crie uma função em ARTS).
    ===================================================================== */
 const GAMES = [
-  {
-    title: "Corrida de Ases",
-    url: "jogos/corrida-de-ases/",
-    desc: "Os quatro ases disputam a pista carta a carta. Aposte no naipe e torça contra o retrocesso.",
-    category: "Apostas",
-    players: "2–10 jogadores",
-    time: "5 min",
-    extra: ["Cartas", "Goles ou fichas"],
-    accent: "#d4a84c",
-    art: "ases"
-  },
   {
     title: "Jogo dos Dados 6×6",
     url: "jogos/dados-6x6/",
@@ -300,10 +276,6 @@ const GAMES = [
 const PIPS={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
 const die=(v,cls)=>`<div class="die ${cls}">${Array.from({length:9},(_,i)=>`<b class="${PIPS[v].includes(i)?"on":""}"></b>`).join("")}</div>`;
 const ARTS = {
-  ases(){
-    const s=[["♥",1,48,22],["♦",1,30,8],["♠",0,62,-14],["♣",0,18,30]];
-    return `<div class="lanes">${s.map(([sym,red,x,dx])=>`<div class="lane"><div class="ace${red?" r":""}" style="--x:${x}%;--dx:${dx}%">${sym}</div></div>`).join("")}</div>`;
-  },
   dados(){
     const t=[0,7,14,21,9,27],o=[5,10,15,30,33];
     const cells=Array.from({length:36},(_,i)=>`<i class="${t.includes(i)?"t":o.includes(i)?"o":""}"></i>`).join("");
@@ -329,7 +301,7 @@ const ARTS = {
     return `<div class="row">${cs.map(([r,s,t,l])=>`<div class="k ${t}${t!=="m"?" r":""}">${r}${s}<u>${l}</u></div>`).join("")}</div><div class="hp"><i></i></div>`;
   },
   atb(){
-    const car=(x,y,c,r,me)=>`<g class="${me?"me":""}" transform="translate(${x} ${y}) rotate(${r})"><rect x="-6.5" y="-11" width="13" height="22" rx="3.5" fill="rgba(0,0,0,.35)" transform="translate(2 2)"/><rect x="-6.5" y="-11" width="13" height="22" rx="3.5" fill="${c}"/>${me?'<rect x="-2.2" y="-11" width="1.5" height="22" fill="#ff9348"/><rect x=".7" y="-11" width="1.5" height="22" fill="#ff9348"/>':""}<rect x="-5" y="-6" width="10" height="3.5" rx="1" fill="#15222a"/><rect x="-4.5" y="3" width="9" height="2.5" rx="1" fill="#15222a"/></g>`;
+    const car=(x,y,c,r,me)=>`<g transform="translate(${x} ${y})"><g class="${me?"me":""}"><g transform="rotate(${r})"><rect x="-6.5" y="-11" width="13" height="22" rx="3.5" fill="rgba(0,0,0,.35)" transform="translate(2 2)"/><rect x="-6.5" y="-11" width="13" height="22" rx="3.5" fill="${c}"/>${me?'<rect x="-2.2" y="-11" width="1.5" height="22" fill="#ff9348"/><rect x=".7" y="-11" width="1.5" height="22" fill="#ff9348"/>':""}<rect x="-5" y="-6" width="10" height="3.5" rx="1" fill="#15222a"/><rect x="-4.5" y="3" width="9" height="2.5" rx="1" fill="#15222a"/></g></g></g>`;
     const road="M70 -10 C 70 40, 130 60, 128 122";
     return `<svg viewBox="0 0 200 112" preserveAspectRatio="xMidYMid slice"><path d="${road}" stroke="#ff9348" stroke-width="82" fill="none" stroke-dasharray="7 7"/><path d="${road}" stroke="#f2f4f5" stroke-width="82" fill="none" stroke-dasharray="7 7" stroke-dashoffset="7"/><path d="${road}" stroke="#3c434b" stroke-width="72" fill="none"/><path class="ln" d="${road}" stroke="#eef2f3" stroke-width="2" fill="none" stroke-dasharray="9 9"/><path class="sk" d="M86 104 C 88 96, 92 90, 97 84" stroke="rgba(10,10,12,.45)" stroke-width="2.5" fill="none"/>${car(118,30,"#5b8def",-22)}${car(80,56,"#f2c94c",-28)}${car(104,86,"#2bc2b3",-12,1)}</svg>`;
   },
@@ -349,7 +321,7 @@ const ARTS = {
       if(c==="R")t+=`<rect x="${X+1.5}" y="${Y+2}" width="9.5" height="8.5" rx="1" fill="none" stroke="#2bc2b3" stroke-width="1"/>`;}));
     const vis=[8,9,10].map(x=>`<rect x="${x*s+.6}" y="${3*s+18.6}" width="${s-1.2}" height="${s-1.2}" rx="1.5" fill="rgba(240,82,95,${x===10?.18:.42})" stroke="#f0525f" stroke-width=".5"/>`).join("");
     const guard=`<g transform="translate(${11*s} ${3*s+18})"><path d="M0 6.2L3.2 3.6V8.8Z" fill="#ffd7c2"/><circle cx="6.2" cy="6.2" r="4.4" fill="#f0525f" stroke="#3a0c12" stroke-width=".8"/></g>`;
-    const me=`<g class="m" transform="translate(${6*s} ${2*s+18})"><circle cx="6.2" cy="6.2" r="4.6" fill="#2bc2b3" stroke="#06201d" stroke-width=".8"/><text x="6.2" y="8.1" text-anchor="middle" font-size="5.6" font-weight="800" fill="#06201d" font-family="Figtree,sans-serif">M</text></g>`;
+    const me=`<g transform="translate(${6*s} ${2*s+18})"><g class="m"><circle cx="6.2" cy="6.2" r="4.6" fill="#2bc2b3" stroke="#06201d" stroke-width=".8"/><text x="6.2" y="8.1" text-anchor="middle" font-size="5.6" font-weight="800" fill="#06201d" font-family="Figtree,sans-serif">M</text></g></g>`;
     return `<svg viewBox="0 0 200 112" preserveAspectRatio="xMidYMid slice">${t}${vis}${guard}${me}</svg>`;
   },
   soon(){return `<span>?</span>`;}
