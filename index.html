@@ -138,6 +138,10 @@ a.game:hover .arr .tl{fill:#3ddc84}
 
 /* arte: Náufragos */
 .art.nfg{background:#0d3a40}
+.art.grp{background:linear-gradient(180deg,#56b7ee 0%,#cdeefd 52%,#e4d7b9 52%)}
+.art.grp .wh{transform-origin:150px 66px;animation:grpw 2.4s linear infinite}
+@keyframes grpw{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.art.grp .wh{animation:none}}
 .nfg svg{position:absolute;inset:0;width:100%;height:100%}
 .nfg .m{transition:transform .6s cubic-bezier(.3,1.2,.5,1)}
 a.game:hover .nfg .m{transform:translate(0,12.5px)}
@@ -181,7 +185,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;border-top:1px solid 
    CATÁLOGO DE JOGOS
    Para adicionar um jogo novo:
    1. crie a pasta jogos/<nome-do-jogo>/ com um index.html dentro;
-   2. acrescente um item aqui embaixo (art pode ser "dados", "fod", "dw", "scd", "atb", "arr", "nfg" ou "soon";
+   2. acrescente um item aqui embaixo (art pode ser "dados", "fod", "dw", "scd", "atb", "arr", "nfg", "grp" ou "soon";
       para arte nova, crie uma função em ARTS).
    ===================================================================== */
 const GAMES = [
@@ -264,6 +268,17 @@ const GAMES = [
     art: "nfg"
   },
   {
+    title: "Garapeiro",
+    url: "jogos/garapeiro/",
+    desc: "Monte sua barraca de caldo de cana: compre insumos, acerte receita e preço conforme o tempo e faça o maior caixa em 30 dias.",
+    category: "Gestão",
+    players: "1 jogador",
+    time: "15 min",
+    extra: ["Solo", "Tycoon", "Recorde"],
+    accent: "#e8772e",
+    art: "grp"
+  },
+  {
     title: "Em breve",
     desc: "O próximo jogo da mesa está sendo preparado.",
     category: null,
@@ -323,6 +338,20 @@ const ARTS = {
     const guard=`<g transform="translate(${11*s} ${3*s+18})"><path d="M0 6.2L3.2 3.6V8.8Z" fill="#ffd7c2"/><circle cx="6.2" cy="6.2" r="4.4" fill="#f0525f" stroke="#3a0c12" stroke-width=".8"/></g>`;
     const me=`<g transform="translate(${6*s} ${2*s+18})"><g class="m"><circle cx="6.2" cy="6.2" r="4.6" fill="#2bc2b3" stroke="#06201d" stroke-width=".8"/><text x="6.2" y="8.1" text-anchor="middle" font-size="5.6" font-weight="800" fill="#06201d" font-family="Figtree,sans-serif">M</text></g></g>`;
     return `<svg viewBox="0 0 200 112" preserveAspectRatio="xMidYMid slice">${t}${vis}${guard}${me}</svg>`;
+  },
+  grp(){
+    const stripes=Array.from({length:8},(_,i)=>`<rect x="${44+i*14}" y="16" width="14.5" height="13" fill="${i%2?"#f2c230":"#2f7d4a"}"/><circle cx="${51+i*14}" cy="29" r="7" fill="${i%2?"#f2c230":"#2f7d4a"}"/>`).join("");
+    const sp=[0,60,120].map(a=>`<line x1="${150+11*Math.cos(a*Math.PI/180)}" y1="${66+11*Math.sin(a*Math.PI/180)}" x2="${150-11*Math.cos(a*Math.PI/180)}" y2="${66-11*Math.sin(a*Math.PI/180)}"/>`).join("");
+    return `<svg viewBox="0 0 200 112" preserveAspectRatio="xMidYMid slice"><circle cx="170" cy="14" r="9" fill="#fff2a8"/>
+      <rect x="47" y="28" width="3" height="50" fill="#7a5230"/><rect x="150" y="28" width="3" height="50" fill="#7a5230"/>
+      <rect x="40" y="4" width="120" height="12" rx="3" fill="#1f5e3a"/><text x="100" y="13.3" text-anchor="middle" font-size="8" font-weight="900" fill="#fff" font-family="system-ui,sans-serif">GARAPA</text>${stripes}
+      <circle cx="92" cy="58" r="5" fill="#c98e62"/><path d="M87 54a5 5 0 0 1 10 0z" fill="#2f7d4a"/><rect x="87" y="63" width="10" height="12" rx="3" fill="#f4f1ea"/>
+      <rect x="64" y="58" width="11" height="17" rx="2" fill="rgba(210,235,245,.7)" stroke="#7896a0"/><rect x="65.5" y="65" width="8" height="9" fill="#c4cc55"/>
+      <rect x="118" y="60" width="22" height="15" rx="2" fill="#8f9aa0"/>
+      <g class="wh" stroke="#5f6a70" stroke-width="2" fill="none"><circle cx="150" cy="66" r="11" stroke-width="3"/>${sp}</g>
+      <rect x="40" y="74" width="120" height="6" rx="2" fill="#e9d3a6"/><rect x="42" y="80" width="116" height="22" rx="3" fill="#b97a45"/>
+      <g stroke="#6fae3c" stroke-width="3.5"><line x1="34" y1="102" x2="40" y2="66"/><line x1="38" y1="102" x2="44" y2="68"/></g>
+      <circle cx="60" cy="104" r="5" fill="#333"/><circle cx="140" cy="104" r="5" fill="#333"/></svg>`;
   },
   soon(){return `<span>?</span>`;}
 };
