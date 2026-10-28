@@ -157,8 +157,9 @@ const LOCS=[
   {id:'estadio',n:'Porta do estádio',e:'🏟️',rent:90,base:300,tol:1.4,unlock:900,wk:1.8,wd:.5,d:'Explode no fim de semana'}
 ];
 const UPS=[
-  {id:'moenda1',n:'Moenda elétrica',e:'⚙️',d:'Atende até 120 copos/dia (manual: 60)',price:150},
-  {id:'moenda2',n:'Moenda industrial',e:'🏭',d:'Atende até 220 copos/dia',price:450,req:'moenda1'},
+  {id:'moenda1',n:'Moenda elétrica',e:'⚙️',d:'Atende 2× mais rápido: fila bem menor',price:150},
+  {id:'moenda2',n:'Moenda industrial',e:'🏭',d:'Atende 4× mais rápido que a manual',price:450,req:'moenda1'},
+  {id:'ajudante',n:'Ajudante',e:'🧑‍🍳',d:'Atende junto com você (+70% de ritmo). Salário R$ 25/dia',price:80,wage:25},
   {id:'radio',n:'Rádio de pilha',e:'📻',d:'Previsão do tempo mais certeira',price:40},
   {id:'faixa',n:'Faixa colorida',e:'🎏',d:'+15% de gente parando na barraca',price:60},
   {id:'isopor',n:'Caixa térmica',e:'🧰',d:'Guarda metade do gelo para o dia seguinte',price:70},
@@ -177,7 +178,10 @@ function setBest(v){try{localStorage.setItem(BEST,String(v))}catch(e){}}
 
 /* ---------- helpers ---------- */
 const loc=()=>LOCS.find(l=>l.id===S.loc);
-const cap=()=>S.up.moenda2?220:S.up.moenda1?120:60;
+const svcMin=()=>(S.up.moenda2?1.5:S.up.moenda1?3:6)/(S.up.ajudante?1.7:1);
+const cap=()=>Math.round(DAY_MIN/svcMin());
+const wage=()=>S.up.ajudante?25:0;
+const dayCost=()=>loc().rent+wage();
 const life=it=>it==='cana'?2+(S.up.geladeira?2:0):4+(S.up.geladeira?3:0);
 const dow=d=>DIAS[(d-1)%7];
 const weekend=d=>((d-1)%7)>=5;
@@ -239,7 +243,7 @@ function renderMorning(){
   const exp=passers(S.fc.type,S.fc.temp,L)*approachP(S.fc.temp);
   const lvl=exp<25?'baixo':exp<55?'médio':exp<110?'alto':'muito alto';
   $('#mWx').innerHTML=`<div class="big">${W.e}</div><div class="tx"><b>Previsão: ${W.n}, ${S.fc.temp}°C</b>
-    <small>${L.e} ${L.n} · aluguel ${L.rent?fmt(L.rent):'grátis'}</small>
+    <small>${L.e} ${L.n} · aluguel ${L.rent?fmt(L.rent):'grátis'}${wage()?` · ajudante ${fmt(wage())}`:''}</small>
     <span class="tag ${exp>=55?'hot':''}">Movimento ${lvl}${weekend(S.day)?' · fim de semana':''}</span></div>`;
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
   const P=$('#panel');
@@ -295,7 +299,8 @@ function htmlPontos(){
   return h+'</div>';
 }
 function htmlEquip(){
-  let h='';
+  const sm=svcMin();
+  let h=`<div class="info" style="margin-bottom:8px">⏱️ Ritmo de atendimento: <b>1 copo a cada ${sm<1?Math.round(sm*60)+' s':(Math.round(sm*10)/10).toString().replace('.',',')+' min'}</b><br>Máximo de ~<b>${cap()} copos/dia</b>. Clientes desistem se a espera passar de ~10 min.</div>`;
   for(const U of UPS){
     const own=S.up[U.id],lock=U.req&&!S.up[U.req];
     const b=own?`<button class="btn done" disabled>✓ Tem</button>`:
@@ -326,7 +331,7 @@ $('#panel').addEventListener('click',e=>{
 $('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;tab=b.dataset.t;renderMorning()});
 $('#bOpen').onclick=()=>{
   const L=loc();
-  if(S.cash<L.rent)return toast('Falta dinheiro para o aluguel');
+  if(S.cash<dayCost())return toast(wage()?'Falta dinheiro para aluguel e ajudante':'Falta dinheiro para o aluguel');
   const p=cupsPossible().n;
   if(p<1)return modal(`<h2>Barraca vazia</h2><p>Com o estoque e a receita atuais você não consegue fazer nenhum copo. Abrir mesmo assim?</p>
     <div class="mbtns"><button class="btn ghost" onclick="closeModal()">Voltar</button><button class="btn or" onclick="closeModal();startDay()">Abrir</button></div>`);
@@ -337,16 +342,16 @@ $('#toTitle').onclick=e=>{e.preventDefault();save();renderTitle();show('title')}
 /* ---------- day simulation ---------- */
 function startDay(){
   const L=loc(),w=realWeather();
-  S.cash-=L.rent;
+  S.cash-=L.rent+wage();
   const N=Math.max(4,Math.round(passers(w.type,w.temp,L)*rf(.9,1.1)));
   const ws=[],vf=Math.min(1,40/N);
   for(let i=0;i<N;i++){
     const run=R()<.07;
-    ws.push({t:clamp((R()+R())/2*DAY_MIN,4,DAY_MIN-4),dir:R()<.5?1:-1,lane:R()<.5?0:1,run,stop:!run&&R()<approachP(w.temp),slot:i%4,look:makeLook(),dec:false,dwell:0});
+    ws.push({t:clamp((R()+R())/2*DAY_MIN,4,DAY_MIN-4),dir:R()<.5?1:-1,lane:R()<.5?0:1,run,stop:!run&&R()<approachP(w.temp),slot:i%4,look:makeLook(),dec:false,dwell:0,pat:rf(5,13)});
     const lw=ws[ws.length-1];lw.vis=R()<(lw.stop?Math.min(1,vf*1.8):vf);
   }
   ws.sort((a,b)=>a.t-b.t);
-  D={type:w.type,temp:w.temp,rent:L.rent,rep0:S.rep,ws,idx:0,t:0,sold:0,rev:0,sats:[],happy:0,reasons:{},
+  D={type:w.type,temp:w.temp,rent:L.rent,wage:wage(),busy:0,rep0:S.rep,ws,idx:0,t:0,sold:0,rev:0,sats:[],happy:0,reasons:{},
      missStock:0,missQueue:0,rejPrice:0,stopped:0,pass:N,jarra:0,jarras:0,hourly:{},out:null,spin:0,ang:0,
      drops:Array.from({length:90},()=>({x:R(),y:R(),s:rf(.6,1)})),
      clouds:Array.from({length:4},()=>({x:R(),y:rf(.06,.24),s:rf(.7,1.15),v:rf(.008,.02)})),
@@ -375,12 +380,12 @@ function decide(w){
   w.dwell=5;
   D.stopped++;
   if(D.out){D.missStock++;say(w,'Acabou? 😞');return}
-  const h=Math.floor(w.t/60);D.hourly[h]=D.hourly[h]||0;
-  if(D.hourly[h]>=cap()/10){D.missQueue++;w.dwell=2;say(w,'Fila grande! 😤');return}
+  const wait=Math.max(0,D.busy-w.t);
+  if(wait>w.pat){D.missQueue++;w.dwell=2;say(w,'Fila grande! 😤');return}
   const tol=(2.5+Math.max(0,D.temp-18)*0.18)*L.tol*(0.85+S.rep/100*0.3)*rf(.75,1.3);
   if(S.rec.preco>tol){D.rejPrice++;say(w,'Muito caro! 💸');return}
   const cup=makeCup();if(!cup){D.missStock++;say(w,'Acabou? 😞');return}
-  D.hourly[h]++;D.sold++;D.rev+=S.rec.preco;S.cash+=S.rec.preco;w.buy=true;D.spin=1;w.dwell=14;
+  D.busy=Math.max(D.busy,w.t)+svcMin();D.sold++;D.rev+=S.rec.preco;S.cash+=S.rec.preco;w.buy=true;D.spin=1;w.dwell=14;
   let s=1,why=null,worst=0;const pen=(v,t)=>{s-=v;if(v>worst){worst=v;why=t}};
   const c=S.rec.cana;if(c<5)pen((5-c)*.22,'Tá aguado! 💧');else if(c>=7)s+=.05;
   const pref=clamp(Math.round(rf(-.45,3.45)),0,3),dl=S.rec.limao-pref;
@@ -424,7 +429,7 @@ function endDay(){
   const avg=D.sats.length?D.sats.reduce((a,b)=>a+b,0)/D.sats.length:0;
   let dRep=(D.sats.length?(avg-.62)*22*Math.min(1,D.sold/12):0)-Math.min(6,(D.missStock+D.missQueue)*.12)-(D.rejPrice>D.sold&&D.rejPrice>5?2:0);
   S.rep=clamp(S.rep+dRep,0,100);
-  const profit=D.rev-S.spent-D.rent;
+  const profit=D.rev-S.spent-D.rent-D.wage;
   S.hist.push({day:S.day,profit,sold:D.sold});
   const W=WEATHER[D.type],F=WEATHER[S.fc.type];
   const top=Object.entries(D.reasons).sort((a,b)=>b[1]-a[1]).slice(0,3);
@@ -435,7 +440,7 @@ function endDay(){
   if(melt)loss.push(`🧊 ${melt} cubos de gelo derreteram`);
   const miss=[];
   if(D.missStock)miss.push(`🚫 ${D.missStock} sem estoque`);
-  if(D.missQueue)miss.push(`⏳ ${D.missQueue} desistiram da fila`);
+  if(D.missQueue)miss.push(`⏳ ${D.missQueue} desistiram da fila`+(D.missQueue>=8&&!(S.up.moenda2&&S.up.ajudante)?`<br><small style="color:var(--muted)">💡 Moenda mais rápida ou ajudante (aba Equip.) diminuem a fila</small>`:''));
   if(D.rejPrice)miss.push(`💸 ${D.rejPrice} acharam caro`);
   const r0=Math.round(D.rep0),r1=Math.round(S.rep),last=S.day>=SEASON;
   modal(`<h2>Fim do dia ${S.day} · ${dow(S.day)}</h2>
@@ -445,6 +450,7 @@ function endDay(){
     <div class="kv"><span>Vendas</span><b class="pos">+ ${fmt(D.rev)}</b></div>
     <div class="kv"><span>Insumos comprados</span><b class="neg">− ${fmt(S.spent)}</b></div>
     <div class="kv"><span>Aluguel</span><b class="neg">− ${fmt(D.rent)}</b></div>
+    ${D.wage?`<div class="kv"><span>Ajudante</span><b class="neg">− ${fmt(D.wage)}</b></div>`:''}
     <div class="kv tot"><span>Resultado do dia</span><span class="${profit>=0?'pos':'neg'}">${profit>=0?'+ ':'− '}${fmt(Math.abs(profit))}</span></div>
     ${D.sats.length?`<div class="sec">Clientes</div><div class="lst">Satisfação média: <b>${Math.round(avg*100)}%</b> · ${D.happy} adoraram${top.length?'<br>'+top.map(([k,v])=>`${v}× “${k}”`).join('<br>'):''}</div>`:''}
     ${miss.length?`<div class="sec">Não atendidos</div><div class="lst">${miss.join('<br>')}</div>`:''}
@@ -494,6 +500,7 @@ const PANTS=['#2f3e5c','#3d3d3d','#6b5b45','#1f4e79','#7a2e2e','#4a5d3a','#8a8a8
 const HAIRC=['#2b1d14','#4a2f1d','#141414','#8a5a2b','#d8b25a','#9a9a9a','#6b3a1e'];
 const HAIRT=['short','short','long','long','cap','bald','bun','curly'];
 function makeLook(){return {skin:pick(SKIN),shirt:pick(SHIRT),pants:pick(PANTS),hair:pick(HAIRC),ht:pick(HAIRT),cap:pick(SHIRT),kid:R()<.12,skirt:R()<.18}}
+const HELPER={skin:'#8a5634',shirt:'#f2c230',pants:'#2f3e5c',hair:'#141414',ht:'curly',cap:'#2f7d4a',apron:true};
 const VENDOR={skin:'#c98e62',shirt:'#f4f1ea',pants:'#3d3d3d',hair:'#222',ht:'cap',cap:'#2f7d4a',apron:true};
 function makeCity(){
   const b=[];let x=-10;
@@ -619,6 +626,7 @@ function stand(now,Y,k){
   ctx.fillStyle='#7a5230';ctx.fillRect(cx-W/2+6,aw,6,top-aw);ctx.fillRect(cx+W/2-12,aw,6,top-aw);
   // vendor
   const serving=D.spin>.25;
+  if(S.up.ajudante)person(cx+W*.03,by-H*.72,k*.9,-1,0,HELPER,{armAng:serving?1.5+Math.sin(now/80+1)*.25:-.15});
   person(cx-W*.1,by-H*.72,k*.95,1,0,VENDOR,{armAng:serving?1.55+Math.sin(now/70)*.25:-.15});
   // moenda (behind slab front)
   const mx=cx+W*.2,my=top-8,mw=W*.2,mh=W*.15;
