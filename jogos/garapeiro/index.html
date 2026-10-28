@@ -26,6 +26,11 @@ html,body{margin:0;height:100%;overflow:hidden;background:#173f28;font-family:sy
 .pills{display:flex;gap:3px;margin:10px 12px 0;background:#e9dfc2;padding:4px;border-radius:999px}
 .pills button{flex:1;border:0;background:transparent;padding:8px 0;border-radius:999px;font-weight:700;font-size:13px;color:var(--muted);font-family:inherit}
 .pills button.on{background:var(--green);color:#fff}
+.tog{display:inline-flex;background:#e9dfc2;border-radius:999px;padding:3px;gap:2px;vertical-align:middle}
+.tog button{border:0;background:transparent;border-radius:999px;padding:6px 11px;font-weight:700;font-size:12.5px;line-height:1;font-family:inherit;color:var(--muted)}
+.tog button.on{background:var(--green);color:#fff}
+.tog button.off.on{background:#8a8170}
+.ajrow{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12.5px;font-weight:600;color:var(--ink)}
 .panel{flex:1;overflow-y:auto;padding:10px 12px 4px;-webkit-overflow-scrolling:touch}
 .row{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin-bottom:8px}
 .row .ic{font-size:26px;width:32px;text-align:center}
@@ -178,9 +183,10 @@ function setBest(v){try{localStorage.setItem(BEST,String(v))}catch(e){}}
 
 /* ---------- helpers ---------- */
 const loc=()=>LOCS.find(l=>l.id===S.loc);
-const svcMin=()=>(S.up.moenda2?1.5:S.up.moenda1?3:6)/(S.up.ajudante?1.7:1);
+const ajOn=()=>!!S.up.ajudante&&S.ajOn!==false;
+const svcMin=()=>(S.up.moenda2?1.5:S.up.moenda1?3:6)/(ajOn()?1.7:1);
 const cap=()=>Math.round(DAY_MIN/svcMin());
-const wage=()=>S.up.ajudante?25:0;
+const wage=()=>ajOn()?25:0;
 const dayCost=()=>loc().rent+wage();
 const life=it=>it==='cana'?2+(S.up.geladeira?2:0):4+(S.up.geladeira?3:0);
 const dow=d=>DIAS[(d-1)%7];
@@ -243,7 +249,7 @@ function renderMorning(){
   const exp=passers(S.fc.type,S.fc.temp,L)*approachP(S.fc.temp);
   const lvl=exp<25?'baixo':exp<55?'médio':exp<110?'alto':'muito alto';
   $('#mWx').innerHTML=`<div class="big">${W.e}</div><div class="tx"><b>Previsão: ${W.n}, ${S.fc.temp}°C</b>
-    <small>${L.e} ${L.n} · aluguel ${L.rent?fmt(L.rent):'grátis'}${wage()?` · ajudante ${fmt(wage())}`:''}</small>
+    <small>${L.e} ${L.n} · aluguel ${L.rent?fmt(L.rent):'grátis'}${wage()?` · ajudante ${fmt(wage())}`:''}</small>${S.up.ajudante?`<div class="ajrow">🧑‍🍳 Ajudante hoje ${ajTog()}</div>`:''}
     <span class="tag ${exp>=55?'hot':''}">Movimento ${lvl}${weekend(S.day)?' · fim de semana':''}</span></div>`;
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
   const P=$('#panel');
@@ -298,12 +304,13 @@ function htmlPontos(){
   }
   return h+'</div>';
 }
+function ajTog(){const on=ajOn();return `<span class="tog"><button data-a="aj" data-v="1" class="${on?'on':''}">Trabalha</button><button data-a="aj" data-v="0" class="off ${on?'':'on'}">Folga</button></span>`}
 function htmlEquip(){
   const sm=svcMin();
   let h=`<div class="info" style="margin-bottom:8px">⏱️ Ritmo de atendimento: <b>1 copo a cada ${sm<1?Math.round(sm*60)+' s':(Math.round(sm*10)/10).toString().replace('.',',')+' min'}</b><br>Máximo de ~<b>${cap()} copos/dia</b>. Clientes desistem se a espera passar de ~10 min.</div>`;
   for(const U of UPS){
     const own=S.up[U.id],lock=U.req&&!S.up[U.req];
-    const b=own?`<button class="btn done" disabled>✓ Tem</button>`:
+    const b=own&&U.id==='ajudante'?ajTog():own?`<button class="btn done" disabled>✓ Tem</button>`:
       lock?`<button class="btn ghost sm" disabled>🔒</button>`:
       `<button class="btn sm" data-a="up" data-i="${U.id}" ${S.cash>=U.price?'':'disabled'}>${fmt0(U.price)}</button>`;
     h+=`<div class="row"><div class="ic">${U.e}</div><div class="tx"><b>${U.n}</b><small>${U.d}</small></div>${b}</div>`;
@@ -325,9 +332,11 @@ $('#panel').addEventListener('click',e=>{
     S.buys.splice(k,1);S.cash+=I.price;S.spent-=I.price;}
   if(a==='move'){S.loc=i;toast('Barraca de mudança! '+loc().e)}
   if(a==='unlock'){const L=LOCS.find(l=>l.id===i);if(S.cash<L.unlock)return;S.cash-=L.unlock;S.unl[i]=1;S.loc=i;toast(L.e+' '+L.n+' liberado!')}
-  if(a==='up'){const U=UPS.find(u=>u.id===i);if(S.cash<U.price)return;S.cash-=U.price;S.up[i]=1;toast(U.e+' '+U.n+' comprado!')}
+  if(a==='aj'){S.ajOn=b.dataset.v==='1';toast(S.ajOn?'🧑‍🍳 Ajudante trabalha hoje':'🧑‍🍳 Ajudante de folga hoje')}
+  if(a==='up'){const U=UPS.find(u=>u.id===i);if(S.cash<U.price)return;S.cash-=U.price;S.up[i]=1;if(i==='ajudante')S.ajOn=true;toast(U.e+' '+U.n+(i==='ajudante'?' contratado!':' comprado!'))}
   save();renderMorning();
 });
+$('#mWx').addEventListener('click',e=>{const b=e.target.closest('[data-a=aj]');if(!b)return;S.ajOn=b.dataset.v==='1';toast(S.ajOn?'🧑‍🍳 Ajudante trabalha hoje':'🧑‍🍳 Ajudante de folga hoje');save();renderMorning()});
 $('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;tab=b.dataset.t;renderMorning()});
 $('#bOpen').onclick=()=>{
   const L=loc();
@@ -440,7 +449,7 @@ function endDay(){
   if(melt)loss.push(`🧊 ${melt} cubos de gelo derreteram`);
   const miss=[];
   if(D.missStock)miss.push(`🚫 ${D.missStock} sem estoque`);
-  if(D.missQueue)miss.push(`⏳ ${D.missQueue} desistiram da fila`+(D.missQueue>=8&&!(S.up.moenda2&&S.up.ajudante)?`<br><small style="color:var(--muted)">💡 Moenda mais rápida ou ajudante (aba Equip.) diminuem a fila</small>`:''));
+  if(D.missQueue)miss.push(`⏳ ${D.missQueue} desistiram da fila`+(D.missQueue>=8&&!(S.up.moenda2&&ajOn())?`<br><small style="color:var(--muted)">💡 Moenda mais rápida ou ajudante (aba Equip.) diminuem a fila</small>`:''));
   if(D.rejPrice)miss.push(`💸 ${D.rejPrice} acharam caro`);
   const r0=Math.round(D.rep0),r1=Math.round(S.rep),last=S.day>=SEASON;
   modal(`<h2>Fim do dia ${S.day} · ${dow(S.day)}</h2>
@@ -626,7 +635,7 @@ function stand(now,Y,k){
   ctx.fillStyle='#7a5230';ctx.fillRect(cx-W/2+6,aw,6,top-aw);ctx.fillRect(cx+W/2-12,aw,6,top-aw);
   // vendor
   const serving=D.spin>.25;
-  if(S.up.ajudante)person(cx+W*.03,by-H*.72,k*.9,-1,0,HELPER,{armAng:serving?1.5+Math.sin(now/80+1)*.25:-.15});
+  if(ajOn())person(cx+W*.03,by-H*.72,k*.9,-1,0,HELPER,{armAng:serving?1.5+Math.sin(now/80+1)*.25:-.15});
   person(cx-W*.1,by-H*.72,k*.95,1,0,VENDOR,{armAng:serving?1.55+Math.sin(now/70)*.25:-.15});
   // moenda (behind slab front)
   const mx=cx+W*.2,my=top-8,mw=W*.2,mh=W*.15;
