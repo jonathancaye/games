@@ -53,7 +53,9 @@ h2{margin:0 0 4px;font-size:20px}
 .eq .lvl{margin-left:0}
 .baitrow{margin-top:8px;background:var(--bg);border-radius:10px;padding:7px 9px;font-size:13px}
 .bgrid{display:grid;grid-template-columns:1fr 1fr;gap:3px 12px}
-.bgrid span{display:flex;justify-content:space-between}
+.bgrid span{display:flex;justify-content:space-between;padding:3px 6px;border-radius:7px}
+.bgrid span.ok{background:var(--orange-l);color:#7a3f08;font-weight:700}
+.bgrid span.off{opacity:.45}
 .baitrow small{display:block;color:var(--muted);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
 /* pesca */
 .hud{display:flex;align-items:center;gap:5px;padding:8px 10px;padding-top:calc(8px + env(safe-area-inset-top));background:var(--teal-d);color:#fff;font-weight:700;font-size:12.5px}
@@ -516,7 +518,8 @@ function renderMorning(){
   else{const nt=S.mode==="temporada"?Object.keys(TOURS).map(Number).find(d=>d>S.day):null;
     if(nt){tc.style.display="block";tc.innerHTML=`<div class="muted small">🏆 Próximo torneio</div><b>${TOURS[nt].nome}</b> · dia ${nt} (${ENVS[TOURS[nt].env].nome.toLowerCase()})`}else tc.style.display="none"}
   $("#mEq").innerHTML=eqHtml();
-  $("#mBaits").innerHTML=`<small>Suas iscas · ${ENVS[S.env].nome.toLowerCase()}</small><div class="bgrid">${ENVS[S.env].baits.map(k=>`<span>${BAITS[k].ic} ${BAITS[k].nome}<b>${k==="art"?(S.art?"✓":"—"):S.bait[k]}</b></span>`).join("")}</div>`;
+  const eb=ENVS[S.env].baits;
+  $("#mBaits").innerHTML=`<small style="display:flex;justify-content:space-between"><span>Suas iscas</span><span style="color:#b8650f">● servem no ${ENVS[S.env].nome.toLowerCase()}</span></small><div class="bgrid">${["minhoca","massa","vivo","camarao","sardinha","art"].map(k=>`<span class="${eb.includes(k)?"ok":"off"}">${BAITS[k].ic} ${BAITS[k].nome}<b>${k==="art"?(S.art?"✓":"—"):S.bait[k]}</b></span>`).join("")}</div>`;
 }
 $("#btnFish").onclick=()=>{if(S.stockEnv!==S.env)prepEnv();S.phase="fish";save();show("fish");toast(S.tour?`${TOURS[S.tour.day].nome} começou! Boa sorte.`:`${SP()[S.spot].nome}. Bom dia de pesca!`)};
 
