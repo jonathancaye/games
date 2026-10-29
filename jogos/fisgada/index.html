@@ -61,6 +61,25 @@ h2{margin:0 0 4px;font-size:20px}
 .bgrid span.ok{background:var(--orange-l);color:#7a3f08;font-weight:700}
 .bgrid span.off{opacity:.45}
 .baitrow small{display:block;color:var(--muted);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+/* manhã compacta: tudo cabe sem rolar */
+#morning .panel{padding:8px 10px;display:flex;flex-direction:column;gap:7px}
+#morning .card{padding:9px 11px;margin:0;border-radius:14px}
+#morning .card>b{font-size:13.5px}
+#morning .wxbig{gap:10px}
+#morning .wxbig .ic{font-size:36px}
+#morning .wxbig b{font-size:16px}
+#morning .tip{margin-top:6px;padding:6px 9px;font-size:12.5px}
+#morning .envs{margin-top:5px}
+#morning .envs span{padding:6px 0}
+
+#morning .mk{padding:4px 0;font-size:12.5px}
+#morning .eq{margin-top:5px;font-size:12px;gap:5px}
+#morning .eq div{padding:5px 8px}
+#morning .baitrow{margin-top:6px;padding:5px 8px;font-size:12px}
+#morning .bgrid{grid-template-columns:1fr 1fr 1fr;gap:3px 5px}
+#morning .bgrid span{padding:2px 5px}
+#morning .btns{padding-top:6px}
+@media (max-height:700px){#morning .panel{gap:5px;padding:6px 10px}#morning .card{padding:7px 10px}#morning .wxbig .ic{font-size:30px}#morning .tip{margin-top:4px;padding:5px 8px}#morning .envs span{padding:5px 0}}
 /* pesca */
 .hud{display:flex;align-items:center;gap:5px;padding:8px 10px;padding-top:calc(8px + env(safe-area-inset-top));background:var(--teal-d);color:#fff;font-weight:700;font-size:12.5px}
 .hud .chip{padding:5px 8px}
@@ -154,13 +173,12 @@ h2{margin:0 0 4px;font-size:20px}
       <div class="wxbig"><div class="ic" id="mWxIc"></div><div><div class="muted small">Previsão de hoje</div><b id="mWxName"></b><div class="muted small" id="mWxDesc"></div></div></div>
       <div class="tip" id="mTip"></div>
     </div>
+    <div class="card" id="mTour" style="display:none"></div>
     <div class="card">
-      <b>Onde pescar</b>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><b>Onde pescar</b><span class="muted small" id="mEnvNote" style="text-align:right"></span></div>
       <div class="envs" id="mEnvs"></div>
-      <div class="muted small" style="margin-top:8px" id="mEnvNote"></div>
     </div>
     <div class="card" id="mMarket"></div>
-    <div class="card" id="mTour" style="display:none"></div>
     <div class="card">
       <b>Seu equipamento</b>
       <div class="eq" id="mEq"></div>
@@ -524,7 +542,7 @@ function renderMarket(){
   const m=S.market,el=$("#mMarket");if(!m){el.style.display="none";return}el.style.display="block";
   const line=(k,tag,mult,col)=>{const d=SPECIES[k],E=ENVS[d.env];
     return`<div class="mk"><span>${E.ic} <b>${d.nome}</b> <span class="muted small">${E.nome}</span></span><span style="color:${col};font-weight:800">${tag} ~${brl(avgPrice(k)*mult)}</span></div>`};
-  el.innerHTML=`<b>📈 Mercado de hoje</b><div class="muted small" style="margin:2px 0 6px">Preço médio por peixe na peixaria</div>
+  el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px"><b>📈 Mercado de hoje</b><span class="muted small">preço médio por peixe</span></div>
     ${m.up.map(k=>line(k,"▲ +50%",1.5,"#1f8f4e")).join("")}${m.down?line(m.down,"▼ −30%",.7,"#c8483a"):""}`;
 }
 function renderMorning(){
@@ -542,17 +560,13 @@ function renderMorning(){
   document.querySelectorAll("[data-env]").forEach(el=>el.onclick=()=>{const k=el.dataset.env;if(!envOpen(k)||S.tour||k===S.env)return;S.env=k;prepEnv();save();renderMorning()});
   const nxt=ENV_ORDER.map(k=>ENVS[k]).find(e=>S.mode!=="semfim"&&e.dia>S.day);
   $("#mEnvs").classList.toggle("tour",!!S.tour);
-  $("#mEnvNote").innerHTML=S.tour?`<b style="color:#a14f08">🏆 Dia de torneio: o local é fixo.</b>`:(nxt?`${nxt.nome} abre no dia ${nxt.dia}.`:"Todos os ambientes liberados.");
-  // card do torneio: logo abaixo da previsão no dia do torneio; senão, depois do mercado
-  const tcard=$("#mTour"),panel=tcard.parentNode;
-  if(S.tour)panel.insertBefore(tcard,panel.children[1]);else panel.insertBefore(tcard,$("#mMarket").nextSibling);
-  tcard.classList.toggle("today",!!S.tour);
+  $("#mEnvNote").innerHTML=S.tour?`<b style="color:#a14f08">🏆 Torneio: local fixo</b>`:(nxt?`${nxt.nome} abre no dia ${nxt.dia}.`:"Todos os ambientes liberados.");
+  $("#mTour").classList.toggle("today",!!S.tour);
   // torneio
   const T=S.tour&&TOURS[S.tour.day],tc=$("#mTour");
-  if(T){tc.style.display="block";tc.innerHTML=`<div class="muted small">🏆 Dia de torneio</div><b style="font-size:17px">${T.nome}</b><div class="small" style="margin-top:4px">${T.desc}</div>
-    <div class="sumline small muted" style="margin-top:6px"><span>Prêmios</span><span>${T.premio.map(brl).join(" · ")}</span></div>`}
+  if(T){tc.style.display="block";tc.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><b style="font-size:15px">🏆 ${T.nome}</b><span class="muted small">hoje</span></div><div class="small" style="margin-top:2px">${T.desc} <span class="muted">Prêmios: ${T.premio.map(brl).join(" / ")}.</span></div>`}
   else{const nt=S.mode==="temporada"?Object.keys(TOURS).map(Number).find(d=>d>S.day):null;
-    if(nt){tc.style.display="block";tc.innerHTML=`<div class="muted small">🏆 Próximo torneio</div><b>${TOURS[nt].nome}</b> · dia ${nt} (${ENVS[TOURS[nt].env].nome.toLowerCase()})`}else tc.style.display="none"}
+    if(nt){tc.style.display="block";tc.innerHTML=`<div class="small">🏆 Próximo torneio: <b>${TOURS[nt].nome}</b> · dia ${nt} (${ENVS[TOURS[nt].env].nome.toLowerCase()})</div>`}else tc.style.display="none"}
   $("#mEq").innerHTML=eqHtml();
   const eb=ENVS[S.env].baits;
   $("#mBaits").innerHTML=`<small style="display:flex;justify-content:space-between"><span>Suas iscas</span><span style="color:#b8650f">● servem no ${ENVS[S.env].nome.toLowerCase()}</span></small><div class="bgrid">${["minhoca","massa","vivo","camarao","sardinha","art"].map(k=>`<span class="${eb.includes(k)?"ok":"off"}">${BAITS[k].ic} ${BAITS[k].nome}<b>${k==="art"?(S.art?"✓":"—"):S.bait[k]}</b></span>`).join("")}</div>`;
