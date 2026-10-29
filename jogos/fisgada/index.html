@@ -80,6 +80,19 @@ h2{margin:0 0 4px;font-size:20px}
 #morning .bgrid span{padding:2px 5px}
 #morning .btns{padding-top:6px}
 @media (max-height:700px){#morning .panel{gap:5px;padding:6px 10px}#morning .card{padding:7px 10px}#morning .wxbig .ic{font-size:30px}#morning .tip{margin-top:4px;padding:5px 8px}#morning .envs span{padding:5px 0}}
+/* álbum em abas, sem rolagem */
+.albTabs{padding:8px 10px 0;background:var(--bg)}
+.albTabs .envs span{font-size:12px;padding:7px 0;white-space:nowrap}
+#album .panel{padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+.arow{display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 9px}
+.arow canvas{width:56px;height:30px;flex:none}
+.arow .tx{flex:1;min-width:0}
+.arow .l1{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.arow .l1 b{font-size:14px}
+.arow small{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}
+.arow .hint{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.3}
+.rar{font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:999px;background:var(--bg);color:var(--muted);white-space:nowrap}
+.rar.inc{background:#dceefa;color:#1f5f8a}.rar.raro{background:#efe2fb;color:#6a3a9a}.rar.lend{background:#fff1bf;color:#8a6300}
 /* pesca */
 .hud{display:flex;align-items:center;gap:5px;padding:8px 10px;padding-top:calc(8px + env(safe-area-inset-top));background:var(--teal-d);color:#fff;font-weight:700;font-size:12.5px}
 .hud .chip{padding:5px 8px}
@@ -252,6 +265,7 @@ h2{margin:0 0 4px;font-size:20px}
 <!-- ÁLBUM -->
 <section class="screen" id="album">
   <div class="top"><a href="#" id="albBack">← Voltar</a><span class="grow">Álbum de espécies</span><span class="chip" id="aCount"></span></div>
+  <div class="albTabs"><div class="envs" id="aTabs"></div><div class="muted small" style="margin-top:5px;text-align:center">Raridade = com que frequência a espécie aparece</div></div>
   <div class="panel" id="aBody"></div>
 </section>
 
@@ -516,7 +530,7 @@ document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",e=>
   show(g);
 }));
 $("#shopBack").onclick=e=>{e.preventDefault();show(prevScreen)};
-$("#albBack").onclick=e=>{e.preventDefault();show(prevScreen)};
+$("#albBack").onclick=e=>{e.preventDefault();albEnv=null;show(prevScreen)};
 
 function dayLabel(){return S.mode==="semfim"?`Dia ${S.day} · Sem fim`:`Dia ${S.day} de ${SEASON_DAYS}`}
 
@@ -1235,20 +1249,25 @@ function buy(id){
 }
 
 /* ================= álbum ================= */
+let albEnv=null;
 function renderAlbum(){
   const all=Object.keys(SPECIES),known=all.filter(k=>S.album[k]).length;
   $("#aCount").textContent=`${known}/${all.length}`;
-  const b=$("#aBody");b.innerHTML=`<div class="muted small" style="padding:0 2px">A raridade indica com que frequência a espécie aparece: Comum, Incomum, Raro e Lendário.</div>`;
-  for(const e of ENV_ORDER){
-  const E=ENVS[e];b.insertAdjacentHTML("beforeend",`<div class="sect">${E.ic} ${E.nome}${envOpen(e)?"":` · abre no dia ${E.dia}`}</div>`);
+  if(!albEnv)albEnv=S.env;
+  $("#aTabs").innerHTML=ENV_ORDER.map(e=>{const sp=envSpecies(e),n=sp.filter(k=>S.album[k]).length;
+    return`<span data-alb="${e}" class="${albEnv===e?"on":""}" style="cursor:pointer;${envOpen(e)?"":"opacity:.55"}">${ENVS[e].nome} <small style="opacity:.75">${n}/${sp.length}</small></span>`}).join("");
+  document.querySelectorAll("[data-alb]").forEach(el=>el.onclick=()=>{albEnv=el.dataset.alb;renderAlbum()});
+  const e=albEnv,E=ENVS[e],b=$("#aBody");b.innerHTML="";
+  if(!envOpen(e))b.insertAdjacentHTML("beforeend",`<div class="muted small" style="text-align:center;margin-bottom:6px">${E.ic} ${E.nome} abre no dia ${E.dia}</div>`);
+  const rarCls={"Comum":"","Incomum":"inc","Raro":"raro","Lendário":"lend"};
   for(const k of envSpecies(e)){
-    const d=SPECIES[k],a=S.album[k],r=document.createElement("div");r.className="row";
+    const d=SPECIES[k],a=S.album[k],r=document.createElement("div");r.className="arow";
     r.appendChild(fishThumb(k,!!a));
-    const mm=marketMult(k),price=d.release?"Não pode ser vendido":`~${brl(avgPrice(k))} por peixe${mm>1?" · 📈 em alta hoje":mm<1?" · 📉 em baixa hoje":""}`;
-    r.insertAdjacentHTML("beforeend",a?`<div class="tx"><b>${d.nome}</b><small>${d.rar} · ${a.n} capturado${a.n>1?"s":""} · recorde ${fmtW(a.best)}</small><small style="color:var(--teal-d);font-weight:700">${price}</small><small>${d.hint}</small></div>`
-      :`<div class="tx"><b>???</b><small>${d.rar}</small><small>${envOpen(e)?d.hint:"Ambiente ainda fechado."}</small></div>`);
+    const mm=marketMult(k),price=d.release?"Não se vende":`~${brl(avgPrice(k))}/peixe${mm>1?" 📈":mm<1?" 📉":""}`;
+    const stats=a?`${a.n}× · recorde ${fmtW(a.best)} · <b style="color:var(--teal-d)">${price}</b>`:"Ainda não capturado";
+    r.insertAdjacentHTML("beforeend",`<div class="tx"><div class="l1"><b>${a?d.nome:"???"}</b><span class="rar ${rarCls[d.rar]}">${d.rar}</span></div><small>${stats}</small><small class="hint">${envOpen(e)?d.hint:"Ambiente ainda fechado."}</small></div>`);
     b.appendChild(r);
-  }}
+  }
 }
 
 /* ================= temporada ================= */
