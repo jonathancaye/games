@@ -45,6 +45,9 @@ h2{margin:0 0 4px;font-size:20px}
 .envs{display:flex;gap:4px;background:var(--teal-l);padding:4px;border-radius:999px;margin-top:4px}
 .envs span{flex:1;text-align:center;padding:8px 0;border-radius:999px;font-weight:700;font-size:12.5px;color:var(--muted)}
 .envs span.on{background:var(--teal);color:#fff}
+.envs.tour{background:var(--orange-l)}
+.envs.tour span.on{background:var(--orange)}
+#mTour.today{border:2px solid var(--orange);background:#fff8f0}
 .small{font-size:12px}
 .eq{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:6px;font-size:13px}
 .eq div{background:var(--bg);border-radius:10px;padding:7px 9px}
@@ -538,7 +541,12 @@ function renderMorning(){
     return`<span data-env="${k}" class="${S.env===k?"on":""}" style="${open&&!lock?"cursor:pointer":"opacity:.6"}">${open?"":"🔒 "}${e.nome}</span>`}).join("");
   document.querySelectorAll("[data-env]").forEach(el=>el.onclick=()=>{const k=el.dataset.env;if(!envOpen(k)||S.tour||k===S.env)return;S.env=k;prepEnv();save();renderMorning()});
   const nxt=ENV_ORDER.map(k=>ENVS[k]).find(e=>S.mode!=="semfim"&&e.dia>S.day);
-  $("#mEnvNote").textContent=S.tour?"Dia de torneio: o local é fixo.":(nxt?`${nxt.nome} abre no dia ${nxt.dia}.`:"Todos os ambientes liberados.");
+  $("#mEnvs").classList.toggle("tour",!!S.tour);
+  $("#mEnvNote").innerHTML=S.tour?`<b style="color:#a14f08">🏆 Dia de torneio: o local é fixo.</b>`:(nxt?`${nxt.nome} abre no dia ${nxt.dia}.`:"Todos os ambientes liberados.");
+  // card do torneio: logo abaixo da previsão no dia do torneio; senão, depois do mercado
+  const tcard=$("#mTour"),panel=tcard.parentNode;
+  if(S.tour)panel.insertBefore(tcard,panel.children[1]);else panel.insertBefore(tcard,$("#mMarket").nextSibling);
+  tcard.classList.toggle("today",!!S.tour);
   // torneio
   const T=S.tour&&TOURS[S.tour.day],tc=$("#mTour");
   if(T){tc.style.display="block";tc.innerHTML=`<div class="muted small">🏆 Dia de torneio</div><b style="font-size:17px">${T.nome}</b><div class="small" style="margin-top:4px">${T.desc}</div>
