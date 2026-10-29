@@ -52,6 +52,7 @@ h2{margin:0 0 4px;font-size:20px}
 .eq div{display:flex;flex-direction:column;gap:4px}
 .eq .lvl{margin-left:0}
 .baitrow{margin-top:8px;background:var(--bg);border-radius:10px;padding:7px 9px;font-size:13px}
+.mk{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-top:1px solid var(--line);font-size:13.5px}
 .bgrid{display:grid;grid-template-columns:1fr 1fr;gap:3px 12px}
 .bgrid span{display:flex;justify-content:space-between;padding:3px 6px;border-radius:7px}
 .bgrid span.ok{background:var(--orange-l);color:#7a3f08;font-weight:700}
@@ -155,6 +156,7 @@ h2{margin:0 0 4px;font-size:20px}
       <div class="envs" id="mEnvs"></div>
       <div class="muted small" style="margin-top:8px" id="mEnvNote"></div>
     </div>
+    <div class="card" id="mMarket"></div>
     <div class="card" id="mTour" style="display:none"></div>
     <div class="card">
       <b>Seu equipamento</b>
@@ -352,7 +354,7 @@ const SPECIES={
 };
 const ROD=[{zona:.28,preco:0},{zona:.33,preco:600},{zona:.38,preco:1800},{zona:.44,preco:4500}];
 const MOTOR=[{min:40,preco:0},{min:28,preco:400},{min:18,preco:1200},{min:10,preco:3000}];
-const SONAR=[{preco:0,d:"Mostra se há peixe"},{preco:700,d:"Mostra o tamanho e a profundidade"},{preco:2200,d:"Identifica a espécie pela cor"}];
+const SONAR=[{preco:0,d:"Mostra se há peixe"},{preco:700,d:"Mostra o tamanho dos peixes"},{preco:2200,d:"Identifica a espécie pela cor"}];
 const ENV_ORDER=["lago","rio","mangue","mar"];
 const ENVS={
   lago:{nome:"Lago",ic:"🏞️",dia:1,start:3,baits:["minhoca","massa","vivo","art"],sonarBot:"#5a3d26",spots:[
@@ -424,9 +426,16 @@ function rollWx(){
   if(S.day===1)return"sol";
   let r=rnd()*100;for(const k in WX){r-=WX[k].p;if(r<=0)return k}return"sol";
 }
+function rollMarket(){
+  const pool=Object.keys(SPECIES).filter(k=>!SPECIES[k].legend&&envOpen(SPECIES[k].env)).sort(()=>rnd()-.5);
+  const up=pool.slice(0,rnd()<.4?2:1),rest=pool.filter(k=>!up.includes(k));
+  return{up,down:rnd()<.5&&rest.length?rest[0]:null};
+}
+function marketMult(sp){const m=S.market;if(!m)return 1;return m.up.includes(sp)?1.5:m.down===sp?.7:1}
 function startDay(){
   S.day++;S.wx=rollWx();S.t=0;S.today=[];S.lastRegen=0;S.phase="morning";
   const T=S.mode==="temporada"&&TOURS[S.day];
+  S.market=rollMarket();
   S.tour=T?{day:S.day,riv:T.riv.map(([a,b])=>+(a+rnd()*(b-a)).toFixed(2))}:null;
   if(T)S.env=T.env;
   if(!envOpen(S.env))S.env="lago";
@@ -490,14 +499,23 @@ function renderTitle(){
 $("#btnNew").onclick=()=>{if(load()&&!confirm("Começar uma nova temporada? O progresso atual será perdido."))return;newSeason();show("morning")};
 $("#btnCont").onclick=()=>{S=load();
   // saves antigos
-  S.env=S.env||"lago";S.bait=Object.assign({minhoca:0,massa:0,vivo:0,camarao:0,sardinha:0},S.bait);S.tourPts=S.tourPts||0;S.tourLog=S.tourLog||[];
+  S.env=S.env||"lago";S.bait=Object.assign({minhoca:0,massa:0,vivo:0,camarao:0,sardinha:0},S.bait);S.tourPts=S.tourPts||0;S.tourLog=S.tourLog||[];if(!S.market)S.market=rollMarket();
   if(!S.stock||S.stockEnv===undefined){S.stockEnv=S.env;S.stock=genStock()}show(S.phase==="fish"?"fish":S.phase==="night"?"night":S.phase==="season"?"season":"morning");if(S.phase==="season")renderSeason()};
 
 function eqHtml(){
   const lv=(n,max)=>`<span class="lvl">${Array.from({length:max},(_,i)=>`<i class="${i<n?"on":""}"></i>`).join("")}</span>`;
   return `<div>Vara${lv(S.rod,4)}</div><div>Motor${lv(S.motor,4)}</div><div>Sonar${lv(S.sonar,3)}</div>`;
 }
+const avgPrice=k=>Math.round(SPECIES[k].avg*SPECIES[k].kg);
+function renderMarket(){
+  const m=S.market,el=$("#mMarket");if(!m){el.style.display="none";return}el.style.display="block";
+  const line=(k,tag,mult,col)=>{const d=SPECIES[k],E=ENVS[d.env];
+    return`<div class="mk"><span>${E.ic} <b>${d.nome}</b> <span class="muted small">${E.nome}</span></span><span style="color:${col};font-weight:800">${tag} ~${brl(avgPrice(k)*mult)}</span></div>`};
+  el.innerHTML=`<b>📈 Mercado de hoje</b><div class="muted small" style="margin:2px 0 6px">Preço médio por peixe na peixaria</div>
+    ${m.up.map(k=>line(k,"▲ +50%",1.5,"#1f8f4e")).join("")}${m.down?line(m.down,"▼ −30%",.7,"#c8483a"):""}`;
+}
 function renderMorning(){
+  renderMarket();
   $("#mTitle").textContent=dayLabel();
   $("#mMoney").textContent=brl(S.money);
   const w=WX[S.wx];
@@ -1028,9 +1046,10 @@ $("#fightOv").addEventListener("pointerdown",hDown); // segurar em qualquer pont
 /* ================= captura ================= */
 function fishValue(f){return Math.max(1,Math.round(f.w*SPECIES[f.sp].kg))}
 function showCatch(f,perfect){
-  const d=SPECIES[f.sp],a=S.album[f.sp];let v=d.release?0:fishValue(f);if(perfect)v=Math.round(v*1.25);
+  const d=SPECIES[f.sp],a=S.album[f.sp],mm=marketMult(f.sp);let v=d.release?0:Math.max(1,Math.round(fishValue(f)*mm));if(perfect)v=Math.round(v*1.25);
   const flags=[];if(perfect&&!d.release)flags.push(["Captura perfeita · +25%",""]);
   if(d.release)flags.push(["Espécie protegida · devolvido à água","or"]);
+  if(!d.release&&mm>1)flags.push(["📈 Em alta · +50%","gold"]);if(!d.release&&mm<1)flags.push(["📉 Em baixa · −30%",""]);
   if(!a)flags.push(["Nova espécie!","or"]);
   else if(f.w>a.best)flags.push(["Novo recorde!","gold"]);
   if(d.legend)flags.push(["Lendário","gold"]);
@@ -1193,7 +1212,8 @@ function renderAlbum(){
   for(const k of envSpecies(e)){
     const d=SPECIES[k],a=S.album[k],r=document.createElement("div");r.className="row";
     r.appendChild(fishThumb(k,!!a));
-    r.insertAdjacentHTML("beforeend",a?`<div class="tx"><b>${d.nome}</b><small>${d.rar} · ${a.n} capturado${a.n>1?"s":""} · recorde ${fmtW(a.best)}</small><small>${d.hint}</small></div>`
+    const mm=marketMult(k),price=d.release?"Não pode ser vendido":`~${brl(avgPrice(k))} por peixe${mm>1?" · 📈 em alta hoje":mm<1?" · 📉 em baixa hoje":""}`;
+    r.insertAdjacentHTML("beforeend",a?`<div class="tx"><b>${d.nome}</b><small>${d.rar} · ${a.n} capturado${a.n>1?"s":""} · recorde ${fmtW(a.best)}</small><small style="color:var(--teal-d);font-weight:700">${price}</small><small>${d.hint}</small></div>`
       :`<div class="tx"><b>???</b><small>${d.rar}</small><small>${envOpen(e)?d.hint:"Ambiente ainda fechado."}</small></div>`);
     b.appendChild(r);
   }}
