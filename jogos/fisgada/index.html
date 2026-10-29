@@ -72,14 +72,29 @@ h2{margin:0 0 4px;font-size:20px}
 #morning .envs{margin-top:5px}
 #morning .envs span{padding:6px 0}
 
-#morning .mk{padding:4px 0;font-size:12.5px}
+/* topo: tempo | mercado */
+.topgrid{display:grid;grid-template-columns:1fr 1.25fr;gap:8px}
+.topgrid.solo{grid-template-columns:1fr}
+.tcol{background:var(--bg);border-radius:12px;padding:8px 9px;min-width:0}
+.thd{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:4px}
+.wxcol{text-align:center;display:flex;flex-direction:column;align-items:center}
+.wxcol .ic{font-size:38px;line-height:1.1}
+.wxcol b{font-size:15px;margin-top:2px}
+.wxcol .small{font-size:11px;line-height:1.25;margin-top:2px}
+.mkrow{display:flex;align-items:center;gap:6px;padding:5px 0;border-top:1px solid var(--line)}
+.thd+.mkrow{border-top:0}
+.mkrow .ar{font-size:15px;font-weight:900;width:16px;text-align:center}
+.mkrow .nm{flex:1;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mkrow .pr{font-weight:800;font-size:13px;white-space:nowrap}
+.mkrow.up{color:#1f8f4e}.mkrow.dn{color:#c8483a}
+.mkrow .nm{color:var(--ink)}
 #morning .eq{margin-top:5px;font-size:12px;gap:5px}
 #morning .eq div{padding:5px 8px}
 #morning .baitrow{margin-top:6px;padding:5px 8px;font-size:12px}
 #morning .bgrid{grid-template-columns:1fr 1fr 1fr;gap:3px 5px}
 #morning .bgrid span{padding:2px 5px}
 #morning .btns{padding-top:6px}
-@media (max-height:700px){#morning .panel{gap:5px;padding:6px 10px}#morning .card{padding:7px 10px}#morning .wxbig .ic{font-size:30px}#morning .tip{margin-top:4px;padding:5px 8px}#morning .envs span{padding:5px 0}}
+@media (max-height:700px){#morning .panel{gap:5px;padding:6px 10px}#morning .card{padding:7px 10px}.wxcol .ic{font-size:30px}.tcol{padding:6px 8px}#morning .tip{margin-top:4px;padding:5px 8px}#morning .envs span{padding:5px 0}}
 /* álbum em abas, sem rolagem */
 .albTabs{padding:8px 10px 0;background:var(--bg)}
 .albTabs .envs span{font-size:12px;padding:7px 0;white-space:nowrap}
@@ -183,7 +198,10 @@ h2{margin:0 0 4px;font-size:20px}
   <div class="top"><a href="#" data-go="title">☰</a><span class="grow" id="mTitle">Dia 1</span><span class="chip" id="mMoney"></span></div>
   <div class="panel">
     <div class="card">
-      <div class="wxbig"><div class="ic" id="mWxIc"></div><div><div class="muted small">Previsão de hoje</div><b id="mWxName"></b><div class="muted small" id="mWxDesc"></div></div></div>
+      <div class="topgrid">
+        <div class="tcol wxcol"><div class="thd">Tempo</div><div class="ic" id="mWxIc"></div><b id="mWxName"></b><div class="muted small" id="mWxDesc"></div></div>
+        <div class="tcol mkcol" id="mMarket"></div>
+      </div>
       <div class="tip" id="mTip"></div>
     </div>
     <div class="card" id="mTour" style="display:none"></div>
@@ -191,7 +209,6 @@ h2{margin:0 0 4px;font-size:20px}
       <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><b>Onde pescar</b><span class="muted small" id="mEnvNote" style="text-align:right"></span></div>
       <div class="envs" id="mEnvs"></div>
     </div>
-    <div class="card" id="mMarket"></div>
     <div class="card">
       <b>Seu equipamento</b>
       <div class="eq" id="mEq"></div>
@@ -553,11 +570,11 @@ function eqHtml(){
 }
 const avgPrice=k=>Math.round(SPECIES[k].avg*SPECIES[k].kg);
 function renderMarket(){
-  const m=S.market,el=$("#mMarket");if(!m){el.style.display="none";return}el.style.display="block";
-  const line=(k,tag,mult,col)=>{const d=SPECIES[k],E=ENVS[d.env];
-    return`<div class="mk"><span>${E.ic} <b>${d.nome}</b> <span class="muted small">${E.nome}</span></span><span style="color:${col};font-weight:800">${tag} ~${brl(avgPrice(k)*mult)}</span></div>`};
-  el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px"><b>📈 Mercado de hoje</b><span class="muted small">preço médio por peixe</span></div>
-    ${m.up.map(k=>line(k,"▲ +50%",1.5,"#1f8f4e")).join("")}${m.down?line(m.down,"▼ −30%",.7,"#c8483a"):""}`;
+  const m=S.market,el=$("#mMarket"),has=m&&(m.up.length||m.down);
+  el.style.display=has?"block":"none";el.parentNode.classList.toggle("solo",!has);if(!has)return;
+  const line=(k,cls,ar,mult)=>{const d=SPECIES[k],E=ENVS[d.env];
+    return`<div class="mkrow ${cls}" title="${E.nome}"><span class="ar">${ar}</span><span class="nm">${d.nome}</span><span class="pr">${brl(avgPrice(k)*mult)}</span></div>`};
+  el.innerHTML=`<div class="thd">Mercado</div>${m.up.map(k=>line(k,"up","▲",1.5)).join("")}${m.down?line(m.down,"dn","▼",.7):""}`;
 }
 function renderMorning(){
   renderMarket();
