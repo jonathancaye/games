@@ -426,10 +426,20 @@ function rollWx(){
   if(S.day===1)return"sol";
   let r=rnd()*100;for(const k in WX){r-=WX[k].p;if(r<=0)return k}return"sol";
 }
+// Mercado: 60% segue a lógica (clima favorece → oferta alta → preço cai), 40% é sorte
 function rollMarket(){
   const pool=Object.keys(SPECIES).filter(k=>!SPECIES[k].legend&&envOpen(SPECIES[k].env)).sort(()=>rnd()-.5);
-  const up=pool.slice(0,rnd()<.4?2:1),rest=pool.filter(k=>!up.includes(k));
-  return{up,down:rnd()<.5&&rest.length?rest[0]:null};
+  const w=k=>wf(SPECIES[k],S.wx);
+  let down=null;
+  if(rnd()<.6){const fav=pool.filter(k=>w(k)>=1.15).sort((a,b)=>w(b)-w(a));down=fav[0]||null}
+  else if(rnd()<.5)down=pool[0];
+  const up=[],n=rnd()<.4?2:1;
+  for(let i=0;i<n;i++){
+    const cand=pool.filter(k=>k!==down&&!up.includes(k));if(!cand.length)break;
+    if(rnd()<.6){const hard=cand.filter(k=>w(k)<=1).sort((a,b)=>w(a)-w(b));up.push((hard.length?hard:cand)[Math.floor(rnd()*Math.min(3,(hard.length?hard:cand).length))])}
+    else up.push(cand[0]);
+  }
+  return{up,down};
 }
 function marketMult(sp){const m=S.market;if(!m)return 1;return m.up.includes(sp)?1.5:m.down===sp?.7:1}
 function startDay(){
