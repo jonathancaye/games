@@ -248,6 +248,13 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .oc .t b:after{content:'';width:6px;height:6px;border-right:1.5px solid var(--mut);border-bottom:1.5px solid var(--mut);transform:rotate(45deg);margin:-3px 2px 0 4px;transition:transform .2s}
 .oc .r.open .t b:after{transform:rotate(-135deg);margin-top:3px}
 .oc .d{display:none;color:var(--tx);opacity:.85;font-size:12.5px;line-height:1.45;padding:0 0 9px}.oc .r.open .d{display:block}
+.oc.flat .r{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;cursor:default}
+.oc.flat .r span:first-child{color:var(--mut)}.oc.flat .r span:last-child{font-weight:600;text-align:right}.oc.flat .bar{margin-top:0}
+.ol .li{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px;line-height:1.45}.ol .li:last-child{border-bottom:0}
+.ol .li i{flex:none;font-style:normal;width:20px;height:20px;border-radius:50%;background:#14b8a622;color:var(--teal);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.ol .li i.dot{width:6px;height:6px;margin:7px 7px 0;background:var(--org)}
+.lab{font-size:11px;color:var(--mut);letter-spacing:1.2px;margin:0 2px 6px}
+.fin h1 span{color:var(--org)}.tile .st{color:var(--org);font-size:15px;letter-spacing:2px}
 .ochint{font-size:11px;color:var(--mut);text-align:right;margin:-10px 2px 12px}.oc .g{color:var(--teal)}.oc .w{color:var(--org)}
 .fpills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}.fpill{font-size:11px;font-weight:700;letter-spacing:.5px;padding:5px 10px;border-radius:20px;border:1px solid var(--line);color:var(--mut)}
 .fpill.got{border-color:var(--teal);color:var(--teal)}.fpill.cur{background:var(--teal);border-color:var(--teal);color:#05201d}.fpill.epi{border-color:var(--org);color:var(--org)}
@@ -1244,7 +1251,8 @@ function rAjustes(){let found=[];try{found=JSON.parse(localStorage.getItem(LS_FI
   <div class="set-h">Sair</div>
   <a class="set-row" href="../../"><span class="si" style="background:#0d9488">${ic('grid')}</span>Voltar à Mesa de Jogos<span class="chev">›</span></a>
   <p class="hint" style="padding:14px 16px">Fonte Anônima · Episódio ${S.ep} de 6 · seu progresso fica salvo neste aparelho.</p></div>`;}
-function howto(){overlay(`<div class="modal"><h1>FONTE <span>ANÔNIMA</span></h1><div class="ep">Como jogar</div><ul style="color:var(--tx)"><li>Tudo acontece no seu celular.</li><li>Toque nos <span class="k">termos em destaque</span> para anotá-los no Caderno. Tocar numa pista no Caderno já pesquisa.</li><li>No Navegador, use a câmera para printar páginas como prova. Alguns sites têm código-fonte e versão arquivada.</li><li>No Papo, use o clipe para mostrar provas às pessoas.</li><li>Cada ação gasta tempo. Algumas provas desaparecem, e quem você alerta reage.</li><li>No fim de cada episódio, escreva a matéria no Blog e decida: publicar ou segurar.</li></ul><button class="bigbtn" data-close="1">Entendi</button></div>`);}
+const RULES=['Tudo acontece no seu celular.','Toque nos <span class="k">termos em destaque</span> para anotá-los no Caderno. Tocar numa pista no Caderno já pesquisa.','No Navegador, use a câmera para printar páginas como prova. Alguns sites têm código-fonte e versão arquivada.','No Papo, use o clipe para mostrar provas às pessoas.','Cada ação gasta tempo. Algumas provas desaparecem, e quem você alerta reage.','No fim de cada episódio, escreva a matéria no Blog e decida: publicar ou segurar.'];
+function howto(){overlay(`<div class="modal fin"><div class="ep">COMO JOGAR</div><h1>FONTE <span>ANÔNIMA</span></h1><div class="dsc">Uma investigação contada pelo seu celular.</div>${olist(RULES,1)}<button class="bigbtn" data-close="1">Entendi</button></div>`);}
 const CLAIMS={
  1:[{t:'A Bia não era dona do Rendix: ela foi contratada para gravar os vídeos.',ok:['pix_lume','briefing','post_publi']},
     {t:'No papel, o Rendix pertence a outra empresa, não à Bia.',ok:['cnpj_rendix','cnpj_mx']},
@@ -1360,6 +1368,8 @@ const FINAL={
 };
 function finalize(kind){closeOverlay();const pub=kind==='pub';let stars=0;CLAIMS[S.ep].forEach((c,i)=>{if(!c.opt&&S.draft[i]&&c.ok.includes(S.draft[i]))stars++;});if(S.ep===6)stars=Math.round(stars*3/5);
   S.mat[S.ep]={pub,stars,draft:S.draft.slice()};advance(30);FINAL[S.ep](pub);view={app:'home'};save();render();}
+const noEmo=x=>String(x).replace(/^[\p{Extended_Pictographic}️‍\s]+/u,'');
+const olist=(items,num)=>`<div class="oc ol">${items.map((x,i)=>`<div class="li"><i class="${num?'':'dot'}">${num?i+1:''}</i><span>${noEmo(x)}</span></div>`).join('')}</div>`;
 function showEpilogo(){S.epiShown=true;save();
   overlay(`<div class="modal fin"><div class="ep">EPÍLOGO · UMA SEMANA DEPOIS</div><h1>${EPILOGO.t}</h1><div class="dsc">${EPILOGO.d}</div>
   <div class="bubm">Número desconhecido · domingo, 23h</div>
@@ -1392,7 +1402,6 @@ function showFinal(){const F=S.final;if(!F)return;
 function trustTxt(v){return v>=2?'Aliado(a)':v>=1?'Confia em você':v===0?'Neutro(a)':v>=-1?'Desconfiado(a)':'Hostil';}
 function showEnd(ep){const M=S.mat[ep];if(!M)return;save();
   const notes=[];let rows='';const e=Math.min(5,S.expo);const nEv=S.ev.filter(x=>EPS[ep].evs.includes(x)).length;
-  rows+=`<div class="r"><span>Matéria</span><span>${M.pub?'Publicada':'Guardada'}</span></div><div class="r"><span>Provas do episódio</span><span>${nEv} de ${EPS[ep].evs.length}</span></div>`;
   if(ep===1){
     rows+=`<div class="r"><span>Carol</span><span>${trustTxt(tv('carol'))}</span></div><div class="r"><span>Luana</span><span>${has('briefing_ok')||tv('luana')?trustTxt(tv('luana')):'Não contatada'}</span></div>`;
     if(S.ev.includes('review_marcos')&&!has('marcos_alerta'))notes.push('🔍 Você guardou uma avaliação antiga do Rendix. Ela pode importar mais do que parece.');
@@ -1454,11 +1463,12 @@ function showEnd(ep){const M=S.mat[ep];if(!M)return;save();
     if(S.kw.includes('Diego'))notes.push('🏍️ Você tem um nome: Diego.');
   }
   const next=EPS[ep+1];
-  overlay(`<div class="modal"><div class="ep">FIM DO EPISÓDIO ${ep}</div><h1 style="font-size:22px">${EPS[ep].title}</h1><div class="stars">${'★'.repeat(M.stars)}${'☆'.repeat(3-M.stars)}</div>
-  <div class="sum">${rows}<div class="r"><span>Exposição</span><span><div class="bar"><i style="width:${e*20}%"></i></div></span></div></div>
-  ${notes.map(n=>`<div class="note">${n}</div>`).join('')}
-  <p style="margin-top:14px;color:var(--mut);font-size:13px">Suas escolhas ficam salvas e vão pesar no final da história.${next?'':`<br><b style="color:var(--teal)">Episódio ${ep+1} · ${NEXT_TITLE[ep+1]}</b> — em breve.`}</p>
-  ${next&&S.ep===ep?`<button class="bigbtn" data-epintro="${ep+1}">▶ Começar Episódio ${ep+1}</button>`:''}
+  overlay(`<div class="modal fin"><div class="ep">FIM DO EPISÓDIO ${ep}</div><h1>${EPS[ep].title}</h1><div class="dsc">Suas escolhas ficam salvas e pesam no final da história.</div>
+  <div class="tiles"><div class="tile"><b class="st">${'★'.repeat(M.stars)}${'☆'.repeat(3-M.stars)}</b><small>Estrelas</small></div><div class="tile"><b>${nEv}/${EPS[ep].evs.length}</b><small>Provas</small></div><div class="tile"><b>${M.pub?'Publicada':'Guardada'}</b><small>Matéria</small></div></div>
+  <div class="oc flat">${rows}<div class="r"><span>Exposição</span><span><div class="bar"><i style="width:${e*20}%"></i></div></span></div></div>
+  ${notes.length?`<div class="lab">O QUE MUDOU</div>${olist(notes)}`:''}
+  ${next?'':`<p style="color:var(--mut);font-size:13px"><b style="color:var(--teal)">Episódio ${ep+1} · ${NEXT_TITLE[ep+1]}</b> — em breve.</p>`}
+  ${next&&S.ep===ep?`<button class="bigbtn" data-epintro="${ep+1}">Começar Episódio ${ep+1}</button>`:''}
   <button class="bigbtn sec" data-close="1">Voltar ao celular</button>${next&&S.ep===ep?'<p class="hint" style="text-align:center;padding:10px 0 0">Dá para avançar depois pelo card na tela inicial.</p>':''}</div>`);}
 function recap(n){const r=[];
   if(n===2){const m1=S.mat[1];
@@ -1502,10 +1512,9 @@ const EP_TXT={
  4:{t:'Domingo, 14h. O número desconhecido não responde mais. Alguém está procurando a sua fonte, e você precisa achá-la primeiro.',tips:['Provas podem chegar como planilhas: abra no Caderno e toque nas linhas que importam.','O relógio corre contra você neste episódio.']}
 };
 function epIntro(n){const r=recap(n);
-  overlay(`<div class="modal"><h1>FONTE <span>ANÔNIMA</span></h1><div class="ep">Episódio ${n} · ${EPS[n].title}</div>
-  <p>${EP_TXT[n].t}</p>
-  <p style="font-size:13px;color:var(--mut)"><b style="color:var(--tx)">Até aqui:</b><br>${r.map(x=>'• '+x).join('<br>')}</p>
-  <ul>${EP_TXT[n].tips.map(x=>`<li>${x}</li>`).join('')}</ul>
+  overlay(`<div class="modal fin"><div class="ep">EPISÓDIO ${n} DE 6</div><h1>${EPS[n].title}</h1><div class="dsc">${EP_TXT[n].t}</div>
+  <div class="lab">ATÉ AQUI</div>${olist(r)}
+  <div class="lab">NESTE EPISÓDIO</div>${olist(EP_TXT[n].tips,1)}
   <button class="bigbtn" data-startep="${n}">Começar</button></div>`);}
 function epTimers(n){
   if(n===2){runNode('anon','e2_start');schedule('grupo_e2',S.t+12);schedule('mae_e2',S.t+25);schedule('carol_e2',S.t+35);if(has('briefing_ok')&&!has('luana_queimada'))schedule('luana_e2',S.t+50);}
@@ -1523,12 +1532,11 @@ function startEp(n){closeOverlay();while(S.queue.length)proc(S.queue.shift());
   view={app:'home'};save();render();setTimeout(()=>epTimers(n),1200);}
 function restartEp(n){let s=null;try{s=JSON.parse(localStorage.getItem(snapKey(n)));}catch(e){}if(!s){toast('Não achei o início do Episódio '+n);return;}
   S=migrate(s);reset();closeOverlay();view={app:'home'};save();render();setTimeout(()=>epTimers(n),1200);}
-function intro(){const sv=migrate(load());
-  overlay(`<div class="modal"><h1>FONTE <span>ANÔNIMA</span></h1><div class="ep">${sv&&sv.started?`Você parou no Episódio ${sv.ep}`:'Episódio 1 · A Cara do Golpe'}</div>
-  <p>Vale Alto, domingo à noite. Você mantém o <b>Vale Alto Agora</b>, um blog de notícias da cidade.</p>
-  <p>Há dois dias, o <b>Rendix</b>, o app que pagava 3% ao mês e que meia cidade usava, saiu do ar. Sua mãe tinha dinheiro lá. E a <b>Bia</b>, sua amiga de escola que aparecia nos vídeos do app, acabou de ser presa.</p>
-  <ul><li>Tudo acontece no seu celular.</li><li>Toque nos <span class="k">termos em destaque</span> para anotá-los no Caderno.</li><li>Pesquise no Navegador e use 📸 para printar páginas como prova.</li><li>No Papo, use 📎 para mostrar provas às pessoas.</li><li>Cada ação gasta tempo. Algumas provas podem desaparecer.</li></ul>
-  ${sv&&sv.started?'<button class="bigbtn" data-continue="1">Continuar</button><button class="bigbtn sec" data-new="1">Novo jogo</button>':'<button class="bigbtn" data-new="1">Começar</button>'}<a href="../../" style="display:block;text-align:center;color:var(--mut);font-size:12.5px;margin-top:14px;text-decoration:none">← Mesa de Jogos</a></div>`);}
+function intro(){const sv=migrate(load());const on=sv&&sv.started;
+  overlay(`<div class="modal fin"><div class="ep">${on?`VOCÊ PAROU NO EPISÓDIO ${sv.ep} DE 6`:'EPISÓDIO 1 · A CARA DO GOLPE'}</div><h1>FONTE <span>ANÔNIMA</span></h1>
+  <div class="dsc">Vale Alto, domingo à noite. Você mantém o <b style="color:var(--tx)">Vale Alto Agora</b>, um blog de notícias da cidade. Há dois dias, o <b style="color:var(--tx)">Rendix</b>, o app que pagava 3% ao mês, saiu do ar. Sua mãe tinha dinheiro lá. E a <b style="color:var(--tx)">Bia</b>, sua amiga de escola que aparecia nos vídeos, acabou de ser presa.</div>
+  <div class="lab">COMO JOGAR</div>${olist(RULES.slice(1,5),1)}
+  ${on?'<button class="bigbtn" data-continue="1">Continuar</button><button class="bigbtn sec" data-new="1">Novo jogo</button>':'<button class="bigbtn" data-new="1">Começar</button>'}<a href="../../" style="display:block;text-align:center;color:var(--mut);font-size:12.5px;margin-top:12px;text-decoration:none">← Mesa de Jogos</a></div>`);}
 function reset(){busy=false;instant=false;typing=null;}
 function newGame(){S=NEW();view={app:'home'};reset();closeOverlay();save();render();setTimeout(()=>runNode('mae','start'),1200);}
 function cont(){S=migrate(load());view={app:'home'};reset();closeOverlay();if(S.queue.length){instant=true;pump();}render();
@@ -1536,7 +1544,7 @@ function cont(){S=migrate(load());view={app:'home'};reset();closeOverlay();if(S.
 
 /* ---------------- EVENTOS ---------------- */
 document.addEventListener('click',e=>{const t=e.target;
-  const k=t.closest('.k');if(k&&S&&!t.closest('#overlay .modal ul')){e.stopPropagation();const kw=k.dataset.k,lb=k.textContent.trim();if(lb[0]==='@'){const pid=handlePage(lb);if(pid){if(!S.kw.includes(kw))addKw(kw);closeOverlay();closeSheet();go(pid);return;}}addKw(kw);return;}
+  const k=t.closest('.k');if(k&&S&&!t.closest('#overlay .modal .ol')){e.stopPropagation();const kw=k.dataset.k,lb=k.textContent.trim();if(lb[0]==='@'){const pid=handlePage(lb);if(pid){if(!S.kw.includes(kw))addKw(kw);closeOverlay();closeSheet();go(pid);return;}}addKw(kw);return;}
   if(t.closest('#notif')){const c=$('#notif').dataset.c;$('#notif').classList.remove('show');if(c&&S)openChat(c);return;}
   if(t.id==='sheet'){closeSheet();return;}
   const tx=t.closest('[data-tx]');if(tx&&S){const k=tx.dataset.tx;if(k.startsWith('n:'))toast(k.slice(2));else if(S.ev.includes(k))toast('Você já printou essas transferências');else{addEv(k);save();render();}return;}
