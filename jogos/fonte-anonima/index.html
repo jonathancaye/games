@@ -25,8 +25,21 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .app{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;position:relative}
 .app .ico{width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 4px 12px #0006}
 .badge{position:absolute;top:-6px;right:6px;background:var(--org);color:#fff;font-size:11px;font-weight:700;min-width:20px;height:20px;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:0 5px}
-.obj{margin-top:auto;background:#0009;border:1px solid var(--line);border-left:3px solid var(--org);border-radius:12px;padding:11px 13px;font-size:13px;line-height:1.4}
-.obj b{color:var(--org);display:block;font-size:11px;letter-spacing:1px;margin-bottom:3px}
+.objw{margin-top:auto;background:rgba(14,24,27,.78);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:14px 14px 12px;box-shadow:0 10px 30px #0006}
+.objw.in{margin:12px}
+.objh{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.objh .oi{width:24px;height:24px;border-radius:50%;background:rgba(20,184,166,.18);color:var(--teal);display:flex;align-items:center;justify-content:center;flex:none}
+.objh .oi svg{width:14px;height:14px}
+.objh .ol{font-size:11px;font-weight:700;letter-spacing:1px;color:var(--teal)}
+.objh .oe{margin-left:auto;font-size:11.5px;color:var(--mut)}
+.objw.done .objh .oi{background:rgba(249,115,22,.2);color:var(--org)}.objw.done .objh .ol{color:var(--org)}
+.objt{font-size:14.5px;line-height:1.42;color:var(--tx)}
+.objst{color:var(--org);letter-spacing:2px;font-size:15px;margin-top:2px}
+.objseg{display:flex;gap:4px;margin-top:12px}.objseg i{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)}
+.objseg i.ok{background:var(--teal)}.objseg i.now{background:var(--org)}
+.objbtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:12px;background:var(--org);color:#fff;font-weight:700;font-size:15px;border-radius:14px;padding:12px}
+.objbtn svg{width:16px;height:16px}
+.objlink{display:block;width:100%;text-align:center;margin-top:8px;font-size:13px;color:var(--mut)}
 /* top bars */
 .tbar{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border-bottom:1px solid var(--line);flex:none}
 .tbar h2{font-size:17px;font-weight:600;flex:1}
@@ -261,6 +274,9 @@ const IC={
  rewind:'<path d="M11 6 4 12l7 6z"/><path d="M20 6l-7 6 7 6z"/>',
  trophy:'<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4"/><path d="M12 13v4M9 20h6"/>',
  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
+ target:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".8"/>',
+ flag:'<path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/>',
+ play:'<path d="M7 4.5v15l12-7.5z"/>',
  grid:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>'
 };
 const ic=n=>`<svg class="i" viewBox="0 0 24 24">${IC[n]}</svg>`;
@@ -1080,12 +1096,20 @@ function objective(){
   if(!S.ev.includes('briefing'))return 'Faça a Luana falar. Mostrar uma prova (📎) costuma funcionar melhor que pressão.';
   if(!S.ev.includes('cnpj_rendix')&&!S.ev.includes('cnpj_mx'))return 'Descubra de quem é o Rendix no papel. Todo site tem um rodapé.';
   return 'Você tem material. Escreva a matéria no app Blog.';}
+function objWidget(inside){const ep=S.ep,M=S.mat[ep];
+  const seg=`<div class="objseg">${[1,2,3,4,5,6].map(n=>`<i class="${S.mat[n]&&(n<ep||S.endShown[n]||S.finalShown)?'ok':n===ep?'now':''}"></i>`).join('')}</div>`;
+  const head=(icn,lab)=>`<div class="objh"><span class="oi">${ic(icn)}</span><span class="ol">${lab}</span><span class="oe">Ep. ${ep} de 6</span></div>`;
+  if(M&&(S.endShown[ep]||S.finalShown)){
+    const stars=`<div class="objst">${'★'.repeat(M.stars)}${'☆'.repeat(3-M.stars)}</div>`;
+    if(ep===6)return `<div class="objw done${inside?' in':''}">${head('flag','HISTÓRIA CONCLUÍDA')}<div class="objt">${EPS[ep].title}</div>${seg}<button class="objbtn" data-showfinal="1">${ic('play')} Ver o final</button></div>`;
+    return `<div class="objw done${inside?' in':''}">${head('flag','EPISÓDIO CONCLUÍDO')}<div class="objt">${EPS[ep].title}</div>${stars}${seg}<button class="objbtn" data-epintro="${ep+1}">${ic('play')} Começar Episódio ${ep+1}</button><button class="objlink" data-showend="1">Ver resultado do episódio</button></div>`;}
+  return `<div class="objw${inside?' in':''}">${head('target','PRÓXIMO PASSO')}<div class="objt">${objective()}</div>${seg}</div>`;}
 function unreadTotal(){return Object.values(S.chats).reduce((a,c)=>a+(c.unread||0),0);}
 function rHome(){const u=unreadTotal();
   const app=(id,icn,bg,lb,b)=>`<button class="app" data-open="${id}"><div class="ico" style="background:${bg}">${ic(icn)}</div>${lb}${b?`<span class="badge">${b}</span>`:''}</button>`;
   return `<div class="home"><div class="bigt">${hm(S.t)}</div><div class="bigd">${DAYSF[dayOf(S.t)]} · Ep. ${S.ep}</div><div class="apps">
   ${app('papo','chat','linear-gradient(160deg,#2dd4bf,#0f766e)','Papo',u)}${app('nav','compass','linear-gradient(160deg,#60a5fa,#1d4ed8)','Navegador')}${app('cad','book','linear-gradient(160deg,#fbbf24,#ea580c)','Caderno')}${app('blog','news','linear-gradient(160deg,#64748b,#1e293b)','Blog')}${app('ajustes','gear','linear-gradient(160deg,#9ca3af,#4b5563)','Ajustes')}
-  </div><div class="obj"><b>OBJETIVO</b>${objective()}</div></div>`;}
+  </div>${objWidget(false)}</div>`;}
 function preview(c){const ch=chat(c);if(typing===c)return '<span class="typ">digitando…</span>';const m=ch.msgs[ch.msgs.length-1];if(!m)return '';
   const t=m.ev?'📎 '+EV[m.ev].t:m.link?'🔗 Link':m.contact?'👤 Contato':strip(m.t);return (m.f==='me'?'Você: ':m.who?m.who.split(' ')[0]+': ':'')+esc(t);}
 function rPapo(){const list=Object.keys(CONTACTS).filter(c=>chat(c).visible).sort((a,b)=>chat(b).last-chat(a).last);
@@ -1123,7 +1147,7 @@ function rNav(){const cur=S.br.cur;let body,url='';const p=curPage();
   return `<div class="bbar"><button data-bback="1" aria-label="Voltar">${ic('back')}</button><form id="uform" style="flex:1;display:flex;min-width:0"><input id="uq" value="${esc(url)}" placeholder="Pesquisar ou digitar endereço" autocomplete="off"></form>${srcb}<button data-bhome="1" aria-label="Busca">${ic('search')}</button><button data-home="1" aria-label="Fechar">${ic('close')}</button></div>
   <div class="pwrap"><div class="page">${body}</div>${pb}<div class="flash"></div></div>`;}
 function rCad(){const tab=view.tab||'pistas';
-  return `<div class="tbar"><button class="back" data-home="1">${ic('back')}</button><h2>Caderno</h2></div><div class="scroll"><div class="obj" style="margin:12px"><b>OBJETIVO</b>${objective()}</div>
+  return `<div class="tbar"><button class="back" data-home="1">${ic('back')}</button><h2>Caderno</h2></div><div class="scroll">${objWidget(true)}
   <div class="tabs"><button class="tab ${tab==='pistas'?'on':''}" data-tab="pistas">Pistas (${S.kw.length})</button><button class="tab ${tab==='provas'?'on':''}" data-tab="provas">Provas (${S.ev.length})</button></div>
   ${tab==='pistas'?(S.kw.length?`<div class="hint">Toque numa pista para pesquisá-la.</div><div class="chips">${S.kw.slice().reverse().map(k=>`<button class="chip" data-search="${esc(k)}">${ic('search')}${k}</button>`).join('')}</div>`:'<div class="empty">Nada anotado ainda. Toque nos termos em destaque nas conversas e páginas.</div>')
   :(S.ev.length?`<div class="evg">${S.ev.slice().reverse().map(evCard).join('')}</div>`:'<div class="empty">Nenhuma prova ainda. Use 📸 no Navegador para printar páginas. Imagens recebidas no Papo também ficam aqui.</div>')}
@@ -1196,7 +1220,7 @@ function closeSheet(){$('#sheet').classList.remove('show');}
 function evPicker(mode,idx){if(!S.ev.length){toast('Você ainda não tem provas');return;}const list=S.ev.slice().reverse();
   openSheet(mode==='send'?'Mostrar qual prova?':'Escolher prova',(mode==='pick'?`<button class="sitem" data-pickev="" data-idx="${idx}">✖ Sem prova</button>`:'')+list.map(id=>`<button class="sitem" ${mode==='send'?`data-sendev="${id}"`:`data-pickev="${id}" data-idx="${idx}"`}>📎 ${EV[id].t}</button>`).join(''));}
 function overlay(html){const o=$('#overlay');o.innerHTML=html;o.classList.add('show');}
-function closeOverlay(){$('#overlay').classList.remove('show');}
+function closeOverlay(){$('#overlay').classList.remove('show');if(S)render();}
 function viewEv(id){if(EV[id].table){overlay(`<div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">${txTable(id)}<button class="bigbtn sec" style="max-width:360px" data-close="1">Fechar</button></div>`);return;}overlay(`<div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%"><div class="evfull"><div class="evt" style="font-size:13px;padding:8px 10px">📸 ${EV[id].t}</div>${EV[id].h()}</div><button class="bigbtn sec" style="max-width:340px" data-close="1">Fechar</button></div>`);}
 function decide(kind){overlay(`<div class="modal"><p><b>${kind==='pub'?'Publicar a matéria agora?':'Segurar a matéria?'}</b></p><p style="color:var(--mut)">${S.ep===6?'Isso encerra a história. Tudo o que você fez até aqui decide o final.':`Essa decisão encerra o Episódio ${S.ep} e tem consequências nos próximos.`}</p><button class="bigbtn" data-confirm="${kind}">Confirmar</button><button class="bigbtn sec" data-close="1">Voltar</button></div>`);}
 const FINAL={
@@ -1345,7 +1369,7 @@ function showEnd(ep){const M=S.mat[ep];if(!M)return;save();
   ${notes.map(n=>`<div class="note">${n}</div>`).join('')}
   <p style="margin-top:14px;color:var(--mut);font-size:13px">Suas escolhas ficam salvas e vão pesar no final da história.${next?'':`<br><b style="color:var(--teal)">Episódio ${ep+1} · ${NEXT_TITLE[ep+1]}</b> — em breve.`}</p>
   ${next&&S.ep===ep?`<button class="bigbtn" data-epintro="${ep+1}">▶ Começar Episódio ${ep+1}</button>`:''}
-  <button class="bigbtn sec" data-close="1">Voltar ao celular</button></div>`);}
+  <button class="bigbtn sec" data-close="1">Voltar ao celular</button>${next&&S.ep===ep?'<p class="hint" style="text-align:center;padding:10px 0 0">Dá para avançar depois pelo card na tela inicial.</p>':''}</div>`);}
 function recap(n){const r=[];
   if(n===2){const m1=S.mat[1];
     r.push(m1&&m1.pub?'Você publicou a matéria sobre a Bia. O blog nunca teve tantos leitores.':'Você segurou a matéria sobre a Bia.');
@@ -1427,7 +1451,7 @@ document.addEventListener('click',e=>{const t=e.target;
   if(t.id==='sheet'){closeSheet();return;}
   const tx=t.closest('[data-tx]');if(tx&&S){const k=tx.dataset.tx;if(k.startsWith('n:'))toast(k.slice(2));else if(S.ev.includes(k))toast('Você já printou essas transferências');else{addEv(k);save();render();}return;}
   const fd=t.closest('[data-fdm]');if(fd&&S){forumDM(+fd.dataset.fdm);return;}
-  const a=t.closest('[data-home],[data-open],[data-chat],[data-p],[data-ev],[data-opt],[data-clip],[data-sendev],[data-pickev],[data-pick],[data-wait],[data-add],[data-search],[data-tab],[data-print],[data-bback],[data-bhome],[data-src],[data-decide],[data-confirm],[data-close],[data-restart],[data-restartep],[data-new],[data-continue],[data-epintro],[data-startep],[data-lxform],[data-arch],[data-waitat],[data-forumdm],[data-dossie],[data-howto]');
+  const a=t.closest('[data-home],[data-open],[data-chat],[data-p],[data-ev],[data-opt],[data-clip],[data-sendev],[data-pickev],[data-pick],[data-wait],[data-add],[data-search],[data-tab],[data-print],[data-bback],[data-bhome],[data-src],[data-decide],[data-confirm],[data-close],[data-restart],[data-restartep],[data-new],[data-continue],[data-epintro],[data-startep],[data-lxform],[data-arch],[data-waitat],[data-forumdm],[data-dossie],[data-howto],[data-showend],[data-showfinal]');
   if(!a)return;const d=a.dataset;
   if(d.new!==undefined){newGame();return;}if(d.continue!==undefined){cont();return;}if(!S)return;
   if(d.home!==undefined){view={app:'home'};render();}
@@ -1457,6 +1481,8 @@ document.addEventListener('click',e=>{const t=e.target;
   else if(d.waitat){waitAt(d.waitat);}
   else if(d.dossie){buildDossie();}
   else if(d.howto){howto();}
+  else if(d.showend){showEnd(S.ep);}
+  else if(d.showfinal){showFinal();}
   else if(d.forumdm){if(has('forum_dm')||has('thiago_contato')){toast('Você já mandou mensagem');return;}openSheet('Mensagem privada para tvieira',`<button class="sitem" data-fdm="1">"Aqui é o jornalista do Vale Alto Agora. Você não está sozinho nessa."</button><button class="sitem" data-fdm="2">"Sei que você é a fonte e que montou o sistema. Fala comigo ou eu publico."</button>`);}
   else if(d.close){closeOverlay();}
   else if(d.restartep){const n=+d.restartep;if(confirm(`Recomeçar o Episódio ${n}? As escolhas dos episódios anteriores continuam valendo.`))restartEp(n);}
