@@ -674,9 +674,9 @@ const D={
   e4_vip:{m:['Filho, o Fábio sumiu com os meus 1.200','Fui na delegacia e nem quiseram registrar direito 😔']},
   e4_pub:{m:['Vi tua matéria. Meus 48 mil estão naquela carteira, né?','Pelo menos agora alguém sabe onde estão']},
   e4_held:{m:['Você nem comeu direito hoje, filho']},
-  e6:{m:['Filho, amanhã é o grande dia, né?','Teu pai ia ter orgulho de você']},
+  e6:{m:['Filho, {amanha} é o grande dia, né?','Teu pai ia ter orgulho de você']},
   e6_env:{m:['Filho, e esse envelope do Marcos?','O que eu faço com ele?'],o:[{t:'Entrega pra polícia, mãe.',go:'e6_entrega',fx(){fl('envelope_entregue');}},{t:'Guarda, mãe. É teu dinheiro.',go:'e6_guarda',fx(){fl('envelope_guardado');}}]},
-  e6_entrega:{m:['Tá. Vou amanhã cedo na delegacia.','Dinheiro sujo não presta, né?']},
+  e6_entrega:{m:['Tá. Vou {cedo} na delegacia.','Dinheiro sujo não presta, né?']},
   e6_guarda:{m:['Tá...','Não sei se consigo dormir com isso aqui em casa']},
   fim_bloq:{m:['Filho, disseram que vão devolver uma parte do dinheiro!','Não é tudo. Mas é nosso ❤️'],after(){enqueue([{fn:'final_show'}]);}},
   fim_sem:{m:['Tá tudo bem, filho. Dinheiro a gente recupera.','Você fez o que pôde ❤️'],after(){enqueue([{fn:'final_show'}]);}},
@@ -756,8 +756,8 @@ const D={
   pub_hon:{m:['Pelo menos contou que fui eu que te dei o banco.','É justo, eu acho.']},
   pub_ok:{m:['Vi a matéria.','Obrigado por me deixar de fora.']},
   held:{m:['Segurou?','Então ainda dá tempo de achar o M antes que ele suma com tudo.']},
-  e6:{m:['Amanhã é a audiência, né?','Se você me incluir na matéria do jeito certo, eu testemunho.','Conto tudo. Inclusive o que eu ainda não te contei.','Se não, eu sumo hoje.'],o:[{t:'Testemunha. E devolve o que você tirou.',go:'e6_test'},{t:'Fica de fora. Eu te protejo.',go:'e6_some',fx(){fl('protege_final');tr('thiago',1);}}]},
-  e6_test:{m:['...','Tá.','admin2 era eu. Uns 300 mil em "taxa do sistema". Vou devolver.','Amanhã vou junto com o advogado da Bia.'],after(){fl('thiago_testemunha');fl('confessou');fl('thiago_devolve');addEv('confissao');}},
+  e6:{m:['{Amanha} é a audiência, né?','Se você me incluir na matéria do jeito certo, eu testemunho.','Conto tudo. Inclusive o que eu ainda não te contei.','Se não, eu sumo hoje.'],o:[{t:'Testemunha. E devolve o que você tirou.',go:'e6_test'},{t:'Fica de fora. Eu te protejo.',go:'e6_some',fx(){fl('protege_final');tr('thiago',1);}}]},
+  e6_test:{m:['...','Tá.','admin2 era eu. Uns 300 mil em "taxa do sistema". Vou devolver.','{Amanha} vou junto com o advogado da Bia.'],after(){fl('thiago_testemunha');fl('confessou');fl('thiago_devolve');addEv('confissao');}},
   e6_some:{m:['Obrigado.','Te devo essa. Nunca vou esquecer.']},
   e5:{m:['Bom dia. Passei a noite olhando a carteira M.',{link:'explorer'},'Esse explorador mostra tudo o que entrou e saiu.','Repara nos destinos. Dinheiro de golpe sempre vira coisa.']},
   e4_end:{m:['Achei mais uma coisa no banco. Uma linha que eu nunca tinha olhado.','Antes de tudo começar, a carteira M recebeu um depósito de teste. R$ 1,00.','Veio de uma conta empresarial: [[Teixeira Materiais de Construção]].','Teixeira...'],after(){fl('pista_teixeira');enqueue([{fn:'end_show'}]);}}
@@ -787,7 +787,7 @@ const D={
   nada:{m:['Preciso do material organizado. Monte um dossiê.']}
  },
  marcos:{
-  e6:{m:['Fiquei sabendo que você vai na audiência amanhã.','Pensa bem no que você vai levar.']},
+  e6:{m:['Fiquei sabendo que você vai na audiência {amanha}.','Pensa bem no que você vai levar.']},
   e5:{m:['Oi, amigo! Alguma novidade sobre o Fábio?','Tô torcendo por você 🙏'],o:[{t:'Marcos, eu sei que o "M" é você.',go:'e5_confronto'},{t:'Nada ainda. E você?',go:'e5_despista'}]},
   e5_alerta:{m:['Fiquei sabendo que você anda fuçando a vida da minha família','Vamos conversar como adultos?'],o:[{t:'Marcos, eu sei que o "M" é você.',go:'e5_confronto'},{t:'Não sei do que você está falando.',go:'e5_despista'}]},
   e5_despista:{m:['Beleza.','Qualquer coisa me chama 🙏']},
@@ -874,7 +874,7 @@ const D={
   e5_pub:{m:['O MARCOS?! O cara que xingava a Bia no grupo?','O advogado disse que agora a Bia sai. É questão de dias']},
   e5_held:{m:['A audiência da Bia é na quinta','O advogado quer saber se você tem alguma coisa que ajude']},
   e5_end_pub:{m:['O Marcos sumiu. A Hilux foi vista na estrada, indo pra fronteira','A audiência da Bia é quinta. Você vai estar lá?'],after(){enqueue([{fn:'end_show'}]);}},
-  e6:{m:['Amanhã às 14h é a audiência','O advogado pediu: se você tiver um dossiê, me manda que eu levo pra ele']},
+  e6:{m:['{Amanha} às 14h é a audiência','O advogado pediu: se você tiver um dossiê, me manda que eu levo pra ele']},
   e6_leva:{m:['Recebi! Já mandei pro advogado','Ele disse que nunca viu nada tão completo']},
   e6_fraco:{m:['Recebi...','O advogado achou fraco. Disse que vai tentar mesmo assim']},
   fim_solta:{m:['A BIA SAIU!!! 😭😭','Ela quer te ver. Agora.']},
@@ -1045,8 +1045,9 @@ function schedule(fn,at){S.timers.push({fn,at});}
 function checkTimers(){S.timers.sort((a,b)=>a.at-b.at);while(S.timers.length&&S.timers[0].at<=S.t){const tm=S.timers.shift();FN[tm.fn]();}}
 function advance(n){S.t+=n;checkTimers();}
 function enqueue(items){S.queue.push(...items);save();pump();}
+function dayWords(t){const q=dayOf(S.t)===4;return t.replace(/\{amanha\}/g,q?'hoje':'amanhã').replace(/\{Amanha\}/g,q?'Hoje':'Amanhã').replace(/\{cedo\}/g,q?'agora mesmo':'amanhã cedo');}
 function runNode(c,id){const n=D[c][id];if(!n)return;if(n.pre)n.pre();const items=[];
-  (n.m||[]).forEach(m=>{const o=typeof m==='string'?{t:m}:Object.assign({},m);if(!o.f)o.f='them';items.push({c,msg:o});});
+  (n.m||[]).forEach(m=>{const o=typeof m==='string'?{t:m}:Object.assign({},m);if(o.t)o.t=dayWords(o.t);if(!o.f)o.f='them';items.push({c,msg:o});});
   if(n.o)items.push({c,opts:{node:id}});if(n.after)items.push({c,after:id});enqueue(items);}
 function pump(){if(busy||!S.queue.length)return;busy=true;const it=S.queue[0];let d=0;
   if(it.msg){d=it.msg.f==='sys'?450:(it.msg.ev||it.msg.link)?1300:Math.min(2300,650+(it.msg.t||'').length*20);if(it.msg.f!=='sys'&&!instant){typing=it.c;render();}}
