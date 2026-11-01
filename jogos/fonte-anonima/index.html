@@ -144,6 +144,26 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .evg .evc{max-width:none}
 .empty{color:var(--mut);font-size:13.5px;padding:10px 16px;line-height:1.5}
 .hint{font-size:12px;color:var(--mut);padding:0 16px 8px}
+.nt{--amb:#f5b301;display:flex;flex-direction:column;flex:1;min-height:0;background:#0b1214}
+.nt-top{display:flex;align-items:center;padding:10px 10px 0;flex:none}
+.nt-back{display:flex;align-items:center;gap:2px;color:var(--amb);font-size:16px}.nt-back svg{width:22px;height:22px}
+.nt-head{padding:4px 18px 10px;flex:none}.nt-title{font-size:32px;font-weight:800;letter-spacing:-.5px}.nt-sub{color:var(--mut);font-size:13px;margin-top:2px}
+.nt-seg{display:flex;background:#1b2528;border-radius:10px;padding:3px;margin:0 16px 4px;flex:none}
+.nt-seg button{flex:1;padding:7px;border-radius:8px;font-size:13.5px;font-weight:600;color:var(--mut)}
+.nt-seg button.on{background:#2c3a3e;color:var(--tx);box-shadow:0 1px 3px #0005}
+.nt-sec{font-size:15px;font-weight:700;padding:16px 18px 7px;display:flex;align-items:baseline;gap:8px}.nt-sec small{font-size:12px;font-weight:500;color:var(--mut)}
+.nt-card{background:var(--card);border-radius:14px;margin:0 14px;overflow:hidden}
+.nt-row{display:flex;align-items:center;gap:12px;padding:11px 14px;width:100%;text-align:left;position:relative}
+.nt-row+.nt-row:before{content:"";position:absolute;top:0;left:14px;right:0;border-top:1px solid var(--line)}
+.nt-row .tx{flex:1;min-width:0}.nt-row .tt{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nt-row .ss{font-size:12.5px;color:var(--mut);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nt-row .ss b{color:var(--amb);font-weight:600}
+.nt-bul{width:9px;height:9px;border-radius:50%;border:2px solid var(--amb);flex:none}
+.nt-go{color:var(--mut);display:flex}.nt-go svg{width:16px;height:16px}
+.thumb{width:50px;height:50px;border-radius:9px;overflow:hidden;background:#fff;flex:none;position:relative;border:1px solid #ffffff22}
+.thumb>div{width:240px;transform:scale(.21);transform-origin:0 0;pointer-events:none}
+.nt-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:40px 30px;color:var(--mut);font-size:14px;line-height:1.5}
+.nt-empty svg{width:40px;height:40px;color:var(--amb);opacity:.7}
+.nt-foot{flex:none;padding:6px 0 4px}.nt-foot .objw{margin:0 12px}
 /* blog */
 .blogh{background:linear-gradient(135deg,#0d9488,#115e59);padding:22px 16px}
 .blogh b{font-size:22px}.blogh div{font-size:12px;opacity:.85}
@@ -161,7 +181,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 #notif.show{transform:none;visibility:visible;opacity:1;pointer-events:auto;transition:transform .3s,opacity .2s,visibility 0s}
 #notif .nb{font-size:13px;line-height:1.3;min-width:0}#notif .nb b{display:block}
 #notif .nb span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--mut)}
-#toast{position:absolute;bottom:60px;left:50%;transform:translateX(-50%) translateY(20px);background:#000d;color:#fff;padding:9px 16px;border-radius:20px;font-size:13px;opacity:0;transition:.3s;z-index:25;pointer-events:none;white-space:nowrap;max-width:92%;overflow:hidden;text-overflow:ellipsis}
+#toast{position:absolute;bottom:200px;left:50%;transform:translateX(-50%) translateY(20px);background:#000d;color:#fff;padding:9px 16px;border-radius:20px;font-size:13px;opacity:0;transition:.3s;z-index:25;pointer-events:none;white-space:nowrap;max-width:92%;overflow:hidden;text-overflow:ellipsis}
 #toast.show{opacity:1;transform:translateX(-50%)}
 #sheet{position:absolute;inset:0;background:#0009;z-index:30;display:none;align-items:flex-end}
 #sheet.show{display:flex}
@@ -1018,8 +1038,8 @@ function notify(c,m){const n=$('#notif');const txt=m.ev?'📎 '+EV[m.ev].t:m.lin
   n.innerHTML=`${avatar(c)}<div class="nb"><b>${CONTACTS[c].name}</b><span>${m.who?m.who+': ':''}${esc(txt)}</span></div>`;
   n.dataset.c=c;n.classList.add('show');clearTimeout(n._t);n._t=setTimeout(()=>n.classList.remove('show'),3200);}
 function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2200);}
-function addKw(k){if(!S.kw.includes(k)){S.kw.push(k);toast('📝 Anotado no Caderno: '+k);save();render();}else toast('Já anotado: '+k);}
-function addEv(id){if(!S.ev.includes(id)){S.ev.push(id);toast('📎 Prova guardada: '+EV[id].t);
+function addKw(k){if(!S.kw.includes(k)){S.kw.push(k);(S.kwEp=S.kwEp||{})[k]=S.ep;toast('📝 Anotado no Caderno: '+k);save();render();}else toast('Já anotado: '+k);}
+function addEv(id){if(!S.ev.includes(id)){S.ev.push(id);(S.evEp=S.evEp||{})[id]=S.ep;(S.evT=S.evT||{})[id]=DAYS[dayOf(S.t)]+' '+hm(S.t);toast('📎 Prova guardada: '+EV[id].t);
   if(S.ep===2&&(id==='src_lucrix'||id==='whois_lucrix')&&!has('e2_alerta_on')){fl('e2_alerta_on');runNode('anon','e2_alerta');}}}
 function busyC(c){return CONTACTS[c].busy&&CONTACTS[c].busy();}
 function autoReply(c){enqueue([{c,msg:{f:'them',t:CONTACTS[c].auto}}]);}
@@ -1146,12 +1166,27 @@ function rNav(){const cur=S.br.cur;let body,url='';const p=curPage();
   const srcb=(p&&p.src?`<button class="srcb ${S.br.src?'on':''}" data-src="1" aria-label="Código-fonte">${ic('code')}</button>`:'')+(p&&p.arch?`<button class="srcb ${S.br.arch?'on':''}" data-arch="1" aria-label="Versão arquivada">${ic('history')}</button>`:'');
   return `<div class="bbar"><button data-bback="1" aria-label="Voltar">${ic('back')}</button><form id="uform" style="flex:1;display:flex;min-width:0"><input id="uq" value="${esc(url)}" placeholder="Pesquisar ou digitar endereço" autocomplete="off"></form>${srcb}<button data-bhome="1" aria-label="Busca">${ic('search')}</button><button data-home="1" aria-label="Fechar">${ic('close')}</button></div>
   <div class="pwrap"><div class="page">${body}</div>${pb}<div class="flash"></div></div>`;}
-function rCad(){const tab=view.tab||'pistas';
-  return `<div class="tbar"><button class="back" data-home="1">${ic('back')}</button><h2>Caderno</h2></div><div class="scroll">${objWidget(true)}
-  <div class="tabs"><button class="tab ${tab==='pistas'?'on':''}" data-tab="pistas">Pistas (${S.kw.length})</button><button class="tab ${tab==='provas'?'on':''}" data-tab="provas">Provas (${S.ev.length})</button></div>
-  ${tab==='pistas'?(S.kw.length?`<div class="hint">Toque numa pista para pesquisá-la.</div><div class="chips">${S.kw.slice().reverse().map(k=>`<button class="chip" data-search="${esc(k)}">${ic('search')}${k}</button>`).join('')}</div>`:'<div class="empty">Nada anotado ainda. Toque nos termos em destaque nas conversas e páginas.</div>')
-  :(S.ev.length?`<div class="evg">${S.ev.slice().reverse().map(evCard).join('')}</div>`:'<div class="empty">Nenhuma prova ainda. Use 📸 no Navegador para printar páginas. Imagens recebidas no Papo também ficam aqui.</div>')}
-  </div>`;}
+function evEp(id){if(S.evEp&&S.evEp[id])return S.evEp[id];const X={extrato:4,extrato_edit:4,dossie:6};if(X[id])return X[id];for(const n in EPS)if(EPS[n].evs.includes(id))return +n;return 0;}
+function evMeta(id){const t=EV[id].t;let kind='Nota',title=t;
+  const m=t.match(/^(Print|Imagem|Foto|Áudio[^:]*|Comprovante[^:]*):\s*(.*)$/);
+  if(EV[id].table)kind='Planilha';else if(m){kind=m[1].startsWith('Áudio')?'Áudio':m[1].startsWith('Comprovante')?'Comprovante':m[1];title=m[2]||t;}
+  else if(/^Áudio/.test(t))kind='Áudio';else if(/^Comprovante/.test(t))kind='Comprovante';else if(/^Briefing/.test(t))kind='Documento';
+  title=title.replace(/^📁\s*/,'');return{kind,title:title.charAt(0).toUpperCase()+title.slice(1)};}
+function groupBy(list,epf){const g={};list.forEach(x=>{const e=epf(x);(g[e]=g[e]||[]).push(x);});return Object.keys(g).map(Number).sort((a,b)=>b-a).map(e=>({e,items:g[e].slice().reverse()}));}
+function secTitle(e,n){return e?`<div class="nt-sec">Episódio ${e}<small>${EPS[e].title} · ${n}</small></div>`:`<div class="nt-sec">Anotações<small>${n}</small></div>`;}
+function rCad(){const tab=view.tab||'pistas';let body='';
+  if(tab==='pistas'){
+    if(!S.kw.length)body=`<div class="nt-empty">${ic('book')}Nenhuma pista anotada.<br>Toque nos termos em destaque nas conversas e páginas para anotá-los aqui.</div>`;
+    else body=groupBy(S.kw,k=>(S.kwEp&&S.kwEp[k])||0).map(g=>secTitle(g.e,g.items.length)+`<div class="nt-card">${g.items.map(k=>`<button class="nt-row" data-search="${esc(k)}"><span class="nt-bul"></span><span class="tx"><div class="tt">${k}</div></span><span class="nt-go">${ic('search')}</span></button>`).join('')}</div>`).join('')+'<div class="hint" style="padding:10px 18px">Toque numa pista para pesquisá-la no Navegador.</div>';
+  }else{
+    if(!S.ev.length)body=`<div class="nt-empty">${ic('camera')}Nenhuma prova ainda.<br>Use a câmera no Navegador para printar páginas. Imagens e documentos recebidos no Papo também ficam aqui.</div>`;
+    else body=groupBy(S.ev,evEp).map(g=>secTitle(g.e,g.items.length)+`<div class="nt-card">${g.items.map(id=>{const M=evMeta(id);const when=S.evT&&S.evT[id]?S.evT[id]+'  ':'';
+      return `<button class="nt-row" data-ev="${id}"><span class="tx"><div class="tt">${M.title}</div><div class="ss">${when}<b>${M.kind}</b></div></span><span class="thumb"><div>${EV[id].h()}</div></span></button>`;}).join('')}</div>`).join('');
+  }
+  return `<div class="nt"><div class="nt-top"><button class="nt-back" data-home="1">${ic('back')}Início</button></div>
+  <div class="nt-head"><div class="nt-title">Caderno</div><div class="nt-sub">${S.kw.length} pista${S.kw.length===1?'':'s'} · ${S.ev.length} prova${S.ev.length===1?'':'s'}</div></div>
+  <div class="nt-seg"><button class="${tab==='pistas'?'on':''}" data-tab="pistas">Pistas</button><button class="${tab==='provas'?'on':''}" data-tab="provas">Provas</button></div>
+  <div class="scroll" style="padding-bottom:12px">${body}</div><div class="nt-foot">${objWidget(true)}</div></div>`;}
 function rAjustes(){let found=[];try{found=JSON.parse(localStorage.getItem(LS_FINAIS)||'[]');}catch(e){}
   const row=(attr,icn,col,label,extra)=>`<button class="set-row" ${attr}><span class="si" style="background:${col}">${ic(icn)}</span>${label}<span class="chev">${extra||'›'}</span></button>`;
   return `<div class="tbar"><button class="back" data-home="1">${ic('back')}</button><h2>Ajustes</h2></div><div class="scroll">
