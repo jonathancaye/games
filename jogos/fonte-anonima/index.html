@@ -233,10 +233,18 @@ const EPS={
  2:{title:'O Site Clonado',mat:'Lucrix: o golpe trocou de roupa',evs:['src_lucrix','whois_lucrix','whois_rendix','caderno_retirada','relato_osvaldo','foto_mentoria']},
  3:{title:'A Mentoria',mat:'A pirâmide por trás da mentoria',evs:['tabela_bonus','ranking','arquivo_fabio','audio_vip']},
  4:{title:'O Programador',mat:'Para onde foi o dinheiro do Rendix',evs:['post_forum','tx_cofre','tx_fabio','tx_admin2','confissao']},
- 5:{title:'O Dinheiro',mat:'A vítima que era dona do golpe',evs:['cnpj_teixeira','explorer_m','hilux','patricia_foto','reconhece_osvaldo','suborno','pix_advogado']}
+ 5:{title:'O Dinheiro',mat:'A vítima que era dona do golpe',evs:['cnpj_teixeira','explorer_m','hilux','patricia_foto','reconhece_osvaldo','suborno','pix_advogado']},
+ 6:{title:'A Matéria',mat:'Rendix: a história inteira',evs:['dossie']}
 };
+const LS_FINAIS='fonte_anonima_finais';
+const FINAIS={
+ completa:{t:'JUSTIÇA COMPLETA',d:'Bia livre, donos presos e parte do dinheiro de volta.'},
+ metade:{t:'VITÓRIA PELA METADE',d:'A Bia saiu. O resto escapou.'},
+ peao:{t:'PEÃO',d:'Você publicou exatamente o que a fonte queria.'},
+ silenciado:{t:'SILENCIADO',d:'A verdade, sozinha, não bastou.'},
+ secreto:{t:'FONTE CONFIÁVEL',d:'Final secreto: você fez tudo certo, com todo mundo.'}};
 const NEXT_TITLE={2:'O Site Clonado',3:'A Mentoria',4:'O Programador',5:'O Dinheiro',6:'A Matéria'};
-const EP_START={2:1440+990,3:5*1440+1200,4:7*1440+840,5:8*1440+540};
+const EP_START={2:1440+990,3:5*1440+1200,4:7*1440+840,5:8*1440+540,6:10*1440+1200};
 const snapKey=n=>n===2?LS2:'fonte_anonima_ep'+n+'_inicio';
 
 /* ---------------- CONTATOS ---------------- */
@@ -254,7 +262,9 @@ const CONTACTS={
   diego:{name:'Diego · Entregas',av:'🏍️',sub:'online',saved:'Contato salvo: Diego Rocha · Entregas rápidas'},
   thiago:{name:'Thiago',av:'💻',sub:'visto por último há pouco',saved:'Contato salvo: Thiago · número novo'},
   marcos:{name:'Marcos Teixeira',av:'🧔🏻',sub:'online'},
-  anon2:{name:'Número desconhecido',av:'❔',sub:'+55 •• •••••-8823'}
+  anon2:{name:'Número desconhecido',av:'❔',sub:'+55 •• •••••-8823'},
+  delegado:{name:'Delegado Paulo Ramos',av:'👮🏽‍♂️',sub:'Polícia Civil · Vale Alto'},
+  mp:{name:'Promotoria · Dra. Helena Duarte',av:'⚖️',sub:'Atendimento: seg a sex, 8h às 18h',busy:()=>{const d=dayOf(S.t),m=S.t%1440;return !(d>=1&&d<=5&&m>=480&&m<1080);},wake:()=>nextOpen(S.t),auto:'🤖 Ministério Público de Vale Alto: atendimento de segunda a sexta, das 8h às 18h. Sua mensagem será lida no próximo expediente.',saved:'Contato salvo: Promotoria de Justiça de Vale Alto'}
 };
 
 /* ---------------- PROVAS ---------------- */
@@ -289,6 +299,7 @@ const EV={
   reconhece_osvaldo:{t:'Áudio do Zé: o Seu Osvaldo reconheceu a moça',h:()=>`<div style="padding:12px;font-size:12.5px;line-height:1.55"><div style="font-weight:700;color:#16a34a">🎤 Áudio · 0:31 · transcrição</div><i>"Mostrei a foto pro pai. Ele ficou branco. Disse: é ela, Zé. É a moça educada do cadastro na igreja, que tirou foto minha com o documento."</i><div style="font-size:11px;color:#888;margin-top:4px">Foto mostrada: Patrícia Teixeira</div></div>`},
   suborno:{t:'Print: proposta do Marcos',h:()=>`<div style="padding:10px;font-size:12.5px;line-height:1.5;background:#0c1416;color:#e6f0f1"><div style="font-size:11px;color:#f97316;margin-bottom:4px">Marcos Teixeira</div><div style="background:#1f2f35;border-radius:10px;padding:6px 9px;margin-bottom:4px">Eu devolvo os 48 mil da tua mãe. Hoje. Em dinheiro</div><div style="background:#1f2f35;border-radius:10px;padding:6px 9px">E você esquece essa história</div></div>`},
   pix_advogado:{t:'Comprovante: Pix da sua mãe para o "advogado"',h:()=>`<div style="padding:12px"><div style="font-weight:800;color:#0d9488">Comprovante de Pix</div><div style="font-size:22px;font-weight:800;margin:6px 0">R$ 500,00</div><div style="font-size:12px;line-height:1.6"><b>De:</b> CÉLIA M.<br><b>Para:</b> MARCOS TEIXEIRA<br><b>Descrição:</b> advogado ação coletiva</div></div>`},
+  dossie:{t:'📁 Dossiê final do caso Rendix',h:()=>{const d=S.dossie||{score:0};return `<div style="padding:12px;font-size:12.5px;line-height:1.55"><b>📁 Dossiê · caso Rendix</b><br>${d.score} de 5 afirmações centrais provadas${d.t6?'<br>+ o desvio do programador':''}<br><span style="color:#0d9488;font-weight:700">Pronto para enviar</span></div>`;}},
   foto_mentoria:{t:'Imagem: folheto de evento',h:()=>`<div style="background:linear-gradient(160deg,#1e1b4b,#7c2d12);color:#fff;padding:14px;text-align:center;font-size:12.5px;line-height:1.5"><div style="font-size:11px;letter-spacing:2px;color:#fbbf24">VAGAS LIMITADAS</div><div style="font-size:17px;font-weight:900;margin:4px 0">MENTORIA LIBERDADE FINANCEIRA</div>com ${K('Fábio Brandão')}<br>Sábados · 9h · Salão Paroquial<br><div style="margin-top:8px;font-size:11px;opacity:.8">Foto do último encontro: equipe de apoio ao fundo, rapaz de boné preto 🧢</div></div>`}
 };
 
@@ -478,6 +489,11 @@ const PAGES={
   patricia_insta:{url:'instaclick.com/patricia.teixeira',title:'Patrícia Teixeira (@patricia.teixeira) · Instaclick',sn:'Esposa do @marcos.teixeira 💍 · Teixeira Materiais',ev:'patricia_foto',evOk:()=>!has('patricia_privado'),
     h:()=>`<div class="st"><div class="ins-h"><div class="ins-av">👩🏻‍🦰</div><div><b>@patricia.teixeira</b><div style="font-size:13px">${has('patricia_privado')?'Patrícia T.':'Esposa do @marcos.teixeira 💍 · Teixeira Materiais'}</div><div style="font-size:12px;color:#777">2.112 seguidores</div></div></div>
     ${has('patricia_privado')?`<div class="gone">🔒 Este perfil é privado.</div>`:`<div class="post"><div class="img" style="background:#fbcfe8">👩🏻‍🦰🏡</div><div class="cap"><b>patricia.teixeira</b> Casa nova! Gratidão 🙏 #AltoDaSerra</div><div class="cm" style="color:#999">há 3 semanas</div></div><div class="post"><div class="img" style="background:#e9d5ff">⛪📋</div><div class="cap"><b>patricia.teixeira</b> Dia de ação social no salão paroquial 💜 Ajudando quem precisa a se cadastrar!</div><div class="cm" style="color:#999">agosto</div></div>`}</div>`},
+  mp_site:{url:'mpva.gov.br/promotoria-vale-alto',title:'Ministério Público · Promotoria de Justiça de Vale Alto',sn:'Dra. Helena Duarte · crimes contra a economia popular · atendimento seg a sex, 8h às 18h',
+    h:()=>`<div class="st"><div class="ceh" style="background:#7f1d1d">Ministério Público · Vale Alto</div><div class="ce"><div style="font-size:40px;text-align:center">⚖️</div><div style="font-weight:800;text-align:center;font-size:16px">Promotoria de Justiça de Vale Alto</div>
+    <div class="rw"><span>Promotora</span><span>Dra. Helena Duarte</span></div><div class="rw"><span>Área</span><span>Economia popular, consumidor</span></div><div class="rw"><span>Atendimento</span><span>Seg a sex, 8h às 18h</span></div>
+    <p style="font-size:12.5px;color:#555;margin-top:10px">Só o Ministério Público pode pedir à Justiça o bloqueio de bens e contas de investigados.</p>
+    <div style="text-align:center"><span class="addc" data-add="mp" style="background:#7f1d1d">💬 Falar com a Promotoria no Papo</span></div></div></div>`},
   borracharia:{url:'guiavalealto.com.br/borracharia-do-ze',title:'Borracharia do Zé — Guia Vale Alto',sn:'Rua Sete, 45 · Centro · Atendimento 24h para emergências',
     h:()=>`<div class="st"><div class="ceh" style="background:#15803d">Guia Vale Alto</div><div class="ce"><div style="font-size:40px;text-align:center">🛞</div><div style="font-weight:800;text-align:center;font-size:17px">Borracharia do Zé</div><div style="text-align:center;font-size:13px;color:#666;margin-bottom:10px">Rua Sete, 45 · Centro · ⭐ 4,8</div>
     <div class="rw"><span>Horário</span><span>24h (emergências)</span></div><div class="rw"><span>Desde</span><span>1994 · "do pai pro filho"</span></div>
@@ -511,6 +527,7 @@ const SEARCH=[
   {ep:5,k:['0x7f3c…a91','0x7f3c','0x7f','carteira m','blocoscan'],p:['explorer']},
   {ep:5,k:['vale alto veiculos','valealtoveiculos'],p:['veiculos']},
   {ep:5,k:['patricia teixeira','patricia.teixeira','patricia'],p:['patricia_insta']},
+  {ep:6,k:['ministerio publico','promotoria','mp vale alto','promotora','helena duarte','bloqueio de bens'],p:['mp_site']},
   {ep:5,k:['imobiliaria horizonte','alto da serra'],p:[],msg:'Imobiliária Horizonte: "Casa no Condomínio Alto da Serra — VENDIDA em 05/10, à vista." O nome do comprador não aparece no anúncio.'},
   {ep:2,upTo:2,k:['diego'],p:[],msg:'Milhares de resultados para "Diego". Sem sobrenome, não dá para saber qual.'},
   {ep:2,k:['salao paroquial','salao da igreja','cadastro auxilio igreja'],p:[],msg:'Só a programação de missas da paróquia. Nada sobre cadastro de auxílio.'}
@@ -568,6 +585,12 @@ const D={
   e4_vip:{m:['Filho, o Fábio sumiu com os meus 1.200','Fui na delegacia e nem quiseram registrar direito 😔']},
   e4_pub:{m:['Vi tua matéria. Meus 48 mil estão naquela carteira, né?','Pelo menos agora alguém sabe onde estão']},
   e4_held:{m:['Você nem comeu direito hoje, filho']},
+  e6:{m:['Filho, amanhã é o grande dia, né?','Teu pai ia ter orgulho de você']},
+  e6_env:{m:['Filho, e esse envelope do Marcos?','O que eu faço com ele?'],o:[{t:'Entrega pra polícia, mãe.',go:'e6_entrega',fx(){fl('envelope_entregue');}},{t:'Guarda, mãe. É teu dinheiro.',go:'e6_guarda',fx(){fl('envelope_guardado');}}]},
+  e6_entrega:{m:['Tá. Vou amanhã cedo na delegacia.','Dinheiro sujo não presta, né?']},
+  e6_guarda:{m:['Tá...','Não sei se consigo dormir com isso aqui em casa']},
+  fim_bloq:{m:['Filho, disseram que vão devolver uma parte do dinheiro!','Não é tudo. Mas é nosso ❤️'],after(){enqueue([{fn:'final_show'}]);}},
+  fim_sem:{m:['Tá tudo bem, filho. Dinheiro a gente recupera.','Você fez o que pôde ❤️'],after(){enqueue([{fn:'final_show'}]);}},
   e5_pagou:{m:['Filho, a Carol me contou que o advogado do Marcos nunca existiu','Eu mandei 500 pra ele. Olha o comprovante',{ev:'pix_advogado'},'Que vergonha 😔']},
   e5_ok:{m:['Filho, tão dizendo que o advogado do Marcos era mentira','Ainda bem que eu esperei você!']},
   e5_envelope:{m:['Filho, um homem deixou um envelope aqui com 48 mil em dinheiro','Disse que era "devolução do Rendix"','O que tá acontecendo?'],after(){fl('mae_recebeu');}},
@@ -637,13 +660,38 @@ const D={
   pub_hon:{m:['Pelo menos contou que fui eu que te dei o banco.','É justo, eu acho.']},
   pub_ok:{m:['Vi a matéria.','Obrigado por me deixar de fora.']},
   held:{m:['Segurou?','Então ainda dá tempo de achar o M antes que ele suma com tudo.']},
+  e6:{m:['Amanhã é a audiência, né?','Se você me incluir na matéria do jeito certo, eu testemunho.','Conto tudo. Inclusive o que eu ainda não te contei.','Se não, eu sumo hoje.'],o:[{t:'Testemunha. E devolve o que você tirou.',go:'e6_test'},{t:'Fica de fora. Eu te protejo.',go:'e6_some',fx(){fl('protege_final');tr('thiago',1);}}]},
+  e6_test:{m:['...','Tá.','admin2 era eu. Uns 300 mil em "taxa do sistema". Vou devolver.','Amanhã vou junto com o advogado da Bia.'],after(){fl('thiago_testemunha');fl('confessou');fl('thiago_devolve');addEv('confissao');}},
+  e6_some:{m:['Obrigado.','Te devo essa. Nunca vou esquecer.']},
   e5:{m:['Bom dia. Passei a noite olhando a carteira M.',{link:'explorer'},'Esse explorador mostra tudo o que entrou e saiu.','Repara nos destinos. Dinheiro de golpe sempre vira coisa.']},
   e4_end:{m:['Achei mais uma coisa no banco. Uma linha que eu nunca tinha olhado.','Antes de tudo começar, a carteira M recebeu um depósito de teste. R$ 1,00.','Veio de uma conta empresarial: [[Teixeira Materiais de Construção]].','Teixeira...'],after(){fl('pista_teixeira');enqueue([{fn:'end_show'}]);}}
  },
  anon2:{
   e4_end:{m:['Sou eu. Thiago. Número novo, de novo.','Achei mais uma coisa antes de sair. Uma linha que eu nunca tinha olhado.','Antes de tudo começar, a carteira M recebeu um depósito de teste. R$ 1,00.','Veio de uma conta empresarial: [[Teixeira Materiais de Construção]].','Teixeira...',{f:'sys',t:'Este número não está mais disponível'}],after(){fl('pista_teixeira');enqueue([{fn:'end_show'}]);}}
  },
+ delegado:{
+  e6:{m:['Boa noite. Aqui é o delegado Paulo Ramos.','Soube que o senhor tem material sobre o Rendix.','Prendi a moça rápido demais, talvez. Tinha os vídeos e o povo na porta da delegacia.','Se tiver algo que prove quem está por trás, me mande.'],o:[{t:'O senhor prendeu a pessoa errada.',go:'e6_errada'},{t:'Vou montar o dossiê e te mando.',go:'e6_ok'}]},
+  e6_errada:{m:['Pode ser.','Então me ajude a consertar.']},
+  e6_ok:{m:['Fico no aguardo.']},
+  recebeu:{m:['Recebi.','...','Isso muda tudo. Vou pedir a prisão do Marcos e da Patrícia Teixeira agora mesmo.']},
+  fraco:{m:['Recebi. Mas com isso não consigo um mandado.','Falta ligar o Marcos ao dinheiro.']},
+  tarde:{m:['Recebi. Mas ele já cruzou a fronteira essa madrugada.','Vou pedir prisão internacional. Não é a mesma coisa.']},
+  ja:{m:['Já estou com o seu dossiê.']},
+  e6_fugiu:{m:['Informação da PRF: o Marcos Teixeira cruzou a fronteira de madrugada.','Se eu tivesse alguma coisa antes...']},
+  e6_saiu:{m:['A carteira daquele Rendix foi esvaziada hoje às 10h. Pra fora do país.']},
+  nada:{m:['Preciso do material organizado. Monte um dossiê.']}
+ },
+ mp:{
+  ola:{o:[{t:'Doutora, tenho provas de que R$ 4,9 milhões das vítimas do Rendix ainda estão numa carteira. Posso mandar?',go:'pode'}]},
+  pode:{m:['Bom dia.','Pode mandar. Se for o que o senhor diz, peço o bloqueio hoje mesmo.']},
+  bloq:{m:['Recebi. Pedido de bloqueio protocolado.','...','A carteira M está congelada. Bom trabalho.']},
+  tarde:{m:['Recebi. Mas a carteira já foi esvaziada.','Vou tentar pelos canais internacionais. Pode levar anos.']},
+  fraco:{m:['Isso não basta para um bloqueio.','Preciso ligar a carteira a alguém.']},
+  ja:{m:['Já estamos analisando o seu material.']},
+  nada:{m:['Preciso do material organizado. Monte um dossiê.']}
+ },
  marcos:{
+  e6:{m:['Fiquei sabendo que você vai na audiência amanhã.','Pensa bem no que você vai levar.']},
   e5:{m:['Oi, amigo! Alguma novidade sobre o Fábio?','Tô torcendo por você 🙏'],o:[{t:'Marcos, eu sei que o "M" é você.',go:'e5_confronto'},{t:'Nada ainda. E você?',go:'e5_despista'}]},
   e5_alerta:{m:['Fiquei sabendo que você anda fuçando a vida da minha família','Vamos conversar como adultos?'],o:[{t:'Marcos, eu sei que o "M" é você.',go:'e5_confronto'},{t:'Não sei do que você está falando.',go:'e5_despista'}]},
   e5_despista:{m:['Beleza.','Qualquer coisa me chama 🙏']},
@@ -730,6 +778,11 @@ const D={
   e5_pub:{m:['O MARCOS?! O cara que xingava a Bia no grupo?','O advogado disse que agora a Bia sai. É questão de dias']},
   e5_held:{m:['A audiência da Bia é na quinta','O advogado quer saber se você tem alguma coisa que ajude']},
   e5_end_pub:{m:['O Marcos sumiu. A Hilux foi vista na estrada, indo pra fronteira','A audiência da Bia é quinta. Você vai estar lá?'],after(){enqueue([{fn:'end_show'}]);}},
+  e6:{m:['Amanhã às 14h é a audiência','O advogado pediu: se você tiver um dossiê, me manda que eu levo pra ele']},
+  e6_leva:{m:['Recebi! Já mandei pro advogado','Ele disse que nunca viu nada tão completo']},
+  e6_fraco:{m:['Recebi...','O advogado achou fraco. Disse que vai tentar mesmo assim']},
+  fim_solta:{m:['A BIA SAIU!!! 😭😭','Ela quer te ver. Agora.']},
+  fim_presa:{m:['Mantiveram a prisão...','Eu não consigo falar agora.']},
   e5_end_held:{m:['A audiência da Bia é quinta, às 14h','É agora ou nunca. Você vai estar lá?'],after(){enqueue([{fn:'end_show'}]);}},
   nada:{m:['Não sei o que isso tem a ver 😕']}
  },
@@ -811,7 +864,7 @@ const H={
  grupo:id=>{if(has('removido'))return null;
    if(S.ep>=2&&['src_lucrix','whois_lucrix','whois_rendix'].includes(id)&&!has('e2_prova')){fl('e2_prova');S.expo+=1;return 'e2_prova';}
    if(id==='review_marcos')return 'review';if(['pix_lume','briefing','post_publi','cnpj_rendix','cnpj_mx'].includes(id)&&!has('grupo_provas')){fl('grupo_provas');S.expo+=1;return 'provas';}return 'nada';},
- carol:id=>({post_publi:'viu_post',briefing:'viu_brief',review_marcos:'viu_marcos',cnpj_rendix:'viu_cnpj',cnpj_mx:'viu_cnpj'}[id]||'nada'),
+ carol:id=>id==='dossie'?(fl('dossie_adv'),S.advScore=S.dossie.score,S.dossie.score>=3?'e6_leva':'e6_fraco'):({post_publi:'viu_post',briefing:'viu_brief',review_marcos:'viu_marcos',cnpj_rendix:'viu_cnpj',cnpj_mx:'viu_cnpj'}[id]||'nada'),
  luana:id=>{if(has('briefing_ok'))return 'ja';if(id==='post_publi'||id==='pix_lume')return 'confronto';if(id==='cnpj_rendix'||id==='cnpj_mx')return 'cnpj';return 'nada';},
  neide:id=>{if(['src_lucrix','whois_lucrix','whois_rendix'].includes(id)&&!has('neide_caiu')){fl('neide_salva');return 'salva';}return 'nada';},
  toninho:id=>{if(['cnpj_mx','whois_lucrix','whois_rendix'].includes(id)){fl('t_osv');return 'osvaldo';}return 'nada';},
@@ -822,6 +875,8 @@ const H={
  thiago:id=>{if(has('thiago_fugiu'))return null;if(['painel','src_lucrix','tx_admin2'].includes(id)){if(has('confessou'))return 'ja';chat('thiago').opts=null;return 'confronto';}if(id==='tx_cofre')return 'cofre';if(id==='extrato'||id==='extrato_edit')return 'edit';return 'nada';},
  marcos:id=>{if(S.ep>=5){if(has('marcos_confrontado5'))return null;if(['hilux','explorer_m','cnpj_teixeira','patricia_foto','reconhece_osvaldo','tx_cofre','pix_advogado'].includes(id)){chat('marcos').opts=null;return 'e5_confronto';}return 'nada';}if(['review_marcos','ranking'].includes(id)&&!has('marcos_alerta_e4')){fl('marcos_alerta_e4');return 'nervoso';}if(['tx_cofre','extrato','extrato_edit'].includes(id))return 'cofre';return 'nada';},
  anon2:()=>null,
+ delegado:id=>{if(id!=='dossie')return 'nada';if(has('dossie_del'))return 'ja';fl('dossie_del');if(has('marcos_fugiu'))return 'tarde';if(S.dossie.score>=3){fl('del_ok');return 'recebeu';}return 'fraco';},
+ mp:id=>{if(id!=='dossie')return 'nada';if(has('dossie_mp'))return 'ja';fl('dossie_mp');if(S.dossie.score<3)return 'fraco';if(has('dinheiro_fora'))return 'tarde';fl('bloqueado');return 'bloq';},
  anon:()=>null
 };
 function joinMent(){fl('na_mentoria');chat('ment').waitAt=9180;runNode('ment','entrou');if(S.expo>=3)runNode('ment','tirou');}
@@ -869,6 +924,14 @@ const FN={
  marcos_e5(){if(has('marcos_confrontado5'))return;runNode('marcos',has('marcos_alerta')||has('marcos_ameacou')||has('thiago_achado')||has('marcos_viu_cofre')?'e5_alerta':'e5');},
  marcos_limpa(){fl('hilux_apagado');fl('patricia_privado');},
  envelope(){if(has('aceitou_suborno'))runNode('mae','e5_envelope');},
+ delegado_e6(){runNode('delegado','e6');},
+ carol_e6(){runNode('carol','e6');},
+ mae_e6(){runNode('mae',has('mae_recebeu')?'e6_env':'e6');},
+ thiago_e6(){runNode('thiago','e6');},
+ marcos_e6(){if(!has('marcos_exposto'))runNode('marcos','e6');},
+ marcos_move(){if(has('bloqueado')||has('dinheiro_fora'))return;fl('dinheiro_fora');if(chat('delegado').visible)runNode('delegado','e6_saiu');},
+ marcos_fronteira(){if(has('del_ok')||has('marcos_fugiu'))return;fl('marcos_fugiu');runNode('delegado','e6_fugiu');},
+ final_show(){S.finalShown=true;save();setTimeout(showFinal,1800);},
  mae_cai(){if(has('mae_salva')||has('alerta_lucrix')||!has('mae_pagou')||has('mae_caiu'))return;fl('mae_caiu');runNode('mae','e2_caiu');}
 };
 
@@ -925,6 +988,13 @@ function toggleSrc(){S.br.arch=false;S.br.src=!S.br.src;if(S.br.src){advance(1);
 
 /* ---------------- TELAS ---------------- */
 function objective(){
+  if(S.ep===6){
+    if(S.mat[6])return 'Fim da história.';
+    if(!S.ev.includes('dossie'))return 'Monte o dossiê final no app Blog: ligue cada afirmação a uma prova.';
+    if(!has('dossie_adv'))return 'Mande o dossiê (📎) para a Carol levar ao advogado da Bia antes da audiência de quinta, às 14h.';
+    if(!has('dossie_mp')&&!has('dinheiro_fora'))return 'Ainda há R$ 4,9 milhões na carteira M. Só o Ministério Público pode pedir o bloqueio. Ache a promotoria.';
+    if(!has('dossie_del')&&!has('marcos_fugiu'))return 'Mande o dossiê ao delegado para que ele peça a prisão do Marcos.';
+    return 'Publique a matéria final no Blog. A ordem importa: publicar avisa quem você quer pegar.';}
   if(S.ep===5){
     if(S.mat[5])return 'Episódio concluído.';
     if(!has('v_cnpj_teixeira'))return 'Siga a pista do depósito de teste: Teixeira Materiais de Construção.';
@@ -1025,13 +1095,21 @@ const CLAIMS={
     {t:'O programador que montou o sistema também desviava dinheiro para si.',ok:['tx_admin2','confissao']}],
  5:[{t:'A carteira "M", que recebeu os R$ 26 milhões, foi testada por uma empresa da família Teixeira.',ok:['explorer_m']},
     {t:'O dinheiro das vítimas virou carro e casa para a família de Marcos Teixeira.',ok:['hilux']},
-    {t:'Marcos Teixeira, que organizava o grupo de vítimas, é o dono do esquema.',ok:['suborno','reconhece_osvaldo']}]
+    {t:'Marcos Teixeira, que organizava o grupo de vítimas, é o dono do esquema.',ok:['suborno','reconhece_osvaldo']}],
+ 6:[{t:'A Bia foi contratada para gravar vídeos. Não era dona de nada.',ok:['pix_lume','briefing','post_publi']},
+    {t:'O Rendix e o Lucrix eram fachadas em nome de um laranja.',ok:['cnpj_mx','whois_lucrix','whois_rendix','relato_osvaldo']},
+    {t:'A mentoria do Fábio recrutava vítimas numa pirâmide.',ok:['tabela_bonus','ranking','tx_fabio']},
+    {t:'O dinheiro foi para a carteira M e virou bens da família Teixeira.',ok:['tx_cofre','explorer_m','hilux']},
+    {t:'Marcos Teixeira, o "líder das vítimas", é o dono do golpe.',ok:['suborno','reconhece_osvaldo']},
+    {t:'(Opcional) O programador que montou o sistema também desviou dinheiro.',ok:['tx_admin2','confissao'],opt:1}]
 };
+function dossieScore(){const CL=CLAIMS[6];let sc=0;CL.forEach((c,i)=>{if(!c.opt&&S.draft[i]&&c.ok.includes(S.draft[i]))sc++;});return{score:sc,t6:!!(S.draft[5]&&CL[5].ok.includes(S.draft[5]))};}
+function buildDossie(){S.dossie=dossieScore();const had=S.ev.includes('dossie');if(!had)addEv('dossie');else toast('📁 Dossiê atualizado');advance(10);save();render();}
 function rBlog(){const done=S.mat[S.ep];const epEv=S.ev.filter(e=>EPS[S.ep].evs.includes(e)).length;
   const past=[];for(let e=1;e<S.ep;e++)if(S.mat[e])past.push(`<div class="bp"><small>${S.mat[e].pub?'Publicada':'Rascunho guardado'} · Ep. ${e}</small>${EPS[e].mat}</div>`);
   return `<div class="tbar"><button class="back" data-home="1">‹</button><h2>Blog</h2></div><div class="scroll"><div class="blogh"><b>Vale Alto Agora</b><div>Notícias de quem mora aqui · ${Object.values(S.mat).filter(m=>m.pub).length?(3.1+11.7*Object.values(S.mat).filter(m=>m.pub).length).toFixed(1).replace('.',','):'3,1'} mil leitores/mês</div></div>
   ${done?`<div class="bp" style="border-left:3px solid var(--org)"><small>${done.pub?'Publicada agora':'Rascunho guardado'}</small><b>${EPS[S.ep].mat}</b></div>`:
-  `<button class="bigbtn" data-open="materia" ${epEv<2?'disabled':''}>✍️ Escrever matéria: ${EPS[S.ep].mat}</button>${epEv<2?'<div class="hint">Você precisa de pelo menos 2 provas novas deste episódio no Caderno.</div>':''}`}
+  S.ep===6?`<button class="bigbtn" data-open="materia">✍️ Escrever a matéria final</button>`:`<button class="bigbtn" data-open="materia" ${epEv<2?'disabled':''}>✍️ Escrever matéria: ${EPS[S.ep].mat}</button>${epEv<2?'<div class="hint">Você precisa de pelo menos 2 provas novas deste episódio no Caderno.</div>':''}`}
   ${has('alerta_lucrix')?'<div class="bp"><small>hoje · alerta</small>URGENTE: não deposite no Lucrix</div>':''}
   ${past.reverse().join('')}
   <div class="bp"><small>há 5 dias</small>Feira do produtor volta à praça central no sábado</div><div class="bp"><small>há 2 semanas</small>Buraco na Av. Brasil completa um ano sem conserto</div></div>`;}
@@ -1039,7 +1117,8 @@ function rMateria(){const CL=CLAIMS[S.ep];return `<div class="tbar"><button clas
   <div class="hint" style="padding-top:12px">"${EPS[S.ep].mat}". Sustente cada afirmação com uma prova do Caderno. Afirmações sem prova enfraquecem a matéria.</div>
   ${CL.map((c,i)=>`<div class="claim"><p>${i+1}. ${c.t}</p><button class="pick ${S.draft[i]?'set':''}" data-pick="${i}">${S.draft[i]?'📎 '+EV[S.draft[i]].t:'+ Escolher prova'}</button></div>`).join('')}
   <div class="hint" style="margin-top:6px">Publicar agora pressiona as autoridades e protege quem ainda pode cair, mas alerta quem está por trás do golpe. Segurar mantém o dossiê em segredo. Lembre-se de quem te passou cada prova.</div>
-  <button class="bigbtn" data-decide="pub">📢 Publicar agora</button><button class="bigbtn sec" data-decide="held">🔒 Segurar e continuar investigando</button></div>`;}
+  ${S.ep===6?`<button class="bigbtn sec" data-dossie="1">📁 ${S.ev.includes('dossie')?'Atualizar dossiê':'Montar dossiê para enviar'}</button><div class="hint">Depois de montado, mande o dossiê pelo Papo (📎) para quem pode agir.</div><button class="bigbtn" data-decide="pub">📢 Publicar a matéria final</button>`:
+  `<button class="bigbtn" data-decide="pub">📢 Publicar agora</button><button class="bigbtn sec" data-decide="held">🔒 Segurar e continuar investigando</button>`}</div>`;}
 function render(){if(!S)return;$('#clock').textContent=DAYS[dayOf(S.t)]+' '+hm(S.t);
   const ae=document.activeElement;const keep=ae&&(ae.id==='q'||ae.id==='uq')?{id:ae.id,v:ae.value,s:ae.selectionStart}:null;
   const m=$('#msgs');const atBottom=!m||m.scrollHeight-m.scrollTop-m.clientHeight<80;const pg=$('.page');const pst=pg?pg.scrollTop:0;
@@ -1058,7 +1137,7 @@ function evPicker(mode,idx){if(!S.ev.length){toast('Você ainda não tem provas'
 function overlay(html){const o=$('#overlay');o.innerHTML=html;o.classList.add('show');}
 function closeOverlay(){$('#overlay').classList.remove('show');}
 function viewEv(id){if(EV[id].table){overlay(`<div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">${txTable(id)}<button class="bigbtn sec" style="max-width:360px" data-close="1">Fechar</button></div>`);return;}overlay(`<div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%"><div class="evfull"><div class="evt" style="font-size:13px;padding:8px 10px">📸 ${EV[id].t}</div>${EV[id].h()}</div><button class="bigbtn sec" style="max-width:340px" data-close="1">Fechar</button></div>`);}
-function decide(kind){overlay(`<div class="modal"><p><b>${kind==='pub'?'Publicar a matéria agora?':'Segurar a matéria?'}</b></p><p style="color:var(--mut)">Essa decisão encerra o Episódio ${S.ep} e tem consequências nos próximos.</p><button class="bigbtn" data-confirm="${kind}">Confirmar</button><button class="bigbtn sec" data-close="1">Voltar</button></div>`);}
+function decide(kind){overlay(`<div class="modal"><p><b>${kind==='pub'?'Publicar a matéria agora?':'Segurar a matéria?'}</b></p><p style="color:var(--mut)">${S.ep===6?'Isso encerra a história. Tudo o que você fez até aqui decide o final.':`Essa decisão encerra o Episódio ${S.ep} e tem consequências nos próximos.`}</p><button class="bigbtn" data-confirm="${kind}">Confirmar</button><button class="bigbtn sec" data-close="1">Voltar</button></div>`);}
 const FINAL={
  1(pub){const usedBrief=S.draft.includes('briefing');
   if(pub){S.expo+=2;tr('carol',2);runNode('carol','pub');if(!has('removido'))runNode('grupo','pub');if(usedBrief)runNode('luana',has('promessa')?'pub_prom':'pub_ame');runNode('mae','pub');}
@@ -1086,6 +1165,27 @@ const FINAL={
     if(usedC)runNode('marcos','pub_cofre');}
   else{tr('carol',-1);runNode('carol','e4_held');runNode('mae','e4_held');if(!has('thiago_fugiu'))runNode('thiago','held');}
   if(has('thiago_fugiu'))runNode('anon2','e4_end');else runNode('thiago','e4_end');},
+ 6(){
+  const d=dossieScore();S.dossie=S.dossie||d;const sc=d.score;
+  if(!has('bloqueado')&&!has('dinheiro_fora'))fl('dinheiro_fora');
+  if(!has('del_ok')&&!has('thiago_testemunha')&&!has('marcos_fugiu'))fl('marcos_fugiu');
+  const biaSolta=(has('dossie_adv')&&S.advScore>=3)||sc>=4||(has('thiago_testemunha')&&sc>=3);
+  const marcosPreso=!has('marcos_fugiu')&&(has('del_ok')||has('thiago_testemunha'))&&sc>=3;
+  const bloq=has('bloqueado');
+  const queim=['luana_queimada','toninho_queimado','ze_queimado','thiago_traido'].filter(has).length;
+  const early=S.ev.includes('review_marcos')&&(has('carol_marcos')||has('marcos_confrontado')||S.ev.includes('ranking'));
+  const protegeu=(has('acobertou')||has('escondeu_thiago')||has('protege_final'))&&!d.t6;
+  let key;
+  if(sc<=2||(has('suborno_exposto')&&!has('envelope_entregue')))key='silenciado';
+  else if(protegeu)key='peao';
+  else if(sc===5&&d.t6&&biaSolta&&marcosPreso&&bloq&&!has('aceitou_suborno')&&queim===0&&early)key='secreto';
+  else if(biaSolta&&marcosPreso&&bloq)key='completa';
+  else if(biaSolta)key='metade';
+  else key='silenciado';
+  S.final={key,biaSolta,marcosPreso,bloq,sc,t6:d.t6,queim};
+  try{const f=JSON.parse(localStorage.getItem(LS_FINAIS)||'[]');if(!f.includes(key))f.push(key);localStorage.setItem(LS_FINAIS,JSON.stringify(f));}catch(e){}
+  S.t=Math.max(S.t,11*1440+960);
+  runNode('carol',biaSolta?'fim_solta':'fim_presa');runNode('mae',bloq?'fim_bloq':'fim_sem');},
  5(pub){
   if(pub){S.expo+=2;fl('dinheiro_fora');fl('marcos_exposto');tr('carol',1);runNode('carol','e5_pub');runNode('mae','e5_pub');
     if(!has('removido'))runNode('grupo','e5_pub');
@@ -1093,8 +1193,29 @@ const FINAL={
   else{tr('carol',-1);runNode('carol','e5_held');if(has('aceitou_suborno'))runNode('mae','e5_envelope');}
   runNode('carol',pub?'e5_end_pub':'e5_end_held');}
 };
-function finalize(kind){closeOverlay();const pub=kind==='pub';let stars=0;CLAIMS[S.ep].forEach((c,i)=>{if(S.draft[i]&&c.ok.includes(S.draft[i]))stars++;});
+function finalize(kind){closeOverlay();const pub=kind==='pub';let stars=0;CLAIMS[S.ep].forEach((c,i)=>{if(!c.opt&&S.draft[i]&&c.ok.includes(S.draft[i]))stars++;});if(S.ep===6)stars=Math.round(stars*3/5);
   S.mat[S.ep]={pub,stars,draft:S.draft.slice()};advance(30);FINAL[S.ep](pub);view={app:'home'};save();render();}
+function showFinal(){const F=S.final;if(!F)return;const E=FINAIS[F.key];const L=[];
+  L.push(F.biaSolta?'👩🏻 A Bia foi solta na quinta à tarde. Na saída do fórum, abraçou a Carol e procurou você na multidão.':'👩🏻 A juíza manteve a prisão da Bia: "provas insuficientes". A Carol parou de responder.');
+  L.push(F.marcosPreso?'🧔🏻 Marcos e Patrícia Teixeira foram presos em casa, no Alto da Serra. A Hilux foi apreendida.':has('marcos_fugiu')?'🧔🏻 Marcos Teixeira cruzou a fronteira. Há um mandado de prisão internacional que talvez nunca seja cumprido.':'🧔🏻 Marcos Teixeira responde em liberdade. Ainda vai à missa de domingo.');
+  L.push(F.bloq?'💰 A Justiça bloqueou R$ 4,9 milhões na carteira M. Sua mãe deve recuperar cerca de R$ 7 mil dos 48. "É pouco, filho. Mas é nosso."':'💸 O dinheiro das vítimas está fora do país. Sua mãe não vai ver os 48 mil de volta.');
+  if(has('mae_recebeu'))L.push(has('envelope_entregue')?'✉️ Sua mãe entregou à polícia o envelope do Marcos.':'✉️ Sua mãe guardou o envelope do Marcos. Vocês nunca mais falaram sobre isso.');
+  L.push(S.ev.includes('tabela_bonus')||(S.mat[3]&&S.mat[3].pub)?'🧑🏻‍💼 Fábio Brandão foi indiciado por pirâmide financeira.':'🧑🏻‍💼 Fábio Brandão abriu uma turma nova, em outra cidade.');
+  if(F.key==='peao')L.push('💻 Thiago deu entrevista na TV como "o programador que desmascarou o golpe". Uma semana depois, embarcou para Lisboa com os R$ 300 mil do admin2.');
+  else if(has('thiago_testemunha'))L.push('💻 Thiago testemunhou, devolveu os R$ 300 mil e pegou pena alternativa.');
+  else if(has('thiago_fugiu'))L.push('💻 Ninguém sabe onde o Thiago está.');
+  else L.push('💻 Thiago foi indiciado como cúmplice.');
+  if(F.queim)L.push('💔 Nem todo mundo que te ajudou quis te ver de novo.');
+  L.push(F.key==='silenciado'?`📰 O Vale Alto Agora saiu do ar depois de uma enxurrada de processos.${has('suborno_exposto')?' A história do envelope do Marcos acabou com a sua credibilidade.':''}`:'📰 O Vale Alto Agora passou de 3 mil para 80 mil leitores por mês.');
+  if(F.key==='secreto')L.push('❔ Uma semana depois, chega uma mensagem de um número desconhecido: "O PainelPay tinha 40 clientes. O Rendix era só o #41." A história continua.');
+  let found=[];try{found=JSON.parse(localStorage.getItem(LS_FINAIS)||'[]');}catch(e){}
+  const total=Object.values(S.mat).reduce((a,m)=>a+(m.stars||0),0);
+  overlay(`<div class="modal"><div class="ep">FIM DA HISTÓRIA</div><h1 style="font-size:24px">${E.t}</h1><p style="color:var(--mut);margin-top:4px">${E.d}</p>
+  <div class="sum" style="margin:12px 0">${L.map(x=>`<p style="font-size:13.5px;line-height:1.5;margin-bottom:9px">${x}</p>`).join('')}</div>
+  <div class="sum"><div class="r"><span>Estrelas na campanha</span><span>${total} de 18</span></div><div class="r"><span>Dossiê final</span><span>${F.sc} de 5${F.t6?' + 1':''}</span></div><div class="r"><span>Finais encontrados</span><span>${found.length} de 5</span></div></div>
+  <div class="note">${Object.keys(FINAIS).map(k=>found.includes(k)?`✅ ${FINAIS[k].t}`:'🔒 ???').join('<br>')}</div>
+  <button class="bigbtn" data-restart="1">Jogar de novo</button><button class="bigbtn sec" data-restartep="6">Refazer só o Episódio 6</button><button class="bigbtn sec" data-close="1">Voltar ao celular</button>
+  <a href="../../" style="display:block;text-align:center;color:var(--mut);font-size:12.5px;margin-top:14px;text-decoration:none">← Mesa de Jogos</a></div>`);}
 function trustTxt(v){return v>=2?'Aliado(a)':v>=1?'Confia em você':v===0?'Neutro(a)':v>=-1?'Desconfiado(a)':'Hostil';}
 function showEnd(ep){const M=S.mat[ep];if(!M)return;save();
   const notes=[];let rows='';const e=Math.min(5,S.expo);const nEv=S.ev.filter(x=>EPS[ep].evs.includes(x)).length;
@@ -1192,10 +1313,16 @@ function recap(n){const r=[];
     if(has('thiago_marcos'))r.push('O Thiago viu o Marcos na porta dele.');
     if(S.ev.includes('review_marcos'))r.push('Você guardou uma avaliação antiga: "Marcos T." sacou R$ 15 mil no começo.');
     r.push('O depósito de teste da carteira M veio da Teixeira Materiais de Construção.');}
+  if(n===6){const m5=S.mat[5];
+    r.push(m5&&m5.pub?'Você publicou que o Marcos é o dono do golpe. Ele está fugindo.':'Você segurou a matéria. O Marcos ainda acha que está seguro.');
+    if(has('aceitou_suborno'))r.push('Você aceitou o dinheiro do Marcos.');else if(has('recusou_suborno'))r.push('Você recusou o suborno do Marcos.');
+    r.push(has('dinheiro_fora')?'O saldo da carteira M já foi para fora do país.':'Ainda há R$ 4,9 milhões na carteira M.');
+    if(!has('thiago_fugiu')&&!has('thiago_traido'))r.push('O Thiago ainda está na cidade.');}
   return r;}
 const EP_TXT={
  2:{t:'Segunda-feira, 16h30. A Bia continua presa e a cidade só fala do Rendix. O número desconhecido prometeu voltar.',tips:['Novo no Navegador: o botão <b>&lt;/&gt;</b> mostra o código-fonte de algumas páginas.','Lojas têm horário. Se precisar, dá para esperar até abrirem, mas o mundo não para enquanto isso.']},
  3:{t:'Sexta-feira, 20h. O folheto da mentoria não sai da sua cabeça. Amanhã cedo tem encontro no salão paroquial.',tips:['Novo no Navegador: o botão <b>🕓</b> mostra versões antigas de algumas páginas.','Quem você ouve, e quem você alerta, muda o que acontece no sábado.']},
+ 6:{t:'Quarta-feira, 20h. A audiência da Bia é amanhã às 14h. Tudo o que você juntou em cinco episódios cabe numa matéria. A pergunta é o que fazer com ela, e em que ordem.',tips:['Monte o dossiê no Blog e mande (📎) para quem pode agir: o advogado da Bia, a polícia, a promotoria.','Publicar avisa quem você quer pegar. Pense na ordem.']},
  5:{t:'Segunda-feira, 9h. A audiência da Bia é na quinta. Teixeira... você conhece um Teixeira.',tips:['O explorador público mostra para onde o dinheiro de uma carteira foi.','Quem tem muito a perder tenta comprar quem atrapalha.']},
  4:{t:'Domingo, 14h. O número desconhecido não responde mais. Alguém está procurando a sua fonte, e você precisa achá-la primeiro.',tips:['Provas podem chegar como planilhas: abra no Caderno e toque nas linhas que importam.','O relógio corre contra você neste episódio.']}
 };
@@ -1207,13 +1334,15 @@ function epIntro(n){const r=recap(n);
   <button class="bigbtn" data-startep="${n}">Começar</button></div>`);}
 function epTimers(n){
   if(n===2){runNode('anon','e2_start');schedule('grupo_e2',S.t+12);schedule('mae_e2',S.t+25);schedule('carol_e2',S.t+35);if(has('briefing_ok')&&!has('luana_queimada'))schedule('luana_e2',S.t+50);}
+  if(n===6){schedule('delegado_e6',S.t+5);schedule('carol_e6',S.t+10);schedule('mae_e6',S.t+20);if(!has('thiago_fugiu')&&!has('thiago_traido'))schedule('thiago_e6',S.t+30);schedule('marcos_e6',S.t+60);
+    if(has('marcos_exposto'))schedule('marcos_fronteira',11*1440+480);else schedule('marcos_move',11*1440+600);}
   if(n===5){if(!has('thiago_fugiu')&&!has('thiago_traido'))schedule('thiago_e5',S.t+10);schedule('carol_e5',S.t+20);schedule('mae_e5',S.t+35);if(chat('ze').visible&&tv('ze')>=0&&!has('ze_queimado'))schedule('ze_e5',S.t+50);schedule('marcos_e5',S.t+90);
     const al=has('marcos_alerta')||has('marcos_ameacou')||has('thiago_achado')||has('marcos_viu_cofre');schedule('marcos_limpa',S.t+(al?40:120));}
   if(n===4){schedule('carol_e4',S.t+15);if(has('diego_ok'))schedule('diego_e4',S.t+20);schedule('marcos_e4',S.t+30);schedule('mae_e4',S.t+45);schedule('thiago_foge',S.t+(has('fabio_alertado')?150:240));}
   if(n===3){runNode('anon','e3_start');schedule('mae_e3',S.t+10);if(!has('removido'))schedule('grupo_e3',S.t+15);if(has('neide_salva')||has('neide_caiu'))schedule('neide_e3',S.t+20);if(tv('carol')>=2)schedule('carol_e3',S.t+30);if(chat('ze').visible&&tv('ze')>=1&&!has('ze_queimado'))schedule('ze_e3',S.t+40);schedule('mentoria_live',9180);}
   save();}
 function startEp(n){closeOverlay();while(S.queue.length)proc(S.queue.shift());
-  S.ep=n;S.t=Math.max(S.t,EP_START[n]);S.draft=[null,null,null];S.timers=[];S.br={stack:[],cur:null,src:false,arch:false};
+  S.ep=n;S.t=Math.max(S.t,EP_START[n]);S.draft=Array(CLAIMS[n].length).fill(null);S.timers=[];S.br={stack:[],cur:null,src:false,arch:false};
   Object.values(S.chats).forEach(c=>{c.opts=null;c.wait=null;c.waitAt=null;});
   try{localStorage.setItem(snapKey(n),JSON.stringify(S));}catch(e){}
   view={app:'home'};save();render();setTimeout(()=>epTimers(n),1200);}
@@ -1228,7 +1357,7 @@ function intro(){const sv=migrate(load());
 function reset(){busy=false;instant=false;typing=null;}
 function newGame(){S=NEW();view={app:'home'};reset();closeOverlay();save();render();setTimeout(()=>runNode('mae','start'),1200);}
 function cont(){S=migrate(load());view={app:'home'};reset();closeOverlay();if(S.queue.length){instant=true;pump();}render();
-  if(S.mat[S.ep]&&!S.queue.length&&S.endShown[S.ep])showEnd(S.ep);}
+  if(S.ep===6&&S.finalShown&&!S.queue.length)showFinal();else if(S.mat[S.ep]&&!S.queue.length&&S.endShown[S.ep])showEnd(S.ep);}
 
 /* ---------------- EVENTOS ---------------- */
 document.addEventListener('click',e=>{const t=e.target;
@@ -1237,7 +1366,7 @@ document.addEventListener('click',e=>{const t=e.target;
   if(t.id==='sheet'){closeSheet();return;}
   const tx=t.closest('[data-tx]');if(tx&&S){const k=tx.dataset.tx;if(k.startsWith('n:'))toast(k.slice(2));else if(S.ev.includes(k))toast('Você já printou essas transferências');else{addEv(k);save();render();}return;}
   const fd=t.closest('[data-fdm]');if(fd&&S){forumDM(+fd.dataset.fdm);return;}
-  const a=t.closest('[data-home],[data-open],[data-chat],[data-p],[data-ev],[data-opt],[data-clip],[data-sendev],[data-pickev],[data-pick],[data-wait],[data-add],[data-search],[data-tab],[data-print],[data-bback],[data-bhome],[data-src],[data-decide],[data-confirm],[data-close],[data-restart],[data-restartep],[data-new],[data-continue],[data-epintro],[data-startep],[data-lxform],[data-arch],[data-waitat],[data-forumdm]');
+  const a=t.closest('[data-home],[data-open],[data-chat],[data-p],[data-ev],[data-opt],[data-clip],[data-sendev],[data-pickev],[data-pick],[data-wait],[data-add],[data-search],[data-tab],[data-print],[data-bback],[data-bhome],[data-src],[data-decide],[data-confirm],[data-close],[data-restart],[data-restartep],[data-new],[data-continue],[data-epintro],[data-startep],[data-lxform],[data-arch],[data-waitat],[data-forumdm],[data-dossie]');
   if(!a)return;const d=a.dataset;
   if(d.new!==undefined){newGame();return;}if(d.continue!==undefined){cont();return;}if(!S)return;
   if(d.home!==undefined){view={app:'home'};render();}
@@ -1265,6 +1394,7 @@ document.addEventListener('click',e=>{const t=e.target;
   else if(d.startep){startEp(+d.startep);}
   else if(d.arch){toggleArch();}
   else if(d.waitat){waitAt(d.waitat);}
+  else if(d.dossie){buildDossie();}
   else if(d.forumdm){if(has('forum_dm')||has('thiago_contato')){toast('Você já mandou mensagem');return;}openSheet('Mensagem privada para tvieira',`<button class="sitem" data-fdm="1">"Aqui é o jornalista do Vale Alto Agora. Você não está sozinho nessa."</button><button class="sitem" data-fdm="2">"Sei que você é a fonte e que montou o sistema. Fala comigo ou eu publico."</button>`);}
   else if(d.close){closeOverlay();}
   else if(d.restartep){const n=+d.restartep;if(confirm(`Recomeçar o Episódio ${n}? As escolhas dos episódios anteriores continuam valendo.`))restartEp(n);}
