@@ -152,6 +152,12 @@ a.game:hover .arr .tl{fill:#3ddc84}
 .nfg .m{transition:transform .6s cubic-bezier(.3,1.2,.5,1)}
 a.game:hover .nfg .m{transform:translate(0,12.5px)}
 
+.art.fnt{background:#0e1a1d}
+.fnt svg{position:absolute;inset:0;width:100%;height:100%}
+.fnt .ty{animation:fntt 1.4s ease-in-out infinite}
+@keyframes fntt{0%,100%{opacity:.35}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.fnt .ty{animation:none}}
+
 /* em breve */
 .game.soon{border-style:dashed;background:transparent}
 .art.soon{background:repeating-linear-gradient(-45deg,rgba(255,255,255,.025) 0 10px,transparent 10px 20px)}
@@ -191,7 +197,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;border-top:1px solid 
    CATÁLOGO DE JOGOS
    Para adicionar um jogo novo:
    1. crie a pasta jogos/<nome-do-jogo>/ com um index.html dentro;
-   2. acrescente um item aqui embaixo (art pode ser "dados", "fod", "dw", "scd", "atb", "arr", "nfg", "grp", "fsg" ou "soon";
+   2. acrescente um item aqui embaixo (art pode ser "dados", "fod", "dw", "scd", "atb", "arr", "nfg", "grp", "fsg", "fnt" ou "soon";
       para arte nova, crie uma função em ARTS).
    ===================================================================== */
 const GAMES = [
@@ -296,6 +302,17 @@ const GAMES = [
     art: "fsg"
   },
   {
+    title: "Fonte Anônima",
+    url: "jogos/fonte-anonima/",
+    desc: "Investigação dentro de um celular: converse no mensageiro, pesquise na internet, junte provas e desmonte o golpe do Rendix episódio por episódio.",
+    category: "Investigação",
+    players: "1 jogador",
+    time: "25 min/episódio",
+    extra: ["Solo", "Episódios", "Escolhas"],
+    accent: "#14b8a6",
+    art: "fnt"
+  },
+  {
     title: "Em breve",
     desc: "O próximo jogo da mesa está sendo preparado.",
     category: null,
@@ -387,6 +404,24 @@ const ARTS = {
         <rect x="-15" y="-3" width="5" height="6" fill="#2b3a3c"/><circle cx="-2" cy="0" r="3.4" fill="#3b6f9e"/><circle cx="-2" cy="0" r="2.3" fill="#f08a24"/></g>
       <g transform="translate(160 74) rotate(-20)"><path d="M-11 0 l-8 -6 v12z" fill="#a9a33c"/><ellipse cx="0" cy="0" rx="13" ry="5" fill="#c9c24a"/>
         <g fill="rgba(30,40,20,.5)"><rect x="-6" y="-5" width="2" height="9"/><rect x="0" y="-5" width="2" height="9"/></g><circle cx="8" cy="-1" r="1.3" fill="#c0281c"/></g>
+    </svg>`;
+  },
+  fnt(){
+    return `<svg viewBox="0 0 200 112" preserveAspectRatio="xMidYMid slice">
+      <rect width="200" height="112" fill="#0e1a1d"/>
+      <g fill="none" stroke="#14b8a6" stroke-opacity=".12">${Array.from({length:9},(_,i)=>`<line x1="${i*25}" y1="0" x2="${i*25}" y2="112"/>`).join("")}</g>
+      <g transform="translate(64 10) rotate(-6)">
+        <rect x="0" y="0" width="58" height="104" rx="9" fill="#1c1c1e"/>
+        <rect x="3.5" y="5" width="51" height="94" rx="6" fill="#0f191c"/>
+        <rect x="3.5" y="5" width="51" height="13" rx="6" fill="#18252a"/>
+        <circle cx="11" cy="11.5" r="3.2" fill="#f97316"/><rect x="17" y="9.5" width="22" height="4" rx="2" fill="#8aa1a6"/>
+        <rect class="b1" x="7" y="23" width="30" height="9" rx="4" fill="#1f2f35"/>
+        <rect class="b2" x="19" y="36" width="31" height="9" rx="4" fill="#0f5c55"/>
+        <rect class="b3" x="7" y="49" width="38" height="20" rx="4" fill="#fff"/>
+        <rect class="b3" x="10" y="52" width="20" height="3" rx="1.5" fill="#222"/><rect class="b3" x="10" y="58" width="31" height="2.4" rx="1.2" fill="#bbb"/><rect class="b3" x="10" y="63" width="26" height="2.4" rx="1.2" fill="#f97316"/>
+        <g class="ty"><rect x="7" y="74" width="20" height="9" rx="4" fill="#1f2f35"/><circle cx="12.5" cy="78.5" r="1.4" fill="#14b8a6"/><circle cx="17" cy="78.5" r="1.4" fill="#14b8a6"/><circle cx="21.5" cy="78.5" r="1.4" fill="#14b8a6"/></g>
+      </g>
+      <g transform="translate(132 50)"><circle r="17" fill="none" stroke="#f97316" stroke-width="5"/><circle r="17" fill="#f97316" fill-opacity=".12"/><path d="M12 12 L28 28" stroke="#f97316" stroke-width="7" stroke-linecap="round"/><text x="0" y="6" text-anchor="middle" font-size="17" font-weight="900" fill="#fff" font-family="system-ui,sans-serif">?</text></g>
     </svg>`;
   },
   soon(){return `<span>?</span>`;}

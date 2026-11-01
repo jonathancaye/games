@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0f191c">
+<title>Fonte Anônima</title>
+<style>
+:root{--teal:#14b8a6;--teal2:#0d9488;--org:#f97316;--scr:#0f191c;--card:#18252a;--card2:#1f2f35;--line:#26383e;--tx:#e6f0f1;--mut:#8aa1a6}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#05090a;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--tx);overflow:hidden}
+body{display:flex;align-items:center;justify-content:center}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+#phone{position:relative;width:390px;height:min(820px,96vh);background:var(--scr);border-radius:44px;border:10px solid #1c1c1e;box-shadow:0 20px 60px #000a;overflow:hidden;display:flex;flex-direction:column}
+@media (max-width:520px){#phone{width:100vw;height:100dvh;border:0;border-radius:0}}
+#status{height:calc(32px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 22px 0;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600;flex:none;background:#0008;z-index:5}
+#screen{flex:1;min-height:0;position:relative;display:flex;flex-direction:column}
+#homebar{height:calc(22px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);flex:none;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#0006}
+#homebar div{width:120px;height:5px;border-radius:3px;background:#ffffff99}
+/* home */
+.home{flex:1;display:flex;flex-direction:column;padding:26px 20px 14px;background:radial-gradient(circle at 20% 10%,#14b8a633,transparent 55%),radial-gradient(circle at 90% 90%,#f9731628,transparent 50%),#0b1517}
+.bigt{text-align:center;font-size:62px;font-weight:200;letter-spacing:1px}
+.bigd{text-align:center;color:var(--mut);font-size:15px;margin-bottom:34px}
+.apps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px 8px}
+.app{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;position:relative}
+.app .ico{width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 4px 12px #0006}
+.badge{position:absolute;top:-6px;right:6px;background:var(--org);color:#fff;font-size:11px;font-weight:700;min-width:20px;height:20px;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:0 5px}
+.obj{margin-top:auto;background:#0009;border:1px solid var(--line);border-left:3px solid var(--org);border-radius:12px;padding:11px 13px;font-size:13px;line-height:1.4}
+.obj b{color:var(--org);display:block;font-size:11px;letter-spacing:1px;margin-bottom:3px}
+/* top bars */
+.tbar{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border-bottom:1px solid var(--line);flex:none}
+.tbar h2{font-size:17px;font-weight:600;flex:1}
+.back{font-size:22px;padding:0 6px;color:var(--teal)}
+.av{width:38px;height:38px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:20px;flex:none}
+.sub{font-size:12px;color:var(--mut)}
+.scroll{flex:1;overflow-y:auto;min-height:0}
+/* chat list */
+.cl{display:flex;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);align-items:center;cursor:pointer}
+.cl .mid{flex:1;min-width:0}
+.cl .nm{font-weight:600;font-size:15px}
+.cl .pv{font-size:13px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cl .rt{display:flex;flex-direction:column;align-items:flex-end;gap:4px;font-size:11px;color:var(--mut)}
+.ub{background:var(--teal);color:#012;font-weight:700;font-size:11px;border-radius:10px;min-width:20px;height:20px;display:flex;align-items:center;justify-content:center;padding:0 5px}
+.typ{color:var(--teal)!important;font-style:italic}
+/* chat */
+.msgs{flex:1;overflow-y:auto;padding:12px 10px;display:flex;flex-direction:column;gap:6px;background:#0c1416}
+.b{max-width:82%;padding:7px 10px 5px;border-radius:12px;font-size:14.5px;line-height:1.38;position:relative;word-wrap:break-word}
+.b.them{background:var(--card2);align-self:flex-start;border-top-left-radius:3px}
+.b.me{background:#0f5c55;align-self:flex-end;border-top-right-radius:3px}
+.b .tm{font-size:10px;color:#ffffff80;text-align:right;margin-top:2px}
+.b .who{font-size:12px;font-weight:700;color:var(--org);margin-bottom:2px}
+.sysm{align-self:center;background:#ffffff12;color:var(--mut);font-size:12px;padding:4px 10px;border-radius:8px;margin:4px 0;text-align:center}
+.lnk{background:#0006;border-radius:8px;padding:8px;margin:2px 0 3px;cursor:pointer;border-left:3px solid var(--teal)}
+.lnk b{display:block;font-size:13.5px}.lnk span{font-size:11.5px;color:var(--mut)}
+.compose{flex:none;background:var(--card);border-top:1px solid var(--line);padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+.opt{text-align:left;border:1px solid var(--teal);color:var(--tx);border-radius:12px;padding:9px 12px;font-size:14px;background:#14b8a614}
+.opt:active{background:#14b8a640}
+.cbar{display:flex;gap:8px;align-items:center}
+.cbar .ph{flex:1;font-size:13px;color:var(--mut);background:#0005;border-radius:18px;padding:9px 14px}
+.clip{width:40px;height:40px;border-radius:50%;background:var(--org);font-size:18px;display:flex;align-items:center;justify-content:center;flex:none}
+.waitb{background:var(--org);color:#fff;border-radius:12px;padding:10px;font-weight:600}
+/* keywords */
+.k{background:rgba(249,115,22,.2);border-bottom:2px dashed var(--org);cursor:pointer;border-radius:3px;padding:0 2px}
+.k.got{background:rgba(20,184,166,.18);border-bottom:2px solid var(--teal)}
+.page .k{color:inherit}
+/* evidence */
+.evc{background:#fff;color:#111;border-radius:10px;overflow:hidden;cursor:pointer;max-width:250px;margin:2px 0 3px}
+.evt{background:#222;color:#fff;font-size:11px;padding:5px 8px;font-weight:600}
+.evb{max-height:130px;overflow:hidden;position:relative;font-size:12px}
+.evb:after{content:"";position:absolute;left:0;right:0;bottom:0;height:34px;background:linear-gradient(transparent,#fff)}
+.evfull{background:#fff;color:#111;border-radius:12px;overflow:hidden;max-width:340px;width:100%;font-size:13.5px}
+/* browser */
+.bbar{display:flex;gap:6px;align-items:center;padding:8px;background:var(--card);border-bottom:1px solid var(--line);flex:none}
+.bbar input{flex:1;min-width:0;background:#0007;border:1px solid var(--line);color:var(--tx);border-radius:18px;padding:8px 12px;font-size:14px;outline:none}
+.bbar button{font-size:18px;padding:4px 6px;color:var(--teal)}
+.page{flex:1;overflow-y:auto;background:#f4f5f6;color:#1a1a1a;position:relative}
+.eng{padding:60px 20px;text-align:center}
+.eng h1{font-size:40px;font-weight:800;letter-spacing:-1px;color:#0d9488}.eng h1 span{color:var(--org)}
+.eng form{margin-top:20px;display:flex;gap:6px}
+.eng input{flex:1;min-width:0;border:2px solid #0d9488;border-radius:24px;padding:12px 16px;font-size:15px;outline:none}
+.eng button{background:#0d9488;color:#fff;border-radius:24px;padding:0 16px;font-weight:600}
+.eng p{font-size:12.5px;color:#666;margin-top:16px;line-height:1.5}
+.res{padding:12px 14px}
+.res .q{font-size:12px;color:#666;margin-bottom:10px}
+.ri{background:#fff;border-radius:10px;padding:11px 12px;margin-bottom:9px;cursor:pointer;box-shadow:0 1px 3px #0001}
+.ri .u{font-size:11.5px;color:#0d9488}.ri .ti{font-size:15.5px;color:#1a0dab;margin:2px 0}.ri .sn{font-size:13px;color:#444;line-height:1.4}
+.printb{position:absolute;right:14px;bottom:14px;background:var(--org);color:#fff;border-radius:24px;padding:11px 16px;font-weight:700;box-shadow:0 4px 14px #0005;z-index:3}
+.printb.done{background:#0d9488}
+.pwrap{position:relative;flex:1;min-height:0;display:flex;flex-direction:column}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:4;transition:opacity .35s}
+.flash.on{opacity:.85;transition:none}
+/* sites */
+.st p{line-height:1.55;margin-bottom:12px;font-size:14.5px}
+.st .in{padding:16px}
+.vn-h{background:#b91c1c;color:#fff;font-weight:900;letter-spacing:1px;padding:12px 16px;font-size:18px}
+.vn-h small{display:block;font-weight:400;font-size:11px;letter-spacing:0;opacity:.85}
+.st h1{font-size:21px;line-height:1.25;margin-bottom:6px}
+.meta{font-size:12px;color:#777;margin-bottom:14px}
+.st a{color:#b91c1c;text-decoration:underline;cursor:pointer}
+.rx{background:linear-gradient(160deg,#3b0764,#6d28d9);color:#fff;min-height:100%;padding:40px 22px;text-align:center}
+.rx .lg{font-size:38px;font-weight:900;letter-spacing:-2px}
+.rx .box{background:#fff2;border-radius:14px;padding:18px;margin:26px 0;line-height:1.5}
+.rx .ft{font-size:11.5px;opacity:.8;margin-top:40px}
+.ins-h{display:flex;gap:14px;align-items:center;padding:16px;background:#fff;border-bottom:1px solid #ddd}
+.ins-av{width:70px;height:70px;border-radius:50%;background:linear-gradient(45deg,#f97316,#db2777);display:flex;align-items:center;justify-content:center;font-size:30px}
+.post{background:#fff;margin:10px 0;padding-bottom:10px}
+.post .img{height:190px;display:flex;align-items:center;justify-content:center;font-size:60px}
+.post .cap{padding:8px 14px;font-size:14px;line-height:1.45}
+.post .cm{padding:2px 14px;font-size:12.5px;color:#555}
+.gone{background:#fff;margin:10px 0;padding:40px 20px;text-align:center;color:#888;font-size:14px}
+.lume{background:#fffbeb}
+.lume .hd{background:#f59e0b;color:#fff;padding:26px 18px}
+.lume .hd b{font-size:24px}
+.team{display:flex;gap:12px;align-items:center;background:#fff;border-radius:12px;padding:12px;margin-bottom:10px}
+.team .av2{width:48px;height:48px;border-radius:50%;background:#fde68a;display:flex;align-items:center;justify-content:center;font-size:22px}
+.addc{display:inline-block;margin-top:6px;background:#16a34a;color:#fff;border-radius:16px;padding:5px 12px;font-size:13px;font-weight:600;cursor:pointer}
+.ce{background:#fff;border-radius:10px;padding:14px;margin:12px}
+.ce .rw{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #eee;padding:7px 0;font-size:13px}
+.ce .rw span:first-child{color:#777;flex:none}.ce .rw span:last-child{text-align:right;font-weight:600}
+.ceh{background:#1e3a8a;color:#fff;padding:14px 16px;font-weight:800}
+.rv{background:#fff;border-radius:10px;padding:11px 12px;margin:8px 12px;font-size:13.5px;line-height:1.4}
+.rv .s{color:#f59e0b}.rv .n{font-weight:700}.rv .d{font-size:11px;color:#999}
+/* caderno */
+.tabs{display:flex;gap:6px;background:#0005;border-radius:20px;padding:4px;margin:12px}
+.tab{flex:1;padding:8px;border-radius:16px;font-size:13.5px;font-weight:600;color:var(--mut)}
+.tab.on{background:var(--teal);color:#012}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:4px 12px 16px}
+.chip{background:var(--card2);border:1px solid var(--line);border-radius:18px;padding:8px 13px;font-size:13.5px}
+.chip:before{content:"🔎 ";font-size:11px}
+.evg{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:4px 12px 16px}
+.evg .evc{max-width:none}
+.empty{color:var(--mut);font-size:13.5px;padding:10px 16px;line-height:1.5}
+.hint{font-size:12px;color:var(--mut);padding:0 16px 8px}
+/* blog */
+.blogh{background:linear-gradient(135deg,#0d9488,#115e59);padding:22px 16px}
+.blogh b{font-size:22px}.blogh div{font-size:12px;opacity:.85}
+.bp{padding:12px 16px;border-bottom:1px solid var(--line);font-size:14px}
+.bp small{display:block;color:var(--mut);font-size:11.5px}
+.bigbtn{display:block;width:calc(100% - 24px);margin:12px;background:var(--org);color:#fff;font-weight:700;border-radius:12px;padding:13px;font-size:15px}
+.bigbtn.sec{background:var(--card2);border:1px solid var(--teal);color:var(--tx)}
+.bigbtn:disabled{opacity:.4}
+.claim{background:var(--card);border:1px solid var(--line);border-radius:12px;margin:10px 12px;padding:12px}
+.claim p{font-size:14px;line-height:1.4;margin-bottom:8px}
+.claim .pick{width:100%;border:1px dashed var(--teal);border-radius:10px;padding:9px;font-size:13px;color:var(--teal)}
+.claim .pick.set{border-style:solid;background:#14b8a61a;color:var(--tx)}
+/* overlays */
+#notif{position:absolute;top:calc(40px + env(safe-area-inset-top));left:10px;right:10px;background:#1f2f35f2;border:1px solid var(--line);border-radius:16px;padding:10px 12px;display:flex;gap:10px;align-items:center;transform:translateY(-180%);transition:transform .3s;z-index:20;cursor:pointer;box-shadow:0 8px 20px #0008}
+#notif.show{transform:none}
+#notif .nb{font-size:13px;line-height:1.3;min-width:0}#notif .nb b{display:block}
+#notif .nb span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--mut)}
+#toast{position:absolute;bottom:60px;left:50%;transform:translateX(-50%) translateY(20px);background:#000d;color:#fff;padding:9px 16px;border-radius:20px;font-size:13px;opacity:0;transition:.3s;z-index:25;pointer-events:none;white-space:nowrap;max-width:92%;overflow:hidden;text-overflow:ellipsis}
+#toast.show{opacity:1;transform:translateX(-50%)}
+#sheet{position:absolute;inset:0;background:#0009;z-index:30;display:none;align-items:flex-end}
+#sheet.show{display:flex}
+#sheet .sh{background:var(--card);width:100%;border-radius:18px 18px 0 0;max-height:75%;overflow-y:auto;padding:14px 12px 24px}
+#sheet h3{font-size:15px;margin:0 4px 10px}
+.sitem{display:block;width:100%;text-align:left;padding:11px;border-radius:10px;background:var(--card2);margin-bottom:8px;font-size:14px}
+#overlay{position:fixed;inset:0;background:#000c;z-index:50;display:none;align-items:center;justify-content:center;padding:16px}
+#overlay.show{display:flex}
+.modal{background:var(--card);border:1px solid var(--line);border-radius:18px;max-width:380px;width:100%;max-height:92vh;overflow-y:auto;padding:22px}
+.modal h1{font-size:28px;letter-spacing:2px;color:var(--teal)}
+.modal h1 span{color:var(--org)}
+.modal .ep{color:var(--mut);font-size:13px;margin-bottom:16px}
+.modal p{font-size:14px;line-height:1.55;margin-bottom:12px}
+.modal ul{font-size:13px;line-height:1.5;color:var(--mut);padding-left:18px;margin-bottom:16px}
+.modal .bigbtn{width:100%;margin:8px 0 0}
+.stars{font-size:34px;text-align:center;margin:8px 0;color:var(--org);letter-spacing:4px}
+.sum{font-size:13.5px;line-height:1.5}
+.sum .r{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:7px 0}
+.sum .r span:last-child{font-weight:600}
+.bar{height:8px;background:#0006;border-radius:4px;overflow:hidden;width:110px;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--org)}
+.src{background:#0d1117;color:#c9d1d9;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;line-height:1.6;padding:14px 12px 80px;white-space:pre-wrap;word-break:break-all;min-height:100%}
+.src .k{color:#fbbf24}
+.bbar .srcb{font-size:13px;font-weight:700;font-family:ui-monospace,monospace;border:1px solid var(--teal);border-radius:8px;padding:3px 6px}
+.bbar .srcb.on{background:var(--teal);color:#012}
+.lx{background:linear-gradient(170deg,#064e3b,#059669);color:#fff;min-height:100%;padding:0 0 30px}
+.lx .warn{background:#dc2626;color:#fff;font-size:12.5px;padding:9px 14px;font-weight:600}
+.lx .in2{padding:30px 22px;text-align:center}
+.lx .lg{font-size:40px;font-weight:900;letter-spacing:-2px}
+.lx .hero{height:150px;border-radius:14px;margin:20px 0;display:flex;align-items:center;justify-content:center;font-size:54px}
+.lx input{width:100%;border:0;border-radius:10px;padding:12px;margin:6px 0;font-size:14px}
+.lx .go{width:100%;background:#fbbf24;color:#422006;font-weight:800;border-radius:10px;padding:13px;margin-top:6px}
+.note{background:#f9731618;border-left:3px solid var(--org);padding:9px 11px;border-radius:8px;font-size:13px;margin-top:10px;line-height:1.45}
+</style>
+</head>
+<body>
+<div id="phone">
+  <div id="status"><span id="clock"></span><span>📶 🔋</span></div>
+  <div id="screen"></div>
+  <div id="notif"></div>
+  <div id="toast"></div>
+  <div id="sheet"></div>
+  <div id="homebar" data-home="1"><div></div></div>
+</div>
+<div id="overlay"></div>
+<script>
+"use strict";
+const LS='fonte_anonima_ep1_v01', LS2='fonte_anonima_ep2_inicio';
+const $=s=>document.querySelector(s);
+const pad=n=>String(n).padStart(2,'0');
+let S=null, view={app:'home'}, typing=null, busy=false, instant=false;
+
+function NEW(){return{ep:1,t:1300,seq:0,kw:[],ev:[],flags:{},trust:{mae:0,carol:0,luana:0},expo:0,chats:{},queue:[],timers:[],br:{stack:[],cur:null,src:false},draft:[null,null,null],mat:{},endShown:{},started:true};}
+function save(){try{localStorage.setItem(LS,JSON.stringify(S));}catch(e){}}
+function load(){try{const r=localStorage.getItem(LS);return r?JSON.parse(r):null;}catch(e){return null;}}
+function migrate(s){if(!s)return s;if(!s.ep)s.ep=1;if(!s.mat){s.mat={};if(s.materia)s.mat[1]=s.materia;}delete s.materia;if(!s.endShown){s.endShown={};if(s.ep1)s.endShown[1]=true;}if(s.br&&s.br.src===undefined)s.br.src=false;return s;}
+const has=f=>!!S.flags[f]; const fl=f=>{S.flags[f]=true;};
+const tr=(c,n)=>{S.trust[c]=(S.trust[c]||0)+n;};
+const tv=c=>S.trust[c]||0;
+const hm=t=>{const m=t%1440;return pad(Math.floor(m/60))+':'+pad(m%60);};
+const DAYS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'], DAYSF=['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
+const dayOf=t=>Math.floor(t/1440)%7;
+function chat(c){return S.chats[c]||(S.chats[c]={visible:false,msgs:[],unread:0,opts:null,last:0,wait:null});}
+function norm(s){return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'');}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function K(kw,label){return `<span class="k${S&&S.kw.includes(kw)?' got':''}" data-k="${kw}">${label||kw}</span>`;}
+function fmt(s){return (s||'').replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g,(m,a,b)=>K(b||a,a));}
+function strip(s){return (s||'').replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g,'$1');}
+function lotOpen(t){const d=dayOf(t),m=t%1440;return d>=1&&d<=6&&m>=480&&m<1080;}
+function nextOpen(t){const base=Math.floor(t/1440)*1440,m=t%1440;let n=m<480?base+480:base+1440+480;if(dayOf(n)===0)n+=1440;return n;}
+
+/* ---------------- EPISÓDIOS ---------------- */
+const EPS={
+ 1:{title:'A Cara do Golpe',mat:'O que ninguém contou sobre a Bia',evs:['post_publi','pix_lume','briefing','cnpj_rendix','cnpj_mx','review_marcos','painel']},
+ 2:{title:'O Site Clonado',mat:'Lucrix: o golpe trocou de roupa',evs:['src_lucrix','whois_lucrix','whois_rendix','caderno_retirada','relato_osvaldo','foto_mentoria']}
+};
+
+/* ---------------- CONTATOS ---------------- */
+const CONTACTS={
+  mae:{name:'Mãe',av:'👩‍🦳',sub:'online'},
+  grupo:{name:'Vítimas do Rendix 💔',av:'👥',sub:'Marcos, Neide, Seu Jair e mais 211'},
+  carol:{name:'Carol (irmã da Bia)',av:'👩🏻',sub:'online'},
+  luana:{name:'Luana · Lume',av:'👩🏽‍💼',sub:'Atendimento: seg a sex, 8h às 18h',busy:()=>S.t<1920,wake:()=>1920,auto:'🤖 Mensagem automática: Olá! Nosso atendimento funciona de segunda a sexta, das 8h às 18h. Retornaremos assim que possível.',saved:'Contato salvo: Luana Prado · Lume Comunicação'},
+  anon:{name:'Número desconhecido',av:'❔',sub:'+55 •• •••••-0417'},
+  toninho:{name:'Seu Toninho · Lotérica',av:'🍀',sub:'Seg a sáb, 8h às 18h',busy:()=>!lotOpen(S.t),wake:()=>nextOpen(S.t),auto:'🤖 Lotérica Trevo da Sorte: atendemos de segunda a sábado, das 8h às 18h. Boa sorte! 🍀',saved:'Contato salvo: Lotérica Trevo da Sorte'},
+  ze:{name:'Zé · Borracharia',av:'🧔🏽',sub:'online',saved:'Contato salvo: Borracharia do Zé (24h)'},
+  neide:{name:'Neide',av:'👵🏽',sub:'online'}
+};
+
+/* ---------------- PROVAS ---------------- */
+const EV={
+  post_publi:{t:'Print: publi da Bia no Instaclick',h:()=>`<div style="padding:10px"><div style="font-weight:700">@bialemos</div><div style="height:70px;background:linear-gradient(135deg,#a855f7,#f97316);border-radius:6px;margin:6px 0;display:flex;align-items:center;justify-content:center;font-size:30px">📱💸</div><div>Meu dinheiro agora trabalha por mim 💸 Conheci o Rendix e não largo mais! <b>#publi</b> ${K('Lume Comunicação','@lumecomunicacao')}</div><div style="color:#888;font-size:11px;margin-top:4px">2.341 curtidas · há 9 semanas</div></div>`},
+  pix_lume:{t:'Comprovante de Pix (enviado pela Carol)',h:()=>`<div style="padding:12px"><div style="font-weight:800;color:#0d9488">Comprovante de Pix</div><div style="font-size:22px;font-weight:800;margin:6px 0">R$ 3.000,00</div><div style="font-size:12px;line-height:1.6">12/08/2026 · 14:03<br><b>De:</b> ${K('Lume Comunicação','LUME COMUNICACAO LTDA')}<br><b>Para:</b> BEATRIZ LEMOS<br><b>Descrição:</b> Vídeo Rendix #3</div></div>`},
+  briefing:{t:'Briefing da campanha (enviado pela Luana)',h:()=>`<div style="padding:12px;font-family:Georgia,serif;font-size:12.5px;line-height:1.55"><div style="font-weight:700;font-size:13px;border-bottom:2px solid #f59e0b;padding-bottom:4px;margin-bottom:6px">BRIEFING DE CAMPANHA · LUME</div><b>Projeto:</b> Rendix — lançamento<br><b>Cliente:</b> ${K('MX Participações','MX PARTICIPAÇÕES LTDA')}<br><b>Contato:</b> Sr. O. (via intermediário)<br><b>Influenciadora:</b> Beatriz Lemos<br><b>Cachê:</b> R$ 3.000 por vídeo<br><b>Obs.:</b> NÃO divulgar os sócios do aplicativo. Usar apenas "equipe Rendix".</div>`},
+  cnpj_rendix:{t:'Print: CNPJ do Rendix',h:()=>`<div style="padding:12px;font-size:12.5px;line-height:1.6"><b>RENDIX TECNOLOGIA LTDA</b><br>CNPJ 48.211.903/0001-77<br>Abertura: 14/07/2026 · Capital: R$ 1.000,00<br>Endereço: ${K('Rua Quinze, 210')} — Centro<br><b>Sócia administradora:</b> ${K('MX Participações','MX PARTICIPACOES LTDA')}</div>`},
+  cnpj_mx:{t:'Print: CNPJ da MX Participações',h:()=>`<div style="padding:12px;font-size:12.5px;line-height:1.6"><b>MX PARTICIPACOES LTDA</b><br>CNPJ 47.903.552/0001-10<br>Abertura: 02/06/2026 · Capital: R$ 1.000,00<br>Endereço: ${K('Rua Quinze, 210')} — Centro<br><b>Sócio administrador:</b> ${K('Osvaldo Pereira da Silva','OSVALDO PEREIRA DA SILVA')}<br><b>Participações:</b> Rendix Tecnologia Ltda</div>`},
+  review_marcos:{t:'Print: avaliação antiga do Rendix',h:()=>`<div style="padding:12px;font-size:13px;line-height:1.45"><b>Marcos T.</b> <span style="color:#f59e0b">★★★★★</span><br><span style="color:#999;font-size:11px">há 2 meses</span><br>Saquei R$ 15 mil, caiu em 5 minutos. Podem confiar, é o futuro! Indiquei pra família toda 🙌</div>`},
+  painel:{t:'Imagem: painel administrativo do Rendix',h:()=>`<div style="background:#111;color:#4ade80;font-family:monospace;padding:12px;font-size:12px;line-height:1.6">RENDIX · ADMIN v2.3<br>──────────────────<br>Usuários ativos ..... 1.214<br>Depósitos totais .... R$ 31.482.900<br>Saques pagos ........ R$ 4.106.300<br><span style="color:#f87171">Saldo em caixa ...... R$ 0,00</span><br>Último acesso ....... admin2<br>Transferências ...... 38 (carteira externa)</div>`},
+  src_lucrix:{t:'Print: código-fonte do Lucrix',h:()=>`<div style="background:#0d1117;color:#c9d1d9;font-family:monospace;padding:12px;font-size:11.5px;line-height:1.6">&lt;!-- tema base: painelpay.net v2.3 — cliente #41 --&gt;<br>&lt;!-- TODO: trocar as imagens antigas antes de divulgar!!! --&gt;<br>&lt;img src="https://<span style="color:#fbbf24">rendix.app</span>/static/hero_bia.jpg"&gt;<br>&lt;img src="https://<span style="color:#fbbf24">rendix.app</span>/static/selo_garantia.png"&gt;<br>&lt;!-- taxa migração: 300 · repasse: admin2 --&gt;</div>`},
+  whois_lucrix:{t:'Print: dono do domínio lucrix.app',h:()=>`<div style="padding:12px;font-size:12.5px;line-height:1.6"><b>lucrix.app</b><br>Criado em: 30/10/2026<br><b>Titular:</b> ${K('Osvaldo Pereira da Silva','OSVALDO PEREIRA DA SILVA')}<br>E-mail técnico: suporte@${K('painelpay.net')}</div>`},
+  whois_rendix:{t:'Print: dono do domínio rendix.app',h:()=>`<div style="padding:12px;font-size:12.5px;line-height:1.6"><b>rendix.app</b><br>Criado em: 10/07/2026<br><b>Titular:</b> ${K('Osvaldo Pereira da Silva','OSVALDO PEREIRA DA SILVA')}<br>E-mail técnico: suporte@${K('painelpay.net')}</div>`},
+  caderno_retirada:{t:'Foto: caderno de retiradas da lotérica',h:()=>`<div style="background:repeating-linear-gradient(#fffef5,#fffef5 21px,#bfdbfe 22px);padding:10px 12px;font-family:'Comic Sans MS','Segoe Print',cursive;font-size:12.5px;line-height:22px;color:#1e3a8a"><b>RETIRADAS — Rua Quinze 210</b><br>04/10 · Rendix Tec., MX Part. — ${K('Diego')} ✍<br>11/10 · Rendix Tec., MX Part. — Diego ✍<br>18/10 · Rendix, MX, <b>Lucrix Serviços</b> — Diego ✍<br>25/10 · Rendix, MX, Lucrix — Diego ✍<br><span style="color:#dc2626">moto vermelha, boné preto</span></div>`},
+  relato_osvaldo:{t:'Áudio do Seu Osvaldo (transcrito)',h:()=>`<div style="padding:12px;font-size:12.5px;line-height:1.55"><div style="font-weight:700;color:#16a34a">🎤 Áudio · 2:14 · transcrição</div><i>"Em agosto teve um cadastro lá no ${K('salão da igreja','salão paroquial')}, pra um auxílio do governo. Uma moça muito educada pediu meu RG, meu CPF, tirou foto minha segurando o documento... Auxílio nunca veio. Empresa? Eu? Eu mal sei mexer nesse telefone, meu filho."</i></div>`},
+  foto_mentoria:{t:'Imagem: folheto de evento',h:()=>`<div style="background:linear-gradient(160deg,#1e1b4b,#7c2d12);color:#fff;padding:14px;text-align:center;font-size:12.5px;line-height:1.5"><div style="font-size:11px;letter-spacing:2px;color:#fbbf24">VAGAS LIMITADAS</div><div style="font-size:17px;font-weight:900;margin:4px 0">MENTORIA LIBERDADE FINANCEIRA</div>com ${K('Fábio Brandão')}<br>Sábados · 9h · Salão Paroquial<br><div style="margin-top:8px;font-size:11px;opacity:.8">Foto do último encontro: equipe de apoio ao fundo, rapaz de boné preto 🧢</div></div>`}
+};
+
+/* ---------------- PÁGINAS ---------------- */
+const LX_SRC_SUJO=`<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>Lucrix · o recomeço</title>
+  <!-- tema base: [[painelpay.net]] v2.3 — cliente #41 -->
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <div class="hero">
+    <!-- TODO: trocar as imagens antigas antes de divulgar!!! -->
+    <img src="https://[[rendix.app]]/static/hero_bia.jpg">
+    <img src="https://rendix.app/static/selo_garantia.png">
+  </div>
+  <h2>Ex-cliente do Rendix? Migre seu saldo.</h2>
+  <form action="/migrar" method="post">
+    <!-- taxa migração: 300 · repasse: admin2 -->
+    <input name="cpf" placeholder="Seu CPF">
+    <input name="saldo" placeholder="Saldo no Rendix">
+    <button>Migrar saldo</button>
+  </form>
+  <footer>Lucrix Serviços Digitais Ltda</footer>
+</body>
+</html>`;
+const LX_SRC_LIMPO=`<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>Lucrix · o recomeço</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <div class="hero">
+    <img src="/static/hero.jpg">
+  </div>
+  <h2>Ex-cliente do Rendix? Migre seu saldo.</h2>
+  <form action="/migrar" method="post">
+    <input name="cpf" placeholder="Seu CPF">
+    <input name="saldo" placeholder="Saldo no Rendix">
+    <button>Migrar saldo</button>
+  </form>
+  <footer>Lucrix Serviços Digitais Ltda</footer>
+</body>
+</html>`;
+const PAGES={
+  vn_prisao:{url:'valenoticias.com.br/policia/influenciadora-presa-rendix',title:'Influenciadora é presa suspeita de comandar golpe do Rendix',sn:'A Polícia Civil prendeu neste domingo Beatriz Lemos, 26, apontada como responsável pelo aplicativo...',
+    visit(){if(S.ep===1&&!has('carol_on')&&!has('carol_sched')){fl('carol_sched');schedule('carol_start',S.t+5);}},
+    h:()=>`<div class="st"><div class="vn-h">VALE NOTÍCIAS<small>O portal de Vale Alto e região</small></div><div class="in"><h1>Influenciadora é presa suspeita de comandar golpe do Rendix</h1><div class="meta">Polícia · domingo, 19h12</div>
+    <p>A Polícia Civil prendeu na tarde deste domingo a influenciadora digital ${K('Beatriz Lemos')}, de 26 anos, apontada como responsável pelo aplicativo ${K('Rendix')}, que prometia rendimentos de 3% ao mês e saiu do ar na sexta-feira.</p>
+    <p>Segundo o delegado ${K('Paulo Ramos')}, Beatriz era "o rosto e a voz" do aplicativo e seus vídeos convenceram centenas de pessoas a depositar dinheiro na plataforma.</p>
+    <p>A estimativa é que mais de 1.200 moradores da região tenham investido no app. O prejuízo pode passar de R$ 30 milhões.</p>
+    <p>O site oficial do Rendix exibe apenas uma mensagem de manutenção. A defesa de Beatriz não se manifestou até a publicação desta reportagem.</p>
+    <p><b>Leia também:</b> <a data-p="vn_vitimas">Vítimas do Rendix criam grupo e prometem ação coletiva</a></p></div></div>`},
+  vn_vitimas:{url:'valenoticias.com.br/cidade/vitimas-rendix-grupo',title:'Vítimas do Rendix criam grupo e prometem ação coletiva',sn:'Grupo organizado pelo comerciante Marcos Teixeira já reúne mais de 200 pessoas...',
+    h:()=>`<div class="st"><div class="vn-h">VALE NOTÍCIAS<small>O portal de Vale Alto e região</small></div><div class="in"><h1>Vítimas do Rendix criam grupo e prometem ação coletiva</h1><div class="meta">Cidade · domingo, 20h40</div>
+    <p>Um grupo de mensagens criado por vítimas do ${K('Rendix')} já reúne mais de 200 pessoas. O organizador é o comerciante ${K('Marcos Teixeira')}, que diz ter perdido R$ 20 mil no aplicativo.</p>
+    <p>"Fui enganado como todo mundo. Agora é hora de a gente se unir", disse Teixeira, que afirma estar contratando um advogado para uma ação coletiva.</p>
+    <p>Segundo ele, cada participante deve contribuir com R$ 500 para os honorários.</p></div></div>`},
+  rendix_site:{url:'rendix.app',title:'Rendix · Seu dinheiro trabalhando por você',sn:'Estamos em manutenção programada. Seus rendimentos continuam sendo calculados...',
+    h:()=>`<div class="rx"><div class="lg">rendix</div><div style="opacity:.8">seu dinheiro trabalhando por você</div><div class="box">🔧 <b>Estamos em manutenção programada.</b><br>Seus rendimentos continuam sendo calculados normalmente.<br>Previsão de retorno: em breve.</div><div style="font-size:13px;opacity:.85">"Meu dinheiro agora trabalha por mim" — Bia Lemos</div><div class="ft">© 2026 Rendix Tecnologia Ltda · CNPJ ${K('48.211.903/0001-77')}<br>Todos os direitos reservados</div></div>`},
+  avalia_rendix:{url:'avaliamais.com.br/empresas/rendix',title:'Rendix — avaliações | Avalia+',sn:'Nota 1,4 nas últimas semanas. "Não consigo sacar desde quinta", "GOLPE"...',ev:'review_marcos',
+    h:()=>`<div class="st"><div class="ceh" style="background:#7c3aed">Avalia+ · Rendix</div><div style="padding:12px 14px;font-size:13px;color:#555">Nota recente <b style="color:#dc2626">1,4</b> · Nota há 2 meses <b style="color:#16a34a">4,9</b></div>
+    <div class="rv"><span class="n">Joana P.</span> <span class="s">★☆☆☆☆</span><div class="d">hoje</div>Não consigo sacar desde quinta. GOLPE. Cadê a tal da Bia agora?</div>
+    <div class="rv"><span class="n">Seu Jair</span> <span class="s">★☆☆☆☆</span><div class="d">ontem</div>Coloquei a aposentadoria toda. Meus filhos não sabem ainda.</div>
+    <div class="rv"><span class="n">Fernanda R.</span> <span class="s">★★★★★</span><div class="d">há 6 semanas</div>Rendeu certinho 3 meses seguidos, recomendo!</div>
+    <div class="rv"><span class="n">Marcos T.</span> <span class="s">★★★★★</span><div class="d">há 2 meses</div>Saquei R$ 15 mil, caiu em 5 minutos. Podem confiar, é o futuro! Indiquei pra família toda 🙌</div></div>`},
+  bia_insta:{url:'instaclick.com/bialemos',title:'Bia Lemos (@bialemos) · Instaclick',sn:'Lifestyle e finanças leves ✨ · 48,2 mil seguidores',ev:'post_publi',evOk:()=>!has('post_apagado'),
+    h:()=>`<div class="st"><div class="ins-h"><div class="ins-av">🙋🏻‍♀️</div><div><b>@bialemos</b><div style="font-size:13px">Bia Lemos · Lifestyle e finanças leves ✨</div><div style="font-size:12px;color:#777">48,2 mil seguidores</div></div></div>
+    ${has('post_apagado')?`<div class="gone">🚫 Esta publicação não está mais disponível.</div>`:`<div class="post"><div class="img" style="background:linear-gradient(135deg,#a855f7,#f97316)">📱💸</div><div class="cap"><b>bialemos</b> Meu dinheiro agora trabalha por mim 💸 Conheci o Rendix e não largo mais! <b>#publi</b> ${K('Lume Comunicação','@lumecomunicacao')}</div><div class="cm"><b>neide_s</b> e agora Bia??? cadê meu dinheiro</div><div class="cm"><b>ju.ribeiro</b> presa é pouco</div><div class="cm" style="color:#999">2.341 curtidas · há 9 semanas</div></div>`}
+    <div class="post"><div class="img" style="background:#fde68a">🌻</div><div class="cap"><b>bialemos</b> Domingo de feira com a vó 🌻</div><div class="cm" style="color:#999">1.102 curtidas · há 11 semanas</div></div></div>`},
+  lume_site:{url:'lumecomunicacao.com.br',title:'Lume Comunicação · Marketing de influência',sn:'Conectamos marcas a influenciadores do interior. Conheça nossa equipe.',
+    h:()=>`<div class="st lume"><div class="hd"><b>☀ Lume Comunicação</b><div style="font-size:13px;margin-top:4px">Conectamos marcas a influenciadores do interior</div></div><div class="in">
+    <p><b>O que fazemos:</b> campanhas com influenciadores locais, roteiros de vídeo e gestão de publis.</p>
+    <p style="font-weight:700;margin-top:6px">Equipe</p>
+    <div class="team"><div class="av2">👨🏻‍💼</div><div><b>Rafael Duarte</b><div style="font-size:12.5px;color:#666">Diretor</div></div></div>
+    <div class="team"><div class="av2">👩🏽‍💼</div><div><b>${K('Luana Prado')}</b><div style="font-size:12.5px;color:#666">Atendimento a clientes e influenciadores</div><span class="addc" data-add="luana">💬 Falar no Papo</span></div></div>
+    <p style="font-size:12px;color:#888;margin-top:14px">Rua das Acácias, 88 · Vale Alto</p></div></div>`},
+  cnpj_rendix:{url:'consultaempresa.com.br/48211903000177',title:'RENDIX TECNOLOGIA LTDA · CNPJ 48.211.903/0001-77',sn:'Situação: ativa · Abertura: 14/07/2026 · Quadro societário disponível',ev:'cnpj_rendix',
+    h:()=>`<div class="st"><div class="ceh">ConsultaEmpresa</div><div class="ce"><div style="font-weight:800;margin-bottom:6px">RENDIX TECNOLOGIA LTDA</div>
+    <div class="rw"><span>CNPJ</span><span>48.211.903/0001-77</span></div><div class="rw"><span>Situação</span><span>Ativa</span></div><div class="rw"><span>Abertura</span><span>14/07/2026</span></div><div class="rw"><span>Capital social</span><span>R$ 1.000,00</span></div><div class="rw"><span>Endereço</span><span>${K('Rua Quinze, 210')} — Centro, Vale Alto</span></div>
+    <div style="font-weight:700;margin:12px 0 4px">Quadro societário</div><div class="rw"><span>Sócia administradora</span><span>${K('MX Participações','MX PARTICIPACOES LTDA')}</span></div></div></div>`},
+  cnpj_mx:{url:'consultaempresa.com.br/47903552000110',title:'MX PARTICIPACOES LTDA · CNPJ 47.903.552/0001-10',sn:'Situação: ativa · Abertura: 02/06/2026 · Sócio administrador...',ev:'cnpj_mx',
+    h:()=>`<div class="st"><div class="ceh">ConsultaEmpresa</div><div class="ce"><div style="font-weight:800;margin-bottom:6px">MX PARTICIPACOES LTDA</div>
+    <div class="rw"><span>CNPJ</span><span>47.903.552/0001-10</span></div><div class="rw"><span>Situação</span><span>Ativa</span></div><div class="rw"><span>Abertura</span><span>02/06/2026</span></div><div class="rw"><span>Capital social</span><span>R$ 1.000,00</span></div><div class="rw"><span>Endereço</span><span>${K('Rua Quinze, 210')} — Centro, Vale Alto</span></div>
+    <div style="font-weight:700;margin:12px 0 4px">Quadro societário</div><div class="rw"><span>Sócio administrador</span><span>${K('Osvaldo Pereira da Silva','OSVALDO PEREIRA DA SILVA')}</span></div>
+    <div style="font-weight:700;margin:12px 0 4px">Participações</div><div class="rw"><span>Empresa</span><span>${K('Rendix')} Tecnologia Ltda</span></div></div></div>`},
+  loterica:{url:'guiavalealto.com.br/rua-quinze-210',title:'Rua Quinze, 210 — Guia Vale Alto',sn:'Lotérica Trevo da Sorte · Centro · Aberto das 8h às 18h',
+    visit(){fl('loterica');},
+    h:()=>`<div class="st"><div class="ceh" style="background:#15803d">Guia Vale Alto</div><div class="ce"><div style="font-size:40px;text-align:center">🍀</div><div style="font-weight:800;text-align:center;font-size:17px">Lotérica Trevo da Sorte</div><div style="text-align:center;font-size:13px;color:#666;margin-bottom:10px">Rua Quinze, 210 · Centro · ⭐ 4,2</div>
+    <div class="rw"><span>Horário</span><span>Seg a sáb, 8h às 18h</span></div><div class="rw"><span>Responsável</span><span>Antônio (Seu Toninho)</span></div><div class="rw"><span>Ponto de referência</span><span>Ao lado da farmácia</span></div>
+    <p style="font-size:13px;color:#555;margin-top:10px">"Lojinha pequena, só tem a lotérica nesse número. Atendimento rápido." — avaliação de cliente</p>
+    ${S.ep>=2?`<div style="text-align:center"><span class="addc" data-add="toninho">💬 Falar com a lotérica no Papo</span></div>`:''}</div></div>`},
+  lucrix_site:{url:'lucrix.app',title:'Lucrix · o recomeço',sn:'Ex-cliente do Rendix? Migre seu saldo e ganhe 10% de bônus.',src:()=>has('lucrix_limpo')?LX_SRC_LIMPO:LX_SRC_SUJO,srcEv:'src_lucrix',srcOk:()=>!has('lucrix_limpo'),
+    h:()=>`<div class="lx">${S.mat[1]&&S.mat[1].pub?`<div class="warn">⚠️ Atenção: o blog "Vale Alto Agora" tenta impedir que as vítimas recuperem seu dinheiro. Não acredite em fake news.</div>`:''}<div class="in2"><div class="lg">lucrix</div><div style="opacity:.85">o recomeço que você merece</div>
+    <div class="hero" style="background:${has('lucrix_limpo')?'#ffffff22':'linear-gradient(135deg,#a855f7,#f97316)'}">${has('lucrix_limpo')?'🌱':'📱💸'}</div>
+    <div style="font-size:19px;font-weight:800;line-height:1.3">Ex-cliente do Rendix?<br>Migre seu saldo e ganhe 10% de bônus.</div>
+    <div style="font-size:13px;opacity:.85;margin:10px 0 16px">Rendimento de 2,5% ao mês. Taxa única de migração: R$ 300.</div>
+    <input placeholder="Seu CPF" disabled><input placeholder="Saldo no Rendix (R$)" disabled><button class="go" data-lxform="1">Migrar meu saldo</button>
+    <div style="font-size:11px;opacity:.7;margin-top:26px">© 2026 Lucrix Serviços Digitais Ltda</div></div></div>`},
+  whois_lucrix:{url:'consultadominio.com.br/lucrix.app',title:'lucrix.app — dados do domínio · ConsultaDomínio',sn:'Quem registrou, quando e com qual e-mail técnico.',ev:'whois_lucrix',
+    h:()=>`<div class="st"><div class="ceh" style="background:#334155">ConsultaDomínio</div><div class="ce"><div style="font-weight:800;margin-bottom:6px">lucrix.app</div>
+    <div class="rw"><span>Criado em</span><span>30/10/2026</span></div><div class="rw"><span>Expira em</span><span>30/10/2027</span></div><div class="rw"><span>Titular</span><span>${K('Osvaldo Pereira da Silva','OSVALDO PEREIRA DA SILVA')}</span></div><div class="rw"><span>E-mail técnico</span><span>suporte@${K('painelpay.net')}</span></div><div class="rw"><span>Servidor</span><span>ns1.painelpay.net</span></div>
+    <p style="font-size:12px;color:#888;margin-top:10px">Dica: consulte também outros domínios, como ${K('rendix.app')}.</p></div></div>`},
+  whois_rendix:{url:'consultadominio.com.br/rendix.app',title:'rendix.app — dados do domínio · ConsultaDomínio',sn:'Quem registrou, quando e com qual e-mail técnico.',ev:'whois_rendix',
+    h:()=>`<div class="st"><div class="ceh" style="background:#334155">ConsultaDomínio</div><div class="ce"><div style="font-weight:800;margin-bottom:6px">rendix.app</div>
+    <div class="rw"><span>Criado em</span><span>10/07/2026</span></div><div class="rw"><span>Expira em</span><span>10/07/2027</span></div><div class="rw"><span>Titular</span><span>${K('Osvaldo Pereira da Silva','OSVALDO PEREIRA DA SILVA')}</span></div><div class="rw"><span>E-mail técnico</span><span>suporte@${K('painelpay.net')}</span></div><div class="rw"><span>Servidor</span><span>ns1.painelpay.net</span></div></div></div>`},
+  painelpay:{url:'painelpay.net',title:'PainelPay · Seu app de investimentos pronto em 48h',sn:'Plataforma completa: painel administrativo, Pix integrado e programa de indicação.',
+    visit(){fl('v_painelpay');},
+    h:()=>`<div class="st"><div class="ceh" style="background:#0f172a">PainelPay</div><div class="in"><h1>Seu app de investimentos pronto em 48 horas</h1>
+    <p>✔ Painel administrativo completo<br>✔ Pix integrado com saque automático<br>✔ Programa de indicação em níveis<br>✔ Tela de "manutenção programada" pronta para usar</p>
+    <p><b>+40 clientes</b> em todo o Brasil.</p><p style="font-size:12px;color:#888">Desenvolvido por equipe independente. Contato apenas por indicação.</p></div></div>`},
+  borracharia:{url:'guiavalealto.com.br/borracharia-do-ze',title:'Borracharia do Zé — Guia Vale Alto',sn:'Rua Sete, 45 · Centro · Atendimento 24h para emergências',
+    h:()=>`<div class="st"><div class="ceh" style="background:#15803d">Guia Vale Alto</div><div class="ce"><div style="font-size:40px;text-align:center">🛞</div><div style="font-weight:800;text-align:center;font-size:17px">Borracharia do Zé</div><div style="text-align:center;font-size:13px;color:#666;margin-bottom:10px">Rua Sete, 45 · Centro · ⭐ 4,8</div>
+    <div class="rw"><span>Horário</span><span>24h (emergências)</span></div><div class="rw"><span>Desde</span><span>1994 · "do pai pro filho"</span></div>
+    <div style="text-align:center"><span class="addc" data-add="ze">💬 Falar no Papo</span></div></div></div>`}
+};
+const SEARCH=[
+  {k:['rendix','golpe rendix','app rendix'],p:['vn_prisao','rendix_site','avalia_rendix']},
+  {k:['beatriz lemos','bia lemos','bialemos','beatriz','bia'],p:['bia_insta','vn_prisao']},
+  {k:['paulo ramos','delegado'],p:['vn_prisao']},
+  {k:['marcos teixeira','vitimas rendix','vitimas do rendix'],p:['vn_vitimas']},
+  {k:['lume comunicacao','lume','lumecomunicacao'],p:['lume_site']},
+  {k:['luana prado','luana'],p:['lume_site']},
+  {k:['48211903000177','rendix tecnologia'],p:['cnpj_rendix','rendix_site']},
+  {k:['mx participacoes','mx'],p:['cnpj_mx']},
+  {k:['47903552000110'],p:['cnpj_mx']},
+  {k:['rua quinze 210','rua quinze','loterica trevo da sorte'],p:['loterica']},
+  {k:['osvaldo pereira da silva','osvaldo'],p:[],msg:'Nenhum resultado para esse nome na internet. Nenhuma rede social, nenhuma foto. Alguém da cidade talvez saiba quem ele é.'},
+  {ep:2,k:['lucrix','lucrix.app','lucrix servicos'],p:['lucrix_site','whois_lucrix']},
+  {ep:2,k:['rendix.app'],p:['whois_rendix','rendix_site']},
+  {ep:2,k:['painelpay','painelpay.net','painel pay'],p:['painelpay']},
+  {ep:2,k:['borracharia do ze','borracharia','rua sete 45'],p:['borracharia']},
+  {ep:2,k:['diego'],p:[],msg:'Milhares de resultados para "Diego". Sem sobrenome, não dá para saber qual.'},
+  {ep:2,k:['salao paroquial','salao da igreja','cadastro auxilio igreja'],p:[],msg:'Só a programação de missas da paróquia. Nada sobre cadastro de auxílio.'}
+];
+function search(q){const nq=norm(q);let pages=[],msg=null;if(!nq)return{pages,msg};
+  SEARCH.forEach(e=>{if(e.ep&&S.ep<e.ep)return;if(e.k.some(k=>{const nk=norm(k);return nq===nk||(nq.length>=4&&nk.includes(nq))||(nk.length>=4&&nq.includes(nk));})){e.p.forEach(p=>{if(!pages.includes(p))pages.push(p);});if(e.msg)msg=e.msg;}});
+  return{pages,msg};}
+
+/* ---------------- DIÁLOGOS ---------------- */
+const LUANA_O=[{t:'A Bia está presa por uma coisa que não fez. Você sabe disso.',go:'fria',fx(){tr('luana',-1);}},{t:'Entendo. Se mudar de ideia, estou aqui.',go:'educada',fx(){tr('luana',1);}}];
+const TQ=[
+  {t:'O senhor sabe o nome do rapaz?',go:'nome',hide:()=>has('t_nome'),fx(){fl('t_nome');}},
+  {t:'O senhor anota quem retira as cartas?',go:'caderno',hide:()=>S.ev.includes('caderno_retirada')},
+  {t:'Conhece um tal de Osvaldo Pereira da Silva?',go:'osvaldo',hide:()=>has('t_osv'),fx(){fl('t_osv');}}];
+const D={
+ mae:{
+  start:{m:['Filho, o Rendix não abre desde ontem 😟','Tô tentando sacar e só dá erro','A Neide disse que a polícia prendeu a menina dos vídeos. A Bia, tua amiga!!',{link:'vn_prisao'}],
+   o:[{t:'Calma, mãe. Quanto você tinha lá?',go:'quanto'},{t:'Deixa comigo. Vou ver o que aconteceu.',go:'vou_ver'}]},
+  quanto:{m:['48 mil','Tudo que teu pai deixou 😞','Eu tirava 3% todo mês, caía certinho. Como pode?'],o:[{t:'Vou descobrir o que aconteceu. Prometo.',go:'vou_ver'}]},
+  vou_ver:{m:['Tá bom, filho','O pessoal fez um grupo das vítimas. Vou te colocar lá'],after(){runNode('grupo','start');schedule('carol_start',S.t+10);schedule('mae_adv',S.t+40);schedule('grupo_pix',S.t+46);}},
+  adv:{m:['Filho, o Marcos do grupo tá juntando R$ 500 de cada um pro advogado','Disse que quem não entrar agora fica de fora da ação','Mando?'],
+   o:[{t:'Espera, mãe. Não manda nada ainda.',go:'adv_nao',fx(){fl('mae_segurou');tr('mae',1);}},{t:'Se é pra ter advogado, pode mandar.',go:'adv_sim',fx(){fl('mae_pagou');}}]},
+  adv_nao:{m:['Tá... mas o pessoal tá tudo mandando 😕','Vou esperar você então']},
+  adv_sim:{m:['Mandei. Ele respondeu rapidinho, muito atencioso 🙏']},
+  pub:{m:['Filho, todo mundo tá falando do teu blog!','Tô orgulhosa. Mas... e o dinheiro? 😔']},
+  held:{m:['Faz o que for certo, filho. Confio em você ❤️']},
+  e2_pagou:{m:['Filho, o Marcos me passou o contato de um tal Lucrix','Disseram que liberam meus 48 mil se eu pagar R$ 300 de taxa de migração','Já mandei meus documentos pra eles. Pago a taxa?'],
+   o:[{t:'Mãe, NÃO paga! É o mesmo golpe.',go:'e2_salva',fx(){fl('mae_salva');tr('mae',1);}},{t:'Espera eu checar antes, tá?',go:'e2_espera'}]},
+  e2_ok:{m:['Filho, tão falando de um tal Lucrix no grupo','Diz que devolve o dinheiro do Rendix... será?'],
+   o:[{t:'Não cai nessa, mãe. Estou investigando.',go:'e2_salva',fx(){fl('mae_salva');tr('mae',1);}},{t:'Ainda não sei, mãe.',go:'e2_espera'}]},
+  e2_salva:{m:['Tá bom, filho. Não faço nada sem falar contigo']},
+  e2_espera:{m:['Tá... mas eles disseram que o prazo é curto'],after(){schedule('mae_cai',S.t+40);}},
+  e2_caiu:{m:['Filho, paguei a taxa','Eles disseram que era urgente, que o prazo acabava hoje 😟']},
+  e2_viu:{m:['Filho, vi teu alerta sobre o Lucrix!','Tinham me mandado o contato deles. Ainda bem que não fiz nada']},
+  e2_pub:{m:['Tua matéria tá em todo grupo da cidade, filho!']},
+  e2_pub_caiu:{m:['Vi tua matéria... e eu paguei os 300 pra eles 😔','Desculpa, filho. Devia ter te esperado']},
+  e2_held:{m:['Tá tudo bem, filho? Você parece cansado']},
+  nada:{m:['Filho, não entendo nada disso 😅','Só me diz se eu vou ver meu dinheiro de volta']}
+ },
+ grupo:{
+  start:{m:[{f:'sys',t:'Mãe adicionou você'},{who:'Marcos Teixeira',t:'Pessoal, CONFIRMADO: a presa é a Bia Lemos. Foi ela que vendeu isso pra gente'},{who:'Neide',t:'Meu Deus, eu seguia ela 😭'},{who:'Seu Jair',t:'Coloquei a aposentadoria toda lá'},{who:'Marcos Teixeira',t:'Calma, gente. Eu também perdi, 20 mil. Mas vamos resolver juntos'},{who:'Marcos Teixeira',t:'Já tô vendo advogado pra todo mundo. Daqui a pouco passo os detalhes'}],
+   o:[{t:'Gente, calma. A Bia só aparecia nos vídeos.',go:'defende'},{t:'(Só observar por enquanto)',say:false}]},
+  defende:{m:[{who:'Marcos Teixeira',t:'Ah, olha aí o amigo da bandida 🙄'},{who:'Neide',t:'Ela falava com tanta certeza nos vídeos...'},{who:'Marcos Teixeira',t:'Quem defende golpista é cúmplice. Fica a dica'}],after(){fl('defendeu');}},
+  pix:{m:[{who:'Marcos Teixeira',t:'Atualização: advogado fechado 🙏'},{who:'Marcos Teixeira',t:'R$ 500 por pessoa. Quem não entrar até amanhã fica fora da ação coletiva'},{who:'Marcos Teixeira',t:'O Pix é o meu celular mesmo'}]},
+  provas:{m:[{who:'Neide',t:'Gente... então ela era contratada?'},{who:'Seu Jair',t:'Isso muda as coisas'},{who:'Marcos Teixeira',t:'Isso qualquer um monta no computador. Não vamos cair em fake news'},{who:'Marcos Teixeira',t:'Foco no advogado, pessoal'}]},
+  review:{m:[{who:'Marcos Teixeira',t:'Sim, saquei no começo. Como MUITA gente aqui'},{who:'Marcos Teixeira',t:'Tá querendo insinuar o quê?'},{f:'sys',t:'Marcos Teixeira removeu você'}],after(){fl('removido');fl('marcos_alerta');S.expo+=2;}},
+  pub:{m:[{who:'Neide',t:'Vocês viram a matéria do Vale Alto Agora??'},{who:'Marcos Teixeira',t:'Blog sem credibilidade nenhuma'},{who:'Marcos Teixeira',t:'Quem garante que esse cara não tá do lado deles?'}]},
+  e2:{m:[{f:'sys',t:'Marcos Teixeira adicionou Suporte Lucrix'},{who:'Suporte Lucrix',t:'Boa tarde! O Lucrix é a solução para ex-clientes do Rendix recuperarem o saldo com 10% de bônus 💚'},{who:'Suporte Lucrix',link:'lucrix_site'},{who:'Marcos Teixeira',t:'Pessoal, conversei com eles, é sério. Eu mesmo já migrei 👍'},{who:'Neide',t:'Será? Alguém sabe se é confiável?'}],
+   o:[{t:'Gente, cuidado. Ninguém sabe quem está por trás disso.',go:'e2_cuidado'},{t:'(Só observar)',say:false,fx(){schedule('neide_cai',S.t+60);}}]},
+  e2_cuidado:{m:[{who:'Marcos Teixeira',t:'Lá vem ele de novo. Quer que todo mundo fique sem dinheiro?'},{who:'Neide',t:'Vou esperar um pouco antes de decidir...'}],after(){schedule('neide_cai',S.t+60);}},
+  e2_prova:{m:[{who:'Neide',t:'Meu Deus... é o mesmo pessoal?'},{who:'Seu Jair',t:'Eu ia migrar hoje!'},{who:'Marcos Teixeira',t:'Eu migrei e tá tudo certo. Cada um faz o que quiser'},{f:'sys',t:'Marcos Teixeira removeu você'}],after(){fl('neide_salva');fl('removido');fl('marcos_alerta');}},
+  e2_viu:{m:[{who:'Neide',t:'Gente, o Vale Alto Agora publicou que o Lucrix é golpe!'},{who:'Marcos Teixeira',t:'Esse blog de novo...'}]},
+  e2_caiu:{m:[{who:'Neide',t:'Gente... paguei os 300 da migração'},{who:'Neide',t:'Agora estão pedindo mais 500 pra liberar o saque 😭'},{who:'Marcos Teixeira',t:'Calma, Neide, deve ser só demora no sistema'}]},
+  e2_pub:{m:[{who:'Neide',t:'O Lucrix saiu do ar depois da matéria!'},{who:'Marcos Teixeira',t:'Ótimo. Agora ninguém recupera nada. Obrigado, blogueiro'}]},
+  nada:{m:[{who:'Neide',t:'Que é isso? 🤔'}]}
+ },
+ neide:{
+  e2_start:{m:['Oi, aqui é a Neide, do grupo das vítimas','Te tiraram do grupo, achei errado','Tão mandando isso agora lá:',{link:'lucrix_site'},'O Marcos disse que já migrou e que é seguro. Você acha que é golpe?'],
+   o:[{t:'É golpe, Neide. Não deposita nada.',go:'salva',fx(){fl('neide_salva');}},{t:'Ainda estou apurando. Espera um pouco.',go:'espera'}]},
+  salva:{m:['Ai, graças a Deus te perguntei','Vou avisar quem eu puder']},
+  espera:{m:['Tá... vou esperar então'],after(){schedule('neide_cai',S.t+60);}},
+  caiu:{m:['Não aguentei esperar...','Paguei os 300 da migração','Agora pedem mais 500 pra "liberar o saque" 😭']},
+  viu:{m:['Oi, aqui é a Neide, do grupo das vítimas','Vi teu alerta sobre o Lucrix. Eu ia migrar hoje!','Obrigada, viu']},
+  alerta:{m:['Vi teu alerta sobre o Lucrix!','Ainda bem que não depositei nada. Obrigada 🙏']},
+  pub:{m:['Vi tua matéria! O Lucrix saiu do ar 🙏']},
+  nada:{m:['Não entendi, meu filho 😅']}
+ },
+ carol:{
+  start:{m:['Oi, aqui é a Carol, irmã da Bia. Peguei teu número com a tua mãe','Você tem o blog, né? Tão acabando com a Bia na internet','Ela NÃO é dona de nada. Ela só gravava os vídeos e recebia por isso'],
+   o:[{t:'Eu conheço a Bia. Não acredito que ela seja dona disso.',go:'quem',fx(){tr('carol',1);}},{t:'Como vou saber que você está falando a verdade?',go:'quem_duvida',fx(){tr('carol',-1);}}]},
+  quem_duvida:{m:['Sério? Você conhece a Bia desde a escola'],after(){runNode('carol','quem');}},
+  quem:{m:['Ela fechou com uma agência. Falava com uma tal de Lu, mandava os vídeos pra ela aprovar','O celular dela tá com a polícia 😭','Mas ela sempre marcava a agência nas publis. Olha o insta dela: [[@bialemos|Beatriz Lemos]]'],
+   o:[{t:'Ela recebia como? Tem algum comprovante?',go:'pix'},{t:'Vou olhar. Te aviso.',go:'aviso'}]},
+  aviso:{m:['Por favor. Ela tá com muito medo'],o:[{t:'Carol, ela recebia como? Tem algum comprovante?',go:'pix'}]},
+  pix:{after(){runNode('carol',S.trust.carol<0?'pix_desc':'pix2');}},
+  pix_desc:{m:['Até tenho...','Mas pra quê? Pra você usar contra ela também?'],o:[{t:'Desculpa pelo que eu disse. Quero tirar ela de lá.',go:'pix2',fx(){tr('carol',2);}}]},
+  pix2:{m:['Deixa eu ver no notebook dela...',{ev:'pix_lume'},'Achei! Ela recebia assim, por vídeo','Isso mostra que ela era contratada, não dona, né?'],o:[{t:'Mostra sim. Já é um começo.',go:'obg'}]},
+  obg:{m:['Obrigada de verdade 🙏','Me avisa de qualquer coisa']},
+  apagaram:{m:['Você viu?? A publi da Bia sumiu do insta!','A agência deve ter pedido pra derrubar. Por que fariam isso se não tivessem nada a esconder?']},
+  viu_post:{m:['Isso! Ela sempre marcava a agência nas publis']},
+  viu_brief:{m:['MX Participações? Nunca ouvi falar','A Bia com certeza não sabia disso']},
+  viu_marcos:{m:['Marcos T.... é o Marcos do grupo das vítimas?','Ele não diz que perdeu tudo?'],after(){fl('carol_marcos');}},
+  viu_cnpj:{m:['Não entendo nada de empresa','Mas não tem o nome da Bia aí, né? Isso é bom!']},
+  pub:{m:['Tá todo mundo compartilhando!!','O advogado da Bia disse que isso ajuda muito 🙏','Obrigada. De verdade.']},
+  held:{m:['Você vai segurar??','Ela tá numa cela, sabia?','...tá. Espero que você saiba o que tá fazendo']},
+  e2:{m:['Oi! A defesa da Bia teve acesso ao processo','Aparece um nome como dono da MX: [[Osvaldo Pereira da Silva]]','Dizem que é um senhor que mora perto da Rua Quinze. Te ajuda?']},
+  e2_fria:{m:['Oi. A Bia continua presa','Só pra você saber']},
+  e2_pub:{m:['Mais uma matéria! A defesa vai juntar tudo no processo 🙏']},
+  e2_held:{m:['Segurou de novo?','Tá bom. Só não demora demais']},
+  nada:{m:['Não sei o que isso tem a ver 😕']}
+ },
+ luana:{
+  ola:{o:[{t:'Bom dia, Luana. Sou do blog Vale Alto Agora e queria falar sobre a campanha do Rendix.',go:'fechada'},{t:'Oi, Luana! Você é a Lu que trabalhava com a Bia Lemos?',go:'lu'}]},
+  fechada:{pre:agencyAlert,m:['Bom dia.','Não comentamos trabalhos de clientes. Desculpe.'],o:LUANA_O},
+  lu:{pre:agencyAlert,m:['...','Quem te passou meu número?','Não posso falar sobre isso.'],o:LUANA_O},
+  fria:{m:['Eu não sei de nada.']},
+  educada:{m:['Obrigada pela compreensão.']},
+  confronto:{pre:agencyAlert,m:['Onde você conseguiu isso?','...','Tá bom. A Lume fez a campanha, sim.','Mas a gente NÃO sabia que era golpe. A Bia também não.','O contrato não veio direto do Rendix. Veio por um intermediário.'],
+   o:[{t:'Me manda o que vocês receberam. Ninguém vai saber que foi você.',go:'briefing',fx(){tr('luana',1);fl('promessa');}},{t:'Ou você me manda tudo, ou a Lume sai na matéria como cúmplice.',go:'ameaca',fx(){tr('luana',-2);fl('ameacou');}}]},
+  briefing:{m:['Vou confiar em você.',{ev:'briefing'},'Apaga essa conversa depois.','E, por favor, não cita meu nome.'],after(){fl('briefing_ok');}},
+  ameaca:{m:['Você está me ameaçando?','...',{ev:'briefing'},'Pronto. Agora some da minha vida.'],after(){fl('briefing_ok');}},
+  ja:{m:['Já te mandei tudo o que eu tinha.']},
+  cnpj:{m:['Não conheço essa empresa.']},
+  pub_prom:{m:['Todo mundo sabe que esse documento saiu da Lume.','Você prometeu.','O Rafael já descobriu que fui eu.'],after(){tr('luana',-3);fl('luana_queimada');}},
+  pub_ame:{m:['Era isso que você queria, né?','Parabéns.'],after(){tr('luana',-1);}},
+  e2:{m:['Vi que você continua mexendo nisso.','Uma coisa que eu não te contei: os pagamentos da campanha eram combinados com um tal de [[Diego]].','Ele vinha buscar os roteiros de moto.','Não me procura mais.'],after(){fl('luana_diego');}},
+  nada:{m:['Não sei do que se trata.']}
+ },
+ toninho:{
+  ola:{o:[{t:'Seu Toninho, sou do blog Vale Alto Agora. Posso fazer umas perguntas?',go:'jorn'},{t:'Oi, Seu Toninho! Sou filho da Dona Célia, que joga aí toda semana.',go:'filho',fx(){tr('toninho',1);}}]},
+  jorn:{after(){runNode('toninho',S.mat[1]&&S.mat[1].pub?'desconfia':'conversa');}},
+  desconfia:{m:['Li o teu blog.','Não quero meu nome em confusão, rapaz.'],o:[{t:'O senhor não fez nada errado. Só quero entender quem usa o seu endereço.',go:'conversa'}]},
+  filho:{m:['Da Célia! Joga a Mega toda quarta, aquela 😄','Pode falar, meu filho.'],after(){runNode('toninho','conversa');}},
+  conversa:{m:['Pois é, tem umas empresas que usam meu endereço pra receber carta','Eu cobro R$ 200 por mês, é um serviço, tudo certinho','Um rapaz de moto vem buscar toda sexta'],o:TQ},
+  nome:{m:['[[Diego]], acho. Novinho, de boné, moto vermelha'],o:TQ},
+  caderno:{m:['Anoto tudo no caderno, sou organizado','Mas não sei se posso te mostrar isso...'],
+   o:[{t:'Prometo não expor o senhor nem a lotérica.',go:'foto',fx(){fl('promessa_toninho');tr('toninho',1);}},{t:'Seu Toninho, tem gente perdendo tudo. Minha mãe perdeu 48 mil.',go:'foto',fx(){tr('toninho',1);}}]},
+  foto:{m:['Tá bom. Mas é só pra você entender',{ev:'caderno_retirada'},'Olha aí. Toda sexta, certinho','Engraçado... esse tal Lucrix aparece desde o dia 18'],o:TQ},
+  osvaldo:{m:['Seu Osvaldo? Aposentado, pai do Zé da [[Borracharia do Zé]], aqui na rua de baixo','Homem bom. Não sabe nem mexer em celular','Por quê? Aconteceu alguma coisa com ele?'],o:TQ},
+  pub_traiu:{m:['Rapaz, apareceu a foto do meu caderno no teu blog','Já tô recebendo ligação estranha aqui na lotérica','Você prometeu'],after(){tr('toninho',-3);fl('toninho_queimado');}},
+  pub_semprom:{m:['Vi meu caderno no teu blog...','Tô com medo, rapaz. Gente perigosa essa'],after(){tr('toninho',-1);}},
+  nada:{m:['Não entendo dessas coisas, meu filho']}
+ },
+ ze:{
+  ola:{o:[{t:'Seu Zé, o nome do seu pai está numa empresa ligada ao golpe do Rendix.',go:'bravo',fx(){tr('ze',-1);}},{t:'Seu Zé, acho que usaram os documentos do seu pai num golpe. Posso explicar?',go:'escuta',fx(){tr('ze',1);}}]},
+  bravo:{m:['Tá me chamando de golpista?','Meu pai tem 78 anos, rapaz!'],o:[{t:'Não! Ele é vítima. Usaram os documentos dele.',go:'escuta'}]},
+  escuta:{m:['Como assim?','Me mostra isso aí.']},
+  choque:{m:['Meu Deus... é o CPF dele mesmo','Ele nunca abriu empresa nenhuma','Deixa eu falar com ele. Já te mando'],after(){runNode('ze','audio');}},
+  audio:{m:[{ev:'relato_osvaldo'},'Ele lembrou de um cadastro no salão da igreja, em agosto. Disse que era pra auxílio do governo','Isso vai ajudar meu pai ou vai complicar ele?'],
+   o:[{t:'Contar a história dele é a melhor defesa. Ele é vítima.',go:'publico'},{t:'Vou proteger o nome dele. Não sai na matéria.',go:'sigilo',fx(){fl('osv_sigilo');tr('ze',1);}}]},
+  publico:{after(){if(tv('ze')>=0){fl('osv_publico');runNode('ze','pub_ok');}else{fl('osv_sigilo');runNode('ze','pub_nao');}}},
+  pub_ok:{m:['Tá. Se é pra limpar o nome dele, pode contar']},
+  pub_nao:{m:['Não confio em você pra isso','Deixa o nome dele de fora. Senão eu te processo']},
+  sigilo:{m:['Obrigado. De verdade']},
+  ja:{m:['Já te mandei o que meu pai contou']},
+  pub_traiu:{m:['Você prometeu!','Agora a rua inteira sabe que é o meu pai'],after(){tr('ze',-3);fl('ze_queimado');}},
+  pub_ok2:{m:['O pessoal veio dar força pro pai','Obrigado por contar do jeito certo'],after(){tr('ze',1);}},
+  nada:{m:['Isso aí não tem nada a ver com meu pai']}
+ },
+ anon:{
+  pub:{m:['Você chegou mais longe que a polícia.',{ev:'painel'},'Esse é o painel de controle do Rendix.','O dinheiro não sumiu. Ele foi pra algum lugar.','Só um conselho: eles também leem o seu blog.','Quer saber quem tem a chave do cofre?','Amanhã eu te procuro.'],after(){enqueue([{fn:'end_show'}]);}},
+  held:{m:['Você chegou mais longe que a polícia.',{ev:'painel'},'Esse é o painel de controle do Rendix.','O dinheiro não sumiu. Ele foi pra algum lugar.','Fez bem em não publicar ainda. Eles estão de olho em quem faz perguntas.','Quer saber quem tem a chave do cofre?','Amanhã eu te procuro.'],after(){enqueue([{fn:'end_show'}]);}},
+  e2_start:{m:['Prometi que te procurava.',{link:'lucrix_site'},'O Rendix morreu na sexta. Esse aqui nasceu no mesmo dia.','Repara bem nas imagens.'],
+   o:[{t:'Quem é você?',go:'e2_quem'},{t:'Por que você está me ajudando?',go:'e2_porque'}]},
+  e2_quem:{m:['Alguém que sabe demais e está cansado disso.','Não perde tempo comigo. Perde tempo com eles.']},
+  e2_porque:{m:['Porque a polícia está procurando no lugar errado.','E porque você não desiste fácil.']},
+  e2_alerta:{m:['Viu? Mesmo pessoal.','Estão mandando o link em todos os grupos de vítimas da região.','Publica um alerta AGORA. Antes que mais gente caia.'],
+   o:[{t:'Vou publicar um alerta curto agora.',go:'e2_alerta_sim'},{t:'Ainda não. Se eu publicar, eles apagam os rastros.',go:'e2_alerta_nao'}]},
+  e2_alerta_sim:{m:['Bom.'],after(){alertaLucrix();}},
+  e2_alerta_nao:{m:['Cada hora que passa, alguém deposita.','Espero que valha a pena.'],after(){tr('anon',-1);fl('alerta_nao');}},
+  e2_pub:{m:['O Lucrix saiu do ar uma hora depois da tua matéria.','Mas o Diego é só o motoboy.',{ev:'foto_mentoria'},'Esse evento acontece todo sábado.','Repara no rapaz de boné ao fundo.','Quem enche aquele salão é quem enche o bolso deles.'],after(){enqueue([{fn:'end_show'}]);}},
+  e2_held:{m:['O Lucrix continua no ar. Fez mais 40 vítimas hoje.','Mas eu entendo. Você quer pegar todos de uma vez.','O Diego é só o motoboy.',{ev:'foto_mentoria'},'Esse evento acontece todo sábado.','Repara no rapaz de boné ao fundo.','Quem enche aquele salão é quem enche o bolso deles.'],after(){enqueue([{fn:'end_show'}]);}}
+ }
+};
+const H={
+ mae:()=>'nada',
+ grupo:id=>{if(has('removido'))return null;
+   if(S.ep>=2&&['src_lucrix','whois_lucrix','whois_rendix'].includes(id)&&!has('e2_prova')){fl('e2_prova');S.expo+=1;return 'e2_prova';}
+   if(id==='review_marcos')return 'review';if(['pix_lume','briefing','post_publi','cnpj_rendix','cnpj_mx'].includes(id)&&!has('grupo_provas')){fl('grupo_provas');S.expo+=1;return 'provas';}return 'nada';},
+ carol:id=>({post_publi:'viu_post',briefing:'viu_brief',review_marcos:'viu_marcos',cnpj_rendix:'viu_cnpj',cnpj_mx:'viu_cnpj'}[id]||'nada'),
+ luana:id=>{if(has('briefing_ok'))return 'ja';if(id==='post_publi'||id==='pix_lume')return 'confronto';if(id==='cnpj_rendix'||id==='cnpj_mx')return 'cnpj';return 'nada';},
+ neide:id=>{if(['src_lucrix','whois_lucrix','whois_rendix'].includes(id)&&!has('neide_caiu')){fl('neide_salva');return 'salva';}return 'nada';},
+ toninho:id=>{if(['cnpj_mx','whois_lucrix','whois_rendix'].includes(id)){fl('t_osv');return 'osvaldo';}return 'nada';},
+ ze:id=>{if(['cnpj_mx','whois_lucrix','whois_rendix'].includes(id)){if(S.ev.includes('relato_osvaldo'))return 'ja';chat('ze').opts=null;return 'choque';}return 'nada';},
+ anon:()=>null
+};
+function agencyAlert(){if(!has('alerta')){fl('alerta');schedule('apaga_post',S.t+20);}}
+function alertaLucrix(){fl('alerta_lucrix');S.expo+=1;tr('anon',1);schedule('limpa_lucrix',S.t+15);
+  if(has('mae_e2_on')&&!has('mae_salva')&&!has('mae_caiu')){fl('mae_salva');runNode('mae','e2_viu');}
+  if(!has('neide_caiu')&&!has('neide_salva')){fl('neide_salva');if(has('removido')){if(has('neide_on'))runNode('neide','alerta');}else if(has('grupo_e2_on'))runNode('grupo','e2_viu');}}
+const FN={
+ carol_start(){if(!has('carol_on')){fl('carol_on');runNode('carol','start');}},
+ mae_adv(){runNode('mae','adv');},
+ grupo_pix(){if(!has('removido'))runNode('grupo','pix');},
+ apaga_post(){fl('post_apagado');if(has('carol_on'))runNode('carol','apagaram');},
+ end_show(){S.endShown[S.ep]=true;save();setTimeout(()=>showEnd(S.ep),1800);},
+ grupo_e2(){if(has('removido')){fl('neide_on');if(has('alerta_lucrix')){fl('neide_salva');runNode('neide','viu');}else runNode('neide','e2_start');}
+   else{fl('grupo_e2_on');runNode('grupo','e2');if(has('alerta_lucrix')){fl('neide_salva');runNode('grupo','e2_viu');}}},
+ mae_e2(){fl('mae_e2_on');if(has('alerta_lucrix')){fl('mae_salva');runNode('mae','e2_viu');}else runNode('mae',has('mae_pagou')?'e2_pagou':'e2_ok');},
+ carol_e2(){runNode('carol',tv('carol')>=2?'e2':'e2_fria');},
+ luana_e2(){runNode('luana','e2');},
+ limpa_lucrix(){fl('lucrix_limpo');},
+ neide_cai(){if(has('neide_salva')||has('alerta_lucrix')||has('neide_caiu'))return;fl('neide_caiu');runNode(has('removido')?'neide':'grupo',has('removido')?'caiu':'e2_caiu');},
+ mae_cai(){if(has('mae_salva')||has('alerta_lucrix')||!has('mae_pagou')||has('mae_caiu'))return;fl('mae_caiu');runNode('mae','e2_caiu');}
+};
+
+/* ---------------- MOTOR ---------------- */
+function schedule(fn,at){S.timers.push({fn,at});}
+function checkTimers(){S.timers.sort((a,b)=>a.at-b.at);while(S.timers.length&&S.timers[0].at<=S.t){const tm=S.timers.shift();FN[tm.fn]();}}
+function advance(n){S.t+=n;checkTimers();}
+function enqueue(items){S.queue.push(...items);save();pump();}
+function runNode(c,id){const n=D[c][id];if(!n)return;if(n.pre)n.pre();const items=[];
+  (n.m||[]).forEach(m=>{const o=typeof m==='string'?{t:m}:Object.assign({},m);if(!o.f)o.f='them';items.push({c,msg:o});});
+  if(n.o)items.push({c,opts:{node:id}});if(n.after)items.push({c,after:id});enqueue(items);}
+function pump(){if(busy||!S.queue.length)return;busy=true;const it=S.queue[0];let d=0;
+  if(it.msg){d=it.msg.f==='sys'?450:(it.msg.ev||it.msg.link)?1300:Math.min(2300,650+(it.msg.t||'').length*20);if(it.msg.f!=='sys'&&!instant){typing=it.c;render();}}
+  setTimeout(()=>{S.queue.shift();typing=null;proc(it);busy=false;if(!S.queue.length)instant=false;save();render();pump();},instant?0:d);}
+function proc(it){if(it.msg)deliver(it.c,it.msg);if(it.opts)chat(it.c).opts=it.opts;if(it.after)D[it.c][it.after].after();if(it.fn)FN[it.fn]();}
+function deliver(c,m){const ch=chat(c);ch.visible=true;m.time=hm(S.t);ch.msgs.push(m);ch.last=++S.seq;
+  if(m.ev&&m.f==='them')addEv(m.ev);
+  if(m.f==='them'&&!(view.app==='chat'&&view.c===c)){ch.unread++;if(!instant)notify(c,m);}}
+function notify(c,m){const n=$('#notif');const txt=m.ev?'📎 '+EV[m.ev].t:m.link?'🔗 '+PAGES[m.link].title:strip(m.t);
+  n.innerHTML=`<div class="av">${CONTACTS[c].av}</div><div class="nb"><b>${CONTACTS[c].name}</b><span>${m.who?m.who+': ':''}${esc(txt)}</span></div>`;
+  n.dataset.c=c;n.classList.add('show');clearTimeout(n._t);n._t=setTimeout(()=>n.classList.remove('show'),3200);}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2200);}
+function addKw(k){if(!S.kw.includes(k)){S.kw.push(k);toast('📝 Anotado no Caderno: '+k);save();render();}else toast('Já anotado: '+k);}
+function addEv(id){if(!S.ev.includes(id)){S.ev.push(id);toast('📎 Prova guardada: '+EV[id].t);
+  if(S.ep===2&&(id==='src_lucrix'||id==='whois_lucrix')&&!has('e2_alerta_on')){fl('e2_alerta_on');runNode('anon','e2_alerta');}}}
+function busyC(c){return CONTACTS[c].busy&&CONTACTS[c].busy();}
+function autoReply(c){enqueue([{c,msg:{f:'them',t:CONTACTS[c].auto}}]);}
+function visOpts(c,nid){return D[c][nid].o.map((o,i)=>({o,i})).filter(x=>!x.o.hide||!x.o.hide());}
+function choose(i){const c=view.c,ch=chat(c);if(!ch.opts)return;const nid=ch.opts.node,o=D[c][nid].o[i];ch.opts=null;
+  if(o.say!==false)deliver(c,{f:'me',t:o.t});advance(2);
+  if(busyC(c)){ch.wait={k:'opt',node:nid,i};autoReply(c);}else doOpt(c,o);save();render();}
+function doOpt(c,o){if(o.fx)o.fx();if(o.go)runNode(c,o.go);}
+function sendEv(id){const c=view.c,ch=chat(c);closeSheet();deliver(c,{f:'me',ev:id});advance(2);
+  if(busyC(c)){if(!ch.wait){ch.wait={k:'ev',id};autoReply(c);}}else handleEv(c,id);save();render();}
+function handleEv(c,id){const n=H[c](id);if(n)runNode(c,n);}
+function waitTill(c){const ch=chat(c);S.t=Math.max(S.t,CONTACTS[c].wake());checkTimers();toast(`🌙 Você esperou. ${DAYSF[dayOf(S.t)]}, ${hm(S.t)}`);const w=ch.wait;ch.wait=null;
+  if(w){if(w.k==='opt')doOpt(c,D[c][w.node].o[w.i]);else handleEv(c,w.id);}save();render();}
+function addContact(c){const ch=chat(c);if(ch.visible){openChat(c);return;}ch.visible=true;ch.last=++S.seq;ch.msgs.push({f:'sys',t:CONTACTS[c].saved,time:hm(S.t)});ch.opts={node:'ola'};toast('💬 Contato adicionado ao Papo');save();openChat(c);}
+function openChat(c){view={app:'chat',c};chat(c).unread=0;save();render();}
+
+/* navegador */
+function go(x){if(S.br.cur!==null)S.br.stack.push(S.br.cur);S.br.cur=x;S.br.src=false;view={app:'nav'};
+  if(x&&x.startsWith('q:'))advance(4);else if(x){advance(3);fl('v_'+x);const p=PAGES[x];if(p.visit)p.visit();}
+  save();render();const pg=$('.page');if(pg)pg.scrollTop=0;}
+function bback(){if(S.br.src){S.br.src=false;}else S.br.cur=S.br.stack.length?S.br.stack.pop():null;save();render();}
+function curPage(){const c=S.br.cur;return c&&!c.startsWith('q:')?PAGES[c]:null;}
+function printable(){const p=curPage();if(!p)return null;if(S.br.src){return p.srcEv&&(!p.srcOk||p.srcOk())?p.srcEv:null;}return p.ev&&(!p.evOk||p.evOk())?p.ev:null;}
+function doPrint(){const id=printable();if(!id)return;const f=$('.flash');if(f){f.classList.add('on');setTimeout(()=>f.classList.remove('on'),60);}
+  if(S.ev.includes(id)){toast('Você já tem esse print');return;}addEv(id);advance(1);save();setTimeout(render,250);}
+function toggleSrc(){S.br.src=!S.br.src;if(S.br.src){advance(1);fl('viu_src');}save();render();const pg=$('.page');if(pg)pg.scrollTop=0;}
+
+/* ---------------- TELAS ---------------- */
+function objective(){
+  if(S.ep===2){
+    if(S.mat[2])return 'Episódio concluído. Aguarde a fonte.';
+    if(!has('v_lucrix_site'))return 'Abra o link que o número desconhecido mandou.';
+    if(!S.ev.includes('src_lucrix')&&!S.ev.includes('whois_lucrix'))return 'Prove que o Lucrix é das mesmas pessoas do Rendix. Veja o código da página (</>) ou quem registrou o domínio.';
+    if(!chat('toninho').visible)return 'Vá atrás do endereço das empresas: Rua Quinze, 210.';
+    if(!S.ev.includes('caderno_retirada'))return 'Descubra quem busca as cartas na lotérica.';
+    if(!S.ev.includes('relato_osvaldo'))return 'Encontre o Seu Osvaldo, o dono no papel. Alguém da rua deve conhecê-lo.';
+    return 'Você tem material. Escreva a matéria no app Blog.';}
+  if(S.mat[1])return 'Episódio concluído. Aguarde o contato da fonte.';
+  if(!has('v_vn_prisao'))return 'Abra o Papo e veja o que sua mãe mandou.';
+  if(!S.kw.includes('Lume Comunicação'))return 'Descubra quem pagava a Bia pelos vídeos. Toque nos termos em destaque para anotá-los.';
+  if(!chat('luana').visible)return 'Encontre alguém da Lume Comunicação. Pesquise no Navegador.';
+  if(!S.ev.includes('briefing'))return 'Faça a Luana falar. Mostrar uma prova (📎) costuma funcionar melhor que pressão.';
+  if(!S.ev.includes('cnpj_rendix')&&!S.ev.includes('cnpj_mx'))return 'Descubra de quem é o Rendix no papel. Todo site tem um rodapé.';
+  return 'Você tem material. Escreva a matéria no app Blog.';}
+function unreadTotal(){return Object.values(S.chats).reduce((a,c)=>a+(c.unread||0),0);}
+function rHome(){const u=unreadTotal();
+  const app=(id,ic,bg,lb,b)=>`<button class="app" data-open="${id}"><div class="ico" style="background:${bg}">${ic}</div>${lb}${b?`<span class="badge">${b}</span>`:''}</button>`;
+  return `<div class="home"><div class="bigt">${hm(S.t)}</div><div class="bigd">${DAYSF[dayOf(S.t)]} · Ep. ${S.ep}</div><div class="apps">
+  ${app('papo','💬','linear-gradient(135deg,#14b8a6,#0f766e)','Papo',u)}${app('nav','🧭','linear-gradient(135deg,#38bdf8,#1d4ed8)','Navegador')}${app('cad','📓','linear-gradient(135deg,#fbbf24,#f97316)','Caderno')}${app('blog','📰','linear-gradient(135deg,#475569,#1e293b)','Blog')}
+  </div><div class="obj"><b>OBJETIVO</b>${objective()}</div></div>`;}
+function preview(c){const ch=chat(c);if(typing===c)return '<span class="typ">digitando…</span>';const m=ch.msgs[ch.msgs.length-1];if(!m)return '';
+  const t=m.ev?'📎 '+EV[m.ev].t:m.link?'🔗 Link':strip(m.t);return (m.f==='me'?'Você: ':m.who?m.who.split(' ')[0]+': ':'')+esc(t);}
+function rPapo(){const list=Object.keys(CONTACTS).filter(c=>chat(c).visible).sort((a,b)=>chat(b).last-chat(a).last);
+  return `<div class="tbar"><button class="back" data-home="1">‹</button><h2>Papo</h2></div><div class="scroll">${list.length?list.map(c=>{const ch=chat(c),m=ch.msgs[ch.msgs.length-1];
+  return `<div class="cl" data-chat="${c}"><div class="av">${CONTACTS[c].av}</div><div class="mid"><div class="nm">${CONTACTS[c].name}</div><div class="pv">${preview(c)}</div></div><div class="rt">${m?m.time:''}${ch.unread?`<span class="ub">${ch.unread}</span>`:''}</div></div>`;}).join(''):'<div class="empty">Nenhuma conversa ainda.</div>'}</div>`;}
+function evCard(id){return `<div class="evc" data-ev="${id}"><div class="evt">📸 ${EV[id].t}</div><div class="evb">${EV[id].h()}</div></div>`;}
+function rMsg(m){if(m.f==='sys')return `<div class="sysm">${esc(m.t)}</div>`;
+  let body='';if(m.who)body+=`<div class="who">${m.who}</div>`;
+  if(m.link){const p=PAGES[m.link];body+=`<div class="lnk" data-p="${m.link}"><b>${p.title}</b><span>${p.url}</span></div>`;}
+  else if(m.ev)body+=evCard(m.ev);else body+=fmt(esc(m.t));
+  return `<div class="b ${m.f}">${body}<div class="tm">${m.time}</div></div>`;}
+function rChat(){const c=view.c,ch=chat(c),C=CONTACTS[c];
+  let comp='';const opts=ch.opts&&!typing?visOpts(c,ch.opts.node):null;
+  const optH=opts?opts.map(x=>`<button class="opt" data-opt="${x.i}">${x.o.t}</button>`).join(''):'';
+  if(c==='grupo'&&has('removido'))comp=`<div class="cbar"><div class="ph">Você não faz mais parte deste grupo.</div></div>`;
+  else if(c==='anon')comp=optH+(opts&&opts.length?'':`<div class="cbar"><div class="ph">Este número não recebe mensagens.</div></div>`);
+  else if(ch.wait){const w=C.wake();comp=`<button class="waitb" data-wait="${c}">⏭ Esperar até ${DAYSF[dayOf(w)]}, ${hm(w)}</button>`;}
+  else comp=optH+`<div class="cbar"><div class="ph">${opts&&opts.length?'Escolha uma resposta ou mostre uma prova':'Mostre uma prova com 📎'}</div><button class="clip" data-clip="1">📎</button></div>`;
+  return `<div class="tbar"><button class="back" data-open="papo">‹</button><div class="av">${C.av}</div><div style="flex:1;min-width:0"><h2 style="font-size:16px">${C.name}</h2><div class="sub">${typing===c?'<span class="typ">digitando…</span>':C.sub}</div></div></div>
+  <div class="msgs" id="msgs">${ch.msgs.map(rMsg).join('')}${typing===c?'<div class="b them"><span class="typ">digitando…</span></div>':''}</div><div class="compose">${comp}</div>`;}
+function rNav(){const cur=S.br.cur;let body,url='';const p=curPage();
+  if(cur===null){body=`<div class="eng"><h1>busca<span>í</span></h1><form id="sform"><input id="q" placeholder="Pesquisar…" autocomplete="off"><button>Ir</button></form><p>Dica: pesquise termos que você encontrou na investigação. Eles ficam guardados no Caderno.</p></div>`;}
+  else if(cur.startsWith('q:')){const q=cur.slice(2);url=q;const r=search(q);
+    body=`<div class="res"><div class="q">Resultados para "<b>${esc(q)}</b>"</div>${r.pages.map(pp=>`<div class="ri" data-p="${pp}"><div class="u">${PAGES[pp].url}</div><div class="ti">${PAGES[pp].title}</div><div class="sn">${PAGES[pp].sn}</div></div>`).join('')}
+    ${r.msg?`<div class="ri" style="cursor:default"><div class="sn">${r.msg}</div></div>`:''}${!r.pages.length&&!r.msg?`<div class="ri" style="cursor:default"><div class="sn">Nenhum resultado relevante. Tente nomes, empresas ou números que você encontrou na investigação.</div></div>`:''}</div>`;}
+  else{url=(S.br.src?'view-source:':'')+p.url;body=S.br.src?`<pre class="src">${fmt(esc(p.src()))}</pre>`:p.h();}
+  let pb='';const pid=printable();
+  if(pid)pb=S.ev.includes(pid)?`<button class="printb done" data-print="1">✓ Printado</button>`:`<button class="printb" data-print="1">📸 ${S.br.src?'Printar código':'Printar'}</button>`;
+  const srcb=p&&p.src?`<button class="srcb ${S.br.src?'on':''}" data-src="1">&lt;/&gt;</button>`:'';
+  return `<div class="bbar"><button data-bback="1">‹</button><form id="uform" style="flex:1;display:flex;min-width:0"><input id="uq" value="${esc(url)}" placeholder="Pesquisar ou digitar endereço" autocomplete="off"></form>${srcb}<button data-bhome="1">⌂</button><button data-home="1">✕</button></div>
+  <div class="pwrap"><div class="page">${body}</div>${pb}<div class="flash"></div></div>`;}
+function rCad(){const tab=view.tab||'pistas';
+  return `<div class="tbar"><button class="back" data-home="1">‹</button><h2>Caderno</h2></div><div class="scroll"><div class="obj" style="margin:12px"><b>OBJETIVO</b>${objective()}</div>
+  <div class="tabs"><button class="tab ${tab==='pistas'?'on':''}" data-tab="pistas">Pistas (${S.kw.length})</button><button class="tab ${tab==='provas'?'on':''}" data-tab="provas">Provas (${S.ev.length})</button></div>
+  ${tab==='pistas'?(S.kw.length?`<div class="hint">Toque numa pista para pesquisá-la.</div><div class="chips">${S.kw.slice().reverse().map(k=>`<button class="chip" data-search="${esc(k)}">${k}</button>`).join('')}</div>`:'<div class="empty">Nada anotado ainda. Toque nos termos em destaque nas conversas e páginas.</div>')
+  :(S.ev.length?`<div class="evg">${S.ev.slice().reverse().map(evCard).join('')}</div>`:'<div class="empty">Nenhuma prova ainda. Use 📸 no Navegador para printar páginas. Imagens recebidas no Papo também ficam aqui.</div>')}
+  <div style="text-align:center;padding:20px;display:flex;flex-direction:column;gap:10px">${S.ep>=2?'<button style="color:var(--mut);font-size:12px;text-decoration:underline" data-restart2="1">Recomeçar Episódio 2</button>':''}<button style="color:var(--mut);font-size:12px;text-decoration:underline" data-restart="1">Recomeçar do Episódio 1</button><a href="../../" style="display:block;text-align:center;color:var(--mut);font-size:12.5px;margin-top:4px;text-decoration:none">← Mesa de Jogos</a></div></div>`;}
+const CLAIMS={
+ 1:[{t:'A Bia não era dona do Rendix: ela foi contratada para gravar os vídeos.',ok:['pix_lume','briefing','post_publi']},
+    {t:'No papel, o Rendix pertence a outra empresa, não à Bia.',ok:['cnpj_rendix','cnpj_mx']},
+    {t:'A campanha da Bia foi paga pela mesma empresa que controla o app.',ok:['briefing']}],
+ 2:[{t:'O Lucrix foi montado pelas mesmas pessoas do Rendix.',ok:['src_lucrix','whois_lucrix']},
+    {t:'O dono no papel é um aposentado que teve os documentos usados sem saber.',ok:['relato_osvaldo']},
+    {t:'O golpe já preparava o Lucrix antes de o Rendix sair do ar.',ok:['caderno_retirada']}]
+};
+function rBlog(){const done=S.mat[S.ep];const epEv=S.ev.filter(e=>EPS[S.ep].evs.includes(e)).length;
+  const past=[];for(let e=1;e<S.ep;e++)if(S.mat[e])past.push(`<div class="bp"><small>${S.mat[e].pub?'Publicada':'Rascunho guardado'} · Ep. ${e}</small>${EPS[e].mat}</div>`);
+  return `<div class="tbar"><button class="back" data-home="1">‹</button><h2>Blog</h2></div><div class="scroll"><div class="blogh"><b>Vale Alto Agora</b><div>Notícias de quem mora aqui · ${S.ep>=2&&S.mat[1]&&S.mat[1].pub?'14,8':'3,1'} mil leitores/mês</div></div>
+  ${done?`<div class="bp" style="border-left:3px solid var(--org)"><small>${done.pub?'Publicada agora':'Rascunho guardado'}</small><b>${EPS[S.ep].mat}</b></div>`:
+  `<button class="bigbtn" data-open="materia" ${epEv<2?'disabled':''}>✍️ Escrever matéria: ${EPS[S.ep].mat}</button>${epEv<2?'<div class="hint">Você precisa de pelo menos 2 provas novas deste episódio no Caderno.</div>':''}`}
+  ${has('alerta_lucrix')?'<div class="bp"><small>hoje · alerta</small>URGENTE: não deposite no Lucrix</div>':''}
+  ${past.reverse().join('')}
+  <div class="bp"><small>há 5 dias</small>Feira do produtor volta à praça central no sábado</div><div class="bp"><small>há 2 semanas</small>Buraco na Av. Brasil completa um ano sem conserto</div></div>`;}
+function rMateria(){const CL=CLAIMS[S.ep];return `<div class="tbar"><button class="back" data-open="blog">‹</button><h2>Rascunho</h2></div><div class="scroll">
+  <div class="hint" style="padding-top:12px">"${EPS[S.ep].mat}". Sustente cada afirmação com uma prova do Caderno. Afirmações sem prova enfraquecem a matéria.</div>
+  ${CL.map((c,i)=>`<div class="claim"><p>${i+1}. ${c.t}</p><button class="pick ${S.draft[i]?'set':''}" data-pick="${i}">${S.draft[i]?'📎 '+EV[S.draft[i]].t:'+ Escolher prova'}</button></div>`).join('')}
+  <div class="hint" style="margin-top:6px">Publicar agora pressiona as autoridades e protege quem ainda pode cair, mas alerta quem está por trás do golpe. Segurar mantém o dossiê em segredo. Lembre-se de quem te passou cada prova.</div>
+  <button class="bigbtn" data-decide="pub">📢 Publicar agora</button><button class="bigbtn sec" data-decide="held">🔒 Segurar e continuar investigando</button></div>`;}
+function render(){if(!S)return;$('#clock').textContent=DAYS[dayOf(S.t)]+' '+hm(S.t);
+  const ae=document.activeElement;const keep=ae&&(ae.id==='q'||ae.id==='uq')?{id:ae.id,v:ae.value,s:ae.selectionStart}:null;
+  const m=$('#msgs');const atBottom=!m||m.scrollHeight-m.scrollTop-m.clientHeight<80;const pg=$('.page');const pst=pg?pg.scrollTop:0;
+  let h;switch(view.app){case 'papo':h=rPapo();break;case 'chat':chat(view.c).unread=0;h=rChat();break;case 'nav':h=rNav();break;case 'cad':h=rCad();break;case 'blog':h=rBlog();break;case 'materia':h=rMateria();break;default:h=rHome();}
+  $('#screen').innerHTML=h;
+  const m2=$('#msgs');if(m2&&atBottom)m2.scrollTop=m2.scrollHeight;const pg2=$('.page');if(pg2&&view.app==='nav')pg2.scrollTop=pst;
+  if(keep){const e=document.getElementById(keep.id);if(e){e.value=keep.v;e.focus();try{e.setSelectionRange(keep.s,keep.s);}catch(x){}}}
+  const f=$('#sform');if(f)f.onsubmit=ev=>{ev.preventDefault();const q=$('#q').value.trim();if(q)go('q:'+q);};
+  const u=$('#uform');if(u)u.onsubmit=ev=>{ev.preventDefault();const q=$('#uq').value.trim().replace(/^view-source:/,'');if(!q)return;const pid=Object.keys(PAGES).find(k=>PAGES[k].url===q);go(pid||'q:'+q);};}
+
+/* ---------------- SHEET / OVERLAY ---------------- */
+function openSheet(title,html){const s=$('#sheet');s.innerHTML=`<div class="sh"><h3>${title}</h3>${html}</div>`;s.classList.add('show');}
+function closeSheet(){$('#sheet').classList.remove('show');}
+function evPicker(mode,idx){if(!S.ev.length){toast('Você ainda não tem provas');return;}const list=S.ev.slice().reverse();
+  openSheet(mode==='send'?'Mostrar qual prova?':'Escolher prova',(mode==='pick'?`<button class="sitem" data-pickev="" data-idx="${idx}">✖ Sem prova</button>`:'')+list.map(id=>`<button class="sitem" ${mode==='send'?`data-sendev="${id}"`:`data-pickev="${id}" data-idx="${idx}"`}>📎 ${EV[id].t}</button>`).join(''));}
+function overlay(html){const o=$('#overlay');o.innerHTML=html;o.classList.add('show');}
+function closeOverlay(){$('#overlay').classList.remove('show');}
+function viewEv(id){overlay(`<div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%"><div class="evfull"><div class="evt" style="font-size:13px;padding:8px 10px">📸 ${EV[id].t}</div>${EV[id].h()}</div><button class="bigbtn sec" style="max-width:340px" data-close="1">Fechar</button></div>`);}
+function decide(kind){overlay(`<div class="modal"><p><b>${kind==='pub'?'Publicar a matéria agora?':'Segurar a matéria?'}</b></p><p style="color:var(--mut)">Essa decisão encerra o Episódio ${S.ep} e tem consequências nos próximos.</p><button class="bigbtn" data-confirm="${kind}">Confirmar</button><button class="bigbtn sec" data-close="1">Voltar</button></div>`);}
+const FINAL={
+ 1(pub){const usedBrief=S.draft.includes('briefing');
+  if(pub){S.expo+=2;tr('carol',2);runNode('carol','pub');if(!has('removido'))runNode('grupo','pub');if(usedBrief)runNode('luana',has('promessa')?'pub_prom':'pub_ame');runNode('mae','pub');}
+  else{tr('carol',-1);runNode('carol','held');runNode('mae','held');}
+  runNode('anon',pub?'pub':'held');},
+ 2(pub){const d=S.draft,usedRel=d.includes('relato_osvaldo'),usedCad=d.includes('caderno_retirada');
+  if(pub){S.expo+=2;fl('lucrix_fora');tr('carol',1);runNode('carol','e2_pub');
+    if(!has('removido')){if(has('grupo_e2_on'))runNode('grupo','e2_pub');}else if(has('neide_on'))runNode('neide','pub');
+    if(usedRel)runNode('ze',has('osv_sigilo')?'pub_traiu':'pub_ok2');
+    if(usedCad)runNode('toninho',has('promessa_toninho')?'pub_traiu':'pub_semprom');
+    runNode('mae',has('mae_caiu')?'e2_pub_caiu':'e2_pub');}
+  else{fl('lucrix_ativo');tr('carol',-1);runNode('carol','e2_held');runNode('mae','e2_held');}
+  runNode('anon',pub?'e2_pub':'e2_held');}
+};
+function finalize(kind){closeOverlay();const pub=kind==='pub';let stars=0;CLAIMS[S.ep].forEach((c,i)=>{if(S.draft[i]&&c.ok.includes(S.draft[i]))stars++;});
+  S.mat[S.ep]={pub,stars,draft:S.draft.slice()};advance(30);FINAL[S.ep](pub);view={app:'home'};save();render();}
+function trustTxt(v){return v>=2?'Aliado(a)':v>=1?'Confia em você':v===0?'Neutro(a)':v>=-1?'Desconfiado(a)':'Hostil';}
+function showEnd(ep){const M=S.mat[ep];if(!M)return;save();
+  const notes=[];let rows='';const e=Math.min(5,S.expo);const nEv=S.ev.filter(x=>EPS[ep].evs.includes(x)).length;
+  rows+=`<div class="r"><span>Matéria</span><span>${M.pub?'Publicada':'Guardada'}</span></div><div class="r"><span>Provas do episódio</span><span>${nEv} de ${EPS[ep].evs.length}</span></div>`;
+  if(ep===1){
+    rows+=`<div class="r"><span>Carol</span><span>${trustTxt(tv('carol'))}</span></div><div class="r"><span>Luana</span><span>${has('briefing_ok')||tv('luana')?trustTxt(tv('luana')):'Não contatada'}</span></div>`;
+    if(S.ev.includes('review_marcos')&&!has('marcos_alerta'))notes.push('🔍 Você guardou uma avaliação antiga do Rendix. Ela pode importar mais do que parece.');
+    if(has('marcos_alerta'))notes.push('⚠️ Alguém no grupo das vítimas agora sabe que você está desconfiado.');
+    if(has('loterica'))notes.push('📍 As duas empresas funcionam num endereço que é uma lotérica.');
+    if(has('mae_pagou'))notes.push('💸 Sua mãe mandou R$ 500 para o advogado do grupo.');
+    if(has('luana_queimada'))notes.push('🔥 Você queimou a Luana. Ela não vai mais te ajudar.');
+  }else{
+    rows+=`<div class="r"><span>Seu Toninho</span><span>${chat('toninho').visible?trustTxt(tv('toninho')):'Não contatado'}</span></div><div class="r"><span>Zé (filho do Seu Osvaldo)</span><span>${chat('ze').visible?trustTxt(tv('ze')):'Não contatado'}</span></div><div class="r"><span>A fonte</span><span>${trustTxt(tv('anon'))}</span></div>`;
+    if(has('neide_salva'))notes.push('🛡️ Você evitou que a Neide caísse no Lucrix.');
+    if(has('neide_caiu'))notes.push('💸 A Neide caiu no Lucrix enquanto você investigava.');
+    if(has('mae_caiu'))notes.push('💸 Sua mãe pagou R$ 300 de "taxa de migração".');
+    else if(has('mae_salva')&&has('mae_pagou'))notes.push('🛡️ Sua mãe já tinha mandado os documentos, mas não pagou a taxa.');
+    if(has('lucrix_ativo'))notes.push('⚠️ O Lucrix continua no ar, fazendo vítimas.');
+    if(has('alerta_lucrix')&&!S.ev.includes('src_lucrix'))notes.push('🧹 Seu alerta fez eles limparem o código do site antes do seu print.');
+    if(has('toninho_queimado'))notes.push('🔥 Você expôs o Seu Toninho. Ele não vai mais ajudar.');
+    if(has('ze_queimado'))notes.push('🔥 Você quebrou a promessa ao Zé.');
+    if(has('v_painelpay'))notes.push('🧩 Você achou a empresa que vende o sistema por trás desses apps.');
+    if(S.kw.includes('Diego'))notes.push('🏍️ Você tem um nome: Diego.');
+  }
+  const next=EPS[ep+1];
+  overlay(`<div class="modal"><div class="ep">FIM DO EPISÓDIO ${ep}</div><h1 style="font-size:22px">${EPS[ep].title}</h1><div class="stars">${'★'.repeat(M.stars)}${'☆'.repeat(3-M.stars)}</div>
+  <div class="sum">${rows}<div class="r"><span>Exposição</span><span><div class="bar"><i style="width:${e*20}%"></i></div></span></div></div>
+  ${notes.map(n=>`<div class="note">${n}</div>`).join('')}
+  <p style="margin-top:14px;color:var(--mut);font-size:13px">Suas escolhas ficam salvas e vão pesar no final da história.${next?'':`<br><b style="color:var(--teal)">Episódio ${ep+1} · A Mentoria</b> — em breve.`}</p>
+  ${next&&S.ep===ep?`<button class="bigbtn" data-ep2="1">▶ Começar Episódio ${ep+1}</button>`:''}
+  <button class="bigbtn sec" data-close="1">Voltar ao celular</button></div>`);}
+function ep2Intro(){const r=[];const m1=S.mat[1];
+  r.push(m1&&m1.pub?'Você publicou a matéria sobre a Bia. O blog nunca teve tantos leitores.':'Você segurou a matéria sobre a Bia.');
+  r.push(has('luana_queimada')?'A Luana não quer mais saber de você.':has('briefing_ok')?'A Luana te passou o briefing da campanha.':'Você não conseguiu fazer a Luana falar.');
+  if(has('mae_pagou'))r.push('Sua mãe mandou R$ 500 para o advogado do grupo.');else if(has('mae_segurou'))r.push('Sua mãe esperou antes de mandar qualquer dinheiro.');
+  if(has('removido'))r.push('O Marcos te tirou do grupo das vítimas.');
+  overlay(`<div class="modal"><h1>FONTE <span>ANÔNIMA</span></h1><div class="ep">Episódio 2 · O Site Clonado</div>
+  <p>Segunda-feira, 16h30. A Bia continua presa e a cidade só fala do Rendix. O número desconhecido prometeu voltar.</p>
+  <p style="font-size:13px;color:var(--mut)"><b style="color:var(--tx)">Até aqui:</b><br>${r.map(x=>'• '+x).join('<br>')}</p>
+  <ul><li>Novo no Navegador: o botão <b>&lt;/&gt;</b> mostra o código-fonte de algumas páginas.</li><li>Lojas têm horário. Se precisar, dá para esperar até abrirem, mas o mundo não para enquanto isso.</li></ul>
+  <button class="bigbtn" data-startep2="1">Começar</button></div>`);}
+function startEp2(){closeOverlay();while(S.queue.length)proc(S.queue.shift());
+  S.ep=2;S.t=Math.max(S.t,1440+990);S.draft=[null,null,null];S.timers=[];S.br={stack:[],cur:null,src:false};
+  Object.values(S.chats).forEach(c=>{c.opts=null;c.wait=null;});
+  try{localStorage.setItem(LS2,JSON.stringify(S));}catch(e){}
+  view={app:'home'};save();render();
+  setTimeout(()=>{runNode('anon','e2_start');schedule('grupo_e2',S.t+12);schedule('mae_e2',S.t+25);schedule('carol_e2',S.t+35);if(has('briefing_ok')&&!has('luana_queimada'))schedule('luana_e2',S.t+50);save();},1200);}
+function intro(){const sv=migrate(load());
+  overlay(`<div class="modal"><h1>FONTE <span>ANÔNIMA</span></h1><div class="ep">${sv&&sv.started?`Você parou no Episódio ${sv.ep}`:'Episódio 1 · A Cara do Golpe'}</div>
+  <p>Vale Alto, domingo à noite. Você mantém o <b>Vale Alto Agora</b>, um blog de notícias da cidade.</p>
+  <p>Há dois dias, o <b>Rendix</b>, o app que pagava 3% ao mês e que meia cidade usava, saiu do ar. Sua mãe tinha dinheiro lá. E a <b>Bia</b>, sua amiga de escola que aparecia nos vídeos do app, acabou de ser presa.</p>
+  <ul><li>Tudo acontece no seu celular.</li><li>Toque nos <span class="k">termos em destaque</span> para anotá-los no Caderno.</li><li>Pesquise no Navegador e use 📸 para printar páginas como prova.</li><li>No Papo, use 📎 para mostrar provas às pessoas.</li><li>Cada ação gasta tempo. Algumas provas podem desaparecer.</li></ul>
+  ${sv&&sv.started?'<button class="bigbtn" data-continue="1">Continuar</button><button class="bigbtn sec" data-new="1">Novo jogo</button>':'<button class="bigbtn" data-new="1">Começar</button>'}<a href="../../" style="display:block;text-align:center;color:var(--mut);font-size:12.5px;margin-top:14px;text-decoration:none">← Mesa de Jogos</a></div>`);}
+function reset(){busy=false;instant=false;typing=null;}
+function newGame(){S=NEW();view={app:'home'};reset();closeOverlay();save();render();setTimeout(()=>runNode('mae','start'),1200);}
+function cont(){S=migrate(load());view={app:'home'};reset();closeOverlay();if(S.queue.length){instant=true;pump();}render();
+  if(S.mat[S.ep]&&!S.queue.length&&S.endShown[S.ep])showEnd(S.ep);}
+function restartEp2(){let s=null;try{s=JSON.parse(localStorage.getItem(LS2));}catch(e){}if(!s){toast('Não achei o início do Episódio 2');return;}
+  S=migrate(s);reset();closeOverlay();view={app:'home'};save();render();
+  setTimeout(()=>{runNode('anon','e2_start');schedule('grupo_e2',S.t+12);schedule('mae_e2',S.t+25);schedule('carol_e2',S.t+35);if(has('briefing_ok')&&!has('luana_queimada'))schedule('luana_e2',S.t+50);save();},1200);}
+
+/* ---------------- EVENTOS ---------------- */
+document.addEventListener('click',e=>{const t=e.target;
+  const k=t.closest('.k');if(k&&S&&!t.closest('#overlay .modal ul')){e.stopPropagation();addKw(k.dataset.k);return;}
+  if(t.closest('#notif')){const c=$('#notif').dataset.c;$('#notif').classList.remove('show');if(c&&S)openChat(c);return;}
+  if(t.id==='sheet'){closeSheet();return;}
+  const a=t.closest('[data-home],[data-open],[data-chat],[data-p],[data-ev],[data-opt],[data-clip],[data-sendev],[data-pickev],[data-pick],[data-wait],[data-add],[data-search],[data-tab],[data-print],[data-bback],[data-bhome],[data-src],[data-decide],[data-confirm],[data-close],[data-restart],[data-restart2],[data-new],[data-continue],[data-ep2],[data-startep2],[data-lxform]');
+  if(!a)return;const d=a.dataset;
+  if(d.new!==undefined){newGame();return;}if(d.continue!==undefined){cont();return;}if(!S)return;
+  if(d.home!==undefined){view={app:'home'};render();}
+  else if(d.open){view={app:d.open};render();}
+  else if(d.chat){openChat(d.chat);}
+  else if(d.p){go(d.p);}
+  else if(d.ev){viewEv(d.ev);}
+  else if(d.opt!==undefined){choose(+d.opt);}
+  else if(d.clip){evPicker('send');}
+  else if(d.sendev){sendEv(d.sendev);}
+  else if(d.pickev!==undefined){S.draft[+d.idx]=d.pickev||null;closeSheet();save();render();}
+  else if(d.pick!==undefined){evPicker('pick',+d.pick);}
+  else if(d.wait){waitTill(d.wait);}
+  else if(d.add){addContact(d.add);}
+  else if(d.search){S.br.stack=[];S.br.cur=null;go('q:'+d.search);}
+  else if(d.tab){view.tab=d.tab;render();}
+  else if(d.print){doPrint();}
+  else if(d.bback){bback();}
+  else if(d.bhome){if(S.br.cur!==null)S.br.stack.push(S.br.cur);S.br.cur=null;S.br.src=false;save();render();}
+  else if(d.src){toggleSrc();}
+  else if(d.lxform){toast('Você não vai colocar seus dados aí, né? 😅');}
+  else if(d.decide){decide(d.decide);}
+  else if(d.confirm){finalize(d.confirm);}
+  else if(d.ep2){ep2Intro();}
+  else if(d.startep2){startEp2();}
+  else if(d.close){closeOverlay();}
+  else if(d.restart2){if(confirm('Recomeçar o Episódio 2? As escolhas do Episódio 1 continuam valendo.'))restartEp2();}
+  else if(d.restart){if(confirm('Recomeçar do Episódio 1? Todo o progresso será perdido.')){try{localStorage.removeItem(LS);localStorage.removeItem(LS2);}catch(x){}closeOverlay();newGame();}}
+});
+intro();
+
+</script>
+</body>
+</html>
