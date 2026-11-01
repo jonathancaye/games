@@ -188,6 +188,9 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 #sheet.show{display:flex}
 #sheet .sh{background:var(--card);width:100%;border-radius:18px 18px 0 0;max-height:75%;overflow-y:auto;padding:14px 12px 24px}
 #sheet h3{font-size:15px;margin:0 4px 10px}
+.srow{display:flex;gap:8px;margin-bottom:8px}.srow .sitem{margin-bottom:0;flex:1;min-width:0}
+.prev{flex:none;width:44px;border-radius:10px;background:var(--card2);color:var(--teal);display:flex;align-items:center;justify-content:center}.prev svg{width:20px;height:20px}
+.claim .prow{display:flex;gap:8px}.claim .prow .pick{flex:1;min-width:0}.claim .prow .prev{border:1px solid var(--line)}
 .sitem{display:block;width:100%;text-align:left;padding:11px;border-radius:10px;background:var(--card2);margin-bottom:8px;font-size:14px}
 #overlay{position:fixed;inset:0;background:#000c;z-index:50;display:none;align-items:center;justify-content:center;padding:16px}
 #overlay.show{display:flex}
@@ -276,6 +279,7 @@ function nextOpen(t){const base=Math.floor(t/1440)*1440,m=t%1440;let n=m<480?bas
 
 /* ---------------- ÍCONES ---------------- */
 const IC={
+ eye:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
  chat:'<path d="M20.5 11.6a8.4 8.4 0 0 1-12.3 7.4L3.5 20.5l1.5-4.4A8.4 8.4 0 1 1 20.5 11.6z"/>',
  compass:'<circle cx="12" cy="12" r="9"/><path d="m15.8 8.2-2.4 5.2-5.2 2.4 2.4-5.2z"/>',
  book:'<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3"/><path d="M9 7.5h6M9 11h4"/>',
@@ -1239,7 +1243,7 @@ function rBlog(){const done=S.mat[S.ep];const epEv=S.ev.filter(e=>EPS[S.ep].evs.
   <div class="bp"><small>há 5 dias</small>Feira do produtor volta à praça central no sábado</div><div class="bp"><small>há 2 semanas</small>Buraco na Av. Brasil completa um ano sem conserto</div></div>`;}
 function rMateria(){const CL=CLAIMS[S.ep];return `<div class="tbar"><button class="back" data-open="blog">${ic('back')}</button><h2>Rascunho</h2></div><div class="scroll">
   <div class="hint" style="padding-top:12px">"${EPS[S.ep].mat}". Sustente cada afirmação com uma prova do Caderno. Afirmações sem prova enfraquecem a matéria.</div>
-  ${CL.map((c,i)=>`<div class="claim"><p>${i+1}. ${c.t}</p><button class="pick ${S.draft[i]?'set':''}" data-pick="${i}">${S.draft[i]?'📎 '+EV[S.draft[i]].t:'+ Escolher prova'}</button></div>`).join('')}
+  ${CL.map((c,i)=>`<div class="claim"><p>${i+1}. ${c.t}</p><div class="prow"><button class="pick ${S.draft[i]?'set':''}" data-pick="${i}">${S.draft[i]?'📎 '+EV[S.draft[i]].t:'+ Escolher prova'}</button>${S.draft[i]?`<button class="prev" data-ev="${S.draft[i]}" aria-label="Pré-visualizar">${ic('eye')}</button>`:''}</div></div>`).join('')}
   <div class="hint" style="margin-top:6px">Publicar agora pressiona as autoridades e protege quem ainda pode cair, mas alerta quem está por trás do golpe. Segurar mantém o dossiê em segredo. Lembre-se de quem te passou cada prova.</div>
   ${S.ep===6?`<button class="bigbtn sec" data-dossie="1">📁 ${S.ev.includes('dossie')?'Atualizar dossiê':'Montar dossiê para enviar'}</button><div class="hint">Depois de montado, mande o dossiê pelo Papo (📎) para quem pode agir.</div><button class="bigbtn" data-decide="pub">📢 Publicar a matéria final</button>`:
   `<button class="bigbtn" data-decide="pub">📢 Publicar agora</button><button class="bigbtn sec" data-decide="held">🔒 Segurar e continuar investigando</button>`}</div>`;}
@@ -1257,7 +1261,7 @@ function render(){if(!S)return;$('#clock').textContent=DAYS[dayOf(S.t)]+' '+hm(S
 function openSheet(title,html){const s=$('#sheet');s.innerHTML=`<div class="sh"><h3>${title}</h3>${html}</div>`;s.classList.add('show');}
 function closeSheet(){$('#sheet').classList.remove('show');}
 function evPicker(mode,idx){if(!S.ev.length){toast('Você ainda não tem provas');return;}const list=S.ev.slice().reverse();
-  openSheet(mode==='send'?'Mostrar qual prova?':'Escolher prova',(mode==='pick'?`<button class="sitem" data-pickev="" data-idx="${idx}">✖ Sem prova</button>`:'')+list.map(id=>`<button class="sitem" ${mode==='send'?`data-sendev="${id}"`:`data-pickev="${id}" data-idx="${idx}"`}>📎 ${EV[id].t}</button>`).join(''));}
+  openSheet(mode==='send'?'Mostrar qual prova?':'Escolher prova',(mode==='pick'?`<button class="sitem" data-pickev="" data-idx="${idx}">✖ Sem prova</button>`:'')+list.map(id=>`<div class="srow"><button class="sitem" ${mode==='send'?`data-sendev="${id}"`:`data-pickev="${id}" data-idx="${idx}"`}>📎 ${EV[id].t}</button><button class="prev" data-ev="${id}" aria-label="Pré-visualizar">${ic('eye')}</button></div>`).join(''));}
 function overlay(html){const o=$('#overlay');o.innerHTML=html;o.classList.add('show');}
 function closeOverlay(){$('#overlay').classList.remove('show');if(S)render();}
 function viewEv(id){if(EV[id].table){overlay(`<div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">${txTable(id)}<button class="bigbtn sec" style="max-width:360px" data-close="1">Fechar</button></div>`);return;}overlay(`<div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%"><div class="evfull"><div class="evt" style="font-size:13px;padding:8px 10px">📸 ${EV[id].t}</div>${EV[id].h()}</div><button class="bigbtn sec" style="max-width:340px" data-close="1">Fechar</button></div>`);}
