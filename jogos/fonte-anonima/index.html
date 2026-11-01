@@ -181,6 +181,13 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .lx .hero{height:150px;border-radius:14px;margin:20px 0;display:flex;align-items:center;justify-content:center;font-size:54px}
 .lx input{width:100%;border:0;border-radius:10px;padding:12px;margin:6px 0;font-size:14px}
 .lx .go{width:100%;background:#fbbf24;color:#422006;font-weight:800;border-radius:10px;padding:13px;margin-top:6px}
+.txt{width:100%;border-collapse:collapse;font-size:11.5px;background:#fff;color:#111}
+.txt th{background:#1e293b;color:#fff;text-align:left;padding:6px 5px;font-weight:600;position:sticky;top:0}
+.txt td{padding:7px 5px;border-bottom:1px solid #e5e7eb;vertical-align:top}
+.txt tr[data-tx]{cursor:pointer}.txt tr[data-tx]:active td{background:#fef3c7}
+.txt .id{color:#9ca3af;font-family:ui-monospace,monospace}.txt .v{text-align:right;font-weight:700;white-space:nowrap}
+.txwrap{background:#fff;border-radius:12px;overflow:auto;max-height:70vh;width:100%;max-width:360px}
+.txhead{padding:10px 12px;font-size:12px;color:#111;background:#f1f5f9;line-height:1.4}
 .note{background:#f9731618;border-left:3px solid var(--org);padding:9px 11px;border-radius:8px;font-size:13px;margin-top:10px;line-height:1.45}
 </style>
 </head>
@@ -224,10 +231,11 @@ function nextOpen(t){const base=Math.floor(t/1440)*1440,m=t%1440;let n=m<480?bas
 const EPS={
  1:{title:'A Cara do Golpe',mat:'O que ninguém contou sobre a Bia',evs:['post_publi','pix_lume','briefing','cnpj_rendix','cnpj_mx','review_marcos','painel']},
  2:{title:'O Site Clonado',mat:'Lucrix: o golpe trocou de roupa',evs:['src_lucrix','whois_lucrix','whois_rendix','caderno_retirada','relato_osvaldo','foto_mentoria']},
- 3:{title:'A Mentoria',mat:'A pirâmide por trás da mentoria',evs:['tabela_bonus','ranking','arquivo_fabio','audio_vip']}
+ 3:{title:'A Mentoria',mat:'A pirâmide por trás da mentoria',evs:['tabela_bonus','ranking','arquivo_fabio','audio_vip']},
+ 4:{title:'O Programador',mat:'Para onde foi o dinheiro do Rendix',evs:['post_forum','tx_cofre','tx_fabio','tx_admin2','confissao']}
 };
-const NEXT_TITLE={2:'O Site Clonado',3:'A Mentoria',4:'O Programador'};
-const EP_START={2:1440+990,3:5*1440+1200};
+const NEXT_TITLE={2:'O Site Clonado',3:'A Mentoria',4:'O Programador',5:'O Dinheiro'};
+const EP_START={2:1440+990,3:5*1440+1200,4:7*1440+840};
 const snapKey=n=>n===2?LS2:'fonte_anonima_ep'+n+'_inicio';
 
 /* ---------------- CONTATOS ---------------- */
@@ -242,7 +250,10 @@ const CONTACTS={
   neide:{name:'Neide',av:'👵🏽',sub:'online'},
   ment:{name:'Mentoria LF · Turma 7 🚀',av:'🚀',sub:'Fábio Brandão, Marcos, Célia e mais 318'},
   fabio:{name:'Fábio Brandão',av:'🧑🏻‍💼',sub:'Mentor · respondo rápido',saved:'Contato salvo: Fábio Brandão · Mentoria LF'},
-  diego:{name:'Diego · Entregas',av:'🏍️',sub:'online',saved:'Contato salvo: Diego Rocha · Entregas rápidas'}
+  diego:{name:'Diego · Entregas',av:'🏍️',sub:'online',saved:'Contato salvo: Diego Rocha · Entregas rápidas'},
+  thiago:{name:'Thiago',av:'💻',sub:'visto por último há pouco',saved:'Contato salvo: Thiago · número novo'},
+  marcos:{name:'Marcos Teixeira',av:'🧔🏻',sub:'online'},
+  anon2:{name:'Número desconhecido',av:'❔',sub:'+55 •• •••••-8823'}
 };
 
 /* ---------------- PROVAS ---------------- */
@@ -263,9 +274,32 @@ const EV={
   ranking:{t:'Imagem: ranking de indicadores da mentoria',h:()=>`<div style="background:#111827;color:#fff;padding:12px;font-size:12.5px;line-height:1.7"><div style="font-weight:900;color:#fbbf24">🏆 TOP INDICADORES · TURMA 7</div><div>1º <b>${K('Marcos Teixeira','Marcos T.')}</b> — 214 indicações — R$ 186 mil em bônus</div><div>2º Fernanda R. — 97 indicações — R$ 64 mil</div><div>3º Joel P. — 58 indicações — R$ 31 mil</div><div style="font-size:11px;opacity:.7">Bônus pagos pelo app parceiro 💜</div></div>`},
   arquivo_fabio:{t:'Print: perfil antigo do Fábio (arquivo)',h:()=>`<div style="padding:12px;font-size:12.5px;line-height:1.55"><div style="font-size:10.5px;color:#888">🕓 arquivo.web · cópia de 15/08/2026</div><b>@fabiobrandao.lf</b><br>Mentor de liberdade financeira · 📍 Vale Alto<br><b style="color:#7c3aed">💜 Parceiro oficial Rendix</b> · use o código <b>FABIO10</b> e ganhe bônus<div style="margin-top:6px;color:#555">"Rendix: o app que eu recomendo pros meus alunos 💸"</div></div>`},
   audio_vip:{t:'Áudio do Fábio para sua mãe (transcrito)',h:()=>`<div style="padding:12px;font-size:12.5px;line-height:1.55"><div style="font-weight:700;color:#7c3aed">🎤 Áudio · 0:48 · transcrição</div><i>"Dona Célia, essa vaga VIP é pra quem quer recuperar rápido. O pessoal do ${K('sistema','sistema')} já tá montando o próximo app, coisa fina. Quem entra agora entra na frente. São só mil e duzentos."</i></div>`},
+  extrato:{t:'Banco de dados do Rendix',table:1,h:()=>`<div style="padding:12px;font-size:12.5px;line-height:1.5"><b>📊 rendix_db_export.csv</b><br>13 linhas · depósitos, saques e transferências<br><span style="color:#0d9488;font-weight:700">Toque para abrir a planilha</span></div>`},
+  extrato_edit:{t:'Banco de dados do Rendix',table:1,h:()=>`<div style="padding:12px;font-size:12.5px;line-height:1.5"><b>📊 rendix_db_export.csv</b><br>10 linhas · depósitos, saques e transferências<br><span style="color:#0d9488;font-weight:700">Toque para abrir a planilha</span></div>`},
+  tx_cofre:{t:'Print: transferências para a carteira "M"',h:()=>`<div style="padding:12px;font-size:12.5px;line-height:1.6"><b>Carteira 0x7f…a91 · rótulo "M"</b><br>#0417 · 30/08 · R$ 4.500.000<br>#0419 · 27/09 · R$ 9.800.000<br>#0422 · 30/10 · R$ 12.270.000<br><b style="color:#dc2626">Total: R$ 26,57 milhões</b></div>`},
+  tx_fabio:{t:'Print: bônus pagos ao Fábio Brandão',h:()=>`<div style="padding:12px;font-size:12.5px;line-height:1.6"><b>Rendix → F. Brandão · "bônus mentoria"</b><br>#0413 · 02/08 · R$ 12.400<br>#0415 · 16/08 · R$ 31.800<br>#0420 · 18/10 · R$ 58.000<br><b>Total: R$ 102.200</b></div>`},
+  tx_admin2:{t:'Print: "taxa sistema" para admin2',h:()=>`<div style="padding:12px;font-size:12.5px;line-height:1.6"><b>Rendix → admin2 · "taxa sistema 2%"</b><br>#0412 · 15/07 · R$ 960<br>#0416 · 23/08 · R$ 84.300<br>#0421 · 25/10 · R$ 212.500<br><b>Total: R$ 297.760</b></div>`},
+  confissao:{t:'Print: confissão do Thiago',h:()=>`<div style="padding:10px;font-size:12.5px;line-height:1.5;background:#0c1416;color:#e6f0f1"><div style="background:#1f2f35;border-radius:10px;padding:6px 9px;margin-bottom:4px">admin2 sou eu.</div><div style="background:#1f2f35;border-radius:10px;padding:6px 9px;margin-bottom:4px">Eu cobrava 2% de cada depósito como "taxa do sistema"</div><div style="background:#1f2f35;border-radius:10px;padding:6px 9px">Uns 300 mil. Ia devolver, juro</div></div>`},
+  post_forum:{t:'Print: post apagado do Thiago no fórum',h:()=>`<div style="padding:12px;font-size:12.5px;line-height:1.5"><div style="font-size:10.5px;color:#888">🕓 arquivo.web · cópia de 05/10/2026</div><b>tvieira</b> · Fórum CodeBR<br><i>"Fiz um sistema de investimento pra uns caras e acho que é pirâmide. O dinheiro sai todo pra uma carteira só. Como eu saio dessa sem me ferrar?"</i></div>`},
   foto_mentoria:{t:'Imagem: folheto de evento',h:()=>`<div style="background:linear-gradient(160deg,#1e1b4b,#7c2d12);color:#fff;padding:14px;text-align:center;font-size:12.5px;line-height:1.5"><div style="font-size:11px;letter-spacing:2px;color:#fbbf24">VAGAS LIMITADAS</div><div style="font-size:17px;font-weight:900;margin:4px 0">MENTORIA LIBERDADE FINANCEIRA</div>com ${K('Fábio Brandão')}<br>Sábados · 9h · Salão Paroquial<br><div style="margin-top:8px;font-size:11px;opacity:.8">Foto do último encontro: equipe de apoio ao fundo, rapaz de boné preto 🧢</div></div>`}
 };
 
+const TX_ROWS=[
+ {id:'#0411',d:'14/07',de:'Célia M.',pa:'Rendix',v:'48.000',r:'depósito',k:'n:Depósito da sua mãe. Os 48 mil que o seu pai deixou.'},
+ {id:'#0412',d:'15/07',de:'Rendix',pa:'admin2',v:'960',r:'taxa sistema',k:'tx_admin2',adm:1},
+ {id:'#0413',d:'02/08',de:'Rendix',pa:'F. Brandão',v:'12.400',r:'bônus mentoria',k:'tx_fabio'},
+ {id:'#0414',d:'09/08',de:'Rendix',pa:'Marcos T.',v:'15.000',r:'saque cliente',k:'n:Saque de cliente. O Marcos disse que sacou no começo, "como muita gente".'},
+ {id:'#0415',d:'16/08',de:'Rendix',pa:'F. Brandão',v:'31.800',r:'bônus mentoria',k:'tx_fabio'},
+ {id:'#0416',d:'23/08',de:'Rendix',pa:'admin2',v:'84.300',r:'taxa sistema',k:'tx_admin2',adm:1},
+ {id:'#0417',d:'30/08',de:'Rendix',pa:'0x7f…a91 (M)',v:'4.500.000',r:'reserva',k:'tx_cofre'},
+ {id:'#0418',d:'13/09',de:'Neide S.',pa:'Rendix',v:'9.000',r:'depósito',k:'n:Depósito comum de cliente.'},
+ {id:'#0419',d:'27/09',de:'Rendix',pa:'0x7f…a91 (M)',v:'9.800.000',r:'reserva',k:'tx_cofre'},
+ {id:'#0420',d:'18/10',de:'Rendix',pa:'F. Brandão',v:'58.000',r:'bônus mentoria',k:'tx_fabio'},
+ {id:'#0421',d:'25/10',de:'Rendix',pa:'admin2',v:'212.500',r:'taxa sistema',k:'tx_admin2',adm:1},
+ {id:'#0422',d:'30/10',de:'Rendix',pa:'0x7f…a91 (M)',v:'12.270.000',r:'reserva',k:'tx_cofre'},
+ {id:'#0423',d:'31/10',de:'—',pa:'—',v:'0,00',r:'saldo final',k:'n:Saldo final. Não sobrou nada.'}];
+function txTable(id){const full=id==='extrato';const rows=TX_ROWS.filter(r=>full||!r.adm);
+  return `<div class="txwrap"><div class="txhead"><b>rendix_db_export.csv</b> · ${rows.length} linhas<br>Toque numa linha para printar o que importa.</div><table class="txt"><tr><th>ID</th><th>Data</th><th>De → Para</th><th>Valor (R$)</th></tr>${rows.map(r=>`<tr data-tx="${r.k}"><td class="id">${r.id}</td><td>${r.d}</td><td>${r.de} → <b>${r.pa}</b><br><span style="color:#6b7280">${r.r}</span></td><td class="v">${r.v}</td></tr>`).join('')}</table></div>`;}
 /* ---------------- PÁGINAS ---------------- */
 const LX_SRC_SUJO=`<!doctype html>
 <html lang="pt-br">
@@ -374,6 +408,20 @@ const PAGES={
     h:()=>`<div class="st"><div class="ceh" style="background:#334155">ConsultaDomínio</div><div class="ce"><div style="font-weight:800;margin-bottom:6px">rendix.app</div>
     <div class="rw"><span>Criado em</span><span>10/07/2026</span></div><div class="rw"><span>Expira em</span><span>10/07/2027</span></div><div class="rw"><span>Titular</span><span>${K('Osvaldo Pereira da Silva','OSVALDO PEREIRA DA SILVA')}</span></div><div class="rw"><span>E-mail técnico</span><span>suporte@${K('painelpay.net')}</span></div><div class="rw"><span>Servidor</span><span>ns1.painelpay.net</span></div></div></div>`},
   painelpay:{url:'painelpay.net',title:'PainelPay · Seu app de investimentos pronto em 48h',sn:'Plataforma completa: painel administrativo, Pix integrado e programa de indicação.',
+    src:()=>`<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="[[tvieira]]">
+  <title>PainelPay</title>
+  <!-- v2.3 · build 41 · deploy feito do wifi da rodoviária kkk -->
+</head>
+<body>
+  <h1>Seu app de investimentos pronto em 48 horas</h1>
+  <!-- TODO: tirar a lista de clientes antes de alguém ver -->
+  <footer>Desenvolvido por equipe independente</footer>
+</body>
+</html>`,
     visit(){fl('v_painelpay');},
     h:()=>`<div class="st"><div class="ceh" style="background:#0f172a">PainelPay</div><div class="in"><h1>Seu app de investimentos pronto em 48 horas</h1>
     <p>✔ Painel administrativo completo<br>✔ Pix integrado com saque automático<br>✔ Programa de indicação em níveis<br>✔ Tela de "manutenção programada" pronta para usar</p>
@@ -388,6 +436,16 @@ const PAGES={
   diego_insta:{url:'instaclick.com/diego.motos',title:'Diego Rocha (@diego.motos) · Instaclick',sn:'Entregas rápidas em Vale Alto 🏍️ · chama no Papo',
     h:()=>`<div class="st"><div class="ins-h"><div class="ins-av" style="background:linear-gradient(45deg,#dc2626,#111)">🏍️</div><div><b>@diego.motos</b><div style="font-size:13px">Diego Rocha · Entregas rápidas em Vale Alto</div><div style="font-size:12px;color:#777">1.204 seguidores</div><span class="addc" data-add="diego">💬 Chama no Papo</span></div></div>
     <div class="post"><div class="img" style="background:#fecaca">🏍️🔴</div><div class="cap"><b>diego.motos</b> A vermelhinha tá de pneu novo 😎</div><div class="cm" style="color:#999">88 curtidas · há 2 semanas</div></div></div>`},
+  forum_tvieira:{url:'codebr.dev/u/tvieira',title:'tvieira · Fórum CodeBR',sn:'Thiago V. · freelancer full stack · Vale Alto · 412 respostas',
+    visit(){fl('v_forum');},
+    arch:()=>`<div class="st"><div style="background:#fef3c7;color:#92400e;font-size:12px;padding:8px 14px">🕓 Você está vendo uma cópia arquivada de 05/10/2026</div><div class="ceh" style="background:#111827">CodeBR · fórum de desenvolvedores</div><div class="in">
+    <div class="rv" style="margin:0 0 10px"><span class="n">tvieira</span><div class="d">05/10/2026 · em "Carreira e ética"</div><b>Fiz um sistema pra uns caras e acho que é pirâmide</b><br>O dinheiro dos depósitos sai todo pra uma carteira só, com um rótulo "M". Eu fiz o painel, tenho acesso a tudo. Como eu saio dessa sem me ferrar?</div>
+    <div class="rv" style="margin:0"><span class="n">dev_anon</span><div class="d">05/10/2026</div>Sai agora e guarda TUDO. Prints, logs, banco. Vai precisar.</div></div></div>`,archEv:'post_forum',
+    h:()=>`<div class="st"><div class="ceh" style="background:#111827">CodeBR · fórum de desenvolvedores</div><div class="ce"><div style="display:flex;gap:12px;align-items:center"><div class="av2" style="width:52px;height:52px;border-radius:50%;background:#1e293b;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px">💻</div><div><b>tvieira</b><div style="font-size:12.5px;color:#666">Thiago V. · freelancer full stack · Vale Alto</div><div style="font-size:12px;color:#999">412 respostas · visto há 2 dias</div></div></div>
+    <div style="margin-top:10px"><span class="addc" data-forumdm="1" style="background:#1e293b">✉️ Mandar mensagem privada</span></div></div>
+    <div class="rv"><span class="n">Como integrar Pix com saque automático?</span><div class="d">há 4 meses</div>Resolvido. Obrigado, pessoal.</div>
+    <div class="rv"><span class="n">[post removido pelo autor]</span><div class="d">há 4 semanas</div><span style="color:#999">Este conteúdo não está mais disponível.</span></div>
+    <div class="rv"><span class="n">Melhor jeito de exportar um banco Postgres inteiro pra CSV</span><div class="d">há 3 semanas</div>Pergunta rápida, é pra backup pessoal.</div></div>`},
   borracharia:{url:'guiavalealto.com.br/borracharia-do-ze',title:'Borracharia do Zé — Guia Vale Alto',sn:'Rua Sete, 45 · Centro · Atendimento 24h para emergências',
     h:()=>`<div class="st"><div class="ceh" style="background:#15803d">Guia Vale Alto</div><div class="ce"><div style="font-size:40px;text-align:center">🛞</div><div style="font-weight:800;text-align:center;font-size:17px">Borracharia do Zé</div><div style="text-align:center;font-size:13px;color:#666;margin-bottom:10px">Rua Sete, 45 · Centro · ⭐ 4,8</div>
     <div class="rw"><span>Horário</span><span>24h (emergências)</span></div><div class="rw"><span>Desde</span><span>1994 · "do pai pro filho"</span></div>
@@ -411,8 +469,12 @@ const SEARCH=[
   {ep:2,k:['borracharia do ze','borracharia','rua sete 45'],p:['borracharia']},
   {ep:3,k:['fabio brandao','fabiobrandao','fabiobrandao.lf','mentoria liberdade financeira','mentoria lf','fabio'],p:['fabio_insta']},
   {ep:3,k:['diego rocha','diego.motos','diegomotos'],p:['diego_insta']},
-  {ep:3,k:['thiago'],p:[],msg:'Nome comum demais. Sem sobrenome, a internet não ajuda. Talvez alguém que conhece ele ajude.'},
+  {ep:4,k:['tvieira','thiago vieira','t vieira','thiago v'],p:['forum_tvieira']},
+  {ep:4,k:['codebr','forum codebr'],p:['forum_tvieira']},
+  {ep:3,upTo:3,k:['thiago'],p:[],msg:'Nome comum demais. Sem sobrenome, a internet não ajuda. Talvez alguém que conhece ele ajude.'},
   {ep:3,k:['programa liberdade','fabio10'],p:['fabio_insta']},
+  {ep:4,k:['thiago'],p:[],msg:'Nome comum demais. Mas o sistema dos apps (PainelPay) pode ter a assinatura de quem o fez.'},
+  {ep:4,k:['teixeira materiais','teixeira materiais de construcao'],p:[],msg:'(continua no Episódio 5)'},
   {ep:2,upTo:2,k:['diego'],p:[],msg:'Milhares de resultados para "Diego". Sem sobrenome, não dá para saber qual.'},
   {ep:2,k:['salao paroquial','salao da igreja','cadastro auxilio igreja'],p:[],msg:'Só a programação de missas da paróquia. Nada sobre cadastro de auxílio.'}
 ];
@@ -465,6 +527,10 @@ const D={
   e3_pub:{m:['Filho, o Fábio apagou o Instaclick dele!','Todo mundo na feira tá falando da tua matéria']},
   e3_pub_pagou:{m:['Li tua matéria...','Eu devia ter lido antes de pagar aquela vaga 😞']},
   e3_held:{m:['O Fábio marcou outro encontro pra semana que vem, filho...']},
+  e4:{m:['Filho, vem almoçar hoje?','Faz tempo que você só vive nesse celular']},
+  e4_vip:{m:['Filho, o Fábio sumiu com os meus 1.200','Fui na delegacia e nem quiseram registrar direito 😔']},
+  e4_pub:{m:['Vi tua matéria. Meus 48 mil estão naquela carteira, né?','Pelo menos agora alguém sabe onde estão']},
+  e4_held:{m:['Você nem comeu direito hoje, filho']},
   nada:{m:['Filho, não entendo nada disso 😅','Só me diz se eu vou ver meu dinheiro de volta']}
  },
  ment:{
@@ -498,7 +564,53 @@ const D={
   ajuda:{m:['Tá...','O Thiago é tipo um hacker. Mora sozinho, perto da rodoviária','Ele fica nervoso toda vez que eu vou lá. Semana passada me perguntou se eu "confiava no Fábio"','Não fala que fui eu, por favor'],after(){fl('diego_thiago');}},
   pressao:{m:['Já falei tudo que eu sei.','Me deixa em paz.']},
   ja:{m:['Já te falei o que eu sabia, mano']},
+  e4_num:{m:['Mano, o Thiago sumiu desde ontem','Os caras do Fábio tão procurando ele','Ele trocou de número e me passou o novo, pra emergência',{contact:'thiago'},'Não fala que fui eu']},
+  e4_sem:{m:['Mano, o Thiago sumiu desde ontem','Os caras do Fábio tão procurando ele','Não me mete mais nisso']},
   nada:{m:['Que isso? Não sei de nada']}
+ },
+ thiago:{
+  ola:{o:[{t:'Thiago? É o jornalista. O Diego me passou teu número.',go:'oi'},{t:'Thiago, eu sei que você é a fonte.',go:'oi',fx(){tr('thiago',-1);}}]},
+  oi:{m:['...','O Diego... tá. Tanto faz agora.','Sim. Sou eu. O número desconhecido.'],after(){fl('thiago_contato');runNode('thiago','conta');}},
+  forum_resp:{m:['Você me achou pelo fórum.','Se você achou, eles também acham.','Sim. Sou eu. O número desconhecido. Esse é meu número novo.'],after(){fl('thiago_contato');runNode('thiago','conta');}},
+  conta:{m:['Eu montei o sistema. O PainelPay é meu.','Achei que era um cliente normal. Um app de investimento como qualquer outro.','Quando vi o dinheiro saindo todo pra uma carteira só, entendi. Foi aí que comecei a te mandar as coisas.','Tenho o banco de dados inteiro. Mas preciso de uma garantia.'],
+   o:[{t:'Eu te deixo fora da matéria. Prometo.',go:'envia',fx(){fl('prometeu_thiago');tr('thiago',1);}},{t:'Não posso esconder teu papel. Mas posso mostrar que você ajudou a desmontar o golpe.',go:'envia',fx(){fl('honesto_thiago');}},{t:'Garantia nenhuma. Ou manda, ou eu publico teu nome hoje.',go:'envia',fx(){fl('ameacou_thiago');tr('thiago',-2);}}]},
+  envia:{after(){runNode('thiago',has('prometeu_thiago')?'envia_full':'envia_edit');}},
+  envia_full:{m:['Tá. Confio em você.',{ev:'extrato'},'Tá tudo aí. Cada depósito, cada saque, cada transferência.','A carteira com rótulo "M" é o cofre. Eu nunca soube quem é o M.'],after(){fl('extrato_sent');}},
+  envia_edit:{m:['...','Tá. Toma.',{ev:'extrato_edit'},'Tá tudo aí. Cada depósito, cada saque, cada transferência.','A carteira com rótulo "M" é o cofre. Eu nunca soube quem é o M.'],after(){fl('extrato_sent');}},
+  confronto:{m:['...','Tá.','admin2 sou eu.','Eu cobrava 2% de cada depósito como "taxa do sistema"','Uns 300 mil. Ia devolver, juro','Não queria que você descobrisse assim'],after(){fl('confessou');addEv('confissao');},
+   o:[{t:'Devolve o dinheiro. É o único jeito de você sair disso limpo.',go:'devolve'},{t:'Isso vai pra matéria, Thiago.',go:'avisa'},{t:'Fica tranquilo. Ninguém precisa saber disso.',go:'acoberta'}]},
+  devolve:{after(){runNode('thiago',tv('thiago')>=0?'devolve_sim':'devolve_nao');}},
+  devolve_sim:{m:['...','Tá.','Vou depositar na conta judicial do processo das vítimas. Te mando o comprovante amanhã'],after(){fl('thiago_devolve');tr('thiago',1);}},
+  devolve_nao:{m:['Fácil falar. Quem vai me proteger depois?','Não.']},
+  avisa:{m:['Então eu viro o vilão da história?','Eu que te dei tudo!'],after(){tr('thiago',-1);fl('thiago_avisado');}},
+  acoberta:{m:['Obrigado. De verdade.','Você é diferente dos outros.'],after(){fl('acobertou');tr('thiago',1);}},
+  ja:{m:['Já te contei tudo. Agora é contigo.']},
+  cofre:{m:['Esse é o M.','Se você descobrir quem é, acabou pra eles.']},
+  edit:{m:['Tá tudo aí.']},
+  nada:{m:['Isso eu não sei.']},
+  carro:{m:['Tem um carro parado aqui na frente faz uma hora','Vou sair da cidade hoje à noite','Se precisar de mais alguma coisa, é agora']},
+  fugiu_sem:{m:['Aqui é a fonte. Número novo.','Tive que sair da cidade. Não dá tempo de explicar.',{ev:'extrato_edit'},'É o que eu consegui tirar. Boa sorte.',{f:'sys',t:'Este número não está mais disponível'}],after(){fl('extrato_sent');}},
+  achado:{m:['Bateram aqui em casa','Era o MARCOS. O do grupo das vítimas. Como ele sabia de mim??','Você contou pra ele?','Nunca mais me procura.',{f:'sys',t:'Este número não está mais disponível'}]},
+  achado_sem:{m:['Bateram aqui em casa','Era o MARCOS. O do grupo das vítimas. Como ele sabia de mim??','Você contou pra ele?','Toma. Faz alguma coisa útil com isso.',{ev:'extrato_edit'},'Nunca mais me procura.',{f:'sys',t:'Este número não está mais disponível'}],after(){fl('extrato_sent');}},
+  pub_traiu:{m:['Você prometeu que eu ficava fora.','Meu nome tá em todo lugar.','Não me procura mais.'],after(){tr('thiago',-3);fl('thiago_traido');}},
+  pub_hon:{m:['Pelo menos contou que fui eu que te dei o banco.','É justo, eu acho.']},
+  pub_ok:{m:['Vi a matéria.','Obrigado por me deixar de fora.']},
+  held:{m:['Segurou?','Então ainda dá tempo de achar o M antes que ele suma com tudo.']},
+  e4_end:{m:['Achei mais uma coisa no banco. Uma linha que eu nunca tinha olhado.','Antes de tudo começar, a carteira M recebeu um depósito de teste. R$ 1,00.','Veio de uma conta empresarial: [[Teixeira Materiais de Construção]].','Teixeira...'],after(){fl('pista_teixeira');enqueue([{fn:'end_show'}]);}}
+ },
+ anon2:{
+  e4_end:{m:['Sou eu. Thiago. Número novo, de novo.','Achei mais uma coisa antes de sair. Uma linha que eu nunca tinha olhado.','Antes de tudo começar, a carteira M recebeu um depósito de teste. R$ 1,00.','Veio de uma conta empresarial: [[Teixeira Materiais de Construção]].','Teixeira...',{f:'sys',t:'Este número não está mais disponível'}],after(){fl('pista_teixeira');enqueue([{fn:'end_show'}]);}}
+ },
+ marcos:{
+  dm:{m:['Oi. Aqui é o Marcos, do grupo das vítimas','Acho que a gente começou com o pé esquerdo','Tô do teu lado. Quero ver o Fábio preso tanto quanto você','Você sabe quem anda te passando informação? Se for alguém de dentro, a gente pode proteger ele'],
+   o:[{t:'É um programador. O Thiago.',go:'dm_entregou',fx(){fl('entregou_thiago');schedule('thiago_achado',S.t+25);}},{t:'Não revelo fontes, Marcos.',go:'dm_nao',fx(){fl('protegeu_fonte');}},{t:'Por que você estava no topo do ranking do Fábio?',go:'dm_ranking',hide:()=>!S.ev.includes('ranking')}]},
+  dm_entregou:{m:['Thiago... o do computador?','Valeu. Vou ver como posso ajudar ele 🙏']},
+  dm_nao:{m:['Respeito.','Mas toma cuidado. Tem gente perigosa nessa história.']},
+  dm_ranking:{m:['Eu indicava porque acreditava!','Perdi tanto quanto qualquer um','...','Esquece. Achei que dava pra conversar contigo.'],after(){fl('marcos_confrontado');}},
+  nervoso:{m:['De onde você tirou isso?','Isso não prova nada.','Você tá brincando com fogo, rapaz.'],after(){fl('marcos_alerta');S.expo+=1;}},
+  cofre:{m:['Uma carteira com "M"?','...','Muita gente tem M no nome, né?'],after(){fl('marcos_viu_cofre');}},
+  pub_cofre:{m:['Carteira M, é?','Cuidado com o que você publica.'],after(){fl('marcos_ameacou');}},
+  nada:{m:['Não entendi.']}
  },
  grupo:{
   start:{m:[{f:'sys',t:'Mãe adicionou você'},{who:'Marcos Teixeira',t:'Pessoal, CONFIRMADO: a presa é a Bia Lemos. Foi ela que vendeu isso pra gente'},{who:'Neide',t:'Meu Deus, eu seguia ela 😭'},{who:'Seu Jair',t:'Coloquei a aposentadoria toda lá'},{who:'Marcos Teixeira',t:'Calma, gente. Eu também perdi, 20 mil. Mas vamos resolver juntos'},{who:'Marcos Teixeira',t:'Já tô vendo advogado pra todo mundo. Daqui a pouco passo os detalhes'}],
@@ -558,6 +670,9 @@ const D={
   e3:{m:['A Bia lembrou de uma coisa na visita de hoje','Quem apresentou ela pra Lume foi o [[Fábio Brandão]], numa mentoria!','Ela gravou um vídeo lá de graça, em julho'],after(){fl('bia_fabio');}},
   e3_pub:{m:['A cidade inteira tá falando do Fábio agora','Se ele recrutava, a Bia era só mais uma peça. A defesa vai usar isso']},
   e3_held:{m:['Tá esperando o quê agora?']},
+  e4:{m:['A audiência da Bia foi marcada pra quinta','O advogado disse uma coisa: se aparecer quem ficou com o dinheiro, ela sai']},
+  e4_pub:{m:['26 MILHÕES numa carteira só?!','O advogado leu tua matéria três vezes']},
+  e4_held:{m:['Quinta é a audiência. Não esquece.']},
   nada:{m:['Não sei o que isso tem a ver 😕']}
  },
  luana:{
@@ -643,6 +758,9 @@ const H={
  ment:()=>null,
  fabio:id=>{if(['tabela_bonus','ranking','arquivo_fabio','audio_vip'].includes(id)){if(!has('fabio_ameacou')){fl('fabio_ameacou');fl('ouviu_fabio');S.expo+=1;fabioAlerta();return 'ameaca';}return null;}return 'nada';},
  diego:id=>{if(has('diego_ok'))return 'ja';chat('diego').opts=null;if(id==='caderno_retirada')return 'abre_cad';if(id==='foto_mentoria')return 'abre_foto';return 'nada';},
+ thiago:id=>{if(has('thiago_fugiu'))return null;if(['painel','src_lucrix','tx_admin2'].includes(id)){if(has('confessou'))return 'ja';chat('thiago').opts=null;return 'confronto';}if(id==='tx_cofre')return 'cofre';if(id==='extrato'||id==='extrato_edit')return 'edit';return 'nada';},
+ marcos:id=>{if(['review_marcos','ranking'].includes(id)&&!has('marcos_alerta_e4')){fl('marcos_alerta_e4');return 'nervoso';}if(['tx_cofre','extrato','extrato_edit'].includes(id))return 'cofre';return 'nada';},
+ anon2:()=>null,
  anon:()=>null
 };
 function joinMent(){fl('na_mentoria');chat('ment').waitAt=9180;runNode('ment','entrou');if(S.expo>=3)runNode('ment','tirou');}
@@ -676,6 +794,13 @@ const FN={
    if(has('na_mentoria')&&!has('ment_removido')){runNode('ment','live1');runNode('ment',has('ranking_cancelado')?'live_cancel':'live_rank');runNode('ment','live_vip');}
    else{fl('rota_mae');runNode('mae','e3_live');runNode('mae',has('ranking_cancelado')?'e3_cancel':'e3_rank');}
    runNode('mae','e3_vip');},
+ carol_e4(){runNode('carol','e4');},
+ mae_e4(){runNode('mae',has('mae_vip_pagou')?'e4_vip':'e4');},
+ diego_e4(){runNode('diego',has('diego_thiago')&&tv('diego')>=1?'e4_num':'e4_sem');},
+ marcos_e4(){runNode('marcos','dm');},
+ thiago_forum(){if(has('thiago_contato')||has('thiago_fugiu'))return;chat('thiago').opts=null;runNode('thiago','forum_resp');},
+ thiago_foge(){if(has('thiago_fugiu'))return;if(has('thiago_contato'))runNode('thiago','carro');else{fl('thiago_fugiu');runNode('thiago','fugiu_sem');}},
+ thiago_achado(){if(has('thiago_fugiu'))return;fl('thiago_fugiu');fl('thiago_achado');fl('thiago_marcos');tr('thiago',-3);chat('thiago').opts=null;runNode('thiago',has('extrato_sent')?'achado':'achado_sem');},
  mae_cai(){if(has('mae_salva')||has('alerta_lucrix')||!has('mae_pagou')||has('mae_caiu'))return;fl('mae_caiu');runNode('mae','e2_caiu');}
 };
 
@@ -694,7 +819,7 @@ function proc(it){if(it.msg)deliver(it.c,it.msg);if(it.opts)chat(it.c).opts=it.o
 function deliver(c,m){const ch=chat(c);ch.visible=true;m.time=hm(S.t);ch.msgs.push(m);ch.last=++S.seq;
   if(m.ev&&m.f==='them')addEv(m.ev);
   if(m.f==='them'&&!(view.app==='chat'&&view.c===c)){ch.unread++;if(!instant)notify(c,m);}}
-function notify(c,m){const n=$('#notif');const txt=m.ev?'📎 '+EV[m.ev].t:m.link?'🔗 '+PAGES[m.link].title:strip(m.t);
+function notify(c,m){const n=$('#notif');const txt=m.ev?'📎 '+EV[m.ev].t:m.link?'🔗 '+PAGES[m.link].title:m.contact?'👤 Contato':strip(m.t);
   n.innerHTML=`<div class="av">${CONTACTS[c].av}</div><div class="nb"><b>${CONTACTS[c].name}</b><span>${m.who?m.who+': ':''}${esc(txt)}</span></div>`;
   n.dataset.c=c;n.classList.add('show');clearTimeout(n._t);n._t=setTimeout(()=>n.classList.remove('show'),3200);}
 function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2200);}
@@ -713,6 +838,7 @@ function sendEv(id){const c=view.c,ch=chat(c);closeSheet();deliver(c,{f:'me',ev:
 function handleEv(c,id){const n=H[c](id);if(n)runNode(c,n);}
 function waitTill(c){const ch=chat(c);S.t=Math.max(S.t,CONTACTS[c].wake());checkTimers();toast(`🌙 Você esperou. ${DAYSF[dayOf(S.t)]}, ${hm(S.t)}`);const w=ch.wait;ch.wait=null;
   if(w){if(w.k==='opt')doOpt(c,D[c][w.node].o[w.i]);else handleEv(c,w.id);}save();render();}
+function forumDM(k){closeSheet();fl('forum_dm');if(k===2){tr('thiago',-2);fl('ameacou_thiago');}else tr('thiago',1);advance(2);schedule('thiago_forum',S.t+8);toast('✉️ Mensagem enviada pelo fórum');save();render();}
 function waitAt(c){const ch=chat(c);if(!ch.waitAt||S.t>=ch.waitAt)return;S.t=ch.waitAt;checkTimers();toast(`🌙 Você esperou. ${DAYSF[dayOf(S.t)]}, ${hm(S.t)}`);save();render();}
 function addContact(c){const ch=chat(c);if(ch.visible){openChat(c);return;}ch.visible=true;ch.last=++S.seq;ch.msgs.push({f:'sys',t:CONTACTS[c].saved,time:hm(S.t)});ch.opts={node:'ola'};toast('💬 Contato adicionado ao Papo');save();openChat(c);}
 function openChat(c){view={app:'chat',c};chat(c).unread=0;save();render();}
@@ -731,6 +857,13 @@ function toggleSrc(){S.br.arch=false;S.br.src=!S.br.src;if(S.br.src){advance(1);
 
 /* ---------------- TELAS ---------------- */
 function objective(){
+  if(S.ep===4){
+    if(S.mat[4])return 'Episódio concluído.';
+    if(!has('thiago_contato')&&!has('extrato_sent'))return 'A fonte sumiu e estão atrás dela. Ache o Thiago antes deles: o sistema PainelPay pode ter a assinatura de quem o fez (</>).';
+    if(!has('extrato_sent'))return 'Ganhe a confiança do Thiago. Ele tem o banco de dados.';
+    if(!S.ev.includes('tx_cofre'))return 'Abra o banco de dados no Caderno e printe as transferências que importam.';
+    if(!has('confessou')&&!S.ev.includes('tx_admin2')&&!has('thiago_fugiu'))return 'Repare nos números das linhas. E o "admin2" aparece em provas antigas. O Thiago contou tudo?';
+    return 'Você tem material. Escreva a matéria no app Blog.';}
   if(S.ep===3){
     if(S.mat[3])return 'Episódio concluído. Aguarde notícias.';
     if(!has('v_fabio_insta'))return 'Descubra quem é Fábio Brandão, o guru do folheto.';
@@ -761,7 +894,7 @@ function rHome(){const u=unreadTotal();
   ${app('papo','💬','linear-gradient(135deg,#14b8a6,#0f766e)','Papo',u)}${app('nav','🧭','linear-gradient(135deg,#38bdf8,#1d4ed8)','Navegador')}${app('cad','📓','linear-gradient(135deg,#fbbf24,#f97316)','Caderno')}${app('blog','📰','linear-gradient(135deg,#475569,#1e293b)','Blog')}
   </div><div class="obj"><b>OBJETIVO</b>${objective()}</div></div>`;}
 function preview(c){const ch=chat(c);if(typing===c)return '<span class="typ">digitando…</span>';const m=ch.msgs[ch.msgs.length-1];if(!m)return '';
-  const t=m.ev?'📎 '+EV[m.ev].t:m.link?'🔗 Link':strip(m.t);return (m.f==='me'?'Você: ':m.who?m.who.split(' ')[0]+': ':'')+esc(t);}
+  const t=m.ev?'📎 '+EV[m.ev].t:m.link?'🔗 Link':m.contact?'👤 Contato':strip(m.t);return (m.f==='me'?'Você: ':m.who?m.who.split(' ')[0]+': ':'')+esc(t);}
 function rPapo(){const list=Object.keys(CONTACTS).filter(c=>chat(c).visible).sort((a,b)=>chat(b).last-chat(a).last);
   return `<div class="tbar"><button class="back" data-home="1">‹</button><h2>Papo</h2></div><div class="scroll">${list.length?list.map(c=>{const ch=chat(c),m=ch.msgs[ch.msgs.length-1];
   return `<div class="cl" data-chat="${c}"><div class="av">${CONTACTS[c].av}</div><div class="mid"><div class="nm">${CONTACTS[c].name}</div><div class="pv">${preview(c)}</div></div><div class="rt">${m?m.time:''}${ch.unread?`<span class="ub">${ch.unread}</span>`:''}</div></div>`;}).join(''):'<div class="empty">Nenhuma conversa ainda.</div>'}</div>`;}
@@ -769,12 +902,14 @@ function evCard(id){return `<div class="evc" data-ev="${id}"><div class="evt">�
 function rMsg(m){if(m.f==='sys')return `<div class="sysm">${esc(m.t)}</div>`;
   let body='';if(m.who)body+=`<div class="who">${m.who}</div>`;
   if(m.link){const p=PAGES[m.link];body+=`<div class="lnk" data-p="${m.link}"><b>${p.title}</b><span>${p.url}</span></div>`;}
+  else if(m.contact){body+=`<div class="lnk" data-add="${m.contact}"><b>👤 ${CONTACTS[m.contact].name}</b><span>Toque para conversar</span></div>`;}
   else if(m.ev)body+=evCard(m.ev);else body+=fmt(esc(m.t));
   return `<div class="b ${m.f}">${body}<div class="tm">${m.time}</div></div>`;}
 function rChat(){const c=view.c,ch=chat(c),C=CONTACTS[c];
   let comp='';const opts=ch.opts&&!typing?visOpts(c,ch.opts.node):null;
   const optH=opts?opts.map(x=>`<button class="opt" data-opt="${x.i}">${x.o.t}</button>`).join(''):'';
   if(c==='grupo'&&has('removido'))comp=`<div class="cbar"><div class="ph">Você não faz mais parte deste grupo.</div></div>`;
+  else if(c==='anon2'||(c==='thiago'&&has('thiago_fugiu')))comp=`<div class="cbar"><div class="ph">Este número não está mais disponível.</div></div>`;
   else if(c==='anon')comp=optH+(opts&&opts.length?'':`<div class="cbar"><div class="ph">Este número não recebe mensagens.</div></div>`);
   else if(c==='ment')comp=`<div class="cbar"><div class="ph">${has('ment_removido')?'Você não faz mais parte deste grupo.':'Somente administradores podem enviar mensagens.'}</div></div>`;
   else if(ch.wait){const w=C.wake();comp=`<button class="waitb" data-wait="${c}">⏭ Esperar até ${DAYSF[dayOf(w)]}, ${hm(w)}</button>`;}
@@ -809,7 +944,10 @@ const CLAIMS={
     {t:'O golpe já preparava o Lucrix antes de o Rendix sair do ar.',ok:['caderno_retirada']}],
  3:[{t:'A mentoria pagava comissão por cada pessoa levada ao Rendix: era uma pirâmide.',ok:['tabela_bonus']},
     {t:'O Fábio era parceiro oficial do Rendix e apagou isso depois do golpe.',ok:['arquivo_fabio']},
-    {t:'Os maiores recrutadores lucraram com o prejuízo de quem entrou depois.',ok:['ranking']}]
+    {t:'Os maiores recrutadores lucraram com o prejuízo de quem entrou depois.',ok:['ranking']}],
+ 4:[{t:'O dinheiro do Rendix foi desviado para uma carteira controlada por uma só pessoa: o "M".',ok:['tx_cofre']},
+    {t:'O guru Fábio recebia parte dos depósitos como "bônus".',ok:['tx_fabio']},
+    {t:'O programador que montou o sistema também desviava dinheiro para si.',ok:['tx_admin2','confissao']}]
 };
 function rBlog(){const done=S.mat[S.ep];const epEv=S.ev.filter(e=>EPS[S.ep].evs.includes(e)).length;
   const past=[];for(let e=1;e<S.ep;e++)if(S.mat[e])past.push(`<div class="bp"><small>${S.mat[e].pub?'Publicada':'Rascunho guardado'} · Ep. ${e}</small>${EPS[e].mat}</div>`);
@@ -841,7 +979,7 @@ function evPicker(mode,idx){if(!S.ev.length){toast('Você ainda não tem provas'
   openSheet(mode==='send'?'Mostrar qual prova?':'Escolher prova',(mode==='pick'?`<button class="sitem" data-pickev="" data-idx="${idx}">✖ Sem prova</button>`:'')+list.map(id=>`<button class="sitem" ${mode==='send'?`data-sendev="${id}"`:`data-pickev="${id}" data-idx="${idx}"`}>📎 ${EV[id].t}</button>`).join(''));}
 function overlay(html){const o=$('#overlay');o.innerHTML=html;o.classList.add('show');}
 function closeOverlay(){$('#overlay').classList.remove('show');}
-function viewEv(id){overlay(`<div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%"><div class="evfull"><div class="evt" style="font-size:13px;padding:8px 10px">📸 ${EV[id].t}</div>${EV[id].h()}</div><button class="bigbtn sec" style="max-width:340px" data-close="1">Fechar</button></div>`);}
+function viewEv(id){if(EV[id].table){overlay(`<div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">${txTable(id)}<button class="bigbtn sec" style="max-width:360px" data-close="1">Fechar</button></div>`);return;}overlay(`<div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%"><div class="evfull"><div class="evt" style="font-size:13px;padding:8px 10px">📸 ${EV[id].t}</div>${EV[id].h()}</div><button class="bigbtn sec" style="max-width:340px" data-close="1">Fechar</button></div>`);}
 function decide(kind){overlay(`<div class="modal"><p><b>${kind==='pub'?'Publicar a matéria agora?':'Segurar a matéria?'}</b></p><p style="color:var(--mut)">Essa decisão encerra o Episódio ${S.ep} e tem consequências nos próximos.</p><button class="bigbtn" data-confirm="${kind}">Confirmar</button><button class="bigbtn sec" data-close="1">Voltar</button></div>`);}
 const FINAL={
  1(pub){const usedBrief=S.draft.includes('briefing');
@@ -862,7 +1000,14 @@ const FINAL={
     if(has('neide_e3_on'))runNode('neide','e3_pub');
     runNode('mae',has('mae_vip_pagou')?'e3_pub_pagou':'e3_pub');}
   else{fl('mentoria_ativa');tr('carol',-1);runNode('carol','e3_held');runNode('mae','e3_held');}
-  runNode('anon',pub?'e3_pub':'e3_held');}
+  runNode('anon',pub?'e3_pub':'e3_held');},
+ 4(pub){const d=S.draft,usedT=d.includes('tx_admin2')||d.includes('confissao'),usedC=d.includes('tx_cofre');
+  if(pub){S.expo+=2;tr('carol',1);runNode('carol','e4_pub');runNode('mae','e4_pub');
+    if(!has('thiago_fugiu')){if(usedT)runNode('thiago',has('prometeu_thiago')||has('acobertou')?'pub_traiu':'pub_hon');else runNode('thiago','pub_ok');}
+    if(!usedT&&has('confessou'))fl('escondeu_thiago');
+    if(usedC)runNode('marcos','pub_cofre');}
+  else{tr('carol',-1);runNode('carol','e4_held');runNode('mae','e4_held');if(!has('thiago_fugiu'))runNode('thiago','held');}
+  if(has('thiago_fugiu'))runNode('anon2','e4_end');else runNode('thiago','e4_end');}
 };
 function finalize(kind){closeOverlay();const pub=kind==='pub';let stars=0;CLAIMS[S.ep].forEach((c,i)=>{if(S.draft[i]&&c.ok.includes(S.draft[i]))stars++;});
   S.mat[S.ep]={pub,stars,draft:S.draft.slice()};advance(30);FINAL[S.ep](pub);view={app:'home'};save();render();}
@@ -877,6 +1022,20 @@ function showEnd(ep){const M=S.mat[ep];if(!M)return;save();
     if(has('loterica'))notes.push('📍 As duas empresas funcionam num endereço que é uma lotérica.');
     if(has('mae_pagou'))notes.push('💸 Sua mãe mandou R$ 500 para o advogado do grupo.');
     if(has('luana_queimada'))notes.push('🔥 Você queimou a Luana. Ela não vai mais te ajudar.');
+  }else if(ep===4){
+    rows+=`<div class="r"><span>Thiago (a fonte)</span><span>${has('thiago_contato')?trustTxt(tv('thiago')):'Não encontrado a tempo'}</span></div><div class="r"><span>Marcos</span><span>${has('marcos_alerta_e4')||has('marcos_viu_cofre')||has('marcos_ameacou')?'Alerta':'Achando que te engana'}</span></div>`;
+    if(has('thiago_achado'))notes.push('🚨 Você contou do Thiago ao Marcos. Ele foi achado em casa.');
+    if(has('thiago_marcos'))notes.push('👀 O Thiago viu quem bateu na porta dele: o Marcos.');
+    else if(has('thiago_fugiu'))notes.push('🏃 O Thiago fugiu antes que você o encontrasse.');
+    if(has('protegeu_fonte'))notes.push('🛡️ Você não revelou sua fonte ao Marcos.');
+    if(has('confessou'))notes.push('🧾 O Thiago confessou que desviava 2% de cada depósito.');
+    else if(S.ev.includes('extrato_edit')&&!S.ev.includes('extrato'))notes.push('✂️ O banco de dados que você recebeu tinha linhas apagadas.');
+    if(has('thiago_devolve'))notes.push('💰 O Thiago aceitou devolver o que desviou.');
+    if(has('acobertou'))notes.push('🤫 Você prometeu esconder o papel do Thiago.');
+    if(has('escondeu_thiago'))notes.push('🤐 A matéria deixou de fora o desvio do Thiago.');
+    if(has('thiago_traido'))notes.push('🔥 Você publicou o papel do Thiago depois de prometer o contrário.');
+    if(has('marcos_ameacou'))notes.push('⚠️ O Marcos te mandou um recado depois da matéria.');
+    if(has('pista_teixeira'))notes.push('🏗️ O depósito de teste da carteira M veio da Teixeira Materiais de Construção.');
   }else if(ep===3){
     rows+=`<div class="r"><span>Diego</span><span>${chat('diego').visible?trustTxt(tv('diego')):'Não contatado'}</span></div><div class="r"><span>Fábio</span><span>${has('ouviu_fabio')?'Ouvido':'Não ouvido'}</span></div><div class="r"><span>A fonte</span><span>${trustTxt(tv('anon'))}</span></div>`;
     if(has('processo_fabio'))notes.push('⚖️ Você publicou sem ouvir o Fábio. Ele entrou com um processo contra o blog.');
@@ -924,10 +1083,18 @@ function recap(n){const r=[];
     if(has('toninho_queimado'))r.push('O Seu Toninho se sentiu traído pela matéria.');
     if(S.kw.includes('Diego'))r.push('Você tem um nome: Diego, o rapaz da moto vermelha.');
     r.push(`Exposição: ${S.expo>=3?'alta. Muita gente já sabe quem você é.':'baixa. Você ainda passa despercebido.'}`);}
+  if(n===4){const m3=S.mat[3];
+    r.push(m3&&m3.pub?'Você publicou a matéria sobre a mentoria.':'Você segurou a matéria sobre a mentoria.');
+    if(has('processo_fabio'))r.push('O Fábio processou o blog.');
+    if(S.ev.includes('ranking'))r.push('Você viu o Marcos no topo do ranking de recrutadores.');
+    if(has('diego_thiago'))r.push('O Diego te contou que o Thiago mora perto da rodoviária.');else if(has('diego_ok'))r.push('Você tem um nome: Thiago, "o cara do computador".');
+    if(has('fabio_alertado'))r.push('Eles estão caçando quem vaza informação.');
+    r.push('A fonte sumiu.');}
   return r;}
 const EP_TXT={
  2:{t:'Segunda-feira, 16h30. A Bia continua presa e a cidade só fala do Rendix. O número desconhecido prometeu voltar.',tips:['Novo no Navegador: o botão <b>&lt;/&gt;</b> mostra o código-fonte de algumas páginas.','Lojas têm horário. Se precisar, dá para esperar até abrirem, mas o mundo não para enquanto isso.']},
- 3:{t:'Sexta-feira, 20h. O folheto da mentoria não sai da sua cabeça. Amanhã cedo tem encontro no salão paroquial.',tips:['Novo no Navegador: o botão <b>🕓</b> mostra versões antigas de algumas páginas.','Quem você ouve, e quem você alerta, muda o que acontece no sábado.']}
+ 3:{t:'Sexta-feira, 20h. O folheto da mentoria não sai da sua cabeça. Amanhã cedo tem encontro no salão paroquial.',tips:['Novo no Navegador: o botão <b>🕓</b> mostra versões antigas de algumas páginas.','Quem você ouve, e quem você alerta, muda o que acontece no sábado.']},
+ 4:{t:'Domingo, 14h. O número desconhecido não responde mais. Alguém está procurando a sua fonte, e você precisa achá-la primeiro.',tips:['Provas podem chegar como planilhas: abra no Caderno e toque nas linhas que importam.','O relógio corre contra você neste episódio.']}
 };
 function epIntro(n){const r=recap(n);
   overlay(`<div class="modal"><h1>FONTE <span>ANÔNIMA</span></h1><div class="ep">Episódio ${n} · ${EPS[n].title}</div>
@@ -937,6 +1104,7 @@ function epIntro(n){const r=recap(n);
   <button class="bigbtn" data-startep="${n}">Começar</button></div>`);}
 function epTimers(n){
   if(n===2){runNode('anon','e2_start');schedule('grupo_e2',S.t+12);schedule('mae_e2',S.t+25);schedule('carol_e2',S.t+35);if(has('briefing_ok')&&!has('luana_queimada'))schedule('luana_e2',S.t+50);}
+  if(n===4){schedule('carol_e4',S.t+15);if(has('diego_ok'))schedule('diego_e4',S.t+20);schedule('marcos_e4',S.t+30);schedule('mae_e4',S.t+45);schedule('thiago_foge',S.t+(has('fabio_alertado')?150:240));}
   if(n===3){runNode('anon','e3_start');schedule('mae_e3',S.t+10);if(!has('removido'))schedule('grupo_e3',S.t+15);if(has('neide_salva')||has('neide_caiu'))schedule('neide_e3',S.t+20);if(tv('carol')>=2)schedule('carol_e3',S.t+30);if(chat('ze').visible&&tv('ze')>=1&&!has('ze_queimado'))schedule('ze_e3',S.t+40);schedule('mentoria_live',9180);}
   save();}
 function startEp(n){closeOverlay();while(S.queue.length)proc(S.queue.shift());
@@ -962,7 +1130,9 @@ document.addEventListener('click',e=>{const t=e.target;
   const k=t.closest('.k');if(k&&S&&!t.closest('#overlay .modal ul')){e.stopPropagation();addKw(k.dataset.k);return;}
   if(t.closest('#notif')){const c=$('#notif').dataset.c;$('#notif').classList.remove('show');if(c&&S)openChat(c);return;}
   if(t.id==='sheet'){closeSheet();return;}
-  const a=t.closest('[data-home],[data-open],[data-chat],[data-p],[data-ev],[data-opt],[data-clip],[data-sendev],[data-pickev],[data-pick],[data-wait],[data-add],[data-search],[data-tab],[data-print],[data-bback],[data-bhome],[data-src],[data-decide],[data-confirm],[data-close],[data-restart],[data-restartep],[data-new],[data-continue],[data-epintro],[data-startep],[data-lxform],[data-arch],[data-waitat]');
+  const tx=t.closest('[data-tx]');if(tx&&S){const k=tx.dataset.tx;if(k.startsWith('n:'))toast(k.slice(2));else if(S.ev.includes(k))toast('Você já printou essas transferências');else{addEv(k);save();render();}return;}
+  const fd=t.closest('[data-fdm]');if(fd&&S){forumDM(+fd.dataset.fdm);return;}
+  const a=t.closest('[data-home],[data-open],[data-chat],[data-p],[data-ev],[data-opt],[data-clip],[data-sendev],[data-pickev],[data-pick],[data-wait],[data-add],[data-search],[data-tab],[data-print],[data-bback],[data-bhome],[data-src],[data-decide],[data-confirm],[data-close],[data-restart],[data-restartep],[data-new],[data-continue],[data-epintro],[data-startep],[data-lxform],[data-arch],[data-waitat],[data-forumdm]');
   if(!a)return;const d=a.dataset;
   if(d.new!==undefined){newGame();return;}if(d.continue!==undefined){cont();return;}if(!S)return;
   if(d.home!==undefined){view={app:'home'};render();}
@@ -990,6 +1160,7 @@ document.addEventListener('click',e=>{const t=e.target;
   else if(d.startep){startEp(+d.startep);}
   else if(d.arch){toggleArch();}
   else if(d.waitat){waitAt(d.waitat);}
+  else if(d.forumdm){if(has('forum_dm')||has('thiago_contato')){toast('Você já mandou mensagem');return;}openSheet('Mensagem privada para tvieira',`<button class="sitem" data-fdm="1">"Aqui é o jornalista do Vale Alto Agora. Você não está sozinho nessa."</button><button class="sitem" data-fdm="2">"Sei que você é a fonte e que montou o sistema. Fala comigo ou eu publico."</button>`);}
   else if(d.close){closeOverlay();}
   else if(d.restartep){const n=+d.restartep;if(confirm(`Recomeçar o Episódio ${n}? As escolhas dos episódios anteriores continuam valendo.`))restartEp(n);}
   else if(d.restart){if(confirm('Recomeçar do Episódio 1? Todo o progresso será perdido.')){try{localStorage.removeItem(LS);[2,3,4,5,6].forEach(n=>localStorage.removeItem(snapKey(n)));}catch(x){}closeOverlay();newGame();}}
