@@ -703,7 +703,14 @@ const D={
   indic2:{m:['Tranquilo!','Mas olha como funciona aqui:',{ev:'tabela_bonus'},'Traz uns amigos que todo mundo cresce junto 😉'],o:[{t:'Na verdade, sou jornalista. Quero ouvir o seu lado sobre o Rendix.',go:'revela',fx(){fl('ouviu_fabio');fabioAlerta();}}],after(){fl('fabio_disfarce');}},
   revela:{m:['...','Que feio, hein. Se passando por aluno.','Não tenho nada a declarar. Fale com meu advogado.']},
   ameaca:{m:['Onde você conseguiu isso?','É material interno, obtido de forma ilegal.','Publica e você vai responder na Justiça.']},
-  nada:{m:['Não entendi. Quer agendar uma mentoria?']}
+  dinheiro:{m:['...','Isso é comissão de parceria. Tudo declarado no meu imposto de renda.','Agora me diz uma coisa: quem te passou isso?','Isso é dado interno, vazado de forma criminosa. Publica e você responde na Justiça.']},
+  folheto:{m:['Sou eu sim! 🙌','Sábado tem encontro no salão paroquial, 9h.','O primeiro é gratuito. Quer que eu guarde uma vaga pra você?']},
+  folheto_seco:{m:['Sim, é meu evento. É público.','Se quiser falar comigo, fale com meu advogado.']},
+  desvia:{m:['Não sei do que você está falando.','Eu só ensino educação financeira.']},
+  desvia_seco:{m:['Não tenho nada a ver com isso.']},
+  advogado:{m:['Já falei: fale com meu advogado.',{f:'sys',t:'Fábio Brandão bloqueou você'}],after(){chat('fabio').opts=null;}},
+  nada:{m:['Não entendi. Quer agendar uma mentoria?']},
+  nada_seco:{m:['Não tenho nada a declarar.']}
  },
  diego:{
   ola:{o:[{t:'Diego, sou jornalista. Quero falar sobre as entregas na Rua Quinze.',go:'medo',fx(){tr('diego',-1);}},{t:'Oi, Diego! Preciso de uma entrega.',go:'entrega'}]},
@@ -959,7 +966,16 @@ const H={
  toninho:id=>{if(['cnpj_mx','whois_lucrix','whois_rendix'].includes(id)){fl('t_osv');return 'osvaldo';}return 'nada';},
  ze:id=>{if(S.ep>=5&&['hilux','patricia_foto'].includes(id)){if(S.ev.includes('reconhece_osvaldo'))return 'ja';if(has('ze_queimado')||tv('ze')<0)return 'nada';return has('pista_moca')||has('ze_e5')?'e5_rec':'e5_rec';}if(['cnpj_mx','whois_lucrix','whois_rendix'].includes(id)){if(S.ev.includes('relato_osvaldo'))return 'ja';chat('ze').opts=null;return 'choque';}return 'nada';},
  ment:()=>null,
- fabio:id=>{if(['tabela_bonus','ranking','arquivo_fabio','audio_vip'].includes(id)){if(!has('fabio_ameacou')){fl('fabio_ameacou');fl('ouviu_fabio');S.expo+=1;fabioAlerta();return 'ameaca';}return null;}return 'nada';},
+ fabio:id=>{if(has('fabio_bloqueou'))return null;
+   const din=['tx_fabio','extrato','extrato_edit','tx_cofre','explorer_m'],interno=['tabela_bonus','ranking','arquivo_fabio','audio_vip'],
+     outros=['post_publi','pix_lume','briefing','cnpj_rendix','cnpj_mx','review_marcos','painel','src_lucrix','whois_lucrix','whois_rendix','caderno_retirada','relato_osvaldo','tx_admin2','confissao','post_forum','cnpj_teixeira','hilux','patricia_foto','reconhece_osvaldo','suborno','pix_advogado','dossie'];
+   if(has('fabio_ameacou')){fl('fabio_bloqueou');return 'advogado';}
+   if(din.includes(id)||interno.includes(id)){fl('fabio_ameacou');fl('ouviu_fabio');S.expo+=1;fabioAlerta();
+     if(din.includes(id)){fl('fabio_viu_dados');S.timers.forEach(t=>{if(t.fn==='thiago_foge')t.at=Math.min(t.at,S.t+40);});return 'dinheiro';}return 'ameaca';}
+   const seco=has('ouviu_fabio');
+   if(id==='foto_mentoria')return seco?'folheto_seco':'folheto';
+   if(outros.includes(id))return seco?'desvia_seco':'desvia';
+   return seco?'nada_seco':'nada';},
  diego:id=>{if(has('diego_ok'))return 'ja';chat('diego').opts=null;if(id==='caderno_retirada')return 'abre_cad';if(id==='foto_mentoria')return 'abre_foto';return 'nada';},
  thiago:id=>{if(has('thiago_fugiu'))return null;if(['painel','src_lucrix','tx_admin2'].includes(id)){if(has('confessou'))return 'ja';chat('thiago').opts=null;return 'confronto';}if(id==='tx_cofre')return 'cofre';if(id==='extrato'||id==='extrato_edit')return 'edit';return 'nada';},
  marcos:id=>{if(S.ep>=5){if(has('marcos_confrontado5'))return null;if(['hilux','explorer_m','cnpj_teixeira','patricia_foto','reconhece_osvaldo','tx_cofre','pix_advogado'].includes(id)){chat('marcos').opts=null;return 'e5_confronto';}return 'nada';}if(['review_marcos','ranking'].includes(id)&&!has('marcos_alerta_e4')){fl('marcos_alerta_e4');return 'nervoso';}if(['tx_cofre','extrato','extrato_edit'].includes(id))return 'cofre';return 'nada';},
@@ -1369,6 +1385,7 @@ function showEnd(ep){const M=S.mat[ep];if(!M)return;save();
     else notes.push('💰 A carteira M ainda tem R$ 4,9 milhões. Ainda dá para bloquear.');
     if(has('hilux_apagado')&&S.ev.includes('hilux'))notes.push('🕓 Eles apagaram os posts, mas o arquivo da internet guardou.');
   }else if(ep===4){
+    if(has('fabio_viu_dados'))notes.push('🗄️ Você mostrou ao Fábio dados de dentro do sistema. Agora eles sabem que o vazamento é de lá.');
     rows+=`<div class="r"><span>Thiago (a fonte)</span><span>${has('thiago_contato')?trustTxt(tv('thiago')):'Não encontrado a tempo'}</span></div><div class="r"><span>Marcos</span><span>${has('marcos_alerta_e4')||has('marcos_viu_cofre')||has('marcos_ameacou')?'Alerta':'Achando que te engana'}</span></div>`;
     if(has('thiago_achado'))notes.push('🚨 Você contou do Thiago ao Marcos. Ele foi achado em casa.');
     if(has('thiago_marcos'))notes.push('👀 O Thiago viu quem bateu na porta dele: o Marcos.');
@@ -1395,6 +1412,7 @@ function showEnd(ep){const M=S.mat[ep];if(!M)return;save();
     if(has('pista_moca'))notes.push('👩 O Seu Osvaldo reconheceu a moça do cadastro ao lado do Fábio.');
     if(has('bia_fabio'))notes.push('🎥 Foi o Fábio quem apresentou a Bia à agência.');
     if(has('fabio_alertado'))notes.push('📡 Depois que você falou com o Fábio, eles começaram a caçar o vazamento.');
+    if(has('fabio_bloqueou'))notes.push('🚫 O Fábio te bloqueou.');
   }else{
     rows+=`<div class="r"><span>Seu Toninho</span><span>${chat('toninho').visible?trustTxt(tv('toninho')):'Não contatado'}</span></div><div class="r"><span>Zé (filho do Seu Osvaldo)</span><span>${chat('ze').visible?trustTxt(tv('ze')):'Não contatado'}</span></div><div class="r"><span>A fonte</span><span>${trustTxt(tv('anon'))}</span></div>`;
     if(has('neide_salva'))notes.push('🛡️ Você evitou que a Neide caísse no Lucrix.');
