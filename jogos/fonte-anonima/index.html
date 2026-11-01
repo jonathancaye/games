@@ -1354,7 +1354,7 @@ function showFinal(){const F=S.final;if(!F)return;const E=FINAIS[F.key];const L=
   else L.push('💻 Thiago foi indiciado como cúmplice.');
   if(F.queim)L.push('💔 Nem todo mundo que te ajudou quis te ver de novo.');
   L.push(F.key==='silenciado'?`📰 O Vale Alto Agora saiu do ar depois de uma enxurrada de processos.${has('suborno_exposto')?' A história do envelope do Marcos acabou com a sua credibilidade.':''}`:'📰 O Vale Alto Agora passou de 3 mil para 80 mil leitores por mês.');
-  if(F.key==='secreto')L.push('❔ Uma semana depois, chega uma mensagem de um número desconhecido: "O PainelPay tinha 40 clientes. O Rendix era só o #41." A história continua.');
+  if(F.key==='secreto')L.push('❔ Uma semana depois, chega uma mensagem de um número desconhecido: "O PainelPay tem 41 clientes. Você derrubou dois. Faltam 39." A história continua.');
   let found=[];try{found=JSON.parse(localStorage.getItem(LS_FINAIS)||'[]');}catch(e){}
   const total=Object.values(S.mat).reduce((a,m)=>a+(m.stars||0),0);
   overlay(`<div class="modal"><div class="ep">FIM DA HISTÓRIA</div><h1 style="font-size:24px">${E.t}</h1><p style="color:var(--mut);margin-top:4px">${E.d}</p>
