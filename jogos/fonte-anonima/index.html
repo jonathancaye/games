@@ -1098,7 +1098,7 @@ function objective(){
     return 'Você tem material. Escreva a matéria no app Blog.';}
   if(S.ep===4){
     if(S.mat[4])return 'Episódio concluído.';
-    if(!has('thiago_contato')&&!has('extrato_sent'))return 'A fonte sumiu e estão atrás dela. Ache o Thiago antes deles: o sistema PainelPay pode ter a assinatura de quem o fez (</>).';
+    if(!has('thiago_contato')&&!has('extrato_sent'))return has('v_painelpay')?'A fonte sumiu e estão atrás dela. Ache o Thiago antes deles: o site do PainelPay pode ter a assinatura de quem fez o sistema. Veja o código da página (&lt;/&gt;).':'A fonte sumiu e estão atrás dela. Ache o Thiago antes deles. Lembra do código do Lucrix? Ele citava o sistema pronto por trás dos apps, o PainelPay. Pesquise no Navegador e veja o código da página (&lt;/&gt;) atrás da assinatura de quem o fez.';
     if(!has('extrato_sent'))return 'Ganhe a confiança do Thiago. Ele tem o banco de dados.';
     if(!S.ev.includes('tx_cofre'))return 'Abra o banco de dados no Caderno e printe as transferências que importam.';
     if(!has('confessou')&&!S.ev.includes('tx_admin2')&&!has('thiago_fugiu'))return 'Repare nos números das linhas. E o "admin2" aparece em provas antigas. O Thiago contou tudo?';
@@ -1114,7 +1114,7 @@ function objective(){
   if(S.ep===2){
     if(S.mat[2])return 'Episódio concluído. Aguarde a fonte.';
     if(!has('v_lucrix_site'))return 'Abra o link que o número desconhecido mandou.';
-    if(!S.ev.includes('src_lucrix')&&!S.ev.includes('whois_lucrix'))return 'Prove que o Lucrix é das mesmas pessoas do Rendix. Veja o código da página (</>) ou quem registrou o domínio.';
+    if(!S.ev.includes('src_lucrix')&&!S.ev.includes('whois_lucrix'))return 'Prove que o Lucrix é das mesmas pessoas do Rendix. Veja o código da página (&lt;/&gt;) ou quem registrou o domínio.';
     if(!chat('toninho').visible)return 'Vá atrás do endereço das empresas: Rua Quinze, 210.';
     if(!S.ev.includes('caderno_retirada'))return 'Descubra quem busca as cartas na lotérica.';
     if(!S.ev.includes('relato_osvaldo'))return 'Encontre o Seu Osvaldo, o dono no papel. Alguém da rua deve conhecê-lo.';
