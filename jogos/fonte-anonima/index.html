@@ -1344,11 +1344,11 @@ const FINAL={
 function finalize(kind){closeOverlay();const pub=kind==='pub';let stars=0;CLAIMS[S.ep].forEach((c,i)=>{if(!c.opt&&S.draft[i]&&c.ok.includes(S.draft[i]))stars++;});if(S.ep===6)stars=Math.round(stars*3/5);
   S.mat[S.ep]={pub,stars,draft:S.draft.slice()};advance(30);FINAL[S.ep](pub);view={app:'home'};save();render();}
 function showEpilogo(){S.epiShown=true;save();
-  overlay(`<div class="modal"><div class="ep">UMA SEMANA DEPOIS</div><h1 style="font-size:24px">${EPILOGO.t}</h1><p style="color:var(--mut);margin-top:4px">${EPILOGO.d}</p>
-  <div class="sum" style="margin:14px 0"><p style="font-size:13.5px;line-height:1.5;margin-bottom:9px">📱 Domingo, 23h. Uma mensagem de um número desconhecido.</p>
-  <p style="font-size:15px;line-height:1.5;margin-bottom:9px;padding:10px 12px;background:var(--card2);border-radius:12px">"O PainelPay tem 41 clientes. Você derrubou dois. Faltam 39."</p>
-  <p style="font-size:13.5px;line-height:1.5">A história continua.</p><p style="margin-top:12px;text-align:center"><span style="display:inline-block;padding:5px 14px;border-radius:20px;border:1px solid var(--org);color:var(--org);font-size:12px;font-weight:700;letter-spacing:1px">EM BREVE · TEMPORADA 2</span></p></div>
-  <button class="bigbtn" data-showfinal="1">Voltar ao resultado</button></div>`);}
+  overlay(`<div class="modal"><div class="ep">EPÍLOGO · UMA SEMANA DEPOIS</div><h1 style="font-size:22px">${EPILOGO.t}</h1><p style="color:var(--mut);font-size:13px;margin:6px 0 4px">${EPILOGO.d}</p>
+  <div class="sum" style="margin-top:10px"><div class="r"><span>Domingo, 23h</span><span>Número desconhecido</span></div></div>
+  <div class="note">📱 "O PainelPay tem 41 clientes. Você derrubou dois. Faltam 39."</div>
+  <p style="margin-top:14px;color:var(--mut);font-size:13px">A história continua.<br><b style="color:var(--teal)">Temporada 2</b> — em breve.</p>
+  <button class="bigbtn sec" data-showfinal="1">Voltar ao resultado</button></div>`);}
 function showFinal(){const F=S.final;if(!F)return;if(F.key==='secreto'){F.key='completa';F.secreto=true;save();try{const f=JSON.parse(localStorage.getItem(LS_FINAIS)||'[]');if(!f.includes('completa'))f.push('completa');localStorage.setItem(LS_FINAIS,JSON.stringify(f));}catch(e){}}const E=FINAIS[F.key];const L=[];
   L.push(F.biaSolta?'👩🏻 A Bia foi solta na quinta à tarde. Na saída do fórum, abraçou a Carol e procurou você na multidão.':'👩🏻 A juíza manteve a prisão da Bia: "provas insuficientes". A Carol parou de responder.');
   L.push(F.marcosPreso?'🧔🏻 Marcos e Patrícia Teixeira foram presos em casa, no Alto da Serra. A Hilux foi apreendida.':has('marcos_fugiu')?'🧔🏻 Marcos Teixeira cruzou a fronteira. Há um mandado de prisão internacional que talvez nunca seja cumprido.':'🧔🏻 Marcos Teixeira responde em liberdade. Ainda vai à missa de domingo.');
@@ -1363,10 +1363,12 @@ function showFinal(){const F=S.final;if(!F)return;if(F.key==='secreto'){F.key='c
   L.push(F.key==='silenciado'?`📰 O Vale Alto Agora saiu do ar depois de uma enxurrada de processos.${has('suborno_exposto')?' A história do envelope do Marcos acabou com a sua credibilidade.':''}`:'📰 O Vale Alto Agora passou de 3 mil para 80 mil leitores por mês.');
   let found=[];try{found=JSON.parse(localStorage.getItem(LS_FINAIS)||'[]');}catch(e){}const nF=found.filter(k=>FINAIS[k]).length,epi=found.includes('secreto');
   const total=Object.values(S.mat).reduce((a,m)=>a+(m.stars||0),0);
-  overlay(`<div class="modal"><div class="ep">FIM DA HISTÓRIA</div><h1 style="font-size:24px">${E.t}</h1><p style="color:var(--mut);margin-top:4px">${E.d}</p>
-  <div class="sum" style="margin:12px 0">${L.map(x=>`<p style="font-size:13.5px;line-height:1.5;margin-bottom:9px">${x}</p>`).join('')}</div>
-  <div class="sum"><div class="r"><span>Estrelas na campanha</span><span>${total} de 18</span></div><div class="r"><span>Dossiê final</span><span>${F.sc} de 5${F.t6?' + 1':''}</span></div><div class="r"><span>Finais encontrados</span><span>${nF} de 4</span></div></div>
-  <div class="note">${Object.keys(FINAIS).map(k=>found.includes(k)?`✅ ${FINAIS[k].t}`:'🔒 ???').join('<br>')}${epi?`<br>✨ Epílogo: ${EPILOGO.t}`:''}</div>
+  const rows=`<div class="r"><span>Estrelas na campanha</span><span>${total} de 18</span></div><div class="r"><span>Dossiê final</span><span>${F.sc} de 5${F.t6?' + 1':''}</span></div><div class="r"><span>Finais encontrados</span><span>${nF} de 4${epi?' ✨':''}</span></div>`;
+  const lista=Object.keys(FINAIS).map(k=>`<div class="r"><span>${found.includes(k)?FINAIS[k].t:'???'}</span><span>${k===F.key?'◀ este':found.includes(k)?'✅':'🔒'}</span></div>`).join('')+(epi?`<div class="r"><span>✨ Epílogo: ${EPILOGO.t}</span><span>✅</span></div>`:'');
+  overlay(`<div class="modal"><div class="ep">FIM DA HISTÓRIA</div><h1 style="font-size:22px">${E.t}</h1><p style="color:var(--mut);font-size:13px;margin:6px 0 4px">${E.d}</p>
+  <div class="sum" style="margin-top:10px">${rows}</div>
+  ${L.map(n=>`<div class="note">${n}</div>`).join('')}
+  <div class="ep" style="margin:18px 0 2px">FINAIS</div><div class="sum">${lista}</div>
   ${F.secreto&&S.epiShown?'<button class="bigbtn sec" data-epilogo="1">✨ Rever epílogo</button>':''}
   <button class="bigbtn" data-restart="1">Jogar de novo</button><button class="bigbtn sec" data-restartep="6">Refazer só o Episódio 6</button><button class="bigbtn sec" data-close="1">Voltar ao celular</button>
   <a href="../../" style="display:block;text-align:center;color:var(--mut);font-size:12.5px;margin-top:14px;text-decoration:none">← Mesa de Jogos</a></div>`);
