@@ -331,7 +331,8 @@ const FINAIS={
  metade:{t:'VITÓRIA PELA METADE',d:'A Bia saiu. O resto escapou.'},
  peao:{t:'PEÃO',d:'Você publicou exatamente o que a fonte queria.'},
  silenciado:{t:'SILENCIADO',d:'A verdade, sozinha, não bastou.'},
- secreto:{t:'FONTE CONFIÁVEL',d:'Final secreto: você fez tudo certo, com todo mundo.'}};
+};
+const EPILOGO={t:'FONTE CONFIÁVEL',d:'Epílogo secreto: você fez tudo certo, com todo mundo.'};
 const NEXT_TITLE={2:'O Site Clonado',3:'A Mentoria',4:'O Programador',5:'O Dinheiro',6:'A Matéria'};
 const EP_START={2:1440+990,3:5*1440+1200,4:7*1440+840,5:8*1440+540,6:10*1440+1200};
 const snapKey=n=>n===2?LS2:'fonte_anonima_ep'+n+'_inicio';
@@ -1219,7 +1220,7 @@ function rAjustes(){let found=[];try{found=JSON.parse(localStorage.getItem(LS_FI
   return `<div class="tbar"><button class="back" data-home="1">${ic('back')}</button><h2>Ajustes</h2></div><div class="scroll">
   <div class="set-h">Partida</div>
   ${row('data-howto="1"','info','#2563eb','Como jogar')}
-  ${row('','trophy','#ca8a04',`Finais encontrados`,`${found.length} de 5`)}
+  ${row('','trophy','#ca8a04',`Finais encontrados`,`${found.filter(k=>FINAIS[k]).length} de 4${found.includes('secreto')?' ✨':''}`)}
   <div class="set-h">Recomeçar</div>
   ${S.ep>=2?row(`data-restartep="${S.ep}"`,'restart','#ea580c',`Recomeçar o Episódio ${S.ep}`):''}
   ${row('data-restart="1"','rewind','#dc2626','Recomeçar do Episódio 1')}
@@ -1325,12 +1326,12 @@ const FINAL={
   let key;
   if(sc<=2||(has('suborno_exposto')&&!has('envelope_entregue')))key='silenciado';
   else if(protegeu)key='peao';
-  else if(sc===5&&d.t6&&biaSolta&&marcosPreso&&bloq&&!has('aceitou_suborno')&&queim===0&&early)key='secreto';
   else if(biaSolta&&marcosPreso&&bloq)key='completa';
   else if(biaSolta)key='metade';
   else key='silenciado';
-  S.final={key,biaSolta,marcosPreso,bloq,sc,t6:d.t6,queim};
-  try{const f=JSON.parse(localStorage.getItem(LS_FINAIS)||'[]');if(!f.includes(key))f.push(key);localStorage.setItem(LS_FINAIS,JSON.stringify(f));}catch(e){}
+  const secreto=key==='completa'&&sc===5&&d.t6&&!has('aceitou_suborno')&&queim===0&&early;
+  S.final={key,biaSolta,marcosPreso,bloq,sc,t6:d.t6,queim,secreto};
+  try{const f=JSON.parse(localStorage.getItem(LS_FINAIS)||'[]');if(!f.includes(key))f.push(key);if(secreto&&!f.includes('secreto'))f.push('secreto');localStorage.setItem(LS_FINAIS,JSON.stringify(f));}catch(e){}
   S.t=Math.max(S.t,11*1440+960);
   runNode('carol',biaSolta?'fim_solta':'fim_presa');runNode('mae',bloq?'fim_bloq':'fim_sem');},
  5(pub){
@@ -1342,7 +1343,13 @@ const FINAL={
 };
 function finalize(kind){closeOverlay();const pub=kind==='pub';let stars=0;CLAIMS[S.ep].forEach((c,i)=>{if(!c.opt&&S.draft[i]&&c.ok.includes(S.draft[i]))stars++;});if(S.ep===6)stars=Math.round(stars*3/5);
   S.mat[S.ep]={pub,stars,draft:S.draft.slice()};advance(30);FINAL[S.ep](pub);view={app:'home'};save();render();}
-function showFinal(){const F=S.final;if(!F)return;const E=FINAIS[F.key];const L=[];
+function showEpilogo(){S.epiShown=true;save();
+  overlay(`<div class="modal"><div class="ep">UMA SEMANA DEPOIS</div><h1 style="font-size:24px">${EPILOGO.t}</h1><p style="color:var(--mut);margin-top:4px">${EPILOGO.d}</p>
+  <div class="sum" style="margin:14px 0"><p style="font-size:13.5px;line-height:1.5;margin-bottom:9px">📱 Domingo, 23h. Uma mensagem de um número desconhecido.</p>
+  <p style="font-size:15px;line-height:1.5;margin-bottom:9px;padding:10px 12px;background:var(--card2);border-radius:12px">"O PainelPay tem 41 clientes. Você derrubou dois. Faltam 39."</p>
+  <p style="font-size:13.5px;line-height:1.5">A história continua.</p></div>
+  <button class="bigbtn" data-showfinal="1">Voltar ao resultado</button></div>`);}
+function showFinal(){const F=S.final;if(!F)return;if(F.key==='secreto'){F.key='completa';F.secreto=true;save();try{const f=JSON.parse(localStorage.getItem(LS_FINAIS)||'[]');if(!f.includes('completa'))f.push('completa');localStorage.setItem(LS_FINAIS,JSON.stringify(f));}catch(e){}}const E=FINAIS[F.key];const L=[];
   L.push(F.biaSolta?'👩🏻 A Bia foi solta na quinta à tarde. Na saída do fórum, abraçou a Carol e procurou você na multidão.':'👩🏻 A juíza manteve a prisão da Bia: "provas insuficientes". A Carol parou de responder.');
   L.push(F.marcosPreso?'🧔🏻 Marcos e Patrícia Teixeira foram presos em casa, no Alto da Serra. A Hilux foi apreendida.':has('marcos_fugiu')?'🧔🏻 Marcos Teixeira cruzou a fronteira. Há um mandado de prisão internacional que talvez nunca seja cumprido.':'🧔🏻 Marcos Teixeira responde em liberdade. Ainda vai à missa de domingo.');
   L.push(F.bloq?'💰 A Justiça bloqueou R$ 4,9 milhões na carteira M. Sua mãe deve recuperar cerca de R$ 7 mil dos 48. "É pouco, filho. Mas é nosso."':'💸 O dinheiro das vítimas está fora do país. Sua mãe não vai ver os 48 mil de volta.');
@@ -1354,15 +1361,16 @@ function showFinal(){const F=S.final;if(!F)return;const E=FINAIS[F.key];const L=
   else L.push('💻 Thiago foi indiciado como cúmplice.');
   if(F.queim)L.push('💔 Nem todo mundo que te ajudou quis te ver de novo.');
   L.push(F.key==='silenciado'?`📰 O Vale Alto Agora saiu do ar depois de uma enxurrada de processos.${has('suborno_exposto')?' A história do envelope do Marcos acabou com a sua credibilidade.':''}`:'📰 O Vale Alto Agora passou de 3 mil para 80 mil leitores por mês.');
-  if(F.key==='secreto')L.push('❔ Uma semana depois, chega uma mensagem de um número desconhecido: "O PainelPay tem 41 clientes. Você derrubou dois. Faltam 39." A história continua.');
-  let found=[];try{found=JSON.parse(localStorage.getItem(LS_FINAIS)||'[]');}catch(e){}
+  let found=[];try{found=JSON.parse(localStorage.getItem(LS_FINAIS)||'[]');}catch(e){}const nF=found.filter(k=>FINAIS[k]).length,epi=found.includes('secreto');
   const total=Object.values(S.mat).reduce((a,m)=>a+(m.stars||0),0);
   overlay(`<div class="modal"><div class="ep">FIM DA HISTÓRIA</div><h1 style="font-size:24px">${E.t}</h1><p style="color:var(--mut);margin-top:4px">${E.d}</p>
   <div class="sum" style="margin:12px 0">${L.map(x=>`<p style="font-size:13.5px;line-height:1.5;margin-bottom:9px">${x}</p>`).join('')}</div>
-  <div class="sum"><div class="r"><span>Estrelas na campanha</span><span>${total} de 18</span></div><div class="r"><span>Dossiê final</span><span>${F.sc} de 5${F.t6?' + 1':''}</span></div><div class="r"><span>Finais encontrados</span><span>${found.length} de 5</span></div></div>
-  <div class="note">${Object.keys(FINAIS).map(k=>found.includes(k)?`✅ ${FINAIS[k].t}`:'🔒 ???').join('<br>')}</div>
+  <div class="sum"><div class="r"><span>Estrelas na campanha</span><span>${total} de 18</span></div><div class="r"><span>Dossiê final</span><span>${F.sc} de 5${F.t6?' + 1':''}</span></div><div class="r"><span>Finais encontrados</span><span>${nF} de 4</span></div></div>
+  <div class="note">${Object.keys(FINAIS).map(k=>found.includes(k)?`✅ ${FINAIS[k].t}`:'🔒 ???').join('<br>')}${epi?`<br>✨ Epílogo: ${EPILOGO.t}`:''}</div>
+  ${F.secreto&&S.epiShown?'<button class="bigbtn sec" data-epilogo="1">✨ Rever epílogo</button>':''}
   <button class="bigbtn" data-restart="1">Jogar de novo</button><button class="bigbtn sec" data-restartep="6">Refazer só o Episódio 6</button><button class="bigbtn sec" data-close="1">Voltar ao celular</button>
-  <a href="../../" style="display:block;text-align:center;color:var(--mut);font-size:12.5px;margin-top:14px;text-decoration:none">← Mesa de Jogos</a></div>`);}
+  <a href="../../" style="display:block;text-align:center;color:var(--mut);font-size:12.5px;margin-top:14px;text-decoration:none">← Mesa de Jogos</a></div>`);
+  if(F.secreto&&!S.epiShown){clearTimeout(window._epiT);window._epiT=setTimeout(()=>{if($('#overlay').classList.contains('show'))showEpilogo();},4500);}}
 function trustTxt(v){return v>=2?'Aliado(a)':v>=1?'Confia em você':v===0?'Neutro(a)':v>=-1?'Desconfiado(a)':'Hostil';}
 function showEnd(ep){const M=S.mat[ep];if(!M)return;save();
   const notes=[];let rows='';const e=Math.min(5,S.expo);const nEv=S.ev.filter(x=>EPS[ep].evs.includes(x)).length;
@@ -1515,7 +1523,7 @@ document.addEventListener('click',e=>{const t=e.target;
   if(t.id==='sheet'){closeSheet();return;}
   const tx=t.closest('[data-tx]');if(tx&&S){const k=tx.dataset.tx;if(k.startsWith('n:'))toast(k.slice(2));else if(S.ev.includes(k))toast('Você já printou essas transferências');else{addEv(k);save();render();}return;}
   const fd=t.closest('[data-fdm]');if(fd&&S){forumDM(+fd.dataset.fdm);return;}
-  const a=t.closest('[data-home],[data-open],[data-chat],[data-p],[data-ev],[data-opt],[data-clip],[data-sendev],[data-pickev],[data-pick],[data-wait],[data-add],[data-search],[data-tab],[data-print],[data-bback],[data-bhome],[data-src],[data-decide],[data-confirm],[data-close],[data-restart],[data-restartep],[data-new],[data-continue],[data-epintro],[data-startep],[data-lxform],[data-arch],[data-waitat],[data-forumdm],[data-dossie],[data-howto],[data-showend],[data-showfinal]');
+  const a=t.closest('[data-home],[data-open],[data-chat],[data-p],[data-ev],[data-opt],[data-clip],[data-sendev],[data-pickev],[data-pick],[data-wait],[data-add],[data-search],[data-tab],[data-print],[data-bback],[data-bhome],[data-src],[data-decide],[data-confirm],[data-close],[data-restart],[data-restartep],[data-new],[data-continue],[data-epintro],[data-startep],[data-lxform],[data-arch],[data-waitat],[data-forumdm],[data-dossie],[data-howto],[data-showend],[data-showfinal],[data-epilogo]');
   if(!a)return;const d=a.dataset;
   if(d.new!==undefined){newGame();return;}if(d.continue!==undefined){cont();return;}if(!S)return;
   if(d.home!==undefined){view={app:'home'};render();}
@@ -1547,6 +1555,7 @@ document.addEventListener('click',e=>{const t=e.target;
   else if(d.howto){howto();}
   else if(d.showend){showEnd(S.ep);}
   else if(d.showfinal){showFinal();}
+  else if(d.epilogo){showEpilogo();}
   else if(d.forumdm){if(has('forum_dm')||has('thiago_contato')){toast('Você já mandou mensagem');return;}openSheet('Mensagem privada para tvieira',`<button class="sitem" data-fdm="1">"Aqui é o jornalista do Vale Alto Agora. Você não está sozinho nessa."</button><button class="sitem" data-fdm="2">"Sei que você é a fonte e que montou o sistema. Fala comigo ou eu publico."</button>`);}
   else if(d.close){closeOverlay();}
   else if(d.restartep){const n=+d.restartep;if(confirm(`Recomeçar o Episódio ${n}? As escolhas dos episódios anteriores continuam valendo.`))restartEp(n);}
