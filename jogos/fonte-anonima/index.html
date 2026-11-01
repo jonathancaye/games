@@ -1347,7 +1347,7 @@ function showEpilogo(){S.epiShown=true;save();
   overlay(`<div class="modal"><div class="ep">UMA SEMANA DEPOIS</div><h1 style="font-size:24px">${EPILOGO.t}</h1><p style="color:var(--mut);margin-top:4px">${EPILOGO.d}</p>
   <div class="sum" style="margin:14px 0"><p style="font-size:13.5px;line-height:1.5;margin-bottom:9px">📱 Domingo, 23h. Uma mensagem de um número desconhecido.</p>
   <p style="font-size:15px;line-height:1.5;margin-bottom:9px;padding:10px 12px;background:var(--card2);border-radius:12px">"O PainelPay tem 41 clientes. Você derrubou dois. Faltam 39."</p>
-  <p style="font-size:13.5px;line-height:1.5">A história continua.</p></div>
+  <p style="font-size:13.5px;line-height:1.5">A história continua.</p><p style="margin-top:12px;text-align:center"><span style="display:inline-block;padding:5px 14px;border-radius:20px;border:1px solid var(--org);color:var(--org);font-size:12px;font-weight:700;letter-spacing:1px">EM BREVE · TEMPORADA 2</span></p></div>
   <button class="bigbtn" data-showfinal="1">Voltar ao resultado</button></div>`);}
 function showFinal(){const F=S.final;if(!F)return;if(F.key==='secreto'){F.key='completa';F.secreto=true;save();try{const f=JSON.parse(localStorage.getItem(LS_FINAIS)||'[]');if(!f.includes('completa'))f.push('completa');localStorage.setItem(LS_FINAIS,JSON.stringify(f));}catch(e){}}const E=FINAIS[F.key];const L=[];
   L.push(F.biaSolta?'👩🏻 A Bia foi solta na quinta à tarde. Na saída do fórum, abraçou a Carol e procurou você na multidão.':'👩🏻 A juíza manteve a prisão da Bia: "provas insuficientes". A Carol parou de responder.');
