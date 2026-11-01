@@ -242,8 +242,13 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
 .tile{background:var(--card2);border-radius:12px;padding:9px 6px;text-align:center}.tile b{display:block;font-size:17px;color:var(--tx)}.tile small{font-size:10.5px;color:var(--mut);letter-spacing:.5px;text-transform:uppercase}
 .oc{background:var(--card2);border-radius:12px;padding:2px 12px;margin-bottom:14px}
-.oc .r{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px}.oc .r:last-child{border-bottom:0}
-.oc .r span:first-child{color:var(--mut)}.oc .r b{font-weight:600;text-align:right}.oc .g{color:var(--teal)}.oc .w{color:var(--org)}
+.oc .r{border-bottom:1px solid var(--line);font-size:13.5px;cursor:pointer}.oc .r:last-child{border-bottom:0}
+.oc .t{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0}
+.oc .t span{color:var(--mut)}.oc .t b{font-weight:600;text-align:right;display:flex;align-items:center;gap:6px}
+.oc .t b:after{content:'';width:6px;height:6px;border-right:1.5px solid var(--mut);border-bottom:1.5px solid var(--mut);transform:rotate(45deg);margin:-3px 2px 0 4px;transition:transform .2s}
+.oc .r.open .t b:after{transform:rotate(-135deg);margin-top:3px}
+.oc .d{display:none;color:var(--tx);opacity:.85;font-size:12.5px;line-height:1.45;padding:0 0 9px}.oc .r.open .d{display:block}
+.ochint{font-size:11px;color:var(--mut);text-align:right;margin:-10px 2px 12px}.oc .g{color:var(--teal)}.oc .w{color:var(--org)}
 .fpills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}.fpill{font-size:11px;font-weight:700;letter-spacing:.5px;padding:5px 10px;border-radius:20px;border:1px solid var(--line);color:var(--mut)}
 .fpill.got{border-color:var(--teal);color:var(--teal)}.fpill.cur{background:var(--teal);border-color:var(--teal);color:#05201d}.fpill.epi{border-color:var(--org);color:var(--org)}
 .btn2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.btn2 .bigbtn{margin-top:8px;font-size:14px;padding-left:6px;padding-right:6px}
@@ -1363,21 +1368,21 @@ function showEpilogo(){S.epiShown=true;save();
   <button class="bigbtn sec" data-showfinal="1">Voltar ao resultado</button></div>`);}
 function showFinal(){const F=S.final;if(!F)return;
   if(F.key==='secreto'){F.key='completa';F.secreto=true;save();try{const f=JSON.parse(localStorage.getItem(LS_FINAIS)||'[]');if(!f.includes('completa'))f.push('completa');localStorage.setItem(LS_FINAIS,JSON.stringify(f));}catch(e){}}
-  const E=FINAIS[F.key];const O=[];const row=(l,v,ok)=>O.push(`<div class="r"><span>${l}</span><b class="${ok?'g':'w'}">${v}</b></div>`);
-  row('Bia',F.biaSolta?'Solta':'Continua presa',F.biaSolta);
-  row('Marcos',F.marcosPreso?'Preso':has('marcos_fugiu')?'Fugiu do país':'Em liberdade',F.marcosPreso);
-  row('Dinheiro',F.bloq?'R$ 4,9 mi bloqueados':'Fora do país',F.bloq);
-  if(has('mae_recebeu'))row('Envelope',has('envelope_entregue')?'Entregue à polícia':'Guardado',has('envelope_entregue'));
-  const fab=S.ev.includes('tabela_bonus')||(S.mat[3]&&S.mat[3].pub);row('Fábio',fab?'Indiciado':'Solto',fab);
-  const th=F.key==='peao'?['Fugiu com R$ 300 mil',0]:has('thiago_testemunha')?['Testemunhou',1]:has('thiago_fugiu')?['Desaparecido',0]:['Indiciado',0];row('Thiago',th[0],th[1]);
-  row('Fontes',F.queim?(F.queim===1?'1 queimada':F.queim+' queimadas'):'Todas preservadas',!F.queim);
-  row('Blog',F.key==='silenciado'?'Saiu do ar':'80 mil leitores/mês',F.key!=='silenciado');
+  const E=FINAIS[F.key];const O=[];const row=(l,v,ok,d)=>O.push(`<div class="r"><div class="t"><span>${l}</span><b class="${ok?'g':'w'}">${v}</b></div><div class="d">${d}</div></div>`);
+  row('Bia',F.biaSolta?'Solta':'Continua presa',F.biaSolta,F.biaSolta?'Foi solta na quinta à tarde. Na saída do fórum, abraçou a Carol e procurou você na multidão.':'A juíza manteve a prisão: "provas insuficientes". A Carol parou de responder.');
+  row('Marcos',F.marcosPreso?'Preso':has('marcos_fugiu')?'Fugiu do país':'Em liberdade',F.marcosPreso,F.marcosPreso?'Ele e Patrícia Teixeira foram presos em casa, no Alto da Serra. A Hilux foi apreendida.':has('marcos_fugiu')?'Cruzou a fronteira. Há um mandado de prisão internacional que talvez nunca seja cumprido.':'Responde em liberdade. Ainda vai à missa de domingo.');
+  row('Dinheiro',F.bloq?'R$ 4,9 mi bloqueados':'Fora do país',F.bloq,F.bloq?'A Justiça bloqueou R$ 4,9 milhões na carteira M. Sua mãe deve recuperar cerca de R$ 7 mil dos 48. "É pouco, filho. Mas é nosso."':'O dinheiro das vítimas está fora do país. Sua mãe não vai ver os 48 mil de volta.');
+  if(has('mae_recebeu'))row('Envelope',has('envelope_entregue')?'Entregue à polícia':'Guardado',has('envelope_entregue'),has('envelope_entregue')?'Sua mãe entregou à polícia o envelope do Marcos.':'Sua mãe guardou o envelope do Marcos. Vocês nunca mais falaram sobre isso.');
+  const fab=S.ev.includes('tabela_bonus')||(S.mat[3]&&S.mat[3].pub);row('Fábio',fab?'Indiciado':'Solto',fab,fab?'Fábio Brandão foi indiciado por pirâmide financeira.':'Fábio Brandão abriu uma turma nova, em outra cidade.');
+  const th=F.key==='peao'?['Fugiu com R$ 300 mil',0,'Deu entrevista na TV como "o programador que desmascarou o golpe". Uma semana depois, embarcou para Lisboa com os R$ 300 mil do admin2.']:has('thiago_testemunha')?['Testemunhou',1,'Testemunhou, devolveu os R$ 300 mil e pegou pena alternativa.']:has('thiago_fugiu')?['Desaparecido',0,'Ninguém sabe onde o Thiago está.']:['Indiciado',0,'Foi indiciado como cúmplice.'];row('Thiago',th[0],th[1],th[2]);
+  row('Fontes',F.queim?(F.queim===1?'1 queimada':F.queim+' queimadas'):'Todas preservadas',!F.queim,F.queim?'Nem todo mundo que te ajudou quis te ver de novo.':'Ninguém que confiou em você foi exposto.');
+  row('Blog',F.key==='silenciado'?'Saiu do ar':'80 mil leitores/mês',F.key!=='silenciado',F.key==='silenciado'?`O Vale Alto Agora saiu do ar depois de uma enxurrada de processos.${has('suborno_exposto')?' A história do envelope do Marcos acabou com a sua credibilidade.':''}`:'O Vale Alto Agora passou de 3 mil para 80 mil leitores por mês.');
   let found=[];try{found=JSON.parse(localStorage.getItem(LS_FINAIS)||'[]');}catch(e){}const nF=found.filter(k=>FINAIS[k]).length,epi=found.includes('secreto');
   const total=Object.values(S.mat).reduce((a,m)=>a+(m.stars||0),0);
   const pills=Object.keys(FINAIS).map(k=>`<span class="fpill${k===F.key?' cur':found.includes(k)?' got':''}">${found.includes(k)?FINAIS[k].t:'???'}</span>`).join('')+(epi?`<span class="fpill epi">${EPILOGO.t}</span>`:'');
   overlay(`<div class="modal fin"><div class="ep">FIM DA HISTÓRIA</div><h1>${E.t}</h1><div class="dsc">${E.d}</div>
   <div class="tiles"><div class="tile"><b>${total}/18</b><small>Estrelas</small></div><div class="tile"><b>${F.sc}/5${F.t6?'+1':''}</b><small>Dossiê</small></div><div class="tile"><b>${nF}/4</b><small>Finais</small></div></div>
-  <div class="oc">${O.join('')}</div>
+  <div class="oc">${O.join('')}</div><div class="ochint">Toque numa linha para ver o que aconteceu</div>
   <div class="fpills">${pills}</div>
   ${F.secreto&&S.epiShown?'<button class="bigbtn sec" data-epilogo="1">Rever epílogo</button>':''}
   <button class="bigbtn" data-restart="1">Jogar de novo</button>
@@ -1535,6 +1540,7 @@ document.addEventListener('click',e=>{const t=e.target;
   if(t.closest('#notif')){const c=$('#notif').dataset.c;$('#notif').classList.remove('show');if(c&&S)openChat(c);return;}
   if(t.id==='sheet'){closeSheet();return;}
   const tx=t.closest('[data-tx]');if(tx&&S){const k=tx.dataset.tx;if(k.startsWith('n:'))toast(k.slice(2));else if(S.ev.includes(k))toast('Você já printou essas transferências');else{addEv(k);save();render();}return;}
+  const ocr=t.closest('.oc .r');if(ocr){ocr.classList.toggle('open');return;}
   const fd=t.closest('[data-fdm]');if(fd&&S){forumDM(+fd.dataset.fdm);return;}
   const a=t.closest('[data-home],[data-open],[data-chat],[data-p],[data-ev],[data-opt],[data-clip],[data-sendev],[data-pickev],[data-pick],[data-wait],[data-add],[data-search],[data-tab],[data-print],[data-bback],[data-bhome],[data-src],[data-decide],[data-confirm],[data-close],[data-restart],[data-restartep],[data-new],[data-continue],[data-epintro],[data-startep],[data-lxform],[data-arch],[data-waitat],[data-forumdm],[data-dossie],[data-howto],[data-showend],[data-showfinal],[data-epilogo]');
   if(!a)return;const d=a.dataset;
