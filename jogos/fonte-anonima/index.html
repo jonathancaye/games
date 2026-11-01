@@ -62,6 +62,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .b.me{background:#0f5c55;align-self:flex-end;border-top-right-radius:3px}
 .b .tm{font-size:10px;color:#ffffff80;text-align:right;margin-top:2px}
 .b .who{font-size:12px;font-weight:700;color:var(--org);margin-bottom:2px}
+.unr{align-self:stretch;text-align:center;margin:8px -10px;padding:6px 0;background:rgba(255,255,255,.07);color:var(--teal);font-size:12.5px;font-weight:600;letter-spacing:.2px}
 .sysm{align-self:center;background:#ffffff12;color:var(--mut);font-size:12px;padding:4px 10px;border-radius:8px;margin:4px 0;text-align:center}
 .lnk{background:#0006;border-radius:8px;padding:8px;margin:2px 0 3px;cursor:pointer;border-left:3px solid var(--teal)}
 .lnk b{display:block;font-size:13.5px}.lnk span{font-size:11.5px;color:var(--mut)}
@@ -1056,7 +1057,10 @@ function waitTill(c){const ch=chat(c);S.t=Math.max(S.t,CONTACTS[c].wake());check
 function forumDM(k){closeSheet();fl('forum_dm');if(k===2){tr('thiago',-2);fl('ameacou_thiago');}else tr('thiago',1);advance(2);schedule('thiago_forum',S.t+8);toast('✉️ Mensagem enviada pelo fórum');save();render();}
 function waitAt(c){const ch=chat(c);if(!ch.waitAt||S.t>=ch.waitAt)return;S.t=ch.waitAt;checkTimers();toast(`🌙 Você esperou. ${DAYSF[dayOf(S.t)]}, ${hm(S.t)}`);save();render();}
 function addContact(c){const ch=chat(c);if(ch.visible){openChat(c);return;}ch.visible=true;ch.last=++S.seq;ch.msgs.push({f:'sys',t:CONTACTS[c].saved,time:hm(S.t)});ch.opts={node:'ola'};toast('💬 Contato adicionado ao Papo');save();openChat(c);}
-function openChat(c){view={app:'chat',c};chat(c).unread=0;save();render();}
+function openChat(c){const ch=chat(c);let mark=null;
+  if(ch.unread>0){let n=0;for(let i=ch.msgs.length-1;i>=0;i--){if(ch.msgs[i].f==='them'){n++;if(n===ch.unread){mark={idx:i,n:ch.unread};break;}}}}
+  view={app:'chat',c,mark};ch.unread=0;save();render();
+  if(mark){const d=document.getElementById('unr');if(d)d.scrollIntoView({block:'start'});}}
 
 /* navegador */
 function go(x){if(S.br.cur!==null)S.br.stack.push(S.br.cur);S.br.cur=x;S.br.src=false;S.br.arch=false;view={app:'nav'};
@@ -1153,7 +1157,7 @@ function rChat(){const c=view.c,ch=chat(c),C=CONTACTS[c];
   else comp=optH+`<div class="cbar"><div class="ph">${opts&&opts.length?'Escolha uma resposta ou mostre uma prova':'Mostre uma prova com o clipe'}</div><button class="clip" data-clip="1" aria-label="Mostrar prova">${ic('clip')}</button></div>`;
   if(ch.waitAt&&S.t<ch.waitAt&&!ch.wait&&!(c==='ment'&&has('ment_removido')))comp=`<button class="waitb" data-waitat="${c}">${ic('clock')} Esperar o encontro (${DAYSF[dayOf(ch.waitAt)]}, ${hm(ch.waitAt)})</button>`+comp;
   return `<div class="tbar"><button class="back" data-open="papo">${ic('back')}</button>${avatar(c)}<div style="flex:1;min-width:0"><h2 style="font-size:16px">${C.name}</h2><div class="sub">${typing===c?'<span class="typ">digitando…</span>':C.sub}</div></div></div>
-  <div class="msgs" id="msgs">${ch.msgs.map(rMsg).join('')}${typing===c?'<div class="b them"><span class="typ">digitando…</span></div>':''}</div><div class="compose">${comp}</div>`;}
+  <div class="msgs" id="msgs">${ch.msgs.map((m,i)=>(view.mark&&view.mark.idx===i?`<div class="unr" id="unr">${view.mark.n} ${view.mark.n===1?'mensagem não lida':'mensagens não lidas'}</div>`:'')+rMsg(m)).join('')}${typing===c?'<div class="b them"><span class="typ">digitando…</span></div>':''}</div><div class="compose">${comp}</div>`;}
 function rNav(){const cur=S.br.cur;let body,url='';const p=curPage();
   if(cur===null){body=`<div class="eng"><h1>busca<span>í</span></h1><form id="sform"><input id="q" placeholder="Pesquisar…" autocomplete="off"><button>Ir</button></form><p>Dica: pesquise termos que você encontrou na investigação. Eles ficam guardados no Caderno.</p></div>`;}
   else if(cur.startsWith('q:')){const q=cur.slice(2);url=q;const r=search(q);
