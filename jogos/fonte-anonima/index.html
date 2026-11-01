@@ -719,8 +719,8 @@ const D={
  },
  thiago:{
   ola:{o:[{t:'Thiago? É o jornalista. O Diego me passou teu número.',go:'oi'},{t:'Thiago, eu sei que você é a fonte.',go:'oi',fx(){tr('thiago',-1);}}]},
-  oi:{m:['...','O Diego... tá. Tanto faz agora.','Sim. Sou eu. O número desconhecido.'],after(){fl('thiago_contato');runNode('thiago','conta');}},
-  forum_resp:{m:['Você me achou pelo fórum.','Se você achou, eles também acham.','Sim. Sou eu. O número desconhecido. Esse é meu número novo.'],after(){fl('thiago_contato');runNode('thiago','conta');}},
+  oi:{pre(){fl('thiago_contato');},m:['...','O Diego... tá. Tanto faz agora.','Sim. Sou eu. O número desconhecido.'],after(){if(has('thiago_conta'))return;fl('thiago_conta');runNode('thiago','conta');}},
+  forum_resp:{pre(){fl('thiago_contato');},m:['Você me achou pelo fórum.','Se você achou, eles também acham.','Sim. Sou eu. O número desconhecido. Esse é meu número novo.'],after(){if(has('thiago_conta'))return;fl('thiago_conta');runNode('thiago','conta');}},
   conta:{m:['Eu montei o sistema. O PainelPay é meu.','Achei que era um cliente normal. Um app de investimento como qualquer outro.','Quando vi o dinheiro saindo todo pra uma carteira só, entendi. Foi aí que comecei a te mandar as coisas.','Tenho o banco de dados inteiro. Mas preciso de uma garantia.'],
    o:[{t:'Eu te deixo fora da matéria. Prometo.',go:'envia',fx(){fl('prometeu_thiago');tr('thiago',1);}},{t:'Não posso esconder teu papel. Mas posso mostrar que você ajudou a desmontar o golpe.',go:'envia',fx(){fl('honesto_thiago');}},{t:'Garantia nenhuma. Ou manda, ou eu publico teu nome hoje.',go:'envia',fx(){fl('ameacou_thiago');tr('thiago',-2);}}]},
   envia:{after(){runNode('thiago',has('prometeu_thiago')?'envia_full':'envia_edit');}},
