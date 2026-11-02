@@ -1137,14 +1137,14 @@ function objective(){
     if(!S.ev.includes('explorer_m'))return 'Rastreie a carteira M. Para onde foi o dinheiro?';
     if(!S.ev.includes('hilux'))return 'Dinheiro de golpe vira carro e casa. Descubra quem recebeu.';
     if(!S.ev.includes('suborno')&&!S.ev.includes('reconhece_osvaldo'))return 'Falta ligar o "M" a uma pessoa. Alguém que viu a família Teixeira de perto pode ajudar. Ou confronte o Marcos.';
-    return 'Você tem material. Escreva a matéria no app Blog.';}
+    return 'Você tem material. Abra o Blog e decida: publicar ou salvar o rascunho.';}
   if(S.ep===4){
     if(S.mat[4])return 'Episódio concluído.';
     if(!has('thiago_contato')&&!has('extrato_sent'))return has('v_painelpay')?'A fonte sumiu e estão atrás dela. Ache o Thiago antes deles: o site do PainelPay pode ter a assinatura de quem fez o sistema. Veja o código da página (&lt;/&gt;).':'A fonte sumiu e estão atrás dela. Ache o Thiago antes deles. Lembra do código do Lucrix? Ele citava o sistema pronto por trás dos apps, o PainelPay. Pesquise no Navegador e veja o código da página (&lt;/&gt;) atrás da assinatura de quem o fez.';
     if(!has('extrato_sent'))return 'Ganhe a confiança do Thiago. Ele tem o banco de dados.';
     if(!S.ev.includes('tx_cofre'))return 'Abra o banco de dados no Caderno e printe as transferências que importam.';
     if(!has('confessou')&&!S.ev.includes('tx_admin2')&&!has('thiago_fugiu'))return 'Repare nos números das linhas. E o "admin2" aparece em provas antigas. O Thiago contou tudo?';
-    return 'Você tem material. Escreva a matéria no app Blog.';}
+    return 'Você tem material. Abra o Blog e decida: publicar ou salvar o rascunho.';}
   if(S.ep===3){
     if(S.mat[3])return 'Episódio concluído. Aguarde notícias.';
     if(!has('v_fabio_insta'))return 'Descubra quem é Fábio Brandão, o guru do folheto.';
@@ -1152,7 +1152,7 @@ function objective(){
     if(!S.ev.includes('tabela_bonus'))return 'Descubra como a mentoria ganhava dinheiro. Quem já esteve lá dentro pode ajudar.';
     if(!S.ev.includes('ranking')&&!has('ranking_cancelado')&&S.t<9300)return 'Acompanhe o encontro de sábado, às 9h.';
     if(!has('diego_ok'))return 'Encontre o Diego, o rapaz de boné que aparece com o Fábio.';
-    return 'Você tem material. Escreva a matéria no app Blog.';}
+    return 'Você tem material. Abra o Blog e decida: publicar ou salvar o rascunho.';}
   if(S.ep===2){
     if(S.mat[2])return 'Episódio concluído. Aguarde a fonte.';
     if(!has('v_lucrix_site'))return 'Abra o link que o número desconhecido mandou.';
@@ -1160,14 +1160,14 @@ function objective(){
     if(!chat('toninho').visible)return 'Vá atrás do endereço das empresas: Rua Quinze, 210.';
     if(!S.ev.includes('caderno_retirada'))return 'Descubra quem busca as cartas na lotérica.';
     if(!S.ev.includes('relato_osvaldo'))return 'Encontre o Seu Osvaldo, o dono no papel. Alguém da rua deve conhecê-lo.';
-    return 'Você tem material. Escreva a matéria no app Blog.';}
+    return 'Você tem material. Abra o Blog e decida: publicar ou salvar o rascunho.';}
   if(S.mat[1])return 'Episódio concluído. Aguarde o contato da fonte.';
   if(!has('v_vn_prisao'))return 'Abra o Papo e veja o que sua mãe mandou.';
   if(!S.kw.includes('Lume Comunicação'))return 'Descubra quem pagava a Bia pelos vídeos. Toque nos termos em destaque para anotá-los.';
   if(!chat('luana').visible)return 'Encontre alguém da Lume Comunicação. Pesquise no Navegador.';
   if(!S.ev.includes('briefing'))return 'Faça a Luana falar. Mostrar uma prova (📎) costuma funcionar melhor que pressão.';
   if(!S.ev.includes('cnpj_rendix')&&!S.ev.includes('cnpj_mx'))return 'Descubra de quem é o Rendix no papel. Todo site tem um rodapé.';
-  return 'Você tem material. Escreva a matéria no app Blog.';}
+  return 'Você tem material. Abra o Blog e decida: publicar ou salvar o rascunho.';}
 function objWidget(inside){const ep=S.ep,M=S.mat[ep];
   const seg=`<div class="objseg">${[1,2,3,4,5,6].map(n=>`<i class="${S.mat[n]&&(n<ep||S.endShown[n]||S.finalShown)?'ok':n===ep?'now':''}"></i>`).join('')}</div>`;
   const head=(icn,lab)=>`<div class="objh"><span class="oi">${ic(icn)}</span><span class="ol">${lab}</span><span class="oe">Ep. ${ep} de 6</span></div>`;
@@ -1251,7 +1251,7 @@ function rAjustes(){let found=[];try{found=JSON.parse(localStorage.getItem(LS_FI
   <div class="set-h">Sair</div>
   <a class="set-row" href="../../"><span class="si" style="background:#0d9488">${ic('grid')}</span>Voltar à Mesa de Jogos<span class="chev">›</span></a>
   <p class="hint" style="padding:14px 16px">Dossiê nº 1 · Caso Rendix · Episódio ${S.ep} de 6 · seu progresso fica salvo neste aparelho.</p></div>`;}
-const RULES=['Tudo acontece no seu celular.','Toque nos <span class="k">termos em destaque</span> para anotá-los no Caderno. Tocar numa pista no Caderno já pesquisa.','No Navegador, use a câmera para printar páginas como prova. Alguns sites têm código-fonte e versão arquivada.','No Papo, use o clipe para mostrar provas às pessoas.','Cada ação gasta tempo. Algumas provas desaparecem, e quem você alerta reage.','No fim de cada episódio, escreva a matéria no Blog e decida: publicar ou segurar.'];
+const RULES=['Tudo acontece no seu celular.','Toque nos <span class="k">termos em destaque</span> para anotá-los no Caderno. Tocar numa pista no Caderno já pesquisa.','No Navegador, use a câmera para printar páginas como prova. Alguns sites têm código-fonte e versão arquivada.','No Papo, use o clipe para mostrar provas às pessoas.','Cada ação gasta tempo. Algumas provas desaparecem, e quem você alerta reage.','No fim de cada episódio, escreva a matéria no Blog e decida: publicar ou salvar o rascunho.'];
 function howto(){overlay(`<div class="modal fin"><div class="ep">COMO JOGAR · Nº 1 · CASO RENDIX</div><h1>DOSSI<span>Ê</span></h1><div class="dsc">Uma investigação contada pelo seu celular.</div>${olist(RULES,1)}<button class="bigbtn" data-close="1">Entendi</button></div>`);}
 const CLAIMS={
  1:[{t:'A Bia não era dona do Rendix: ela foi contratada para gravar os vídeos.',ok:['pix_lume','briefing','post_publi']},
@@ -1289,9 +1289,9 @@ function rBlog(){const done=S.mat[S.ep];const epEv=S.ev.filter(e=>EPS[S.ep].evs.
 function rMateria(){const CL=CLAIMS[S.ep];return `<div class="tbar"><button class="back" data-open="blog">${ic('back')}</button><h2>Rascunho</h2></div><div class="scroll">
   <div class="hint" style="padding-top:12px">"${EPS[S.ep].mat}". Sustente cada afirmação com uma prova do Caderno. Afirmações sem prova enfraquecem a matéria.</div>
   ${CL.map((c,i)=>`<div class="claim"><p>${i+1}. ${c.t}</p><div class="prow"><button class="pick ${S.draft[i]?'set':''}" data-pick="${i}">${S.draft[i]?'📎 '+EV[S.draft[i]].t:'+ Escolher prova'}</button>${S.draft[i]?`<button class="prev" data-ev="${S.draft[i]}" aria-label="Pré-visualizar">${ic('eye')}</button>`:''}</div></div>`).join('')}
-  <div class="hint" style="margin-top:6px">Publicar agora pressiona as autoridades e protege quem ainda pode cair, mas alerta quem está por trás do golpe. Segurar mantém o dossiê em segredo. Lembre-se de quem te passou cada prova.</div>
+  <div class="hint" style="margin-top:6px">Publicar agora pressiona as autoridades e protege quem ainda pode cair, mas alerta quem está por trás do golpe. Salvar o rascunho mantém a investigação em segredo. Lembre-se de quem te passou cada prova.</div>
   ${S.ep===6?`<button class="bigbtn sec" data-dossie="1">📁 ${S.ev.includes('dossie')?'Atualizar dossiê':'Montar dossiê para enviar'}</button><div class="hint">Depois de montado, mande o dossiê pelo Papo (📎) para quem pode agir.</div><button class="bigbtn" data-decide="pub">📢 Publicar a matéria final</button>`:
-  `<button class="bigbtn" data-decide="pub">📢 Publicar agora</button><button class="bigbtn sec" data-decide="held">🔒 Segurar e continuar investigando</button>`}</div>`;}
+  `<button class="bigbtn sec" data-decide="pub">📢 Publicar agora</button><button class="bigbtn sec" data-decide="held">🔒 Salvar rascunho e continuar</button>`}</div>`;}
 function render(){if(!S)return;$('#clock').textContent=DAYS[dayOf(S.t)]+' '+hm(S.t);
   const ae=document.activeElement;const keep=ae&&(ae.id==='q'||ae.id==='uq')?{id:ae.id,v:ae.value,s:ae.selectionStart}:null;
   const m=$('#msgs');const atBottom=!m||m.scrollHeight-m.scrollTop-m.clientHeight<80;const pg=$('.page');const pst=pg?pg.scrollTop:0;
@@ -1310,7 +1310,7 @@ function evPicker(mode,idx){if(!S.ev.length){toast('Você ainda não tem provas'
 function overlay(html){const o=$('#overlay');o.innerHTML=html;o.classList.add('show');}
 function closeOverlay(){$('#overlay').classList.remove('show');if(S)render();}
 function viewEv(id){if(EV[id].table){overlay(`<div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">${txTable(id)}<button class="bigbtn sec" style="max-width:360px" data-close="1">Fechar</button></div>`);return;}overlay(`<div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%"><div class="evfull"><div class="evt" style="font-size:13px;padding:8px 10px">📸 ${EV[id].t}</div>${EV[id].h()}</div><button class="bigbtn sec" style="max-width:340px" data-close="1">Fechar</button></div>`);}
-function decide(kind){overlay(`<div class="modal"><p><b>${kind==='pub'?'Publicar a matéria agora?':'Segurar a matéria?'}</b></p><p style="color:var(--mut)">${S.ep===6?'Isso encerra a história. Tudo o que você fez até aqui decide o final.':`Essa decisão encerra o Episódio ${S.ep} e tem consequências nos próximos.`}</p><button class="bigbtn" data-confirm="${kind}">Confirmar</button><button class="bigbtn sec" data-close="1">Voltar</button></div>`);}
+function decide(kind){overlay(`<div class="modal"><p><b>${kind==='pub'?'Publicar a matéria agora?':'Salvar o rascunho sem publicar?'}</b></p><p style="color:var(--mut)">${S.ep===6?'Isso encerra a história. Tudo o que você fez até aqui decide o final.':`Essa decisão encerra o Episódio ${S.ep} e tem consequências nos próximos.`}</p><button class="bigbtn" data-confirm="${kind}">Confirmar</button><button class="bigbtn sec" data-close="1">Voltar</button></div>`);}
 const FINAL={
  1(pub){const usedBrief=S.draft.includes('briefing');
   if(pub){S.expo+=2;tr('carol',2);runNode('carol','pub');if(!has('removido'))runNode('grupo','pub');if(usedBrief)runNode('luana',has('promessa')?'pub_prom':'pub_ame');runNode('mae','pub');}
