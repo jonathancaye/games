@@ -170,6 +170,8 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .blogh b{font-size:22px}.blogh div{font-size:12px;opacity:.85}
 .bp{padding:12px 16px;border-bottom:1px solid var(--line);font-size:14px}
 .bp small{display:block;color:var(--mut);font-size:11.5px}
+.bpo{display:block;width:100%;text-align:left;color:var(--tx)}.bpo .ver{display:block;margin-top:3px;color:var(--teal);font-size:12px;font-weight:600}
+.mvt{font-size:13px;color:var(--mut);margin:-4px 0 10px}.mvc p{font-size:13.5px;line-height:1.4;margin-bottom:6px}.sitem.vazio{color:var(--mut)}
 .bigbtn{display:block;width:calc(100% - 24px);margin:12px;background:var(--org);color:#fff;font-weight:700;border-radius:12px;padding:13px;font-size:15px}
 .bigbtn.sec{background:var(--card2);border:1px solid var(--teal);color:var(--tx)}
 .bigbtn:disabled{opacity:.4}
@@ -1279,17 +1281,17 @@ const CLAIMS={
 function dossieScore(){const CL=CLAIMS[6];let sc=0;CL.forEach((c,i)=>{if(!c.opt&&S.draft[i]&&c.ok.includes(S.draft[i]))sc++;});return{score:sc,t6:!!(S.draft[5]&&CL[5].ok.includes(S.draft[5]))};}
 function buildDossie(){S.dossie=dossieScore();const had=S.ev.includes('dossie');if(!had)addEv('dossie');else toast('📁 Dossiê atualizado');advance(10);save();render();}
 function rBlog(){const done=S.mat[S.ep];const epEv=S.ev.filter(e=>EPS[S.ep].evs.includes(e)).length;
-  const past=[];for(let e=1;e<S.ep;e++)if(S.mat[e])past.push(`<div class="bp"><small>${S.mat[e].pub?'Publicada':'Rascunho guardado'} · Ep. ${e}</small>${EPS[e].mat}</div>`);
+  const past=[];for(let e=1;e<S.ep;e++)if(S.mat[e])past.push(`<button class="bp bpo" data-matview="${e}"><small>${S.mat[e].pub?'Publicada':'Rascunho guardado'} · Ep. ${e}</small>${EPS[e].mat}<span class="ver">Ver provas</span></button>`);
   return `<div class="tbar"><button class="back" data-home="1">${ic('back')}</button><h2>Blog</h2></div><div class="scroll"><div class="blogh"><b>Vale Alto Agora</b><div>Notícias de quem mora aqui · ${Object.values(S.mat).filter(m=>m.pub).length?(3.1+11.7*Object.values(S.mat).filter(m=>m.pub).length).toFixed(1).replace('.',','):'3,1'} mil leitores/mês</div></div>
-  ${done?`<div class="bp" style="border-left:3px solid var(--org)"><small>${done.pub?'Publicada agora':'Rascunho guardado'}</small><b>${EPS[S.ep].mat}</b></div>`:
+  ${done?`<button class="bp bpo" data-matview="${S.ep}" style="border-left:3px solid var(--org)"><small>${done.pub?'Publicada agora':'Rascunho guardado'}</small><b>${EPS[S.ep].mat}</b><span class="ver">Ver provas</span></button>`:
   S.ep===6?`<button class="bigbtn" data-open="materia">✍️ Escrever a matéria final</button>`:`<button class="bigbtn" data-open="materia" ${epEv<2?'disabled':''}>✍️ Escrever matéria: ${EPS[S.ep].mat}</button>${epEv<2?'<div class="hint">Você precisa de pelo menos 2 provas novas deste episódio no Caderno.</div>':''}`}
   ${has('alerta_lucrix')?'<div class="bp"><small>hoje · alerta</small>URGENTE: não deposite no Lucrix</div>':''}
   ${past.reverse().join('')}
   <div class="bp"><small>há 5 dias</small>Feira do produtor volta à praça central no sábado</div><div class="bp"><small>há 2 semanas</small>Buraco na Av. Brasil completa um ano sem conserto</div></div>`;}
 function rMateria(){const CL=CLAIMS[S.ep];return `<div class="tbar"><button class="back" data-open="blog">${ic('back')}</button><h2>Rascunho</h2></div><div class="scroll">
-  <div class="hint" style="padding-top:12px">"${EPS[S.ep].mat}". Sustente cada afirmação com uma prova do Caderno. Afirmações sem prova enfraquecem a matéria.</div>
+  <div class="hint" style="padding-top:12px">"${EPS[S.ep].mat}". Sustente cada afirmação com uma prova do Caderno. Afirmações sem prova enfraquecem a matéria.${S.ep===6&&S.dossPreN?` ${S.dossPreN===1?'Uma prova veio':S.dossPreN+' provas vieram'} das suas matérias e rascunhos. Confira antes de montar.`:''}</div>
   ${CL.map((c,i)=>`<div class="claim"><p>${i+1}. ${c.t}</p><div class="prow"><button class="pick ${S.draft[i]?'set':''}" data-pick="${i}">${S.draft[i]?'📎 '+EV[S.draft[i]].t:'+ Escolher prova'}</button>${S.draft[i]?`<button class="prev" data-ev="${S.draft[i]}" aria-label="Pré-visualizar">${ic('eye')}</button>`:''}</div></div>`).join('')}
-  <div class="hint" style="margin-top:6px">Publicar agora pressiona as autoridades e protege quem ainda pode cair, mas alerta quem está por trás do golpe. Salvar o rascunho mantém a investigação em segredo. Lembre-se de quem te passou cada prova.</div>
+  <div class="hint" style="margin-top:6px">${S.ep===6?'':'Publicar agora pressiona as autoridades e protege quem ainda pode cair, mas alerta quem está por trás do golpe. Salvar o rascunho mantém a investigação em segredo. '}Lembre-se de quem te passou cada prova.</div>
   ${S.ep===6?`<button class="bigbtn sec" data-dossie="1">📁 ${S.ev.includes('dossie')?'Atualizar dossiê':'Montar dossiê para enviar'}</button><div class="hint">Depois de montado, mande o dossiê pelo Papo (📎) para quem pode agir.</div><button class="bigbtn" data-decide="pub">📢 Publicar a matéria final</button>`:
   `<button class="bigbtn sec" data-decide="pub">📢 Publicar agora</button><button class="bigbtn sec" data-decide="held">🔒 Salvar rascunho e continuar</button>`}</div>`;}
 function render(){if(!S)return;$('#clock').textContent=DAYS[dayOf(S.t)]+' '+hm(S.t);
@@ -1305,6 +1307,12 @@ function render(){if(!S)return;$('#clock').textContent=DAYS[dayOf(S.t)]+' '+hm(S
 /* ---------------- SHEET / OVERLAY ---------------- */
 function openSheet(title,html){const s=$('#sheet');s.innerHTML=`<div class="sh"><h3>${title}</h3>${html}</div>`;s.classList.add('show');}
 function closeSheet(){$('#sheet').classList.remove('show');}
+function viewMat(e){const M=S.mat[e];if(!M)return;const d=M.draft||[];
+  openSheet(`${M.pub?'Matéria publicada':'Rascunho guardado'} · Ep. ${e}`,`<div class="mvt">${EPS[e].mat}</div>`+CLAIMS[e].map((c,i)=>{const id=d[i];return `<div class="mvc"><p>${i+1}. ${c.t}</p>${id?`<div class="srow"><div class="sitem">📎 ${EV[id].t}</div><button class="prev" data-ev="${id}" aria-label="Pré-visualizar">${ic('eye')}</button></div>`:'<div class="sitem vazio">Sem prova</div>'}</div>`;}).join(''));}
+/* Ep. 6: reaproveita as provas válidas das matérias e rascunhos. A afirmação opcional do Thiago fica de fora: incluí-la é uma escolha do jogador. */
+function prefillDossie(){if(S.ep!==6||S.dossPre)return;S.dossPre=true;let n=0;
+  CLAIMS[6].forEach((c,i)=>{if(c.opt||S.draft[i])return;for(let e=1;e<=5;e++){const id=((S.mat[e]||{}).draft||[]).find(x=>x&&c.ok.includes(x)&&S.ev.includes(x));if(id){S.draft[i]=id;n++;break;}}});
+  S.dossPreN=n;save();}
 function evPicker(mode,idx){if(!S.ev.length){toast('Você ainda não tem provas');return;}const list=S.ev.slice().reverse();
   openSheet(mode==='send'?'Mostrar qual prova?':'Escolher prova',(mode==='pick'?`<button class="sitem" data-pickev="" data-idx="${idx}">✖ Sem prova</button>`:'')+list.map(id=>`<div class="srow"><button class="sitem" ${mode==='send'?`data-sendev="${id}"`:`data-pickev="${id}" data-idx="${idx}"`}>📎 ${EV[id].t}</button><button class="prev" data-ev="${id}" aria-label="Pré-visualizar">${ic('eye')}</button></div>`).join(''));}
 function overlay(html){const o=$('#overlay');o.innerHTML=html;o.classList.add('show');}
@@ -1550,14 +1558,15 @@ document.addEventListener('click',e=>{const t=e.target;
   const tx=t.closest('[data-tx]');if(tx&&S){const k=tx.dataset.tx;if(k.startsWith('n:'))toast(k.slice(2));else if(S.ev.includes(k))toast('Você já printou essas transferências');else{addEv(k);save();render();}return;}
   const ocr=t.closest('.oc .r');if(ocr){ocr.classList.toggle('open');return;}
   const fd=t.closest('[data-fdm]');if(fd&&S){forumDM(+fd.dataset.fdm);return;}
-  const a=t.closest('[data-home],[data-open],[data-chat],[data-p],[data-ev],[data-opt],[data-clip],[data-sendev],[data-pickev],[data-pick],[data-wait],[data-add],[data-search],[data-tab],[data-print],[data-bback],[data-bhome],[data-src],[data-decide],[data-confirm],[data-close],[data-restart],[data-restartep],[data-new],[data-continue],[data-epintro],[data-startep],[data-lxform],[data-arch],[data-waitat],[data-forumdm],[data-dossie],[data-howto],[data-showend],[data-showfinal],[data-epilogo]');
+  const a=t.closest('[data-home],[data-open],[data-chat],[data-p],[data-ev],[data-opt],[data-clip],[data-sendev],[data-pickev],[data-pick],[data-matview],[data-wait],[data-add],[data-search],[data-tab],[data-print],[data-bback],[data-bhome],[data-src],[data-decide],[data-confirm],[data-close],[data-restart],[data-restartep],[data-new],[data-continue],[data-epintro],[data-startep],[data-lxform],[data-arch],[data-waitat],[data-forumdm],[data-dossie],[data-howto],[data-showend],[data-showfinal],[data-epilogo]');
   if(!a)return;const d=a.dataset;
   if(d.new!==undefined){newGame();return;}if(d.continue!==undefined){cont();return;}if(!S)return;
   if(d.home!==undefined){view={app:'home'};render();}
-  else if(d.open){view={app:d.open};render();}
+  else if(d.open){if(d.open==='materia')prefillDossie();view={app:d.open};render();}
   else if(d.chat){openChat(d.chat);}
   else if(d.p){go(d.p);}
   else if(d.ev){viewEv(d.ev);}
+  else if(d.matview){viewMat(+d.matview);}
   else if(d.opt!==undefined){choose(+d.opt);}
   else if(d.clip){evPicker('send');}
   else if(d.sendev){sendEv(d.sendev);}
