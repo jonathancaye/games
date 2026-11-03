@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#140c08">
+<title>Imperium</title>
+<link rel="icon" href="../../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Cardo:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Conceito: um gabinete romano. Parede de afresco, mapa pintado, papiro para o que chega, cera para o que você ordena. */
+:root{
+  color-scheme:dark;
+  --noite:#140c08;--tinta:#2c1a0c;--pompeia:#7a1c14;--lacre:#8f1f14;
+  --ouro:#f0d488;--ouro2:#d4ae5c;--bronze:#a87f2e;--filete:#5a4322;
+  --marfim:#f3e7cc;--areia:#e8dabb;--apagado:#cdbd9b;--alerta:#f2a06a;--laranja:#e07b3f;--mar:#1f5560;
+  --inscr:"Cinzel","Times New Roman",serif;--texto:"Cardo",Georgia,serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--noite);overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+body{color:var(--marfim);font-family:var(--texto);font-variant-numeric:tabular-nums;-webkit-tap-highlight-color:transparent}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+button:focus-visible,input:focus-visible{outline:2px solid var(--ouro);outline-offset:2px}
+h1,h2,h3,p{margin:0}
+#app{position:relative;height:100vh;height:100dvh;max-width:480px;margin:0 auto;display:flex;flex-direction:column;overflow:hidden;background:var(--pompeia) url(assets/afresco.jpg) center/cover no-repeat}
+.ins{font-family:var(--inscr);font-weight:700;letter-spacing:.09em}
+.rotulo{font-family:var(--inscr);font-weight:600;font-size:10px;letter-spacing:.1em;color:var(--ouro2)}
+.meandro{height:14px;flex:none;background:var(--noite) url(assets/meandro.png) left center/28px 14px repeat-x;border-block:1px solid var(--bronze)}
+header.top{flex:none;height:50px;padding:0 max(14px,env(safe-area-inset-left,0px));display:flex;align-items:center;justify-content:space-between}
+header.top .marca{font-family:var(--inscr);font-weight:700;font-size:23px;letter-spacing:.12em;color:var(--ouro);text-shadow:0 2px 2px rgba(0,0,0,.65)}
+header.top .quando{text-align:right;line-height:1.15}
+header.top .quando b{display:block;font-family:var(--inscr);font-size:12px;letter-spacing:.1em}
+header.top .quando i{font-size:12.5px;color:#f0dfc0}
+.recursos{flex:none;background:var(--noite);padding:7px 12px;display:flex;flex-direction:column;gap:6px}
+.tres{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.tres>div{padding:0 8px}.tres>div+div{border-left:1px solid var(--filete)}
+.tres .v{font-weight:700;font-size:20px;line-height:1.12}
+.tres .s{font-size:11.5px;color:var(--apagado)}
+.quente{color:var(--alerta)}.grave{color:#ff8d6e}
+.fav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:0 8px}
+.fav .l{display:flex;justify-content:space-between;font-size:11.5px;color:var(--areia)}
+.barra{height:4px;background:#3a2a16;margin-top:2px}.barra i{display:block;height:100%;background:#c9a24b}
+.barra i.baixo{background:var(--laranja)}
+.mapbox{position:relative;flex:none;overflow:hidden;background:var(--mar);border-block:2px solid #c9a24b}
+.palco{position:absolute;left:50%;top:50%;width:390px;height:378px;margin:-189px 0 0 -195px;background:url(assets/mapa.jpg) center/100% 100% no-repeat;transform-origin:center}
+.rot{position:absolute;transform:translate(-50%,-50%);font-family:var(--inscr);font-weight:700;font-size:8.5px;letter-spacing:.09em;color:#26150a;text-shadow:0 0 3px #efdcae,0 0 3px #efdcae;white-space:nowrap;pointer-events:none}
+.mar{position:absolute;transform:translate(-50%,-50%);font-style:italic;font-size:10.5px;letter-spacing:.2em;color:#cfe6dc;white-space:nowrap;pointer-events:none}
+.pv{position:absolute;transform:translate(-50%,-50%);min-width:44px;min-height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.pv .n{font-family:var(--inscr);font-weight:700;font-size:9px;letter-spacing:.07em;color:#26150a;text-shadow:0 0 3px #efdcae,0 0 3px #efdcae,0 0 2px #efdcae;white-space:nowrap}
+.leg{width:22px;height:22px;border-radius:50%;border:1.5px solid #e6c678;background:#2a120c;color:var(--marfim);font-family:var(--inscr);font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.7)}
+.pv.tenso .leg{border-color:#ffb36b}.pv.revolta .leg{background:var(--lacre);border-color:#fff4dc;animation:pulso 1.2s infinite}
+.pv.fixa{pointer-events:none}
+@keyframes pulso{50%{box-shadow:0 0 0 5px rgba(255,160,90,.35)}}
+.alerta{position:absolute;transform:translate(-50%,-50%);background:var(--lacre);border:1px solid #f6e3a8;padding:1px 6px;font-size:11px;font-weight:700;color:#fff4dc;white-space:nowrap;box-shadow:0 2px 4px rgba(0,0,0,.6);pointer-events:none}
+.roma{position:absolute;left:179px;top:158px;transform:translate(-50%,-50%);width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+.roma i{width:15px;height:15px;border-radius:50%;background:#5a1a4a;border:2px solid #f6e3a8;box-shadow:0 0 0 1.5px #2a120c,0 2px 4px rgba(0,0,0,.7)}
+svg.rotas{position:absolute;inset:0;pointer-events:none}
+.despachos{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px;padding:7px 12px 6px}
+.carta{display:flex;align-items:center;gap:10px;width:100%;min-height:50px;padding:5px 10px;text-align:left;color:var(--tinta);background:#e4cf9f url(assets/papiro.webp) center/640px auto;box-shadow:0 2px 5px rgba(0,0,0,.55)}
+.carta img{width:32px;height:32px;flex:none}
+.carta span{flex:1;min-width:0}
+.carta small{display:block;font-family:var(--inscr);font-weight:700;font-size:10px;letter-spacing:.07em;color:#6a1a10;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.carta b{display:block;font-weight:400;font-size:14.5px;line-height:1.18}
+.painel{flex:none;display:flex;flex-direction:column;justify-content:center;gap:2px;padding:6px 10px;background:rgba(20,12,8,.82);border:1px solid var(--filete);font-size:14px;line-height:1.25}
+.selos{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto}
+.selos div{display:flex;align-items:center}
+.selos img{width:38px;height:38px}.selos img+img{margin-left:-3px}
+.selos img.novo{animation:carimbo .28s ease-out}
+@keyframes carimbo{from{transform:scale(1.5);opacity:.3}}
+.btn{min-height:44px;padding:0 14px;background:var(--noite);border:1px solid #e6c678;color:var(--ouro);font-family:var(--inscr);font-weight:700;font-size:12px;letter-spacing:.07em}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.forte{background:var(--lacre);color:#fff4dc}
+.btn.cheio{display:flex;align-items:center;justify-content:center;gap:6px;width:100%}
+nav{flex:none;height:56px;background:var(--noite);border-top:1px solid var(--bronze);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11.5px;color:#e0d2b4;position:relative}
+nav svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6}
+nav em{position:absolute;top:5px;left:calc(50% + 7px);min-width:16px;height:16px;border-radius:8px;background:var(--lacre);color:#fff4dc;font-style:normal;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+/* folhas */
+.veu{position:absolute;inset:0;z-index:20;background:rgba(10,5,3,.55);display:flex;flex-direction:column;justify-content:flex-end;animation:surge .16s ease-out}
+.veu.cheia{justify-content:flex-start;background:rgba(10,5,3,.86)}
+@keyframes surge{from{opacity:0}}
+.folha{position:relative;max-height:100%;overflow:auto;background:#1a100a;border-top:2px solid #c9a24b;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px;animation:sobe .18s ease-out}
+.cheia .folha{height:100%}
+@keyframes sobe{from{transform:translateY(24px)}}
+.fecha{position:absolute;right:6px;top:6px;width:44px;height:44px;font-size:22px;line-height:1;color:var(--ouro);z-index:2}
+.tit{font-family:var(--inscr);font-weight:700;font-size:21px;letter-spacing:.07em;color:var(--ouro);padding-right:40px}
+.sub{font-size:14.5px;color:var(--areia);line-height:1.28}
+.gov{display:flex;align-items:center;gap:12px}
+.gov img{width:82px;height:82px;flex:none}
+.cera{background:#2a1a0e url(assets/tabuinha.jpg) center/100% 100% no-repeat;padding:20px 24px;display:flex;flex-direction:column;gap:6px;color:#f0dfb9;text-shadow:0 1px 0 #000;font-size:15px}
+.cera h3{font-family:var(--inscr);font-weight:700;font-size:12.5px;letter-spacing:.1em;color:var(--ouro)}
+.linha{display:flex;justify-content:space-between;gap:10px}
+.linha span:last-child{white-space:nowrap}
+.ordem{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:46px;width:100%;padding:6px 10px;background:rgba(0,0,0,.34);border:1px solid #c9a24b;text-align:left;color:#f0dfb9;font-size:14.5px;line-height:1.2}
+.ordem small{display:block;font-size:12.5px;color:#d9c9a4}
+.ordem:disabled{opacity:.5;cursor:default}
+.gr2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:30px;margin:0;background:transparent}
+input[type=range]::-webkit-slider-runnable-track{height:3px;background:#120a05;box-shadow:0 1px 0 #8a6a42}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:26px;margin-top:-12px;background:#d9b45e;border:1px solid #3a2710;border-radius:7px 7px 2px 2px}
+input[type=range]::-moz-range-track{height:3px;background:#120a05}
+input[type=range]::-moz-range-thumb{width:14px;height:24px;background:#d9b45e;border:1px solid #3a2710;border-radius:7px 7px 2px 2px}
+.pilhas{display:flex;flex-wrap:wrap;gap:6px}
+.pilha{min-height:44px;padding:0 12px;border:1px solid #c9a24b;color:#f0dfb9;font-size:14px}
+.pilha[aria-pressed=true]{background:#c9a24b;color:#1d110a;text-shadow:none;font-weight:700}
+.papiro{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;gap:9px;margin:0 auto;width:100%;max-width:400px;padding:26px 28px 24px;color:var(--tinta);background:url(assets/papiro.webp) center/100% 100% no-repeat;overflow:auto}
+.papiro .abre{text-align:center;font-family:var(--inscr);font-weight:700;font-size:14px;letter-spacing:.09em;color:#5c170e;line-height:1.3}
+.papiro .data{text-align:center;font-size:13px;font-style:italic;color:#5a4128}
+.papiro p{font-size:15.5px;line-height:1.34}
+.op{display:block;width:100%;min-height:58px;padding:7px 11px;background:#1d110a;border:1px solid var(--bronze);text-align:left;color:var(--marfim)}
+.op b{display:block;font-family:var(--inscr);font-size:12.5px;letter-spacing:.03em;color:var(--ouro)}
+.op span{display:block;font-size:13.5px;line-height:1.2;margin-top:2px}
+.op:disabled{opacity:.55}
+.fatos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:15px;line-height:1.26}
+.fatos li{padding-left:15px;position:relative}
+.fatos li:before{content:"";position:absolute;left:1px;top:7px;width:7px;height:7px;background:#6b5436;transform:rotate(45deg)}
+.fatos li.ok:before{background:#2f6b57}.fatos li.bad:before{background:#a3271a}
+.tabela{display:flex;flex-direction:column}
+.tabela>div{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--filete);font-size:14.5px}
+.brasa{position:absolute;left:50%;bottom:66px;transform:translateX(-50%);z-index:40;max-width:320px;padding:8px 14px;background:var(--lacre);border:1px solid #f6e3a8;color:#fff4dc;font-size:14.5px;text-align:center;box-shadow:0 3px 8px rgba(0,0,0,.6)}
+.capa{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center;background:rgba(20,12,8,.42)}
+.capa h1{font-family:var(--inscr);font-weight:700;font-size:44px;letter-spacing:.11em;color:var(--ouro);text-shadow:0 3px 3px rgba(0,0,0,.7)}
+.capa img{width:150px;height:150px}
+.voltar{position:absolute;left:max(12px,env(safe-area-inset-left,0px));top:max(10px,env(safe-area-inset-top,0px));min-height:44px;display:flex;align-items:center;color:var(--ouro);text-decoration:none;font-size:15px;text-shadow:0 1px 2px #000}
+.capa .btn{min-width:230px;min-height:50px;font-size:13px}
+@media (max-height:700px){.gov img{width:60px;height:60px}.tabela>div{padding:3px 0}.folha{gap:7px;padding-top:10px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+'use strict';
+/* ========== DADOS ========== */
+const EST=['Ver','Aestas','Autumnus','Hiems'],ESTPT=['Primavera','Verão','Outono','Inverno'];
+const PV={
+ hisp:{nome:'HISPANIA',pt:'Hispânia',rich:29,x:54,y:172,req:{n:'Prata das minas',d:'+45 mil no tesouro',fx:{aer:45}}},
+ gall:{nome:'GALLIA',pt:'Gália',rich:26,x:104,y:96,front:'germanos',req:{n:'Ferro e couro',d:'+5 de exército',fx:{exe:5}}},
+ afri:{nome:'AFRICA',pt:'África',rich:20,x:206,y:266,grao:1,req:{n:'Azeite',d:'+5 de povo',fx:{pov:5}}},
+ aegy:{nome:'AEGYPTVS',pt:'Egito',rich:34,x:324,y:316,grao:1,req:{n:'Linho e papiro',d:'+25 mil no tesouro',fx:{aer:25}}},
+ syri:{nome:'SYRIA',pt:'Síria',rich:30,x:360,y:238,front:'partos',req:{n:'Vidro e especiarias',d:'+5 de Senado',fx:{sen:5}}},
+};
+const IDS=Object.keys(PV);
+const ART={hisp:'a',gall:'a',afri:'a',aegy:'o',syri:'a'};
+const doP=i=>(ART[i]==='o'?'do ':'da ')+PV[i].pt,aoP=i=>(ART[i]==='o'?'ao ':'à ')+PV[i].pt,noP=i=>(ART[i]==='o'?'no ':'na ')+PV[i].pt;
+const VIAG={'hisp-gall':1,'hisp-afri':1,'hisp-aegy':3,'hisp-syri':3,'gall-afri':2,'gall-aegy':3,'gall-syri':3,'afri-aegy':2,'afri-syri':2,'aegy-syri':1};
+const viag=(a,b)=>VIAG[a+'-'+b]||VIAG[b+'-'+a]||2;
+const ROTA={
+ aegy:{costa:{nome:'Costeira',t:2,r:.03,d:'M315 271C296 246 266 232 240 228C222 224 208 214 204 197C196 186 188 172 177 160'},
+       mar:{nome:'Alto-mar',t:1,r:.16,d:'M315 271C286 246 246 246 214 228C196 216 190 192 177 160'}},
+ afri:{costa:{nome:'Costeira',t:2,r:.02,d:'M162 209C180 222 205 215 204 197C196 186 188 172 177 160'},
+       mar:{nome:'Direta',t:1,r:.1,d:'M162 209C168 192 172 176 177 160'}},
+};
+const GOVN=['Marco Sextílio Varo','Lúcio Cornélio Ático','Públio Vínio Galo','Quinto Hortênsio Naso','Caio Fábio Tusco','Aulo Mânlio Crispo','Tito Lólio Sabino','Gneu Pórcio Severo','Sexto Aurélio Prisco','Décimo Valério Lento','Mânio Acílio Bruto','Sérvio Nônio Rufo','Lúcio Tício Paulo','Caio Ópio Celer'];
+const IMPN=['Caio Valério','Tito Valério','Lúcio Valério','Marco Valério','Públio Valério','Quinto Valério','Sexto Valério'];
+const AMB={
+ pao:{n:'Pão e Circo',d:'Termine o reinado com o povo em 75 ou mais, sem Roma ficar sem pão.',t:s=>`Povo ${r0(s.pov)} de 75`,ok:s=>s.pov>=75&&!s.r.semPao},
+ pax:{n:'Pax Romana',d:'Passe 5 anos seguidos sem revolta nem derrota.',t:s=>`${Math.floor(s.paz/4)} de 5 anos de paz`,ok:s=>s.r.pazMax>=20},
+ bri:{n:'Conquistar a Britânia',d:'Reúna 10 legiões na Gália e anexe a ilha.',t:s=>s.brit===2?'Britânia anexada':s.brit===1?`Campanha: ${s.britP} de 3 estações`:`${s.prov.gall.leg} de 10 legiões na Gália`,ok:s=>s.brit===2},
+ moe:{n:'Moeda Pura',d:'Termine com 600 mil no tesouro, sem nunca reduzir a prata.',t:s=>`Tesouro ${r0(s.aer)} de 600 mil`,ok:s=>s.aer>=600&&!s.r.diluiu},
+ obr:{n:'Cidade de Mármore',d:'Conclua 3 grandes obras em Roma.',t:s=>`${s.r.obras} de 3 obras`,ok:s=>s.r.obras>=3},
+};
+const DEM=[
+ {f:'pov',n:'O povo',d:'Termine o ano com 6 meses de pão',ok:s=>s.annona>=6},
+ {f:'pov',n:'O povo',d:'Conclua uma obra neste ano',ok:s=>s.y.obra},
+ {f:'exe',n:'O exército',d:'Reserve o soldo integral no orçamento',ok:s=>s.budget.soldo>=soldoNec(s)-.5},
+ {f:'exe',n:'O exército',d:'Não sofra nenhuma derrota neste ano',ok:s=>!s.y.derrota},
+ {f:'sen',n:'O Senado',d:'Termine o ano com 300 mil no tesouro',ok:s=>s.aer>=300},
+ {f:'sen',n:'O Senado',d:'Não deixe imposto acima de 15%',ok:s=>IDS.every(i=>s.prov[i].tax<=15)},
+];
+/* Cartas: cada opção recebe fx(s,l). ig = efeito de não responder. */
+const add=(s,o)=>{for(const k in o){if(k==='aer')s.aer+=o.aer;else if(k==='ann')s.annona=Math.max(0,s.annona+o.ann);else s[k]=clamp(s[k]+o[k])}};
+const un=(s,id,v)=>{const p=s.prov[id];p.unrest=clamp(p.unrest+v,5)};
+const E={
+ nilo:{prov:'aegy',cond:s=>s.nile<=13&&s.season===1,tit:'O Nilo subiu menos do que o esperado',txt:s=>`Marcamos ${s.nile} côvados no nilômetro. A próxima colheita será curta e o povo de Alexandria já estoca. Se eu mandar tudo a Óstia, o Egito passa fome antes da cheia. Aguardo tua ordem.`,
+  ops:[{t:'Exigir a entrega integral',d:'+3 meses no estoque do Egito. Revolta sobe 18.',fx:s=>{s.prov.aegy.stock+=3;un(s,'aegy',18)}},
+       {t:'Comprar grãos da Síria',d:'−40 mil. +3 meses de pão em Roma.',fx:s=>add(s,{aer:-40,ann:3})},
+       {t:'Reduzir a cota',d:'Egito calmo (−10). Povo de Roma −3.',fx:s=>{un(s,'aegy',-10);add(s,{pov:-3})}}],
+  igt:'o Egito estocou por conta própria.',ig:s=>un(s,'aegy',6)},
+ motim:{prov:'gall',urg:s=>s.ratioS<.97,cond:s=>s.ratioS<.97,tit:'As legiões exigem o soldo atrasado',txt:s=>`Os centuriões já não seguram os homens. Falam em não atravessar o Reno enquanto o soldo não vier. Mande prata ou mande ordens claras.`,
+  ops:[{t:'Pagar o atrasado',d:'−55 mil. Exército +7.',fx:s=>add(s,{aer:-55,exe:7})},
+       {t:'Prometer terras',d:'Exército +3. Senado −6.',fx:s=>add(s,{exe:3,sen:-6})},
+       {t:'Punir os cabeças',d:'Exército −7. Senado +4.',fx:s=>add(s,{exe:-7,sen:4})}],
+  igt:'o motim no Reno cresceu.',ig:s=>{add(s,{exe:-9});s.prov.gall.threat+=10}},
+ pirata:{prov:'hisp',cond:s=>s.pirat===0,tit:'Piratas nas rotas de grãos',txt:s=>`Barcos rápidos saíram das enseadas da Ilíria e já tomaram dois cargueiros. Sem resposta, nenhum capitão vai querer zarpar em alto-mar.`,
+  ops:[{t:'Armar uma esquadra',d:'−45 mil. Rotas seguras.',fx:s=>add(s,{aer:-45})},
+       {t:'Pagar para deixarem passar',d:'−15 mil. Senado −3. Risco sobe por 2 estações.',fx:s=>{add(s,{aer:-15,sen:-3});s.pirat=2}}],
+  igt:'piratas aumentam o risco no mar por 4 estações.',ig:s=>{s.pirat=4}},
+ fogo:{cond:s=>true,tit:'Incêndio na Subura',txt:s=>`O fogo consumiu quarteirões inteiros junto ao Fórum. Milhares dormem na rua e o povo olha para o Palatino.`,de:'Prefeito de Roma',
+  ops:[{t:'Reconstruir com dinheiro público',d:'−60 mil. Povo +5.',fx:s=>add(s,{aer:-60,pov:5})},
+       {t:'Abrir os jardins imperiais',d:'−15 mil. Povo +1.',fx:s=>add(s,{aer:-15,pov:1})}],
+  igt:'o povo culpa o palácio pelo incêndio.',ig:s=>add(s,{pov:-7})},
+ triunfo:{cond:s=>melhorGeneral(s),tit:'Um general pede um triunfo',txt:(s,l)=>{const g=s.prov[l.p].gov;return `${g.nome} pede para desfilar em Roma com seus veteranos. Os soldados cantam o nome dele. Negar ofende a tropa; conceder dá a ele ainda mais glória.`},prv:s=>melhorGeneral(s),
+  ops:[{t:'Conceder o triunfo',d:'−30 mil. Exército +5. A fama dele sobe 12.',fx:(s,l)=>{add(s,{aer:-30,exe:5});s.prov[l.p].gov.fame+=12}},
+       {t:'Conceder só as insígnias',d:'Senado +3. Lealdade dele cai.',fx:(s,l)=>{add(s,{sen:3});s.prov[l.p].gov.loyal-=12}},
+       {t:'Chamá-lo a Roma',d:'Troca o general. Exército −4.',fx:(s,l)=>{add(s,{exe:-4});novoGov(s,l.p)}}],
+  igt:'o general se ofendeu.',ig:(s,l)=>{s.prov[l.p].gov.loyal-=10}},
+ denun:{cond:s=>s.sen<55,tit:'Uma denúncia anônima',txt:s=>`Chegou ao palácio uma lista de senadores que se reúnem à noite. Pode ser verdade, pode ser vingança pessoal.`,de:'Prefeito do Pretório',
+  ops:[{t:'Abrir processos',d:'Senado −5. Reduz o risco de complô.',fx:s=>{add(s,{sen:-5});s.conj=Math.max(0,s.conj-30)}},
+       {t:'Queimar a lista em público',d:'Senado +7.',fx:s=>add(s,{sen:7})}],
+  igt:'o boato correu pelo Senado.',ig:s=>{add(s,{sen:-3});s.conj+=10}},
+ ganan:{cond:s=>IDS.some(i=>s.prov[i].gov.greed>52&&!s.prov[i].gov.known),prv:s=>pickFrom(IDS.filter(i=>s.prov[i].gov.greed>52&&!s.prov[i].gov.known)),tit:'As contas não fecham',txt:(s,l)=>`A alfândega ${doP(l.p)} registra mais carga do que o governador declara ter tributado. Pode ser erro de escrivão. Pode ser ${s.prov[l.p].gov.nome} enchendo os bolsos.`,de:'Procurador imperial',
+  ops:[{t:'Enviar auditor agora',d:'Revela o governador. Recupera parte do desvio.',fx:(s,l)=>auditar(s,l.p)},
+       {t:'Advertir por carta',d:'Reduz a ganância dele em 12.',fx:(s,l)=>{s.prov[l.p].gov.greed-=12;s.prov[l.p].gov.loyal-=6}}],
+  igt:'o caso foi arquivado.'},
+ peste:{prov:'syri',cond:s=>true,tit:'Febre em Antioquia',txt:s=>`A doença desceu o Orontes. Os mercados fecharam e as caravanas evitam a cidade. Os impostos deste ano serão menores.`,
+  ops:[{t:'Enviar médicos e grãos',d:'−30 mil. Revolta −8.',fx:s=>{add(s,{aer:-30});un(s,'syri',-8)}},
+       {t:'Isolar a cidade',d:'A Síria rende metade por 1 ano.',fx:s=>{s.prov.syri.ravaged=4}}],
+  igt:'a febre se espalhou pela Síria.',ig:s=>{s.prov.syri.ravaged=3;un(s,'syri',10)}},
+ jogos:{cond:s=>s.pov<70,tit:'O povo pede jogos',txt:s=>`Os colégios de ofício pedem cem dias de jogos em honra de César. Os gladiadores estão caros, mas o Circo cheio não reclama do preço do pão.`,de:'Edis de Roma',
+  ops:[{t:'Patrocinar os jogos',d:'−40 mil. Povo +8.',fx:s=>add(s,{aer:-40,pov:8})},
+       {t:'Deixar para os senadores',d:'Senado −3. Povo +2.',fx:s=>add(s,{sen:-3,pov:2})}],
+  igt:'o povo vaiou seu nome no Circo.',ig:s=>add(s,{pov:-3})},
+ parto:{prov:'syri',cond:s=>s.prov.syri.threat>35,tit:'Embaixada do Rei dos Partos',txt:s=>`Os enviados de Ctesifonte chegaram a Zeugma. Falam em paz no Eufrates, em troca de ouro e de reconhecimento.`,
+  ops:[{t:'Pagar pela paz',d:'−55 mil. Ameaça parta −45. Senado −4.',fx:s=>{add(s,{aer:-55,sen:-4});s.prov.syri.threat-=45}},
+       {t:'Trocar reféns',d:'Ameaça parta −20.',fx:s=>{s.prov.syri.threat-=20}},
+       {t:'Expulsar os enviados',d:'Exército +4. Ameaça parta +20.',fx:s=>{add(s,{exe:4});s.prov.syri.threat+=20}}],
+  igt:'os partos se sentiram ignorados.',ig:s=>{s.prov.syri.threat+=12}},
+ germ:{prov:'gall',cond:s=>s.prov.gall.threat>30,tit:'Tribos oferecem aliança',txt:s=>`Chefes de além-Reno propõem fornecer cavalaria em troca de terras e subsídios. Metade do conselho diz que é astúcia.`,
+  ops:[{t:'Aceitar e pagar',d:'−35 mil. Ameaça germana −35.',fx:s=>{add(s,{aer:-35});s.prov.gall.threat-=35}},
+       {t:'Atacar primeiro',d:'Ameaça −25. Perde 1 legião se tiver menos de 8.',fx:s=>{s.prov.gall.threat-=25;if(s.prov.gall.leg<8&&s.prov.gall.leg>0)s.prov.gall.leg--;add(s,{exe:2})}}],
+  igt:'as tribos se aproximam do Reno.',ig:s=>{s.prov.gall.threat+=10}},
+ mina:{prov:'hisp',cond:s=>true,tit:'Novo veio de prata',txt:s=>`Em Cartago Nova abrimos um veio rico. Falta gente. Posso forçar as aldeias ao trabalho ou contratar libertos, que custam caro.`,
+  ops:[{t:'Forçar as aldeias',d:'+90 mil. Revolta sobe 20.',fx:s=>{add(s,{aer:90});un(s,'hisp',20)}},
+       {t:'Contratar libertos',d:'+45 mil.',fx:s=>add(s,{aer:45})}],
+  igt:'o veio ficou parado.'},
+ credor:{cond:s=>s.aer<160,tit:'Um senador oferece empréstimo',txt:s=>`Um dos homens mais ricos de Roma oferece 120 mil. Em troca, quer de volta 20 mil por estação, durante 8 estações, e a gratidão do imperador.`,de:'Do Senado',
+  ops:[{t:'Aceitar',d:'+120 mil agora. −20 mil por 8 estações.',fx:s=>{add(s,{aer:120,sen:3});s.divida+=8}},
+       {t:'Recusar',d:'Senado −1.',fx:s=>add(s,{sen:-1})}],
+  igt:'o senador guardou seu dinheiro.'},
+ press:{cond:s=>true,tit:'Mau presságio no Capitólio',txt:s=>`Um raio atingiu a estátua de Júpiter e as aves voaram para o sul. Os áugures pedem sacrifícios e a cidade comenta.`,de:'Colégio dos Áugures',
+  ops:[{t:'Oferecer sacrifícios',d:'−15 mil. Povo +2. Senado +3.',fx:s=>add(s,{aer:-15,pov:2,sen:3})},
+       {t:'Declarar que é superstição',d:'Povo −3.',fx:s=>add(s,{pov:-3})}],
+  igt:'a cidade ficou inquieta.',ig:s=>add(s,{pov:-2})},
+ moeda:{cond:s=>s.pur<95,tit:'Mercadores recusam o denário',txt:s=>`Em Óstia os mercadores pesam as moedas e cobram mais caro. Dizem que a nova cunhagem vale menos que a de teu antecessor.`,de:'Procurador da Moeda',
+  ops:[{t:'Tabelar preços',d:'Povo +3. Senado −5.',fx:s=>add(s,{pov:3,sen:-5})},
+       {t:'Recolher moeda ruim',d:'−50 mil. Prata +4.',fx:s=>{add(s,{aer:-50});s.pur=Math.min(100,s.pur+4)}}],
+  igt:'os preços subiram mais.',ig:s=>add(s,{pov:-4})},
+ trama:{urg:s=>s.conj>=45,cond:s=>s.conj>=45,tit:'O perigo está no Senado',txt:s=>`Meus homens viram punhais serem comprados perto da Cúria. Alguém pretende terminar seu reinado antes do tempo.`,de:'Prefeito do Pretório',
+  ops:[{t:'Prender os suspeitos',d:'Senado −8. O complô se desfaz.',fx:s=>{add(s,{sen:-8});s.conj=0}},
+       {t:'Convidá-los ao jantar',d:'−30 mil. Senado +8. Complô diminui.',fx:s=>{add(s,{aer:-30,sen:8});s.conj=Math.max(0,s.conj-25)}}],
+  igt:'o complô avança.',ig:s=>{s.conj+=20}},
+ usurp:{urg:s=>IDS.find(i=>s.prov[i].gov.plot===1),cond:s=>IDS.find(i=>s.prov[i].gov.plot===1),prv:s=>IDS.find(i=>s.prov[i].gov.plot===1),tit:'As tropas juram por outro nome',txt:(s,l)=>{const g=s.prov[l.p].gov;return `${g.nome} tem ${s.prov[l.p].leg} legiões e a fama de vencedor. Os estandartes já levam o rosto dele. Se nada for feito, ele marcha sobre Roma na próxima estação.`},de:'Informante nas legiões',
+  ops:[{t:'Destituí-lo agora',d:'Troca o comandante. Exército −6.',fx:(s,l)=>{add(s,{exe:-6});novoGov(s,l.p)}},
+       {t:'Comprar sua lealdade',d:'−80 mil. Lealdade +30. Fama −20.',fx:(s,l)=>{add(s,{aer:-80});const g=s.prov[l.p].gov;g.loyal+=30;g.fame-=20;g.plot=0}}],
+  igt:'ninguém conteve o general.'},
+};
+/* ========== REGRAS ========== */
+let rng=Math.random;
+const R=(a,b)=>a+rng()*(b-a),Ri=(a,b)=>Math.floor(R(a,b+1));
+const pickFrom=a=>a[Math.floor(rng()*a.length)];
+const clamp=(v,a=0,b=100)=>Math.max(a,Math.min(b,v));
+const r0=v=>Math.round(v);
+const rom=n=>{const m=[[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];let o='';for(const[v,c]of m)while(n>=v){o+=c;n-=v}return o};
+let S=null;
+const novoGovObj=(s)=>{const livres=GOVN.filter(n=>!IDS.some(i=>s&&s.prov&&s.prov[i]&&s.prov[i].gov&&s.prov[i].gov.nome===n));
+ return{nome:pickFrom(livres),comp:Ri(40,85),loyal:Ri(25,90),greed:Ri(10,80),fame:Ri(5,20),known:false,plot:0,pedra:Ri(1,4)}};
+function novoGov(s,id){s.prov[id].gov=novoGovObj(s)}
+function melhorGeneral(s){return ['gall','syri'].find(i=>s.prov[i].gov.fame>=48&&s.prov[i].leg>0)}
+const soldoNec=s=>Math.round(legTotal(s)*14*(1+s.infl/100));
+const paoNec=s=>Math.round(80*(1+s.infl/100));
+function legTotal(s){return s.danubio+IDS.reduce((a,i)=>a+s.prov[i].leg,0)+s.moves.reduce((a,m)=>a+m.n,0)}
+function newGame(){
+ const s={year:14,start:14,season:0,seals:3,aer:412,annona:8,sen:55,pov:58,exe:62,pur:100,infl:0,obrasP:0,budget:{soldo:350,pao:80,obras:50},budgetDue:true,
+  prov:{},fleets:[],moves:[],deliv:[],letters:[],seen:{},demands:[],y:{},r:{obras:0,semPao:false,diluiu:false,pazMax:0,dem:0,favSum:0,favN:0},paz:0,pirat:0,divida:0,danubio:7,noBread:0,conj:0,ratioS:1,nile:14,brit:0,britP:0,fase:'ambicao',ambOps:[],amb:null,
+  emp:{nome:IMPN[0],idade:44},vida:Ri(9,11),n:1,hist:[],score:0,over:null,lastRep:[],aviso:[],t:0};
+ const leg={hisp:3,gall:8,afri:1,aegy:2,syri:4},stock={aegy:9,afri:3};
+ IDS.forEach(i=>{s.prov[i]={id:i,tax:10,unrest:Ri(15,28),leg:leg[i],gov:null,stock:stock[i]||0,ravaged:0,revolt:false,threat:PV[i].front?Ri(15,35):0,est:null}});
+ IDS.forEach(i=>novoGov(s,i));
+ const eg=s.prov.aegy.gov;eg.nome='Marco Sextílio Varo';eg.greed=Ri(45,70);eg.comp=68;
+ s.ambOps=sorteiaAmb();pedidos(s);S=s;cartas(s);return s;
+}
+function sorteiaAmb(){const a=Object.keys(AMB);for(let i=a.length-1;i>0;i--){const j=Ri(0,i);[a[i],a[j]]=[a[j],a[i]]}return a.slice(0,3)}
+function pedidos(s){const a=[...DEM];const d=[];const f=pickFrom(a);d.push(f);d.push(pickFrom(a.filter(x=>x.f!==f.f)));s.demands=d.map(x=>DEM.indexOf(x));s.y={derrota:false,obra:false}}
+function cartas(s){
+ const l=[];const dispon=Object.keys(E).filter(id=>(s.seen[id]||-99)<s.t-9);
+ const urg=Object.keys(E).filter(id=>E[id].urg&&E[id].urg(s));
+ const put=id=>{const e=E[id];const p=e.prv?e.prv(s):e.prov;l.push({id,p:p||null});s.seen[id]=s.t};
+ urg.slice(0,2).forEach(put);
+ const n=(rng()<.4?2:1);const pool=dispon.filter(id=>!urg.includes(id)&&!E[id].urg&&E[id].cond(s));
+ while(l.length<n&&pool.length){const k=Math.floor(rng()*pool.length);put(pool.splice(k,1)[0])}
+ s.letters=l;
+}
+const incomeOf=(s,p)=>{if(p.revolt)return{bruto:0,pago:0};const b=PV[p.id].rich*p.tax/10*(.72+p.gov.comp/190)*(p.ravaged>0?.5:1);return{bruto:b,pago:b*(1-p.gov.greed/100*.35)}};
+const rendaPrev=s=>IDS.reduce((a,i)=>a+incomeOf(s,s.prov[i]).pago,0);
+function spend(s){if(s.seals<=0)return false;s.seals--;return true}
+function auditar(s,id){const g=s.prov[id].gov;g.known=true;const v=g.greed>45?Math.round(g.greed*.6):0;if(v)s.aer+=v;g.greed=Math.max(10,g.greed-8);return v}
+const A={
+ tax(id,v){if(!spend(S))return'sem';S.prov[id].tax=v;return true},
+ fleet(id,cargo,rota,esc){const p=S.prov[id];if(cargo<1||cargo>p.stock+.01)return'carga';if(!spend(S))return'sem';if(esc)S.aer-=15;p.stock-=cargo;const q=ROTA[id][rota];S.fleets.push({src:id,cargo,rota,esc:!!esc,left:q.t,t:q.t});return true},
+ req(id){if(!spend(S))return'sem';un(S,id,11);S.deliv.push(id);return true},
+ audit(id){if(!spend(S))return'sem';S.aer-=10;return{rec:auditar(S,id)}},
+ trocar(id){if(!spend(S))return'sem';add(S,{sen:-2});if(PV[id].front)add(S,{exe:-3});novoGov(S,id);return true},
+ reprimir(id){const p=S.prov[id];if(p.leg<2)return'poucas';if(!spend(S))return'sem';p.revolt=false;p.unrest=45;if(rng()<.35)p.leg--;add(S,{pov:-2});return true},
+ mover(a,b,n){const p=S.prov[a];if(n<1||n>p.leg)return'n';if(!spend(S))return'sem';p.leg-=n;const t=viag(a,b);S.moves.push({de:a,para:b,n,left:t,t});return true},
+ recrutar(id){if(S.aer<60)return'caro';if(!spend(S))return'sem';S.aer-=60;S.moves.push({de:null,para:id,n:1,left:2,t:2});return true},
+ diluir(){if(S.pur<=50)return'n';if(!spend(S))return'sem';S.pur-=10;S.aer+=90;S.r.diluiu=true;return true},
+ jogos(){if(S.aer<40)return'caro';if(!spend(S))return'sem';add(S,{aer:-40,pov:7});return true},
+ britania(){if(S.brit||S.prov.gall.leg<10||S.aer<120)return'n';if(!spend(S))return'sem';S.aer-=120;S.brit=1;S.britP=0;return true},
+ responder(i,o){if(!spend(S))return'sem';const l=S.letters[i];E[l.id].ops[o].fx(S,l);S.letters.splice(i,1);return true},
+ orcar(so,pa,ob){S.budget={soldo:so,pao:pa,obras:ob};S.budgetDue=false;return true},
+ ambicao(id){S.amb=id;S.fase='jogo';return true},
+};
+function fim(s,tipo,txt){s.over={tipo,txt,vitoria:false};s.fase='fim'}
+const nomeLeg=n=>n===1?'1 legião':n+' legiões';
+function resolver(){
+ const s=S,L=[];const log=(k,t)=>L.push({k,t});
+ s.letters.forEach(l=>{const e=E[l.id];if(e.ig)e.ig(s,l);if(e.igt)log('bad','Carta sem resposta: '+e.igt)});
+ const ignorou=new Set(s.letters.map(l=>l.id));s.letters=[];
+ // frotas
+ s.fleets=s.fleets.filter(f=>{f.left--;if(f.left>0)return true;
+  const q=ROTA[f.src][f.rota];let risco=q.r+(s.season===3?.35:0)+(s.pirat>0?.14:0);if(f.esc)risco*=.5;
+  const nom=doP(f.src);
+  if(rng()<risco){log('bad',`A frota ${nom} naufragou com ${fmt1(f.cargo)} meses de grãos.`)}
+  else{const g=s.prov[f.src].gov;const real=Math.round(f.cargo*(1-g.greed/350)*10)/10;s.annona+=real;log(real<f.cargo-.25?'info':'ok',`Frota ${nom} chegou a Óstia: ${fmt1(real)} meses de pão${real<f.cargo-.25?`, de ${fmt1(f.cargo)} declarados`:''}.`)}
+  return false});
+ // legiões
+ s.moves=s.moves.filter(m=>{m.left--;if(m.left>0)return true;s.prov[m.para].leg+=m.n;log('info',`${nomeLeg(m.n)} chegou${m.n>1?'ram':''} ${aoP(m.para)}.`);return false});
+ // mercadorias
+ s.deliv.forEach(id=>{add(s,PV[id].req.fx);log('ok',`${PV[id].req.n} ${doP(id)}: ${PV[id].req.d}.`)});s.deliv=[];
+ // economia
+ let inc=0;IDS.forEach(i=>{inc+=incomeOf(s,s.prov[i]).pago});if(s.brit===2)inc+=14;
+ s.aer+=inc;
+ const so=s.budget.soldo/4,pa=s.budget.pao/4,ob=s.budget.obras/4;s.aer-=so+pa+ob;
+ if(s.divida>0){s.aer-=20;s.divida--}
+ s.ratioS=s.budget.soldo/Math.max(1,soldoNec(s));const rp=s.budget.pao/Math.max(1,paoNec(s));
+ log('info',`Impostos: +${r0(inc)} mil. Despesas: −${r0(so+pa+ob+(s.divida>0?20:0))} mil.`);
+ s.infl+=((100-s.pur)*.9-s.infl)*.12;
+ s.obrasP+=ob;if(s.obrasP>=135){s.obrasP-=135;s.r.obras++;s.y.obra=true;add(s,{pov:6,sen:4});log('ok','Uma grande obra foi inaugurada em Roma. Povo +6, Senado +4.')}
+ // pão
+ s.annona-=3;if(s.annona<=0){s.annona=0;s.noBread++;s.r.semPao=true;log('bad','Roma está sem pão. A multidão cerca o Palatino.')}else s.noBread=0;
+ // favores
+ const dExe=(s.ratioS<1?(s.ratioS-1)*22:Math.min(1.2,(s.ratioS-1)*6+.5));
+ let dPov=(rp<1?(rp-1)*14:Math.min(1.4,(rp-1)*5+.4))+(s.annona>=3?.4:s.annona>0?-3:-13)-s.infl*.05;
+ let dSen=(50-s.sen)*.03+(s.aer>300?.8:0)-(s.aer<80?2:0);
+ if(s.aer<0){dSen-=2;dPov-=1}
+ add(s,{exe:dExe-(s.aer<0?3:0),pov:dPov,sen:dSen});
+ // províncias
+ IDS.forEach(i=>{const p=s.prov[i],g=p.gov;
+  if(p.ravaged>0)p.ravaged--;
+  let d=(p.tax-10)*.55+(g.greed-45)*.03-(g.comp-50)*.03-Math.min(p.leg,3)*.5-.6;if(p.ravaged>0)d+=1;
+  p.unrest=clamp(p.unrest+d,5);g.fame=Math.max(0,g.fame-.6);
+  if(!p.revolt&&p.unrest>=100){p.revolt=true;s.paz=0;add(s,{sen:-4});log('bad',`${PV[i].pt} se revoltou! A província parou de pagar. Reprima com 2 legiões.`)}
+  if(p.revolt){add(s,{pov:-1});IDS.forEach(o=>{if(o!==i)s.prov[o].unrest+=1})}
+ });
+ // fronteiras
+ ['gall','syri'].forEach(i=>{const p=s.prov[i];p.threat=clamp(p.threat+(i==='gall'?R(3,10):R(2,8)),0,120);
+  const[mi,ma]=i==='gall'?[5,10]:[3,7];
+  if(p.threat>=65&&!p.est)p.est=Ri(mi,ma);
+  if(p.threat>=100){const forca=p.est||Ri(mi,ma);const def=p.leg*(.75+p.gov.comp/190);const nomeI=i==='gall'?'Os germanos':'Os partos';
+   if(def+R(-1,1.5)>=forca){log('ok',`${nomeI} atacaram e foram repelidos ${noP(i)}. Exército +4.`);add(s,{exe:4,sen:2});p.gov.fame+=18;p.threat=Ri(5,25)}
+   else{const pe=Math.min(p.leg,Ri(1,2));p.leg-=pe;log('bad',`Derrota ${noP(i)}! ${nomeI} romperam a fronteira: ${nomeLeg(pe)} perdida${pe>1?'s':''}.`);add(s,{exe:-9,sen:-7,pov:-4});un(s,i,28);p.ravaged=4;p.threat=Ri(30,50);s.paz=-1;s.y.derrota=true}
+   p.est=null}});
+ // Britânia
+ if(s.brit===1){if(s.prov.gall.leg>=9){s.britP++;log('info',`Campanha na Britânia: ${s.britP} de 3 estações.`);if(s.britP>=3){s.brit=2;add(s,{sen:6,exe:6,pov:4});s.prov.gall.gov.fame+=25;log('ok','A Britânia foi anexada ao império!')}}else{s.brit=0;log('bad','A campanha da Britânia foi abandonada: faltam legiões na Gália.')}}
+ // paz
+ const revoltas=IDS.filter(i=>s.prov[i].revolt).length;
+ if(revoltas>0)s.paz=0;else s.paz++;s.r.pazMax=Math.max(s.r.pazMax,s.paz);
+ if(s.pirat>0)s.pirat--;
+ // complô e usurpação
+ if(s.sen<32)s.conj+=(32-s.sen)*.8;else s.conj=Math.max(0,s.conj-2);
+ ['gall','syri'].forEach(i=>{const p=s.prov[i],g=p.gov;
+  if(g.plot===1&&ignorou.has('usurp')){if(s.exe>g.fame+R(-5,15)&&s.exe>50){log('ok',`${g.nome} marchou sobre Roma, mas as legiões o abandonaram.`);add(s,{exe:-10});novoGov(s,i)}else fim(s,'golpe',`${g.nome} marchou com suas legiões e foi aclamado imperador. Sua dinastia terminou.`)}
+  else if(!g.plot&&g.fame>=62&&p.leg>=4&&g.loyal<65&&rng()<.35)g.plot=1;
+ });
+ if(s.conj>=80&&rng()<.5)fim(s,'punhal','Senadores cercaram o imperador na Cúria. Foram 23 punhaladas, e sua dinastia terminou ali.');
+ if(s.exe<=8)fim(s,'golpe','As legiões deixaram de obedecer e aclamaram outro imperador. Sua dinastia terminou.');
+ if(s.pov<=6)fim(s,'povo','A multidão invadiu o Palatino. Nem a guarda quis defender o imperador.');
+ if(s.noBread>=2)fim(s,'pao','Depois de meses sem pão, Roma incendiou os armazéns e derrubou o imperador.');
+ if(s.aer<=-220)fim(s,'falencia','O tesouro quebrou. Sem soldo, a guarda abriu as portas do palácio aos conspiradores.');
+ if(revoltas>=3)fim(s,'colapso','Três províncias se separaram ao mesmo tempo. O império ruiu sob seu governo.');
+ // tempo
+ s.t++;s.r.favSum+=(s.sen+s.pov+s.exe)/3;s.r.favN++;
+ let viraAno=false;s.season++;if(s.season>3){s.season=0;s.year++;viraAno=true}
+ if(s.season===0){s.prov.aegy.stock=Math.min(18,s.prov.aegy.stock+colheita(s.nile));log('info',`Colheita do Egito: ${fmt1(colheita(s.nile))} meses de grãos no estoque.`)}
+ if(s.season===1){const c=R(4,5.5);s.prov.afri.stock=Math.min(10,s.prov.afri.stock+c);s.nile=nilo();log('info',`Colheita da África: ${fmt1(c)} meses. O nilômetro marca ${s.nile} côvados.`)}
+ if(viraAno&&!s.over){
+  if(s.prov.aegy.stock<2){un(s,'aegy',18);log('bad','O Egito ficou sem reserva de grãos. Revolta sobe.')}
+  if(s.prov.afri.stock<1){un(s,'afri',10);log('bad','A África ficou sem reserva de grãos. Revolta sobe.')}
+  s.demands.forEach(i=>{const d=DEM[i];const nom=d.n;if(d.ok(s)){add(s,{[d.f]:8});s.r.dem++;log('ok',`${nom} está satisfeito: "${d.d}". +8.`)}else{add(s,{[d.f]:-6});log('bad',`${nom} cobra: "${d.d}". −6.`)}});
+  pedidos(s);s.budgetDue=true;
+  if(s.year-s.start>=s.vida){s.fase='sucessao';s.vered=veredito(s)}
+ }
+ s.seals=3;if(s.fase==='jogo')cartas(s);
+ s.lastRep=L;return L;
+}
+const nilo=()=>{const x=rng();return x<.12?12:x<.3?13:x<.55?14:x<.8?15:x<.95?16:17};
+const colheita=n=>({12:9,13:11,14:13,15:14,16:15,17:13})[n]||13;
+const fmt1=v=>(Math.round(v*10)/10).toString().replace('.',',');
+function veredito(s){
+ const fav=s.r.favSum/Math.max(1,s.r.favN),amb=s.amb&&AMB[s.amb].ok(s);
+ let t,d;
+ if(amb&&fav>=48){t='Pater Patriae';d='Pai da Pátria. Cumpriu o que jurou e deixou Roma em ordem.'}
+ else if(s.amb==='bri'&&amb||s.brit===2){t='O Conquistador';d='Ampliou as fronteiras, a um preço que os cronistas ainda discutem.'}
+ else if(s.sen<28){t='O Tirano';d='Governou pelo medo. O Senado comemorou sua morte.'}
+ else if(fav<36){t='Damnatio Memoriae';d='Seu nome foi raspado dos monumentos.'}
+ else if(amb){t='O Fiel';d='Cumpriu a palavra, mas deixou feridas abertas.'}
+ else if(s.aer>=400){t='O Prudente';d='Não fez história, mas deixou os cofres cheios.'}
+ else{t='O Sobrevivente';d='Morreu na própria cama, o que já é uma vitória em Roma.'}
+ const pts=Math.round((amb?40:0)+fav*.5+s.r.dem*1.5+(s.brit===2?8:0)-(t==='Damnatio Memoriae'?15:0));
+ return{t,d,amb,pts,nome:s.emp.nome};
+}
+function herdeiros(s){return s.herd||(s.herd=[{t:'Soldado',d:'Exército +12, Senado −4',fx:{exe:12,sen:-4}},{t:'Orador',d:'Senado +12, povo +2',fx:{sen:12,pov:2}},{t:'Generoso',d:'Povo +12, −60 mil',fx:{pov:12,aer:-60}}].sort(()=>rng()-.5).slice(0,2))}
+function suceder(i){const s=S,h=herdeiros(s)[i],v=s.vered;s.hist.push(v);s.score+=v.pts;
+ if(s.n>=5){s.fase='fim';s.over={vitoria:true,txt:'O quinto imperador morreu no trono. Sua dinastia entrou para a história.'};return}
+ add(s,h.fx);s.n++;s.emp={nome:IMPN[s.n-1],idade:Ri(30,42)};s.start=s.year;s.vida=Ri(9,11);s.r={obras:0,semPao:false,diluiu:false,pazMax:0,dem:0,favSum:0,favN:0};s.paz=0;s.amb=null;s.ambOps=sorteiaAmb();s.herd=null;s.vered=null;s.fase='ambicao';cartas(s)}
+const estrelas=s=>{const m=s.score/Math.max(1,s.hist.length);return m>=62?'Gloriosa':m>=48?'Lembrada':m>=34?'Discutida':'Esquecida'};
+
+/* ========== INTERFACE ========== */
+const app=typeof document!=='undefined'?document.getElementById('app'):null;
+let U={f:null,capa:true,toast:null};
+const SAVE='imperium_v1';
+const salvar=()=>{try{localStorage.setItem(SAVE,JSON.stringify(S))}catch(e){}};
+const carregar=()=>{try{const t=localStorage.getItem(SAVE);return t?JSON.parse(t):null}catch(e){return null}};
+const apagar=()=>{try{localStorage.removeItem(SAVE)}catch(e){}};
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cam=g=>`assets/camafeu${g.pedra>1?g.pedra:''}.webp`;
+const camEmp='assets/camafeu4.webp';
+const nivel=v=>v>=70?'Alta':v>=45?'Média':'Baixa';
+const nivelComp=v=>v>=72?'Excelente':v>=58?'Boa':v>=45?'Regular':'Fraca';
+const tituloGov=id=>id==='aegy'?'prefeito':PV[id].front?'legado':'governador';
+function toast(t){U.toast=t;render();setTimeout(()=>{U.toast=null;render()},1900)}
+const erro=r=>({sem:'Sem selos nesta estação.',caro:'O tesouro não cobre esta ordem.',carga:'Não há grãos para essa carga.',poucas:'São necessárias 2 legiões na província.',n:'Esta ordem não está disponível.'}[r]||'Não foi possível.');
+function feito(r,ok,sheet){if(r===true||(r&&typeof r==='object')){U.f=sheet||null;salvar();if(ok)toast(typeof ok==='function'?ok(r):ok);else render()}else toast(erro(r))}
+
+function topo(){return `<header class="top"><div class="marca">IMPERIVM</div><div class="quando"><b>${EST[S.season].toUpperCase()}</b><i>ano ${rom(S.year+753)} de Roma</i></div></header><div class="meandro"></div>`}
+function recursos(){const b=(l,v)=>`<div><div class="l"><span>${l}</span><span>${r0(v)}</span></div><div class="barra"><i class="${v<35?'baixo':''}" style="width:${r0(v)}%"></i></div></div>`;
+ const pago=S.ratioS<.97;
+ return `<section class="recursos" aria-label="Recursos"><div class="tres">
+ <div><div class="rotulo">AERARIVM</div><div class="v ${S.aer<100?'quente':''}">${r0(S.aer)} mil</div><div class="s">denários</div></div>
+ <div><div class="rotulo">ANNONA</div><div class="v ${S.annona<=3?'quente':''}">${fmt1(S.annona)} meses</div><div class="s">de pão em Roma</div></div>
+ <div><div class="rotulo">LEGIONES</div><div class="v">${legTotal(S)}</div><div class="s">${pago?'soldo atrasado':'soldo em dia'}</div></div></div>
+ <div class="fav">${b('Senado',S.sen)}${b('Povo',S.pov)}${b('Exército',S.exe)}</div></section>`}
+function mapa(){
+ let rotas='',navios='';
+ S.fleets.forEach((f,i)=>{const d=ROTA[f.src][f.rota].d;rotas+=`<path id="rt${i}" d="${d}" style="fill:none;stroke:#f6e3a8;stroke-width:1.5;stroke-dasharray:2 4;stroke-linecap:round"/>`;navios+=`<g class="navio" data-r="rt${i}" data-p="${1-(f.left-.5)/f.t}"><path d="M-9 1H9L6 6H-6Z" style="fill:#2a120c;stroke:#f6e3a8"/><path d="M0 1V-10M0 -9C6 -7 6 -3 0 -1C-6 -3 -6 -7 0 -9Z" style="fill:#f3e7cc;stroke:#2a120c;stroke-width:.8"/></g>`});
+ S.moves.forEach(m=>{if(!m.de)return;const a=PV[m.de],b=PV[m.para];rotas+=`<path d="M${a.x} ${a.y}L${b.x} ${b.y}" style="fill:none;stroke:#ff9d6a;stroke-width:1.5;stroke-dasharray:5 4"/>`});
+ const prev=U.f&&U.f.t==='frota'?`<path d="${ROTA[U.f.id][U.f.rota].d}" style="fill:none;stroke:#fff;stroke-width:2;stroke-dasharray:3 3"/>`:'';
+ const pvs=IDS.map(i=>{const q=PV[i],p=S.prov[i];const c=p.revolt?'revolta':p.unrest>=65?'tenso':'';
+  return `<button class="pv ${c}" style="left:${q.x}px;top:${q.y}px" data-a="abrir" data-v="${i}" aria-label="${q.pt}, ${nomeLeg(p.leg)}"><span class="leg">${p.leg}</span><span class="n">${q.nome}</span></button>`}).join('');
+ let al='';IDS.forEach(i=>{const q=PV[i],p=S.prov[i];if(p.revolt)al+=`<span class="alerta" style="left:${clampX(q.x)}px;top:${q.y-30}px">Revolta</span>`;else if(p.est&&p.threat>=65)al+=`<span class="alerta" style="left:${clampX(q.x)}px;top:${q.y-30}px">Ataque iminente</span>`});
+ if(S.annona<=3)al+=`<span class="alerta" style="left:179px;top:182px">Pão acaba logo</span>`;
+ if(S.brit===1)al+=`<span class="alerta" style="left:80px;top:34px">Campanha</span>`;
+ return `<div class="mapbox" id="mb"><div class="palco" id="pl">
+ <span class="mar" style="left:36px;top:112px;transform:translate(-50%,-50%) rotate(-74deg)">OCEANVS</span>
+ <span class="mar" style="left:244px;top:228px">MARE NOSTRVM</span>
+ <span class="rot" style="left:198px;top:48px">GERMANIA</span><span class="rot" style="left:186px;top:96px;opacity:.75">NORICVM</span><span class="rot" style="left:262px;top:176px;opacity:.75">GRAECIA</span><span class="rot" style="left:334px;top:190px;opacity:.75">ASIA</span>
+ <span class="rot" style="left:161px;top:140px;font-size:10px;color:#f6e3a8;text-shadow:0 0 3px #2a120c,0 1px 2px #2a120c,0 0 2px #2a120c">ROMA</span>
+ <svg class="rotas" viewBox="0 0 390 378" aria-hidden="true">${rotas}${prev}${navios}</svg>
+ <button class="roma" data-a="nav" data-v="senado" aria-label="Roma e Senado"><i></i></button>
+ ${pvs}
+ <div class="pv fixa" style="left:256px;top:128px"><span class="leg">${S.danubio}</span><span class="n" style="opacity:.8">ILLYRICVM</span></div>
+ ${al}</div></div>`}
+const clampX=x=>Math.max(44,Math.min(346,x));
+function despachos(){
+ const h=window.__altDesp||170,max=h>=190?2:1;
+ let cs=S.letters.slice(0,max).map((l,i)=>{const e=E[l.id];return `<button class="carta" data-a="carta" data-v="${i}"><img src="assets/selo.webp" alt=""><span><small>${esc(remetente(l))}</small><b>${esc(e.tit)}</b></span></button>`}).join('');
+ if(!S.letters.length){const a=S.amb?AMB[S.amb]:null;cs=`<div class="painel"><span class="rotulo">SUA AMBIÇÃO: ${a?a.n.toUpperCase():''}</span><span>${a?esc(a.t(S)):''}. Nenhuma carta aguarda resposta.</span></div>`}
+ const sel=[0,1,2].map(i=>`<img src="assets/${i<S.seals?'selo':'selo-vazio'}.webp" alt="">`).join('');
+ return `<section class="despachos" aria-label="Despachos">${cs}<div class="selos"><div aria-label="${S.seals} de 3 selos">${sel}</div><button class="btn" data-a="fim">ENCERRAR ESTAÇÃO</button></div></section>`}
+function remetente(l){const e=E[l.id];if(e.de)return e.de.toUpperCase();if(l.p){return `${PV[l.p].pt.toUpperCase()} · ${tituloGov(l.p).toUpperCase()}`}return 'ROMA'}
+function nav(){const it=[['mapa','Mapa','<path d="M4 6l5-2 6 2 5-2v14l-5 2-6-2-5 2zM9 4v14M15 6v14"/>'],['cartas','Cartas','<path d="M6 4h12v13a3 3 0 0 0 3 3H9a3 3 0 0 1-3-3zM9 8h6M9 12h6"/>'],['tesouro','Tesouro','<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5.5" stroke-dasharray="1.5 2"/>'],['legioes','Legiões','<path d="M12 22V9M12 3l2 3h4l-3 3H9L6 6h4zM7 13h10"/>'],['senado','Senado','<path d="M3 9l9-5 9 5zM5 9v9M10 9v9M14 9v9M19 9v9M3 20h18"/>']];
+ return `<nav aria-label="Seções">${it.map(([k,l,p])=>`<button data-a="nav" data-v="${k}" ${(!U.f&&k==='mapa')||(U.f&&U.f.t===k)?'style="color:var(--ouro)" aria-current="page"':''}><svg viewBox="0 0 24 24" aria-hidden="true">${p}</svg>${l}${k==='cartas'&&S.letters.length?`<em>${S.letters.length}</em>`:''}</button>`).join('')}</nav>`}
+
+/* folhas */
+const fecha=`<button class="fecha" data-a="fechar" aria-label="Fechar">×</button>`;
+function fProv(id){const p=S.prov[id],q=PV[id],g=p.gov,t=U.f.tax??p.tax;const i=incomeOf(S,p);
+ return `<div class="veu"><div class="folha">${fecha}
+ <div class="gov"><img src="${cam(g)}" alt="Camafeu de ${esc(g.nome)}"><div><div class="tit">${q.nome}</div><div class="sub">${esc(g.nome)}, ${tituloGov(id)}</div></div></div>
+ <div class="tres"><div><div class="rotulo">COMPETÊNCIA</div><b>${nivelComp(g.comp)}</b></div><div><div class="rotulo">LEALDADE</div><b class="${g.known?'':'quente'}">${g.known?nivel(g.loyal):'Incerta'}</b></div><div><div class="rotulo">GANÂNCIA</div><b class="${g.known?'':'quente'}">${g.known?nivel(g.greed):'Incerta'}</b></div></div>
+ <div class="tabela">
+ <div><span>Revolta</span><b class="${p.unrest>=65?'grave':''}">${r0(p.unrest)} de 100${p.revolt?' · em revolta':''}</b></div>
+ <div><span>Legiões${q.front?` · ameaça ${q.front}`:''}</span><b>${p.leg}${q.front?` · ${ameacaTxt(p)}`:''}</b></div>
+ ${q.grao?`<div><span>Grãos em estoque</span><b>${fmt1(p.stock)} meses</b></div>`:''}
+ ${id==='aegy'?`<div><span>Nilômetro</span><b>${S.nile} côvados · colheita de ${colheita(S.nile)} meses</b></div>`:''}
+ <div><span>Imposto recebido</span><b>${r0(i.pago)} mil por estação</b></div></div>
+ <div class="cera"><h3>ORDENS · CADA UMA GASTA 1 SELO</h3>
+ <div class="linha"><span>Imposto</span><span id="tv">${t}%</span></div>
+ <input id="tax" type="range" min="5" max="30" step="5" value="${t}" aria-label="Imposto" data-i="tax">
+ <button class="ordem" id="btax" data-a="selarTax" data-v="${id}" ${t===p.tax?'hidden':''}>Selar imposto de ${t}%</button>
+ ${q.grao?`<button class="ordem" data-a="frota" data-v="${id}"><span>Enviar frota de grãos<small>Escolha carga, rota e escolta</small></span></button>`:''}
+ <div class="gr2">
+ <button class="ordem" data-a="req" data-v="${id}"><span>${q.req.n}<small>${q.req.d}. Revolta +11</small></span></button>
+ <button class="ordem" data-a="audit" data-v="${id}"><span>Enviar auditor<small>−10 mil. Revela o governador</small></span></button>
+ <button class="ordem" data-a="trocar" data-v="${id}"><span>Trocar ${tituloGov(id)}<small>Senado −2${q.front?', exército −3':''}</small></span></button>
+ ${p.revolt?`<button class="ordem" data-a="reprimir" data-v="${id}"><span>Reprimir revolta<small>Exige 2 legiões</small></span></button>`:`<button class="ordem" data-a="mover" data-v="${id}"><span>Mover legiões<small>Daqui para outra província</small></span></button>`}
+ </div></div></div></div>`}
+function ameacaTxt(p){if(p.est)return `~${p.est} legiões inimigas`;return p.threat>=45?'crescente':'baixa'}
+function fFrota(){const f=U.f,p=S.prov[f.id],q=PV[f.id],max=Math.min(8,Math.floor(p.stock));const c=Math.min(f.cargo,max);const o=ROTA[f.id];const r=o[f.rota];
+ const risco=Math.round(Math.min(.95,(r.r+(S.season===3?.35:0)+(S.pirat>0?.14:0))*(f.esc?.5:1))*100);
+ return `<div class="veu" style="background:rgba(10,5,3,.1)"><div class="folha">${fecha}<div class="tit">FROTA ${doP(f.id).toUpperCase()}</div>
+ <div class="cera"><div class="linha"><span>Carga (estoque ${fmt1(p.stock)})</span><span id="cv">${c} meses</span></div>
+ <input id="cg" type="range" min="1" max="${Math.max(1,max)}" value="${c}" aria-label="Carga" data-i="cargo">
+ <div class="pilhas" role="group" aria-label="Rota"><button class="pilha" data-a="rota" data-v="costa" aria-pressed="${f.rota==='costa'}">${o.costa.nome} · ${o.costa.t} est.</button><button class="pilha" data-a="rota" data-v="mar" aria-pressed="${f.rota==='mar'}">${o.mar.nome} · ${o.mar.t} est.</button></div>
+ <div class="pilhas"><button class="pilha" data-a="escolta" aria-pressed="${f.esc}">Escolta · −15 mil</button></div>
+ <div class="linha"><span>Risco de naufrágio${S.season===3?' (inverno)':''}</span><span class="${risco>=25?'quente':''}">${risco}%</span></div>
+ <button class="btn forte cheio" data-a="zarpar" ${max<1?'disabled':''}>SELAR E ZARPAR</button></div></div></div>`}
+function fMover(){const f=U.f,a=f.de,p=S.prov[a];const n=Math.min(f.n,p.leg);const dest=IDS.filter(i=>i!==a);const t=f.para?viag(a,f.para):0;
+ return `<div class="veu" style="background:rgba(10,5,3,.1)"><div class="folha">${fecha}<div class="tit">MOVER LEGIÕES</div><div class="sub">Saindo ${doP(a)}, onde há ${nomeLeg(p.leg)}.</div>
+ <div class="cera"><div class="pilhas" role="group" aria-label="Destino">${dest.map(i=>`<button class="pilha" data-a="dest" data-v="${i}" aria-pressed="${f.para===i}">${PV[i].pt} · ${viag(a,i)} est.</button>`).join('')}</div>
+ <div class="linha"><span>Legiões</span><span id="nv">${n}</span></div>
+ <input id="nl" type="range" min="1" max="${Math.max(1,p.leg)}" value="${Math.max(1,n)}" aria-label="Número de legiões" data-i="n">
+ <button class="btn forte cheio" data-a="marchar" ${!f.para||p.leg<1?'disabled':''}>${f.para?`SELAR · CHEGA EM ${t} ESTAÇ${t>1?'ÕES':'ÃO'}`:'ESCOLHA O DESTINO'}</button></div></div></div>`}
+function fCartas(){return `<div class="veu"><div class="folha">${fecha}<div class="tit">CARTAS</div><div class="sub">Responder gasta 1 selo. O que ficar sem resposta tem consequência ao fim da estação.</div>
+ ${S.letters.length?S.letters.map((l,i)=>`<button class="carta" data-a="carta" data-v="${i}"><img src="assets/selo.webp" alt=""><span><small>${esc(remetente(l))}</small><b>${esc(E[l.id].tit)}</b></span></button>`).join(''):'<p class="sub">Nenhuma carta aguarda resposta.</p>'}</div></div>`}
+function fCarta(i){const l=S.letters[i],e=E[l.id];
+ return `<div class="veu cheia"><div class="folha" style="background:transparent;border:0;padding:8px">${fecha.replace('class="fecha"','class="fecha" style="color:#5c170e;right:14px;top:14px"')}
+ <article class="papiro"><div class="abre">${esc(remetente(l))}<br>CAESARI · S · D</div><div class="data">escrita há 40 dias</div>
+ <h2 style="font-size:17px;line-height:1.2;text-align:center">${esc(e.tit)}</h2><p>${esc(e.txt(S,l))}</p>
+ <div style="display:flex;flex-direction:column;gap:6px;margin-top:auto">${e.ops.map((o,k)=>`<button class="op" data-a="resp" data-v="${i}:${k}" ${S.seals<1?'disabled':''}><b>${esc(o.t)}</b><span>${esc(o.d)}</span></button>`).join('')}</div></article>
+ <div class="sub" style="text-align:center;color:var(--marfim);text-shadow:0 1px 2px #000;padding-top:4px">${S.seals<1?'Sem selos: esta carta ficará sem resposta.':`Responder gasta 1 de seus ${S.seals} selos.`}</div></div></div>`}
+function fTesouro(){const rp=rendaPrev(S);
+ return `<div class="veu"><div class="folha">${fecha}<div class="tit">TESOURO</div>
+ <div class="tabela"><div><span>Tesouro</span><b>${r0(S.aer)} mil</b></div><div><span>Impostos previstos no ano</span><b>${r0(rp*4)} mil</b></div>
+ <div><span>Soldo no orçamento</span><b>${S.budget.soldo} de ${soldoNec(S)} mil</b></div><div><span>Pão no orçamento</span><b>${S.budget.pao} de ${paoNec(S)} mil</b></div><div><span>Obras</span><b>${S.budget.obras} mil · ${r0(S.obrasP/135*100)}% da próxima</b></div>
+ ${S.divida?`<div><span>Empréstimo</span><b>20 mil por ${S.divida} estações</b></div>`:''}
+ <div><span>Prata do denário</span><b class="${S.pur<100?'quente':''}">${S.pur}% · inflação ${fmt1(S.infl)}%</b></div></div>
+ <div class="cera"><h3>ORDEM DO TESOURO</h3><button class="ordem" data-a="diluir"><span>Reduzir a prata do denário<small>+90 mil agora. A inflação chega nos anos seguintes</small></span></button></div></div></div>`}
+function fOrcamento(){const f=U.f,rp=rendaPrev(S)*4,tot=f.so+f.pa+f.ob;const sobra=rp-tot;
+ return `<div class="veu"><div class="folha"><div class="tit">ORÇAMENTO DO ANO</div><div class="sub">Tesouro de ${r0(S.aer)} mil e cerca de ${r0(rp)} mil em impostos previstos. O que não for reservado fica no tesouro.</div>
+ <div class="cera"><div class="linha"><span>Soldo das legiões</span><span id="v_so">${f.so} de ${soldoNec(S)}</span></div><input id="so" type="range" min="200" max="${soldoNec(S)+60}" step="10" value="${f.so}" aria-label="Soldo" data-i="so">
+ <div class="linha"><span>Pão de Roma</span><span id="v_pa">${f.pa} de ${paoNec(S)}</span></div><input id="pa" type="range" min="30" max="${paoNec(S)+40}" step="5" value="${f.pa}" aria-label="Pão" data-i="pa">
+ <div class="linha"><span>Obras públicas</span><span id="v_ob">${f.ob}</span></div><input id="ob" type="range" min="0" max="200" step="10" value="${f.ob}" aria-label="Obras" data-i="ob">
+ <div class="linha"><span>Saldo previsto no ano</span><span id="v_sb" class="${sobra<0?'quente':''}">${sobra>=0?'+':'−'}${Math.abs(r0(sobra))} mil</span></div></div>
+ <button class="btn forte cheio" data-a="orcar">APROVAR ORÇAMENTO</button></div></div>`}
+function fLegioes(){const[...lin]=IDS.map(i=>{const p=S.prov[i];return `<div><span>${PV[i].pt}${PV[i].front?` · ${ameacaTxt(p)}`:''}</span><b>${p.leg}</b></div>`});
+ const tr=S.moves.map(m=>`<div><span>${m.de?PV[m.de].pt+' para ':'Recrutas para '}${PV[m.para].pt}</span><b>${m.n} · ${m.left} est.</b></div>`).join('');
+ return `<div class="veu"><div class="folha">${fecha}<div class="tit">LEGIÕES</div><div class="tabela">${lin.join('')}<div><span>Ilírico · Danúbio (fixas)</span><b>${S.danubio}</b></div>${tr}</div>
+ <div class="cera"><h3>RECRUTAR · 60 MIL E 1 SELO</h3><div class="pilhas">${IDS.map(i=>`<button class="pilha" data-a="recrutar" data-v="${i}">${PV[i].pt}</button>`).join('')}</div>
+ ${S.brit===0?`<button class="ordem" data-a="britania" ${S.prov.gall.leg<10?'disabled':''}><span>Invadir a Britânia<small>−120 mil. Exige 10 legiões na Gália por 3 estações</small></span></button>`:''}</div></div></div>`}
+function fSenado(){const a=S.amb?AMB[S.amb]:null;
+ return `<div class="veu"><div class="folha">${fecha}<div class="tit">ROMA</div>
+ <div class="gov" style="gap:10px"><img src="${camEmp}" alt="" style="width:64px;height:64px"><div class="sub"><b>${S.emp.nome}</b>, ${S.n}º imperador de 5<br>${S.year-S.start} anos de reinado</div></div>
+ ${a?`<div><div class="rotulo">AMBIÇÃO JURADA</div><div class="ins" style="font-size:14px;color:var(--ouro);margin-top:2px">${a.n}</div><div class="sub">${esc(a.d)} <b>${esc(a.t(S))}.</b></div></div>`:''}
+ <div><div class="rotulo">PEDIDOS DESTE ANO</div><div class="tabela">${S.demands.map(i=>`<div><span>${esc(DEM[i].n)}: ${esc(DEM[i].d)}</span><b>${DEM[i].ok(S)?'Em dia':'Pendente'}</b></div>`).join('')}</div></div>
+ ${S.hist.length?`<div><div class="rotulo">CRÔNICA DA DINASTIA</div><div class="tabela">${S.hist.map(h=>`<div><span>${h.nome}</span><b>${h.t}</b></div>`).join('')}</div></div>`:''}
+ <div class="cera"><h3>ORDENS DE ROMA</h3><button class="ordem" data-a="jogos"><span>Promover jogos no Circo<small>−40 mil. Povo +7. Gasta 1 selo</small></span></button></div>
+ <div class="gr2"><button class="btn" data-a="ajuda">COMO JOGAR</button><button class="btn" data-a="reinicio">RECOMEÇAR</button></div></div></div>`}
+function fRelatorio(){return `<div class="veu cheia"><div class="folha" style="background:transparent;border:0;padding:8px"><article class="papiro"><div class="abre">ACTA DIVRNA</div><div class="data">${ESTPT[S.season]} do ano ${rom(S.year+753)}</div>
+ <ul class="fatos">${S.lastRep.map(x=>`<li class="${x.k}">${esc(x.t)}</li>`).join('')}</ul></article><button class="btn forte cheio" style="margin-top:8px" data-a="seguir">CONTINUAR</button></div></div>`}
+function fAjuda(){return `<div class="veu cheia"><div class="folha" style="background:transparent;border:0;padding:8px"><article class="papiro"><div class="abre">INSTRUÇÕES AO NOVO CÉSAR</div>
+ <ul class="fatos"><li>Cada estação você tem <b>3 selos</b>. Cada ordem ou resposta a uma carta gasta 1.</li><li>Roma come <b>3 meses de pão por estação</b>. Toque no Egito ou na África e envie frotas. No inverno o mar é perigoso.</li><li>Legiões levam estações para marchar. Quando surgir <b>Ataque iminente</b>, a defesa precisa já estar lá.</li><li>Na primavera você divide o <b>orçamento</b> do ano.</li><li>Governadores podem roubar. Se a frota chegar leve, desconfie e mande um auditor.</li><li><b>Objetivo:</b> faça 5 imperadores seguidos morrerem no trono. Em cada reinado, cumpra a ambição jurada.</li></ul></article><button class="btn forte cheio" style="margin-top:8px" data-a="fechar">ENTENDI</button></div></div>`}
+function fAmbicao(){return `<div class="veu cheia"><div class="folha"><div class="gov"><img src="${camEmp}" alt=""><div><div class="tit" style="padding:0">${S.emp.nome.toUpperCase()}</div><div class="sub">${S.n}º imperador da dinastia. Diante do Senado, jure sua ambição.</div></div></div>
+ <div style="display:flex;flex-direction:column;gap:8px">${S.ambOps.map(k=>`<button class="op" data-a="jurar" data-v="${k}" style="min-height:76px"><b>${AMB[k].n}</b><span style="font-size:14.5px">${esc(AMB[k].d)}</span></button>`).join('')}</div></div></div>`}
+function fSucessao(){const v=S.vered;return `<div class="veu cheia"><div class="folha"><div class="gov"><img src="${camEmp}" alt=""><div><div class="sub">Morreu ${v.nome}, no trono.</div><div class="tit" style="padding:0">${v.t.toUpperCase()}</div></div></div>
+ <div class="sub">${esc(v.d)} ${v.amb?'Ambição cumprida.':'A ambição jurada ficou pelo caminho.'} Nota do reinado: ${v.pts}.</div>
+ <div class="rotulo">ESCOLHA O HERDEIRO</div><div style="display:flex;flex-direction:column;gap:8px">${herdeiros(S).map((h,i)=>`<button class="op" data-a="herd" data-v="${i}"><b>${h.t}</b><span>${h.d}</span></button>`).join('')}</div></div></div>`}
+function fFim(){const o=S.over,c=S.hist;return `<div class="veu cheia"><div class="folha"><div class="tit" style="padding:0">${o.vitoria?'DINASTIA COMPLETA':'FIM DA DINASTIA'}</div><div class="sub">${esc(o.txt)}</div>
+ <div class="tabela">${c.map(h=>`<div><span>${h.nome}</span><b>${h.t}</b></div>`).join('')}${o.vitoria?'':`<div><span>${S.emp.nome}</span><b>Deposto</b></div>`}</div>
+ <div class="ins" style="font-size:15px;color:var(--ouro)">${o.vitoria?`A HISTÓRIA A CHAMA: ${estrelas(S).toUpperCase()}`:`${c.length} DE 5 IMPERADORES`}</div>
+ <button class="btn forte cheio" data-a="novo">NOVA DINASTIA</button></div></div>`}
+function capa(){const tem=carregar();return `<div class="capa"><a class="voltar" href="../../">← Mesa de Jogos</a><img src="assets/camafeu4.webp" alt=""><h1>IMPERIVM</h1><p class="sub" style="max-width:300px;color:var(--marfim);font-size:16px">Roma é sua. Faça cinco imperadores morrerem no trono.</p><button class="btn forte" data-a="novo">NOVA DINASTIA</button>${tem&&!tem.over?`<button class="btn" data-a="cont">CONTINUAR</button>`:''}<button class="btn" data-a="ajudaC">COMO JOGAR</button></div>`}
+function folha(){
+ if(!S)return'';
+ if(S.fase==='fim')return fFim();if(S.fase==='sucessao')return fSucessao();
+ if(U.f&&U.f.t==='rel')return fRelatorio();
+ if(S.fase==='ambicao')return fAmbicao();
+ if(S.budgetDue&&!(U.f&&U.f.t==='ajuda')){if(!U.f||U.f.t!=='orc')U.f={t:'orc',so:S.budget.soldo,pa:S.budget.pao,ob:S.budget.obras};return fOrcamento()}
+ if(!U.f)return'';
+ const t=U.f.t;return({prov:()=>fProv(U.f.id),frota:fFrota,mover:fMover,cartas:fCartas,carta:()=>fCarta(U.f.i),tesouro:fTesouro,legioes:fLegioes,senado:fSenado,ajuda:fAjuda}[t]||(()=>''))();
+}
+function render(){
+ if(!app)return;
+ if(U.capa){app.innerHTML=(U.f&&U.f.t==='ajuda'?capa()+fAjuda():capa())+brasa();return}
+ app.innerHTML=topo()+recursos()+mapa()+despachos()+nav()+folha()+brasa();
+ ajustar();
+}
+const brasa=()=>U.toast?`<div class="brasa" role="status">${esc(U.toast)}</div>`:'';
+function ajustar(){const mb=document.getElementById('mb'),pl=document.getElementById('pl');if(!mb)return;
+ const w=app.clientWidth,H=app.clientHeight,fixo=50+14+92+56+4;const minD=118;
+ const h=Math.min(w*378/390,H-fixo-minD);mb.style.height=Math.max(170,h)+'px';
+ const hh=mb.clientHeight,s=Math.min(w/390,hh/378);pl.style.transform=`scale(${s})`;
+ const d=H-fixo-mb.clientHeight;if(Math.abs((window.__altDesp||0)-d)>1){const era=window.__altDesp;window.__altDesp=d;if((era>=190)!==(d>=190)){render();return}}
+ document.querySelectorAll('.navio').forEach(n=>{const p=document.getElementById(n.dataset.r);if(!p)return;const pt=p.getPointAtLength(p.getTotalLength()*Math.max(0,Math.min(1,+n.dataset.p)));n.setAttribute('transform',`translate(${pt.x} ${pt.y})`)});
+}
+if(app){
+ app.addEventListener('click',ev=>{const b=ev.target.closest('[data-a]');if(!b||b.disabled)return;const a=b.dataset.a,v=b.dataset.v;const h=H[a];if(h)h(v)});
+ app.addEventListener('input',ev=>{const k=ev.target.dataset.i;if(!k||!U.f)return;const n=+ev.target.value;const set=(id,t)=>{const e=document.getElementById(id);if(e)e.textContent=t};
+  if(k==='tax'){U.f.tax=n;set('tv',n+'%');const bt=document.getElementById('btax');if(bt){bt.hidden=n===S.prov[U.f.id].tax;bt.textContent=`Selar imposto de ${n}%`}}
+  if(k==='cargo'){U.f.cargo=n;set('cv',n+' meses')}
+  if(k==='n'){U.f.n=n;set('nv',n)}
+  if(['so','pa','ob'].includes(k)){U.f[k]=n;set('v_so',U.f.so+' de '+soldoNec(S));set('v_pa',U.f.pa+' de '+paoNec(S));set('v_ob',U.f.ob);const sb=rendaPrev(S)*4-U.f.so-U.f.pa-U.f.ob;const e=document.getElementById('v_sb');if(e){e.textContent=(sb>=0?'+':'−')+Math.abs(r0(sb))+' mil';e.className=sb<0?'quente':''}}
+ });
+ addEventListener('resize',()=>{if(!U.capa)ajustar()});
+}
+const H={
+ novo(){apagar();newGame();U={f:null,capa:false,toast:null};salvar();render()},
+ cont(){S=carregar();U={f:null,capa:false,toast:null};render()},
+ ajudaC(){U.f={t:'ajuda'};render()},ajuda(){U.f={t:'ajuda'};render()},
+ reinicio(){U.capa=true;U.f=null;render()},
+ fechar(){U.f=null;render()},
+ nav(v){U.f=v==='mapa'?null:{t:v};render()},
+ abrir(v){U.f={t:'prov',id:v};render()},
+ selarTax(v){const t=U.f.tax;feito(A.tax(v,t),`Imposto ${doP(v)} fixado em ${t}%.`,{t:'prov',id:v})},
+ frota(v){const p=S.prov[v];U.f={t:'frota',id:v,cargo:Math.min(5,Math.max(1,Math.floor(p.stock))),rota:'costa',esc:false};render()},
+ rota(v){U.f.rota=v;render()},escolta(){U.f.esc=!U.f.esc;render()},
+ zarpar(){const f=U.f;feito(A.fleet(f.id,Math.min(f.cargo,Math.floor(S.prov[f.id].stock)),f.rota,f.esc),'A frota zarpou.')},
+ req(v){feito(A.req(v),'Requisição enviada. Chega na próxima estação.',{t:'prov',id:v})},
+ audit(v){feito(A.audit(v),r=>r.rec?`Auditor recuperou ${r.rec} mil.`:'Nada de grave foi encontrado.',{t:'prov',id:v})},
+ trocar(v){feito(A.trocar(v),'Novo governador nomeado.',{t:'prov',id:v})},
+ reprimir(v){feito(A.reprimir(v),'Revolta esmagada.',{t:'prov',id:v})},
+ mover(v){U.f={t:'mover',de:v,para:null,n:1};render()},
+ dest(v){U.f.para=v;render()},
+ marchar(){const f=U.f;feito(A.mover(f.de,f.para,f.n),'As legiões marcharam.')},
+ recrutar(v){feito(A.recrutar(v),`Nova legião a caminho ${doP(v)}.`,{t:'legioes'})},
+ britania(){feito(A.britania(),'As legiões embarcam para a Britânia.')},
+ diluir(){feito(A.diluir(),'Nova cunhagem em circulação.',{t:'tesouro'})},
+ jogos(){feito(A.jogos(),'O Circo Máximo ruge seu nome.',{t:'senado'})},
+ carta(v){U.f={t:'carta',i:+v};render()},
+ resp(v){const[i,o]=v.split(':').map(Number);const res=A.responder(i,o);if(res===true){U.f=S.letters.length?{t:'cartas'}:null;salvar();render()}else toast(erro(res))},
+ orcar(){const f=U.f;A.orcar(f.so,f.pa,f.ob);U.f=null;salvar();render()},
+ jurar(v){A.ambicao(v);U.f=S.t===0&&S.n===1?{t:'ajuda'}:null;salvar();render()},
+ herd(v){suceder(+v);U.f=null;salvar();render()},
+ fim(){resolver();U.f={t:'rel'};salvar();render()},
+ seguir(){U.f=null;render()},
+};
+if(typeof window!=='undefined'){window.IMP={get S(){return S},render,U:()=>U,A,newGame,resolver,suceder,E,AMB,DEM,soldoNec,paoNec,rendaPrev,setRng:f=>{rng=f}};}
+if(app&&!(typeof window!=='undefined'&&window.__NOUI)){const go=()=>render();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(go);go()}
+</script>
+</body>
+</html>

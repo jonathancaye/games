@@ -15,6 +15,7 @@ jogos/
   scoundrel/index.html
   asfalto-turbo/index.html
   arrancada-402/index.html
+  imperium/index.html
 ```
 
 ## Publicar no GitHub Pages

@@ -138,6 +138,9 @@ a.game:hover .arr .tl{fill:#3ddc84}
 
 /* arte: Náufragos */
 .art.nfg{background:#0d3a40}
+.art.imp{background:#7a1c14 url(jogos/imperium/assets/afresco.jpg) center/cover}
+.art.imp .cam{width:62%;max-width:150px;aspect-ratio:1;filter:drop-shadow(0 6px 10px rgba(0,0,0,.55))}
+.art.imp .sel{position:absolute;right:calc(50% - 86px);bottom:7%;width:48px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.6))}
 .art.fsg{background:#1f8197}
 .art.fsg .bob{transform-origin:118px 58px;animation:fsgb 1.6s ease-in-out infinite}
 .art.fsg .rp{transform-origin:118px 60px;animation:fsgr 1.6s ease-out infinite}
@@ -197,7 +200,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;border-top:1px solid 
    CATÁLOGO DE JOGOS
    Para adicionar um jogo novo:
    1. crie a pasta jogos/<nome-do-jogo>/ com um index.html dentro;
-   2. acrescente um item aqui embaixo (art pode ser "dados", "fod", "dw", "scd", "atb", "arr", "nfg", "grp", "fsg", "fnt" ou "soon";
+   2. acrescente um item aqui embaixo (art pode ser "dados", "fod", "dw", "scd", "atb", "arr", "nfg", "grp", "fsg", "fnt", "imp" ou "soon";
       para arte nova, crie uma função em ARTS).
    ===================================================================== */
 const GAMES = [
@@ -313,6 +316,17 @@ const GAMES = [
     art: "fnt"
   },
   {
+    title: "Imperium",
+    url: "jogos/imperium/",
+    desc: "Você é César: envie frotas de grãos, cobre impostos, posicione as legiões, desconfie dos governadores e faça cinco imperadores morrerem no trono.",
+    category: "Gestão",
+    players: "1 jogador",
+    time: "30 min/reinado",
+    extra: ["Solo", "Roma antiga", "Dinastia"],
+    accent: "#c9a24b",
+    art: "imp"
+  },
+  {
     title: "Em breve",
     desc: "O próximo jogo da mesa está sendo preparado.",
     category: null,
@@ -386,6 +400,9 @@ const ARTS = {
       <rect x="40" y="74" width="120" height="6" rx="2" fill="#e9d3a6"/><rect x="42" y="80" width="116" height="22" rx="3" fill="#b97a45"/>
       <g stroke="#6fae3c" stroke-width="3.5"><line x1="34" y1="102" x2="40" y2="66"/><line x1="38" y1="102" x2="44" y2="68"/></g>
       <circle cx="60" cy="104" r="5" fill="#333"/><circle cx="140" cy="104" r="5" fill="#333"/></svg>`;
+  },
+  imp(){
+    return `<img class="cam" src="jogos/imperium/assets/camafeu4.webp" alt=""><img class="sel" src="jogos/imperium/assets/selo.webp" alt="">`;
   },
   fsg(){
     return `<svg viewBox="0 0 200 112" preserveAspectRatio="xMidYMid slice">
