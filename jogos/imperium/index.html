@@ -12,7 +12,7 @@
 /* Conceito: um gabinete romano. Parede de afresco, mapa pintado, papiro para o que chega, cera para o que você ordena. */
 :root{
   color-scheme:dark;
-  --noite:#140c08;--tinta:#2c1a0c;--pompeia:#7a1c14;--lacre:#8f1f14;
+  --noite:#140c08;--tinta:#170b04;--pompeia:#7a1c14;--lacre:#8f1f14;
   --ouro:#f0d488;--ouro2:#d4ae5c;--bronze:#a87f2e;--filete:#5a4322;
   --marfim:#f3e7cc;--areia:#e8dabb;--apagado:#cdbd9b;--alerta:#f2a06a;--laranja:#e07b3f;--mar:#1f5560;
   --inscr:"Cinzel","Times New Roman",serif;--texto:"Cardo",Georgia,serif;
@@ -58,10 +58,10 @@ header.top .quando i{font-size:12.5px;color:#f0dfc0}
 .roma i{width:15px;height:15px;border-radius:50%;background:#5a1a4a;border:2px solid #f6e3a8;box-shadow:0 0 0 1.5px #2a120c,0 2px 4px rgba(0,0,0,.7)}
 svg.rotas{position:absolute;inset:0;pointer-events:none}
 .despachos{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px;padding:7px 12px 6px}
-.carta{display:flex;align-items:center;gap:10px;width:100%;min-height:50px;padding:5px 10px;text-align:left;color:var(--tinta);background:#e4cf9f url(assets/papiro.webp) center/640px auto;box-shadow:0 2px 5px rgba(0,0,0,.55)}
+.carta{display:flex;align-items:center;gap:10px;width:100%;min-height:50px;padding:5px 10px;text-align:left;color:var(--tinta);background:#e4cf9f url(assets/papiro-claro.webp) center/640px auto;box-shadow:0 2px 5px rgba(0,0,0,.55)}
 .carta img{width:32px;height:32px;flex:none}
 .carta span{flex:1;min-width:0}
-.carta small{display:block;font-family:var(--inscr);font-weight:700;font-size:10px;letter-spacing:.07em;color:#6a1a10;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.carta small{display:block;font-family:var(--inscr);font-weight:700;font-size:10px;letter-spacing:.07em;color:#5a140b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .carta b{display:block;font-weight:400;font-size:14.5px;line-height:1.18}
 .painel{flex:none;display:flex;flex-direction:column;justify-content:center;gap:2px;padding:6px 10px;background:rgba(20,12,8,.82);border:1px solid var(--filete);font-size:14px;line-height:1.25}
 .selos{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto}
@@ -105,23 +105,23 @@ input[type=range]::-moz-range-thumb{width:14px;height:24px;background:#d9b45e;bo
 .pilhas{display:flex;flex-wrap:wrap;gap:6px}
 .pilha{min-height:44px;padding:0 12px;border:1px solid #c9a24b;color:#f0dfb9;font-size:14px}
 .pilha[aria-pressed=true]{background:#c9a24b;color:#1d110a;text-shadow:none;font-weight:700}
-.papiro{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;gap:9px;margin:0 auto;width:100%;max-width:400px;padding:26px 28px 24px;color:var(--tinta);background:url(assets/papiro.webp) center/100% 100% no-repeat;overflow:auto}
-.papiro .abre{text-align:center;font-family:var(--inscr);font-weight:700;font-size:14px;letter-spacing:.09em;color:#5c170e;line-height:1.3}
-.papiro .data{text-align:center;font-size:13px;font-style:italic;color:#5a4128}
-.papiro p{font-size:15.5px;line-height:1.34}
+.papiro{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;gap:9px;margin:0 auto;width:100%;max-width:400px;padding:26px 28px 24px;color:var(--tinta);background:url(assets/papiro-claro.webp) center/100% 100% no-repeat;overflow:auto}
+.papiro .abre{text-align:center;font-family:var(--inscr);font-weight:700;font-size:14px;letter-spacing:.09em;color:#4f1209;line-height:1.3}
+.papiro .data{text-align:center;font-size:13.5px;font-style:italic;color:#3f2a14}
+.papiro p{font-size:16px;line-height:1.36}
 .op{display:block;width:100%;min-height:58px;padding:7px 11px;background:#1d110a;border:1px solid var(--bronze);text-align:left;color:var(--marfim)}
 .op b{display:block;font-family:var(--inscr);font-size:12.5px;letter-spacing:.03em;color:var(--ouro)}
 .op span{display:block;font-size:13.5px;line-height:1.2;margin-top:2px}
 .op:disabled{opacity:.55}
 .papiro.ajuda{gap:7px}
-.papiro h3{font-family:var(--inscr);font-size:12.5px;letter-spacing:.07em;color:#5c170e;margin-top:2px}
-.passos{margin:0;padding:0 0 0 22px;display:flex;flex-direction:column;gap:8px;font-size:15.5px;line-height:1.3}
-.passos li::marker{font-family:var(--inscr);font-weight:700;color:#5c170e}
+.papiro h3{font-family:var(--inscr);font-size:12.5px;letter-spacing:.07em;color:#4f1209;margin-top:2px}
+.passos{margin:0;padding:0 0 0 22px;display:flex;flex-direction:column;gap:8px;font-size:16px;line-height:1.32}
+.passos li::marker{font-family:var(--inscr);font-weight:700;color:#4f1209}
 .tarefas{margin:0;display:flex;flex-direction:column;gap:3px}
-.tarefas dt{font-family:var(--inscr);font-weight:700;font-size:12.5px;letter-spacing:.04em;color:#5c170e;margin-top:6px}
+.tarefas dt{font-family:var(--inscr);font-weight:700;font-size:12.5px;letter-spacing:.04em;color:#4f1209;margin-top:6px}
 .tarefas dt:first-child{margin-top:0}
-.tarefas dd{margin:0;font-size:15px;line-height:1.28}
-.fatos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:15px;line-height:1.26}
+.tarefas dd{margin:0;font-size:15.5px;line-height:1.3}
+.fatos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:15.5px;line-height:1.28}
 .fatos li{padding-left:15px;position:relative}
 .fatos li:before{content:"";position:absolute;left:1px;top:7px;width:7px;height:7px;background:#6b5436;transform:rotate(45deg)}
 .fatos li.ok:before{background:#2f6b57}.fatos li.bad:before{background:#a3271a}
@@ -514,7 +514,7 @@ function fMover(){const f=U.f,a=f.de,p=S.prov[a];const n=Math.min(f.n,p.leg);con
 function fCartas(){return `<div class="veu"><div class="folha">${fecha}<div class="tit">CARTAS</div><div class="sub">Responder gasta 1 selo. O que ficar sem resposta tem consequência ao fim da estação.</div>
  ${S.letters.length?S.letters.map((l,i)=>`<button class="carta" data-a="carta" data-v="${i}"><img src="assets/selo.webp" alt=""><span><small>${esc(remetente(l))}</small><b>${esc(E[l.id].tit)}</b></span></button>`).join(''):'<p class="sub">Nenhuma carta aguarda resposta.</p>'}</div></div>`}
 function fCarta(i){const l=S.letters[i],e=E[l.id];
- return `<div class="veu cheia"><div class="folha" style="background:transparent;border:0;padding:8px">${fecha.replace('class="fecha"','class="fecha" style="color:#5c170e;right:14px;top:14px"')}
+ return `<div class="veu cheia"><div class="folha" style="background:transparent;border:0;padding:8px">${fecha.replace('class="fecha"','class="fecha" style="color:#4f1209;right:14px;top:14px"')}
  <article class="papiro"><div class="abre">${esc(remetente(l))}<br>CAESARI · S · D</div><div class="data">escrita há 40 dias</div>
  <h2 style="font-size:17px;line-height:1.2;text-align:center">${esc(e.tit)}</h2><p>${esc(e.txt(S,l))}</p>
  <div style="display:flex;flex-direction:column;gap:6px;margin-top:auto">${e.ops.map((o,k)=>`<button class="op" data-a="resp" data-v="${i}:${k}" ${S.seals<1?'disabled':''}><b>${esc(o.t)}</b><span>${esc(o.d)}</span></button>`).join('')}</div></article>
@@ -565,8 +565,8 @@ const AJUDA=[
  <dt>Vigiar os governadores</dt><dd>Se a frota chegar mais leve ou as contas não fecharem, toque na província e envie um auditor.</dd></dl>`},
 ];
 function fAjuda(){const p=(U.f&&U.f.p)||0,a=AJUDA[p],ult=p===AJUDA.length-1;
- return `<div class="veu cheia"><div class="folha" style="background:transparent;border:0;padding:8px"><article class="papiro ajuda"><div class="data">Instruções ao novo César · ${p+1} de ${AJUDA.length}</div><h2 class="abre">${a.t}</h2>${a.h}</article>
- <div class="gr2" style="margin-top:8px"><button class="btn" data-a="ajp" data-v="${p-1}" ${p===0?'disabled':''}>VOLTAR</button><button class="btn forte" data-a="${ult?'fechar':'ajp'}" data-v="${p+1}">${ult?'ENTENDI':'PRÓXIMO'}</button></div></div></div>`}
+ return `<div class="veu cheia"><div class="folha" style="background:transparent;border:0;padding:8px"><button class="fecha" style="color:#4f1209;right:14px;top:14px" data-a="fechar" aria-label="Fechar instruções">×</button><article class="papiro ajuda"><div class="data">Instruções ao novo César · ${p+1} de ${AJUDA.length}</div><h2 class="abre">${a.t}</h2>${a.h}</article>
+ <div class="gr2" style="margin-top:8px">${p===0?'<button class="btn" data-a="fechar">FECHAR</button>':`<button class="btn" data-a="ajp" data-v="${p-1}">VOLTAR</button>`}<button class="btn forte" data-a="${ult?'fechar':'ajp'}" data-v="${p+1}">${ult?'ENTENDI':'PRÓXIMO'}</button></div></div></div>`}
 function fAmbicao(){return `<div class="veu cheia"><div class="folha"><div class="gov"><img src="${camEmp}" alt=""><div><div class="tit" style="padding:0">${S.emp.nome.toUpperCase()}</div><div class="sub">${S.n}º imperador da dinastia. Diante do Senado, jure sua ambição.</div></div></div>
  <div style="display:flex;flex-direction:column;gap:8px">${S.ambOps.map(k=>`<button class="op" data-a="jurar" data-v="${k}" style="min-height:76px"><b>${AMB[k].n}</b><span style="font-size:14.5px">${esc(AMB[k].d)}</span></button>`).join('')}</div></div></div>`}
 function fSucessao(){const v=S.vered;return `<div class="veu cheia"><div class="folha"><div class="gov"><img src="${camEmp}" alt=""><div><div class="sub">Morreu ${v.nome}, no trono.</div><div class="tit" style="padding:0">${v.t.toUpperCase()}</div></div></div>
@@ -587,10 +587,25 @@ function folha(){
  if(!U.f)return'';
  const t=U.f.t;return({prov:()=>fProv(U.f.id),frota:fFrota,mover:fMover,cartas:fCartas,carta:()=>fCarta(U.f.i),tesouro:fTesouro,legioes:fLegioes,senado:fSenado,ajuda:fAjuda}[t]||(()=>''))();
 }
+function morph(a,b){
+ if(a.nodeType!==b.nodeType||a.nodeName!==b.nodeName){a.replaceWith(b.cloneNode(true));return}
+ if(a.nodeType===3||a.nodeType===8){if(a.data!==b.data)a.data=b.data;return}
+ if(a.nodeType!==1)return;
+ for(const n of [...a.attributes])if(!b.hasAttribute(n.name))a.removeAttribute(n.name);
+ for(const n of [...b.attributes])if(a.getAttribute(n.name)!==n.value)a.setAttribute(n.name,n.value);
+ if(a.nodeName==='INPUT'&&a.value!==b.getAttribute('value'))a.value=b.getAttribute('value');
+ morphFilhos(a,b);
+}
+function morphFilhos(a,b){
+ const x=[...a.childNodes],y=[...b.childNodes];
+ y.forEach((n,i)=>{if(x[i])morph(x[i],n);else a.appendChild(n.cloneNode(true))});
+ x.slice(y.length).forEach(n=>n.remove());
+}
+function pintar(html){const t=document.createElement('div');t.innerHTML=html;morphFilhos(app,t)}
 function render(){
  if(!app)return;
- if(U.capa){app.innerHTML=(U.f&&U.f.t==='ajuda'?capa()+fAjuda():capa())+brasa();return}
- app.innerHTML=topo()+recursos()+mapa()+despachos()+nav()+folha()+brasa();
+ if(U.capa){pintar((U.f&&U.f.t==='ajuda'?capa()+fAjuda():capa())+brasa());return}
+ pintar(topo()+recursos()+mapa()+despachos()+nav()+folha()+brasa());
  ajustar();
 }
 const brasa=()=>U.toast?`<div class="brasa" role="status">${esc(U.toast)}</div>`:'';
