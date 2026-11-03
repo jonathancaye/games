@@ -78,7 +78,7 @@ nav button{display:flex;flex-direction:column;align-items:center;justify-content
 nav svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6}
 nav em{position:absolute;top:5px;left:calc(50% + 7px);min-width:16px;height:16px;border-radius:8px;background:var(--lacre);color:#fff4dc;font-style:normal;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
 /* folhas */
-.veu{position:absolute;inset:0;z-index:20;background:rgba(10,5,3,.55);display:flex;flex-direction:column;justify-content:flex-end;animation:surge .16s ease-out}
+.veu{position:absolute;inset:0;z-index:35;background:rgba(10,5,3,.55);display:flex;flex-direction:column;justify-content:flex-end;animation:surge .16s ease-out}
 .veu.cheia{justify-content:flex-start;background:rgba(10,5,3,.86)}
 @keyframes surge{from{opacity:0}}
 .folha{position:relative;max-height:100%;overflow:auto;background:#1a100a;border-top:2px solid #c9a24b;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px;animation:sobe .18s ease-out}
@@ -113,6 +113,14 @@ input[type=range]::-moz-range-thumb{width:14px;height:24px;background:#d9b45e;bo
 .op b{display:block;font-family:var(--inscr);font-size:12.5px;letter-spacing:.03em;color:var(--ouro)}
 .op span{display:block;font-size:13.5px;line-height:1.2;margin-top:2px}
 .op:disabled{opacity:.55}
+.papiro.ajuda{gap:7px}
+.papiro h3{font-family:var(--inscr);font-size:12.5px;letter-spacing:.07em;color:#5c170e;margin-top:2px}
+.passos{margin:0;padding:0 0 0 22px;display:flex;flex-direction:column;gap:8px;font-size:15.5px;line-height:1.3}
+.passos li::marker{font-family:var(--inscr);font-weight:700;color:#5c170e}
+.tarefas{margin:0;display:flex;flex-direction:column;gap:3px}
+.tarefas dt{font-family:var(--inscr);font-weight:700;font-size:12.5px;letter-spacing:.04em;color:#5c170e;margin-top:6px}
+.tarefas dt:first-child{margin-top:0}
+.tarefas dd{margin:0;font-size:15px;line-height:1.28}
 .fatos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:15px;line-height:1.26}
 .fatos li{padding-left:15px;position:relative}
 .fatos li:before{content:"";position:absolute;left:1px;top:7px;width:7px;height:7px;background:#6b5436;transform:rotate(45deg)}
@@ -540,8 +548,25 @@ function fSenado(){const a=S.amb?AMB[S.amb]:null;
  <div class="gr2"><button class="btn" data-a="ajuda">COMO JOGAR</button><button class="btn" data-a="reinicio">RECOMEÇAR</button></div></div></div>`}
 function fRelatorio(){return `<div class="veu cheia"><div class="folha" style="background:transparent;border:0;padding:8px"><article class="papiro"><div class="abre">ACTA DIVRNA</div><div class="data">${ESTPT[S.season]} do ano ${rom(S.year+753)}</div>
  <ul class="fatos">${S.lastRep.map(x=>`<li class="${x.k}">${esc(x.t)}</li>`).join('')}</ul></article><button class="btn forte cheio" style="margin-top:8px" data-a="seguir">CONTINUAR</button></div></div>`}
-function fAjuda(){return `<div class="veu cheia"><div class="folha" style="background:transparent;border:0;padding:8px"><article class="papiro"><div class="abre">INSTRUÇÕES AO NOVO CÉSAR</div>
- <ul class="fatos"><li>Cada estação você tem <b>3 selos</b>. Cada ordem ou resposta a uma carta gasta 1.</li><li>Roma come <b>3 meses de pão por estação</b>. Toque no Egito ou na África e envie frotas. No inverno o mar é perigoso.</li><li>Legiões levam estações para marchar. Quando surgir <b>Ataque iminente</b>, a defesa precisa já estar lá.</li><li>Na primavera você divide o <b>orçamento</b> do ano.</li><li>Governadores podem roubar. Se a frota chegar leve, desconfie e mande um auditor.</li><li><b>Objetivo:</b> faça 5 imperadores seguidos morrerem no trono. Em cada reinado, cumpra a ambição jurada.</li></ul></article><button class="btn forte cheio" style="margin-top:8px" data-a="fechar">ENTENDI</button></div></div>`}
+const AJUDA=[
+ {t:'O OBJETIVO',h:`<p><b>Você é César.</b> Vença fazendo <b>5 imperadores seguidos</b> morrerem no trono.</p>
+ <p>Cada imperador reina cerca de 10 anos e jura uma ambição. Cumprir a ambição melhora a nota da dinastia, mas o que garante a vitória é continuar vivo.</p>
+ <h3>Você perde se</h3>
+ <ul class="fatos"><li>Roma ficar sem pão por 2 estações seguidas.</li><li>O tesouro passar de 220 mil negativos.</li><li>O povo ou o exército chegar perto de zero.</li><li>O Senado ficar muito baixo e um complô avançar.</li><li>3 províncias estiverem em revolta ao mesmo tempo.</li><li>Um general marchar sobre Roma sem ser contido.</li></ul>`},
+ {t:'COMO JOGAR UMA ESTAÇÃO',h:`<p>O ano tem 4 estações. Repita estes passos em cada uma:</p>
+ <ol class="passos"><li><b>Na primavera, aprove o orçamento.</b> Divida o dinheiro do ano entre soldo, pão e obras.</li>
+ <li><b>Confira o topo da tela.</b> Veja quantos meses de pão restam, o tesouro e os favores.</li>
+ <li><b>Gaste até 3 selos.</b> Cada resposta a uma carta ou ordem em uma província custa 1 selo.</li>
+ <li><b>Toque em Encerrar estação.</b> Leia o relatório do que aconteceu e siga para a próxima.</li></ol>
+ <p>Carta sem resposta tem consequência ao fim da estação. Selo que sobra não passa para a seguinte.</p>`},
+ {t:'COMO FAZER CADA TAREFA',h:`<dl class="tarefas"><dt>Alimentar Roma</dt><dd>Roma consome 3 meses de pão por estação. Toque no Egito ou na África, depois em Enviar frota. Evite navegar no inverno.</dd>
+ <dt>Defender as fronteiras</dt><dd>Toque em uma província, depois em Mover legiões. A marcha leva de 1 a 3 estações, então reaja assim que surgir Ataque iminente.</dd>
+ <dt>Fazer caixa</dt><dd>Toque em uma província para subir o imposto ou requisitar mercadorias. As duas ordens aumentam a revolta.</dd>
+ <dt>Vigiar os governadores</dt><dd>Se a frota chegar mais leve ou as contas não fecharem, toque na província e envie um auditor.</dd></dl>`},
+];
+function fAjuda(){const p=(U.f&&U.f.p)||0,a=AJUDA[p],ult=p===AJUDA.length-1;
+ return `<div class="veu cheia"><div class="folha" style="background:transparent;border:0;padding:8px"><article class="papiro ajuda"><div class="data">Instruções ao novo César · ${p+1} de ${AJUDA.length}</div><h2 class="abre">${a.t}</h2>${a.h}</article>
+ <div class="gr2" style="margin-top:8px"><button class="btn" data-a="ajp" data-v="${p-1}" ${p===0?'disabled':''}>VOLTAR</button><button class="btn forte" data-a="${ult?'fechar':'ajp'}" data-v="${p+1}">${ult?'ENTENDI':'PRÓXIMO'}</button></div></div></div>`}
 function fAmbicao(){return `<div class="veu cheia"><div class="folha"><div class="gov"><img src="${camEmp}" alt=""><div><div class="tit" style="padding:0">${S.emp.nome.toUpperCase()}</div><div class="sub">${S.n}º imperador da dinastia. Diante do Senado, jure sua ambição.</div></div></div>
  <div style="display:flex;flex-direction:column;gap:8px">${S.ambOps.map(k=>`<button class="op" data-a="jurar" data-v="${k}" style="min-height:76px"><b>${AMB[k].n}</b><span style="font-size:14.5px">${esc(AMB[k].d)}</span></button>`).join('')}</div></div></div>`}
 function fSucessao(){const v=S.vered;return `<div class="veu cheia"><div class="folha"><div class="gov"><img src="${camEmp}" alt=""><div><div class="sub">Morreu ${v.nome}, no trono.</div><div class="tit" style="padding:0">${v.t.toUpperCase()}</div></div></div>
@@ -556,8 +581,9 @@ function folha(){
  if(!S)return'';
  if(S.fase==='fim')return fFim();if(S.fase==='sucessao')return fSucessao();
  if(U.f&&U.f.t==='rel')return fRelatorio();
+ if(U.f&&U.f.t==='ajuda')return fAjuda();
  if(S.fase==='ambicao')return fAmbicao();
- if(S.budgetDue&&!(U.f&&U.f.t==='ajuda')){if(!U.f||U.f.t!=='orc')U.f={t:'orc',so:S.budget.soldo,pa:S.budget.pao,ob:S.budget.obras};return fOrcamento()}
+ if(S.budgetDue){if(!U.f||U.f.t!=='orc')U.f={t:'orc',so:S.budget.soldo,pa:S.budget.pao,ob:S.budget.obras};return fOrcamento()}
  if(!U.f)return'';
  const t=U.f.t;return({prov:()=>fProv(U.f.id),frota:fFrota,mover:fMover,cartas:fCartas,carta:()=>fCarta(U.f.i),tesouro:fTesouro,legioes:fLegioes,senado:fSenado,ajuda:fAjuda}[t]||(()=>''))();
 }
@@ -586,9 +612,10 @@ if(app){
  addEventListener('resize',()=>{if(!U.capa)ajustar()});
 }
 const H={
- novo(){apagar();newGame();U={f:null,capa:false,toast:null};salvar();render()},
+ novo(){apagar();newGame();U={f:{t:'ajuda',p:0},capa:false,toast:null};salvar();render()},
  cont(){S=carregar();U={f:null,capa:false,toast:null};render()},
- ajudaC(){U.f={t:'ajuda'};render()},ajuda(){U.f={t:'ajuda'};render()},
+ ajudaC(){U.f={t:'ajuda',p:0};render()},ajuda(){U.f={t:'ajuda',p:0};render()},
+ ajp(v){U.f={t:'ajuda',p:+v};render()},
  reinicio(){U.capa=true;U.f=null;render()},
  fechar(){U.f=null;render()},
  nav(v){U.f=v==='mapa'?null:{t:v};render()},
@@ -611,7 +638,7 @@ const H={
  carta(v){U.f={t:'carta',i:+v};render()},
  resp(v){const[i,o]=v.split(':').map(Number);const res=A.responder(i,o);if(res===true){U.f=S.letters.length?{t:'cartas'}:null;salvar();render()}else toast(erro(res))},
  orcar(){const f=U.f;A.orcar(f.so,f.pa,f.ob);U.f=null;salvar();render()},
- jurar(v){A.ambicao(v);U.f=S.t===0&&S.n===1?{t:'ajuda'}:null;salvar();render()},
+ jurar(v){A.ambicao(v);U.f=null;salvar();render()},
  herd(v){suceder(+v);U.f=null;salvar();render()},
  fim(){resolver();U.f={t:'rel'};salvar();render()},
  seguir(){U.f=null;render()},
