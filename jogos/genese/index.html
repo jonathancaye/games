@@ -151,7 +151,17 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 .ramo.extinta{--cor:var(--cinza)!important}
 .ramo h4{margin:0;font-size:14px;font-weight:800;text-align:center}
 .ramo h4 small{display:block;font-size:11.5px;font-weight:600;color:var(--suave);margin-top:1px}
-.secao{margin:18px 0 8px;font-family:var(--titulo);font-weight:500;font-size:19px;text-align:center}
+.ramo h4 small.ok{color:#8fe8c4}
+.ramo h4 small.mal{color:#ffb27a}
+.faixa{display:flex;align-items:center;gap:10px;margin:18px 0 10px;font-family:var(--titulo);font-weight:500;font-size:18px;color:var(--suave);white-space:nowrap}
+.painel>.faixa:first-child{margin-top:4px}
+.faixa::before,.faixa::after{content:"";flex:1;height:1px;background:var(--fio)}
+.faixa.agora{color:var(--papel);font-weight:800}
+.faixa.agora::before,.faixa.agora::after{height:2px;background:var(--mar)}
+.leg{margin:-4px 0 10px;text-align:center;font-size:12.5px;color:var(--suave)}
+.leg .ui{color:#ffd27a;font-size:14px}
+.nob{position:relative;display:block}
+.esc{position:absolute;right:-5px;bottom:-3px;font-size:17px;line-height:0;color:#ffd27a;filter:drop-shadow(0 1px 1px rgba(0,0,0,.5))}
 
 /* fim */
 #fim .painel{padding-top:calc(22px + env(safe-area-inset-top))}
@@ -259,6 +269,7 @@ const UI={
   vit:`<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 22c-1-8-3-11-10-13C10 8 12 6 12 1c0 5 2 7 10 8-7 2-9 5-10 13z"/></svg>`,
   menu:`<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.400" stroke-linecap="round" d="M3 6h18M3 12h18M3 18h12"/></svg>`,
   nada:`<svg class="x" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.400" stroke-linecap="round" d="m6 6 12 12M18 6 6 18"/></svg>`,
+  escudo:`<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 1.500 21 5v6.500c0 5.500-3.700 9.300-9 11-5.300-1.700-9-5.500-9-11V5z"/><path fill="none" stroke="#10302f" stroke-width="2.400" stroke-linecap="round" stroke-linejoin="round" d="m8 12 3 3 5-6"/></svg>`,
   pista:`<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.500" fill="currentColor" opacity=".22"/><path fill="none" stroke="currentColor" stroke-width="2.600" stroke-linecap="round" d="M8.500 9c.3-2.200 1.800-3.500 3.700-3.500 2 0 3.500 1.300 3.500 3.200 0 3-3.700 3-3.700 6"/><circle cx="12" cy="18.400" r="1.500" fill="currentColor"/></svg>`
 };
 /* ---------- conteúdo ---------- */
@@ -644,19 +655,42 @@ function pintarEvo(){
   return h;
 }
 function noArv(id,cls){
-  const x=E[id];
-  if(S.ext[id])return `<div class="no morto ${cls||""}">${orbe(id)}<span class="nm">${x.n}</span></div>`;
-  if(S.k[id]==null)return `<div class="no oculto ${cls||""}"><span class="orbe">?</span></div>`;
-  return `<div class="no ${cls||""}">${orbe(id)}<span class="nm">${x.n}</span>${x.r?`<span class="rc">${x.r.map(mini).join("+")}</span>`:""}</div>`;
+  const x=E[id],esc=x.ad?`<span class="esc" title="Defesa">${UI.escudo}</span>`:"";
+  if(S.ext[id])return `<div class="no morto ${cls||""}"><span class="nob">${orbe(id)}${esc}</span><span class="nm">${x.n}</span></div>`;
+  if(S.k[id]==null)return `<div class="no oculto ${cls||""}"><span class="nob"><span class="orbe">?</span>${esc}</span></div>`;
+  return `<div class="no ${cls||""}"><span class="nob">${orbe(id)}${esc}</span><span class="nm">${x.n}</span>${x.r?`<span class="rc">${x.r.map(mini).join("+")}</span>`:""}</div>`;
+}
+const ST={ausente:["Não surgiu",""],abrigada:["Sobreviveu no calor","ok"],adaptada:["Sobreviveu","ok"],refugio:["Sobreviveu no refúgio","ok"],extinta:["Extinta","mal"],fora:["Ficou para trás",""],escapou:["Escapou","ok"]};
+function stVida(l){
+  if(S.gelo2&&S.gelo2[l]==="extinta")return ST.extinta;
+  if(S.gelo)return ST[S.gelo[l]];
+  if(!RAMO[l].some(id=>E[id].l===l&&vivo(id)))return ["Ainda não surgiu",""];
+  if(l==="calor")return ["Fora de risco","ok"];
+  if(S.k[LINHAS[l].ad]!=null)return [`Protegida por ${E[LINHAS[l].ad].n}`,"ok"];
+  if(S.guarda[l])return ["Em refúgio","ok"];
+  return ["Em risco","mal"];
+}
+function stEsp(l){
+  if(S.gelo2)return ST[S.gelo2[l]];
+  if(!S.abre)return ["",""];
+  if(!S.abre[l])return ST.fora;
+  if(S.guarda[l])return ["Em refúgio","ok"];
+  if(!revelada())return ["Crise desconhecida",""];
+  const c=CRISES[S.crise2];
+  if(l===c.escapa)return ["Fora de risco","ok"];
+  if(S.k[c.def[l]]!=null)return [`Protegida por ${E[c.def[l]].n}`,"ok"];
+  return ["Em risco","mal"];
 }
 function arvore(){
-  const est={ausente:"não surgiu",abrigada:"abrigada",adaptada:"adaptada",refugio:"em refúgio",extinta:"extinta",fora:"ficou para trás",escapou:"escapou"};
-  const col=(m,g)=>ORDEM.map(l=>{
-    const st=S.gelo2&&S.gelo2[l]==="extinta"?"extinta":g?g[l]:null;
-    return `<div class="ramo ${st==="extinta"?"extinta":""}" style="--cor:${LINHAS[l].cor}"><h4>${LINHAS[l].n}${st?`<small>${est[st]}</small>`:""}</h4>${m[l].map(id=>noArv(id)).join("")}</div>`;
+  const col=(m,f)=>ORDEM.map(l=>{
+    const [t,c]=f(l);
+    return `<div class="ramo ${t==="Extinta"?"extinta":""}" style="--cor:${LINHAS[l].cor}"><h4>${LINHAS[l].n}${t?`<small class="${c}">${t}</small>`:""}</h4>${m[l].map(id=>noArv(id)).join("")}</div>`;
   }).join("");
-  const eraNova=S.abre?`<h3 class="secao">Era das Espécies</h3><div class="ramos">${col(RAMO2,S.gelo2)}</div>`:"";
-  return `<div class="tronco">${[...BASE1,...MATERIA.filter(i=>i!=="celula")].map(id=>noArv(id)).join("")}</div>${noArv("celula","nocel")}<div class="ramos">${col(RAMO,S.gelo)}</div>${eraNova}`;
+  const faixa=(n,on)=>`<h3 class="faixa${on?" agora":""}">${n}</h3>`;
+  const f=S.fase;
+  return faixa("Era da Matéria",f==="materia")+`<div class="tronco">${[...BASE1,...MATERIA.filter(i=>i!=="celula")].map(id=>noArv(id)).join("")}</div>${noArv("celula","nocel")}`
+    +faixa("Era da Vida",f==="vida"||f==="degelo")+`<p class="leg">${UI.escudo} marca uma defesa contra a crise da era</p><div class="ramos">${col(RAMO,stVida)}</div>`
+    +faixa("Era das Espécies",f==="especies"||f==="recup")+`<div class="ramos">${col(RAMO2,stEsp)}</div>`;
 }
 function pintarFim(){
   const fin=S.fim,F=FINAIS[fin],c=cronica(fin);
