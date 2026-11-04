@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#2b1420">
+<title>Gênese</title>
+<link rel="icon" href="../../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,800;1,9..144,500&family=Figtree:wght@400;500;600;700;800&display=swap">
+<style>
+:root{--papel:#f5ecd9;--suave:#cbbfae;--magma:#f97316;--mar:#14b8a6;--gelo:#d3edf6;
+  --luz:#86d65a;--calor:#f97316;--caca:#b596ff;--cinza:#6f6b6a;
+  --fundo:#2b1420;--fundo2:#471d24;--vidro:rgba(255,240,220,.08);--fio:rgba(255,240,220,.16);
+  --titulo:"Fraunces",Georgia,serif;--corpo:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#app.vida{--fundo:#06303a;--fundo2:#0b4d4e}
+#app.degelo{--fundo:#0d3a48;--fundo2:#1f6a62}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#190b12;font-family:var(--corpo);color:var(--papel);touch-action:manipulation;-webkit-user-select:none;user-select:none}
+button{font-family:inherit;color:inherit;border:0;background:none;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offset:2px}
+#app{position:relative;max-width:480px;height:100vh;height:100dvh;margin:0 auto;overflow:hidden;background:radial-gradient(120% 70% at 50% 18%,var(--fundo2),var(--fundo) 72%);display:flex;flex-direction:column}
+#frost{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:0;transition:opacity .6s;box-shadow:inset 0 0 70px 26px rgba(205,236,247,.9),inset 0 0 8px 3px #fff}
+.tela{position:absolute;inset:0;display:none;flex-direction:column}
+.tela.on{display:flex}
+
+/* capa */
+#capa{align-items:center;justify-content:center;padding:24px;text-align:center}
+#capa .voltar{position:absolute;top:calc(14px + env(safe-area-inset-top));left:16px;color:var(--suave);text-decoration:none;font-size:14px;font-weight:600}
+.fusao{position:relative;width:190px;height:120px;margin-bottom:6px}
+.fusao i{position:absolute;top:30px;width:60px;height:60px;border-radius:50%;mix-blend-mode:screen}
+.fusao .a{left:12px;background:radial-gradient(circle at 35% 30%,#ffd58a,var(--magma) 60%,#7a2505);animation:fa 2.6s cubic-bezier(.6,0,.3,1) .3s both}
+.fusao .b{right:12px;background:radial-gradient(circle at 35% 30%,#c6fff3,var(--mar) 60%,#064a50);animation:fb 2.6s cubic-bezier(.6,0,.3,1) .3s both}
+.fusao .c{left:50%;top:50%;width:92px;height:92px;margin:-46px 0 0 -46px;opacity:0;mix-blend-mode:normal;background:radial-gradient(circle at 38% 32%,#fff7dd,#a7e7a0 42%,#2a9a7c 72%,#0b4d4e);box-shadow:0 0 44px rgba(140,240,190,.45);animation:fc 2.6s ease .3s both}
+@keyframes fa{to{transform:translateX(53px)}}
+@keyframes fb{to{transform:translateX(-53px)}}
+@keyframes fc{0%,62%{opacity:0;transform:scale(.5)}82%{opacity:1;transform:scale(1.1)}100%{opacity:1;transform:none}}
+#capa h1{font-family:var(--titulo);font-weight:800;font-size:clamp(64px,21vw,92px);letter-spacing:-.03em;line-height:1;margin:0}
+#capa p{max-width:30ch;margin:10px 0 0;font-size:17px;line-height:1.45;color:var(--papel)}
+#capa .acoes{display:flex;flex-direction:column;gap:10px;width:min(280px,100%);margin-top:26px}
+#capa small{display:block;margin-top:18px;color:var(--suave);font-size:13.5px}
+.btn{display:block;width:100%;padding:14px 16px;border-radius:999px;font-weight:800;font-size:16px;background:var(--mar);color:#04262a;text-align:center;text-decoration:none}
+.btn.fogo{background:var(--magma);color:#2b1000}
+.btn.vazado{background:transparent;box-shadow:inset 0 0 0 1.5px var(--fio);color:var(--papel)}
+.btn:disabled{opacity:.45}
+
+/* topo */
+.hud{display:flex;align-items:center;gap:8px;padding:10px 12px 6px;padding-top:calc(10px + env(safe-area-inset-top))}
+.hud .menu{width:36px;height:36px;font-size:20px;border-radius:50%}
+.hud h2{flex:1;margin:0;font-family:var(--titulo);font-weight:500;font-size:20px;min-width:0;white-space:nowrap}
+.res{display:flex;align-items:center;gap:4px;padding:5px 11px;border-radius:999px;background:var(--vidro);font-weight:800;font-size:15.5px;font-variant-numeric:tabular-nums}
+.res.baixo{background:rgba(249,115,22,.3)}
+.res .i{font-size:13px}
+.res.vit .i{color:var(--luz)}
+.status{padding:0 14px;min-height:44px}
+.status b{font-size:14.5px;font-weight:700}
+.status .barra{height:5px;border-radius:9px;background:var(--vidro);margin-top:6px;overflow:hidden}
+.status .barra i{display:block;height:100%;background:var(--magma);border-radius:9px;transition:width .35s}
+#app.vida .status .barra i{background:var(--gelo)}
+.status .sinal{font-size:13.5px;line-height:1.3;color:var(--gelo);margin-top:4px}
+.status.lin{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.status .enc{padding:6px 12px;border-radius:999px;background:var(--mar);color:#04262a;font-weight:800;font-size:13.5px;white-space:nowrap}
+
+/* forja */
+.forja{position:relative;height:104px;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:16px;flex:none}
+.slot{width:66px;height:66px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--fio);display:grid;place-items:center;font-size:32px;transition:transform .34s cubic-bezier(.6,0,.4,1),opacity .2s .24s;background:var(--vidro)}
+.slot.vazio{font-size:0}
+.crisol{width:94px;height:94px;border-radius:50%;display:grid;place-items:center;font-size:46px;box-shadow:inset 0 0 0 2px var(--fio);background:radial-gradient(circle at 50% 42%,rgba(255,235,200,.12),transparent 70%);position:relative;z-index:1}
+.crisol.novo{animation:pop .5s cubic-bezier(.2,1.5,.4,1);box-shadow:inset 0 0 0 2px var(--papel),0 0 40px rgba(255,235,190,.5)}
+.crisol.nada{animation:treme .32s}
+.crisol .x{font-size:24px;color:var(--suave)}
+.forja.funde #sa{transform:translateX(86px) scale(.6);opacity:0}
+.forja.funde #sb{transform:translateX(-86px) scale(.6);opacity:0}
+@keyframes pop{from{transform:scale(.4)}to{transform:none}}
+@keyframes treme{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.info{min-height:40px;padding:0 18px;text-align:center;font-size:14px;line-height:1.3;color:var(--papel);display:flex;align-items:center;justify-content:center}
+.info b{font-weight:800}
+
+/* pedidos */
+.pedidos{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:4px 12px 8px}
+.ped{min-height:84px;border-radius:14px;background:var(--vidro);padding:8px 10px;display:flex;flex-direction:column;gap:4px}
+.ped p{margin:0;font-size:13.5px;line-height:1.22;flex:1}
+.ped .pr{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.ped .val{font-weight:800;font-size:13.5px;color:var(--luz);white-space:nowrap}
+.ped button{padding:5px 10px;border-radius:999px;background:var(--mar);color:#04262a;font-weight:800;font-size:13px;white-space:nowrap}
+.ped button.prod{background:var(--papel);color:#2b1420}
+.ped .aguarda{font-size:12.5px;color:var(--suave)}
+
+/* elementos */
+.mesa{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:2px 10px 8px;display:grid;grid-template-columns:repeat(5,1fr);gap:6px 2px;align-content:start}
+.el{display:flex;flex-direction:column;align-items:center;gap:3px;padding:2px 0;position:relative;min-width:0}
+.orbe{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;font-size:26px;background:radial-gradient(circle at 36% 30%,rgba(255,255,255,.3),var(--tinta,#a98) 60%,rgba(0,0,0,.35));box-shadow:0 2px 6px rgba(0,0,0,.28)}
+.el span.nm{font-size:12px;line-height:1.1;font-weight:600;text-align:center;max-width:100%}
+.el .q{position:absolute;top:0;right:6px;min-width:19px;padding:1px 4px;border-radius:999px;background:var(--papel);color:#2b1420;font-size:11.5px;font-weight:800;line-height:1.35}
+.el.gasto .orbe{opacity:.42}
+.el.gasto span.nm{color:var(--suave)}
+.el.sel .orbe{box-shadow:0 0 0 3px var(--papel)}
+.el.dica .orbe{animation:dica 1s ease-in-out infinite}
+@keyframes dica{50%{box-shadow:0 0 0 5px var(--luz)}}
+
+/* abas */
+.abas{display:flex;gap:3px;margin:0 12px;padding:4px;background:var(--vidro);border-radius:999px;margin-bottom:calc(10px + env(safe-area-inset-bottom));flex:none}
+.abas button{flex:1;padding:9px 0;border-radius:999px;font-weight:700;font-size:14.5px;color:var(--suave)}
+.abas button.on{background:var(--mar);color:#04262a}
+.painel{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 14px 12px}
+
+/* evolução */
+.up{padding:12px 0;border-bottom:1px solid var(--fio)}
+.up:last-child{border:0}
+.up .t{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.up h3{margin:0;font-family:var(--titulo);font-weight:500;font-size:20px}
+.up p{margin:4px 0 0;font-size:14.5px;line-height:1.35;color:var(--suave)}
+.up .pg{padding:8px 14px;border-radius:999px;background:var(--mar);color:#04262a;font-weight:800;font-size:14.5px;white-space:nowrap}
+.up .pg:disabled{background:var(--vidro);color:var(--suave)}
+.up .lns{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.up .lns .pg{flex:1}
+
+/* árvore */
+.tronco{display:grid;grid-template-columns:repeat(5,1fr);gap:8px 2px;margin-bottom:6px}
+.no{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;text-align:center}
+.no .orbe{width:38px;height:38px;font-size:19px}
+.no .nm{font-size:11.5px;font-weight:600;line-height:1.1;max-width:100%}
+.no .rc{font-size:10.5px;line-height:1.1;opacity:.85}
+.no.oculto .orbe{background:var(--vidro);box-shadow:inset 0 0 0 1px var(--fio);color:var(--suave);font-size:15px;font-weight:800}
+.no.morto .orbe{background:#55524f;filter:grayscale(1);opacity:.7}
+.no.morto .nm{color:var(--suave);text-decoration:line-through}
+.nocel{margin:8px auto 10px;width:90px}
+.nocel .orbe{width:52px;height:52px;font-size:26px}
+.ramos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.ramo{display:flex;flex-direction:column;gap:9px;border-top:3px solid var(--cor);padding-top:7px;align-items:center;min-width:0}
+.ramo.extinta{--cor:var(--cinza)!important}
+.ramo h4{margin:0;font-size:14px;font-weight:800;text-align:center}
+.ramo h4 small{display:block;font-size:11.5px;font-weight:600;color:var(--suave);margin-top:1px}
+
+/* fim */
+#fim .painel{padding-top:calc(22px + env(safe-area-inset-top))}
+#fim h1{font-family:var(--titulo);font-weight:800;font-size:40px;line-height:1.02;letter-spacing:-.02em;margin:0}
+#fim .cron{font-family:var(--titulo);font-size:18.5px;line-height:1.5;margin:14px 0 6px}
+#fim .cron p{margin:0 0 9px}
+#fim .num{color:var(--suave);font-size:14.5px;margin:8px 0 16px}
+#fim .acoes{display:flex;gap:8px;padding:10px 14px calc(12px + env(safe-area-inset-bottom));flex:none}
+
+/* modal */
+#modal{position:absolute;inset:0;z-index:10;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(10,6,10,.62)}
+#modal.on{display:flex}
+.caixa{width:100%;max-height:92%;overflow-y:auto;border-radius:20px;padding:20px 18px;background:var(--fundo);box-shadow:0 0 0 1px var(--fio),0 18px 50px rgba(0,0,0,.5)}
+.caixa .ic{font-size:44px;line-height:1;text-align:center}
+.caixa h3{margin:8px 0 6px;font-family:var(--titulo);font-weight:800;font-size:27px;line-height:1.1;text-align:center}
+.caixa p{margin:0 0 10px;font-size:15.5px;line-height:1.42}
+.caixa .acoes{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.caixa.gelo{background:#dcf1f8;color:#0b3440}
+.caixa.gelo .btn{background:#0b3440;color:#eaf8fc}
+.vered{display:flex;gap:10px;align-items:baseline;padding:7px 0;border-top:1px solid rgba(11,52,64,.2);font-size:15px;line-height:1.3}
+.vered b{flex:none;width:58px}
+@media (max-height:700px){.forja{height:84px}.slot{width:54px;height:54px;font-size:26px}.crisol{width:76px;height:76px;font-size:36px}.ped{min-height:72px}.info{min-height:36px;font-size:13.5px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.fusao .a{transform:translateX(53px)}.fusao .b{transform:translateX(-53px)}.fusao .c{opacity:1}}
+</style>
+</head>
+<body>
+<div id="app">
+  <section class="tela on" id="capa"></section>
+  <section class="tela" id="jogo"></section>
+  <section class="tela" id="fim"></section>
+  <div id="frost"></div>
+  <div id="modal"></div>
+</div>
+<script>
+"use strict";
+/* ---------- conteúdo ---------- */
+const LINHAS={
+  luz:{n:"Luz",cor:"var(--luz)",tinta:"#5fae45",ad:"esporo"},
+  calor:{n:"Calor",cor:"var(--calor)",tinta:"#d9651a",ad:null},
+  caca:{n:"Caça",cor:"var(--caca)",tinta:"#8a6bd8",ad:"cisto"}
+};
+const E={
+  fogo:{n:"Fogo",e:"🔥",t:"#d9651a"},agua:{n:"Água",e:"💧",t:"#2f8fb8"},terra:{n:"Terra",e:"⛰️",t:"#8a6a48"},ar:{n:"Ar",e:"💨",t:"#9fb3bb"},
+  sol:{n:"Sol",e:"☀️",t:"#e0a92e"},
+  vapor:{n:"Vapor",e:"🌫️",t:"#9fb3bb",r:["agua","fogo"],c:"Água que aprendeu a subir",f:"O planeta jovem era quente demais para mares. A água vivia no ar."},
+  lava:{n:"Lava",e:"🌋",t:"#c94f1b",r:["terra","fogo"],c:"Chão que derrete",f:"A Terra começou como uma bola de rocha derretida."},
+  lama:{n:"Lama",e:"🟤",t:"#7a5a3e",r:["agua","terra"],c:"Chão que amolece com a água",f:"Mistura simples, mas é nela que a química encontra abrigo."},
+  poeira:{n:"Poeira",e:"🏜️",t:"#b4935f",r:["ar","terra"],c:"Chão levado pelo vento",f:"O vento carrega grãos minerais por continentes inteiros."},
+  nuvem:{n:"Nuvem",e:"☁️",t:"#9fb3bb",r:["vapor","ar"],c:"O vapor subiu alto e esfriou",f:"Com o planeta esfriando, o vapor começou a condensar."},
+  chuva:{n:"Chuva",e:"🌧️",t:"#4f85a5",r:["nuvem","agua"],c:"A nuvem ficou pesada",f:"Choveu por muito, muito tempo."},
+  raio:{n:"Relâmpago",e:"🌩️",t:"#7f78c9",r:["nuvem","fogo"],c:"Energia que nasce na nuvem",f:"Tempestades despejavam energia num mundo sem vida."},
+  rocha:{n:"Rocha",e:"🪨",t:"#7d7a78",r:["lava","agua"],c:"Lava que a água esfriou",f:"As rochas mais antigas conhecidas têm cerca de 4 bilhões de anos."},
+  oceano:{n:"Oceano",e:"🌊",t:"#23749e",r:["chuva","terra"],c:"Chuva sem fim enchendo a terra",f:"A chuva encheu as bacias e nasceu o mar."},
+  fonte:{n:"Fonte Termal",e:"♨️",t:"#c9542f",r:["oceano","lava"],c:"Onde o mar encontra o fogo da terra",f:"Fontes no fundo do mar foram descobertas em 1977, cheias de vida sem sol."},
+  argila:{n:"Argila",e:"🏺",t:"#b0693f",r:["lama","poeira"],c:"Lama e pó de grãos bem finos",f:"Grãos de argila ajudam moléculas a formar cadeias, em laboratório."},
+  sopa:{n:"Sopa Primordial",e:"🍲",t:"#8f9a3c",r:["oceano","raio"],c:"O mar levou um choque",f:"Em 1953, faíscas numa mistura de gases produziram aminoácidos em laboratório."},
+  rna:{n:"RNA",e:"🧬",t:"#3fa58d",r:["sopa","argila"],c:"A sopa ganhou um molde para se organizar",f:"O RNA guarda informação e acelera reações, por isso é candidato a primeira molécula da vida."},
+  membrana:{n:"Membrana",e:"🫧",t:"#5aa6b5",r:["sopa","fonte"],c:"A sopa aquecida forma bolhas",f:"Gorduras simples formam bolhas sozinhas na água."},
+  celula:{n:"Célula",e:"🦠",t:"#3fa58d",r:["rna","membrana"],c:"Uma receita dentro de uma bolha",f:"Toda a vida conhecida vem de um ancestral celular comum."},
+  ciano:{n:"Ciano\u00ADbactéria",e:"🟢",l:"luz",r:["celula","sol"],c:"Uma célula que come luz",f:"As primeiras a fazer fotossíntese liberando oxigênio."},
+  oxigenio:{n:"Oxigênio",e:"🌬️",t:"#7fb7c9",r:["ciano","oceano"],c:"O resíduo da luz enche o mar",f:"Há cerca de 2,4 bilhões de anos, esse gás mudou a atmosfera inteira."},
+  alga:{n:"Alga",e:"🍃",l:"luz",r:["ciano","celula"],c:"Uma célula engoliu outra e ficou com ela",f:"Cloroplastos são descendentes de cianobactérias engolidas."},
+  esporo:{n:"Esporo",e:"🌰",l:"luz",ad:1,r:["ciano","poeira"],c:"Seres da luz viajando dormentes no pó",f:"Formas dormentes atravessam frio e seca até o ambiente melhorar."},
+  musgo:{n:"Musgo",e:"🍀",l:"luz",r:["alga","rocha"],c:"A alga subiu na pedra",f:"Plantas assim foram das primeiras a colonizar a terra."},
+  samambaia:{n:"Samambaia",e:"🌿",l:"luz",r:["musgo","chuva"],c:"O musgo bebeu e cresceu",f:"Parentes das samambaias formaram as primeiras florestas."},
+  floresta:{n:"Floresta",e:"🌳",l:"luz",apex:1,r:["samambaia","terra"],c:"Verde cobrindo os continentes",f:"Florestas mudaram o clima, o solo e os rios."},
+  extremo:{n:"Extremófilo",e:"🌡️",l:"calor",r:["celula","fonte"],c:"Uma célula que gosta de ferver",f:"Alguns microrganismos crescem acima de 100 °C sob pressão."},
+  verme:{n:"Verme Tubular",e:"🪱",l:"calor",r:["extremo","rocha"],c:"Um tubo agarrado na pedra quente",f:"O verme gigante das fontes não tem boca: vive de bactérias dentro do corpo."},
+  abissal:{n:"Jardim Abissal",e:"🪸",l:"calor",apex:1,r:["verme","fonte"],c:"Uma cidade no escuro, ao redor do calor",f:"Ecossistemas inteiros vivem no fundo do mar sem nenhuma luz."},
+  colonia:{n:"Colônia",e:"🧫",l:"caca",r:["celula","celula"],c:"Uma célula encontrou outra igual",f:"Viver em grupo foi o primeiro passo para os corpos multicelulares."},
+  ameba:{n:"Ameba",e:"👾",l:"caca",r:["celula","oxigenio"],c:"Uma célula que respira e persegue",f:"Com oxigênio sobra energia, e surge quem caça."},
+  cisto:{n:"Cisto",e:"🥚",l:"caca",ad:1,r:["ameba","lama"],c:"A caçadora se fecha na lama para esperar",f:"Amebas formam cápsulas resistentes quando o ambiente piora."},
+  esponja:{n:"Esponja",e:"🧽",l:"caca",r:["colonia","oceano"],c:"A colônia se fixa no mar",f:"As esponjas estão entre os animais mais antigos."},
+  aguaviva:{n:"Água-viva",e:"🪼",l:"caca",r:["esponja","raio"],c:"Um corpo que levou um choque e se moveu",f:"Entre os primeiros animais com nervos: sinais elétricos no corpo."},
+  trilobita:{n:"Trilobita",e:"🪲",l:"caca",r:["aguaviva","rocha"],c:"Um corpo mole que vestiu pedra",f:"Tinham carapaça dura e olhos com lentes de mineral."},
+  peixe:{n:"Peixe",e:"🐟",l:"caca",apex:1,r:["trilobita","oxigenio"],c:"Um caçador rápido respirando o mar",f:"Os primeiros com coluna vertebral abriram caminho para nós."}
+};
+const BASE1=["fogo","agua","terra","ar"];
+const MATERIA=["vapor","lava","lama","poeira","nuvem","chuva","raio","rocha","oceano","fonte","argila","sopa","rna","membrana","celula"];
+const RAMO={luz:["ciano","oxigenio","alga","esporo","musgo","samambaia","floresta"],calor:["extremo","verme","abissal"],caca:["colonia","ameba","cisto","esponja","aguaviva","trilobita","peixe"]};
+const TOTAL=Object.values(E).filter(x=>x.r).length;
+const chave=(a,b)=>[a,b].sort().join("+");
+const RECEITA={};Object.keys(E).forEach(id=>{const x=E[id];if(x.r)RECEITA[chave(...x.r)]=id;x.t=x.t||(x.l&&LINHAS[x.l].tinta)});
+const nivel=id=>{const x=E[id];return x.r?1+Math.max(...x.r.map(nivel)):0};
+Object.keys(E).forEach(id=>E[id].nv=nivel(id));
+
+const EN1=38,EN2=11,EN3=6,RES_MAX=2,RES_GANHO=4,DICA=4,REFUGIO=8;
+const SINAIS=[[9,"Os polos estão mais brancos a cada ano."],[6,"O gelo avança sobre o mar. Quem vive da luz vai ficar no escuro."],[3,"Quem vive solto no mar precisa de um jeito de dormir até o frio passar."]];
+const FINAIS={
+  esteril:{t:"Planeta Estéril",x:"A energia acabou antes da primeira célula. O planeta seguiu girando, em silêncio."},
+  pleno:{t:"Planeta Pleno",x:"Mares, terra e abismo: a vida ocupou tudo o que havia para ocupar."},
+  fp:{t:"Terra Verde, Mar Vivo",x:"Florestas em terra e caçadores na água. O planeta nunca mais seria quieto."},
+  fa:{t:"Verde e Abismo",x:"A vida ficou nos dois extremos: no sol da superfície e no escuro do fundo."},
+  pa:{t:"Dois Mares",x:"A terra seguiu nua. Toda a história aconteceu debaixo d'água."},
+  f:{t:"Reino Verde",x:"Ninguém caça, ninguém foge. Só plantas, de horizonte a horizonte."},
+  p:{t:"Mar de Caçadores",x:"A água se encheu de dentes e olhos, e a terra ficou esperando."},
+  a:{t:"Reino Abissal",x:"A superfície ficou vazia. A vida encontrou seu lugar longe do sol."},
+  micro:{t:"Mundo Invisível",x:"Nada maior que um grão de areia, mas a vida continuou."},
+  fio:{t:"Por um Fio",x:"Restaram células soltas, recomeçando quase do zero."}
+};
+
+/* ---------- estado ---------- */
+const SAVE="genese_v1",FINS="genese_v1_finais";
+const G={rapido:false,dica:null,aba:"mesa",a:null,b:null,trava:false,info:"",res:null};
+let S=null;
+function nova(){return {fase:"materia",en:EN1,enMax:EN1,vit:0,k:{fogo:1,agua:1,terra:1,ar:1},ord:[],tent:{},ext:{},guarda:{},res:0,erros:0,sinal:-1,prim:null,gelo:null,ped:0}}
+function salvar(){try{localStorage.setItem(SAVE,JSON.stringify(S))}catch(e){}}
+function carregar(){try{const s=localStorage.getItem(SAVE);return s?JSON.parse(s):null}catch(e){return null}}
+function limpar(){try{localStorage.removeItem(SAVE)}catch(e){}}
+function finais(){try{return JSON.parse(localStorage.getItem(FINS))||[]}catch(e){return []}}
+function marcarFinal(id){try{const f=finais();if(!f.includes(id)){f.push(id);localStorage.setItem(FINS,JSON.stringify(f))}}catch(e){}}
+
+/* ---------- regras ---------- */
+const vivo=id=>S.k[id]!=null&&!S.ext[id];
+const descobertas=()=>Object.keys(S.k).filter(id=>E[id].r).length+Object.keys(S.ext).length;
+function alcancaveis(){return Object.keys(E).filter(id=>{const x=E[id];return x.r&&S.k[id]==null&&!S.ext[id]&&x.r.every(vivo)})}
+function custoReserva(){return 5+3*S.res}
+function ramoVivo(l){return RAMO[l].some(id=>E[id].l===l&&vivo(id))}
+function esgotado(id){
+  if(!E[id].r&&id!=="sol"&&!Object.values(E).some(x=>x.r&&x.r.includes(id)))return true;
+  return !Object.keys(E).some(o=>{const x=E[o];return x.r&&x.r.includes(id)&&S.k[o]==null&&!S.ext[o]&&x.r.every(p=>!S.ext[p])});
+}
+function sortear(l){return l[Math.floor(Math.random()*l.length)]}
+function novoPedido(){
+  const ativos=S.ord.map(o=>o.id);
+  const alc=alcancaveis().filter(id=>!ativos.includes(id));
+  const prio=alc.filter(id=>E[id].ad);
+  const est=Object.keys(S.k).filter(id=>E[id].r&&vivo(id)&&id!=="celula"&&!ativos.includes(id)&&(S.fase!=="materia"||E[id].nv>=2));
+  const ped=id=>({id,q:1,v:1+Math.floor(E[id].nv/4)});
+  if(prio.length&&S.fase==="vida")return ped(sortear(prio));
+  const temPista=S.ord.some(o=>S.k[o.id]==null);
+  if(alc.length&&(!temPista||Math.random()<.5||!est.length))return ped(sortear(alc));
+  if(est.length){const id=sortear(est);return {id,q:2,v:2+Math.floor(E[id].nv/4)}}
+  return null;
+}
+function encherPedidos(){
+  S.ord=S.ord.filter(o=>!S.ext[o.id]);
+  while(S.ord.length<2){const p=novoPedido();if(!p)break;S.ord.push(p)}
+}
+function gastar(){S.en=Math.max(0,S.en-1);atualizaSinal()}
+function atualizaSinal(){
+  if(S.fase!=="vida")return;
+  SINAIS.forEach((s,i)=>{if(S.en<=s[0]&&i>S.sinal)S.sinal=i});
+}
+function descobrir(id){
+  S.k[id]=1;
+  const l=E[id].l;
+  if(l&&!S.prim)S.prim=l;
+  G.info=`<span><b>${E[id].n}.</b> ${E[id].f}</span>`;
+  encherPedidos();
+}
+function combinar(a,b){
+  const k=chave(a,b),id=RECEITA[k];
+  G.res=null;G.dica=null;
+  if(id&&S.ext[id]){G.res={x:"🧊"};G.info=`${E[id].n} se perdeu no gelo. Esse caminho fechou nesta partida.`;return}
+  if(id&&S.k[id]!=null){G.res={id};G.info=`Você já conhece ${E[id].n}. Essa repetição não gasta energia.`;return}
+  if(!id&&S.tent[k]){G.res={x:"✕"};G.info="Você já tentou essa mistura. Nada acontece, e a energia fica.";return}
+  gastar();
+  if(id){descobrir(id);G.res={id,novo:1};
+    if(id==="celula"){salvar();abrirEraVida();return}
+  }else{S.tent[k]=1;S.erros++;G.res={x:"✕"};G.info="Nada se formou. Essa mistura custou 1 de energia."}
+  depois();
+}
+function depois(){
+  salvar();
+  if(S.en<=0)zero();
+  else if(!alcancaveis().length){if(S.fase==="vida")crise();else if(S.fase==="degelo")finalizar()}
+}
+function zero(){
+  if(S.vit>=custoReserva()&&S.res<RES_MAX){
+    const msg={materia:"Sem energia, o planeta esfria antes de surgir a vida.",vida:"Sem energia, o gelo chega agora.",degelo:"Sem energia, esta história termina aqui."}[S.fase];
+    modal({ic:"⚡",t:"A energia acabou",h:`<p>${msg}</p>`,b:[
+      {t:`Comprar Reserva (+${RES_GANHO}) por ${custoReserva()} ✦`,f:()=>{comprarReserva();pintar()}},
+      {t:"Seguir sem comprar",c:"vazado",f:seguirZero}]});
+  }else seguirZero();
+}
+function seguirZero(){
+  if(S.fase==="materia")finalizar("esteril");
+  else if(S.fase==="vida")crise();
+  else finalizar();
+}
+function comprarReserva(){if(S.vit<custoReserva()||S.res>=RES_MAX)return;S.vit-=custoReserva();S.res++;S.en+=RES_GANHO;S.enMax=Math.max(S.enMax,S.en);salvar()}
+function comprarDica(){
+  if(S.vit<DICA)return;
+  const alc=alcancaveis();if(!alc.length)return;
+  const ped=alc.find(id=>S.ord.some(o=>o.id===id));
+  const id=ped||alc.sort((x,y)=>E[x].nv-E[y].nv)[0];
+  S.vit-=DICA;G.dica=E[id].r.slice();G.aba="mesa";G.info=`Sua intuição diz: tente <b>${E[E[id].r[0]].n}</b> com <b>${E[E[id].r[1]].n}</b>.`;salvar();pintar();
+}
+function comprarRefugio(l){if(S.vit<REFUGIO)return;S.vit-=REFUGIO;S.guarda[l]=1;salvar();pintar()}
+function entregar(i){
+  const o=S.ord[i];if(!o||!vivo(o.id)||S.k[o.id]<o.q)return;
+  S.k[o.id]-=o.q;S.vit+=o.v;S.ped++;S.ord.splice(i,1);encherPedidos();
+  G.info=`Entregue: ${E[o.id].n}. Você ganhou ${o.v} ✦.`;salvar();pintar();
+}
+function produzir(i){
+  const o=S.ord[i];if(!o||!vivo(o.id)||S.en<=0)return;
+  S.k[o.id]++;gastar();G.info=`Mais uma unidade de ${E[o.id].n} por 1 de energia.`;pintar();depois();
+}
+function abrirEraVida(){
+  const bonus=Math.floor(S.en/3);
+  S.vit+=bonus;S.fase="vida";S.en=EN2;S.enMax=EN2;S.res=0;S.k.sol=1;S.ord=[];encherPedidos();salvar();
+  modal({ic:"🦠",t:"A primeira célula",h:`<p>Começa a Era da Vida, e o Sol entra na sua mesa.</p><p>A vida pode seguir três caminhos: a <b>Luz</b>, o <b>Calor</b> das fontes e a <b>Caça</b>.</p><p>Cada combinação agora aproxima o gelo.${bonus?` A energia que sobrou virou ${bonus} ✦.`:""}</p>`,b:[{t:"Continuar",f:pintar}]});
+}
+function crise(){
+  const r={};
+  ["luz","caca","calor"].forEach(l=>{
+    const mem=RAMO[l].filter(id=>E[id].l===l&&vivo(id));
+    if(!mem.length)r[l]="ausente";
+    else if(l==="calor")r[l]="abrigada";
+    else if(S.k[LINHAS[l].ad]!=null)r[l]="adaptada";
+    else if(S.guarda[l])r[l]="refugio";
+    else{r[l]="extinta";mem.forEach(id=>{S.ext[id]=1;delete S.k[id]})}
+  });
+  S.gelo=r;S.fase="degelo";S.en=EN3;S.enMax=EN3;S.res=0;encherPedidos();salvar();
+  const T={ausente:"Ainda não existia.",abrigada:"O calor do fundo manteve tudo vivo.",adaptada:"Dormiu e acordou depois do gelo.",refugio:"Sobreviveu no refúgio.",extinta:"Extinta. Receitas ligadas a ela fecharam."};
+  const h=`<p>A Terra virou uma bola de neve, de polo a polo.</p>`+["luz","calor","caca"].map(l=>`<div class="vered"><b>${LINHAS[l].n}</b><span>${T[r[l]]}</span></div>`).join("");
+  modal({ic:"🧊",t:"A Grande Glaciação",h,gelo:1,b:[{t:"Ver o degelo",f:()=>{G.aba="mesa";pintar();if(!alcancaveis().length)finalizar()}}]});
+}
+function escolherFinal(){
+  const f=vivo("floresta"),p=vivo("peixe"),a=vivo("abissal");
+  if(f&&p&&a)return "pleno";if(f&&p)return "fp";if(f&&a)return "fa";if(p&&a)return "pa";
+  if(f)return "f";if(p)return "p";if(a)return "a";
+  return ["luz","calor","caca"].some(ramoVivo)?"micro":"fio";
+}
+function cronica(fin){
+  const c=[];
+  if(fin==="esteril")return [`Foram ${S.erros} misturas sem resultado até a energia acabar.`];
+  c.push(S.erros<=6?"A vida surgiu depressa, quase sem tropeços.":S.erros<=14?"A vida demorou, mas surgiu.":"O planeta errou muito antes de acertar a vida.");
+  if(S.prim)c.push({luz:"Os primeiros seres subiram em busca da luz.",calor:"Os primeiros seres desceram para o calor das fontes.",caca:"Os primeiros seres se juntaram em colônias."}[S.prim]);
+  const r=S.gelo||{};
+  const F={luz:{extinta:"A grande glaciação apagou o sol, e a linhagem da Luz morreu no escuro.",adaptada:"A Luz atravessou o gelo dormindo em esporos.",refugio:"A Luz resistiu em um último refúgio."},
+    caca:{extinta:"Os caçadores não tinham onde se esconder, e o gelo acabou com eles.",adaptada:"Os caçadores se fecharam em cistos e esperaram o frio passar.",refugio:"Os caçadores resistiram em um último refúgio."},
+    calor:{abrigada:"No fundo do mar, as fontes quentes nem sentiram o gelo."}};
+  const fr=["luz","caca","calor"].map(l=>F[l][r[l]]).filter(Boolean);
+  c.push(...fr);
+  if(!fr.length)c.push("O gelo cobriu um mundo de células solitárias.");
+  c.push(FINAIS[fin].x);
+  return c;
+}
+function finalizar(id){
+  const fin=id||escolherFinal();
+  marcarFinal(fin);S.fase="fim";S.fim=fin;limpar();pintar();
+}
+
+/* ---------- desenho ---------- */
+const $=s=>document.querySelector(s);
+const orbe=(id)=>`<span class="orbe" style="--tinta:${E[id].t}">${E[id].e}</span>`;
+function tela(id){document.querySelectorAll(".tela").forEach(t=>t.classList.toggle("on",t.id===id))}
+function modal(o){
+  const m=$("#modal");
+  m.innerHTML=`<div class="caixa${o.gelo?" gelo":""}" role="dialog" aria-modal="true"><div class="ic">${o.ic}</div><h3>${o.t}</h3>${o.h}<div class="acoes">${o.b.map((b,i)=>`<button class="btn ${b.c||""}" data-m="${i}">${b.t}</button>`).join("")}</div></div>`;
+  m.classList.add("on");m._b=o.b;
+}
+function fechaModal(){const m=$("#modal");m.classList.remove("on");m.innerHTML=""}
+function pintarCapa(){
+  const s=carregar(),f=finais().length,tot=Object.keys(FINAIS).length;
+  $("#capa").innerHTML=`<a class="voltar" href="../../">← Mesa de Jogos</a><div class="fusao" aria-hidden="true"><i class="a"></i><i class="b"></i><i class="c"></i></div><h1>Gênese</h1><p>Misture os elementos, crie a vida e descubra o que sobrevive ao gelo.</p><div class="acoes">${s?`<button class="btn" data-a="continuar">Continuar partida</button>`:""}<button class="btn ${s?"vazado":"fogo"}" data-a="nova">Nova partida</button><button class="btn vazado" data-a="como">Como jogar</button></div>${f?`<small>Finais encontrados: ${f} de ${tot}</small>`:""}`;
+  $("#app").className="";$("#frost").style.opacity=0;tela("capa");
+}
+function comoJogar(){
+  modal({ic:"🔥",t:"Como jogar",h:`<p><b>Combine:</b> toque em dois elementos. Cada mistura nova gasta 1 de energia, certa ou errada.</p><p><b>Entregue:</b> os pedidos dão pistas e rendem ✦ Vitalidade, que compra ajuda na aba Evolução.</p><p><b>Sobreviva:</b> na Era da Vida, a energia é o tempo até o gelo. Linhagens sem proteção se extinguem, e as receitas ligadas a elas fecham.</p><p>Elementos apagados já não têm nada a oferecer.</p>`,b:[{t:"Entendi",f:()=>{}}]});
+}
+function pintar(){
+  if(!S)return pintarCapa();
+  if(S.fase==="fim")return pintarFim();
+  const a=$("#app");a.className=S.fase==="materia"?"":S.fase;
+  document.querySelector('meta[name=theme-color]').content=S.fase==="materia"?"#2b1420":S.fase==="vida"?"#06303a":"#0d3a48";
+  $("#frost").style.opacity=S.fase==="vida"?(0.12+.75*(1-S.en/Math.max(S.enMax,1))).toFixed(2):0;
+  tela("jogo");
+  const era={materia:"Era da Matéria",vida:"Era da Vida",degelo:"O Degelo"}[S.fase];
+  const topo=`<div class="hud"><button class="menu" data-a="menu" aria-label="Menu">☰</button><h2>${era}</h2><span class="res${S.en<=4?" baixo":""}" aria-label="Energia"><span class="i">⚡</span>${S.en}</span><span class="res vit" aria-label="Vitalidade"><span class="i">✦</span>${S.vit}</span></div>`;
+  const abas=`<nav class="abas">${[["mesa","Mesa"],["evo","Evolução"],["arv","Árvore"]].map(([k,n])=>`<button class="${G.aba===k?"on":""}" data-aba="${k}">${n}</button>`).join("")}</nav>`;
+  let corpo="";
+  if(G.aba==="mesa")corpo=pintarMesa();
+  else if(G.aba==="evo")corpo=`<div class="painel">${pintarEvo()}</div>`;
+  else corpo=`<div class="painel">${arvore()}</div>`;
+  const sc=document.querySelector(".mesa,.painel");const y=sc?sc.scrollTop:0;
+  $("#jogo").innerHTML=topo+corpo+abas;
+  const n=document.querySelector(".mesa,.painel");if(n)n.scrollTop=y;
+}
+function pintarStatus(){
+  if(S.fase==="materia"){
+    const n=MATERIA.filter(id=>S.k[id]!=null).length;
+    return `<div class="status"><b>Objetivo: criar a primeira Célula</b><div class="barra"><i style="width:${n/MATERIA.length*100}%"></i></div></div>`;
+  }
+  if(S.fase==="vida"){
+    const s=S.sinal>=0?SINAIS[S.sinal][1]:"O ar está esfriando. Proteja o que você criar.";
+    return `<div class="status"><b>Gelo em ${S.en} ${S.en===1?"combinação":"combinações"}</b><div class="sinal">${s}</div></div>`;
+  }
+  return `<div class="status lin"><b>O gelo recua. Leve uma linhagem até o topo.</b><button class="enc" data-a="encerrar">Encerrar era</button></div>`;
+}
+function pintarMesa(){
+  const f=G.a,g=G.b,r=G.res;
+  const cen=r?(r.id?E[r.id].e:`<span class="x">${r.x}</span>`):"";
+  const forja=`<div class="forja" id="forja"><div class="slot${f?"":" vazio"}" id="sa">${f?E[f].e:""}</div><div class="crisol${r&&r.novo?" novo":""}${r&&!r.id?" nada":""}">${cen}</div><div class="slot${g?"":" vazio"}" id="sb">${g?E[g].e:""}</div></div>`;
+  const info=`<div class="info">${G.info||(f?"Agora escolha o segundo elemento.":"Toque em dois elementos para combinar.")}</div>`;
+  const peds=[0,1].map(i=>{
+    const o=S.ord[i];
+    if(!o)return `<div class="ped"><p class="aguarda">Nenhum pedido agora.</p></div>`;
+    const conhe=vivo(o.id),tem=conhe?S.k[o.id]:0;
+    const txt=conhe?`${o.q>1?o.q+" × ":""}${E[o.id].e} ${E[o.id].n}`:`❔ ${E[o.id].c}`;
+    const btn=!conhe?`<span class="aguarda">Descubra</span>`:tem>=o.q?`<button data-ent="${i}">Entregar</button>`:`<button class="prod" data-prod="${i}">Produzir ⚡1</button>`;
+    return `<div class="ped"><p>${txt}</p><div class="pr"><span class="val">+${o.v} ✦</span>${btn}</div></div>`;
+  }).join("");
+  const ids=Object.keys(S.k).filter(id=>!S.ext[id]).map((id,i)=>({id,i,g:esgotado(id)?1:0})).sort((x,y)=>x.g-y.g||x.i-y.i);
+  const els=ids.map(({id,g:ga})=>{
+    const q=S.k[id],d=G.dica&&G.dica.includes(id),sel=G.a===id||G.b===id;
+    return `<button class="el${ga?" gasto":""}${sel?" sel":""}${d?" dica":""}" data-el="${id}">${orbe(id)}<span class="nm">${E[id].n}</span>${E[id].r&&q>1?`<span class="q">${q}</span>`:""}</button>`;
+  }).join("");
+  return pintarStatus()+forja+info+`<div class="pedidos">${peds}</div><div class="mesa">${els}</div>`;
+}
+function pintarEvo(){
+  const c=custoReserva(),alc=alcancaveis().length;
+  let h=`<div class="up"><div class="t"><h3>Reserva</h3><button class="pg" data-a="reserva" ${S.vit>=c&&S.res<RES_MAX?"":"disabled"}>${S.res>=RES_MAX?"Esgotada":c+" ✦"}</button></div><p>+${RES_GANHO} de energia${S.fase==="vida"?", o que atrasa o gelo":""}. Até ${RES_MAX} por era (${S.res} ${S.res===1?"usada":"usadas"}).</p></div>
+  <div class="up"><div class="t"><h3>Intuição</h3><button class="pg" data-a="dica" ${S.vit>=DICA&&alc?"":"disabled"}>${DICA} ✦</button></div><p>Mostra na mesa dois elementos que combinam.</p></div>`;
+  if(S.fase==="vida"){
+    const ls=["luz","caca"].filter(l=>!S.guarda[l]&&ramoVivo(l));
+    const pr=["luz","caca"].filter(l=>S.guarda[l]).map(l=>LINHAS[l].n);
+    h+=`<div class="up"><div class="t"><h3>Refúgio</h3><span class="res vit">${REFUGIO} ✦</span></div><p>Salva uma linhagem inteira do gelo, mesmo sem adaptação.${pr.length?` Protegida: ${pr.join(" e ")}.`:""}</p><div class="lns">${ls.length?ls.map(l=>`<button class="pg" data-ref="${l}" ${S.vit>=REFUGIO?"":"disabled"}>Proteger ${LINHAS[l].n}</button>`).join(""):`<p>Crie um ser da Luz ou da Caça para poder protegê-lo.</p>`}</div></div>`;
+  }
+  return h;
+}
+function noArv(id,cls){
+  const x=E[id];
+  if(S.ext[id])return `<div class="no morto ${cls||""}">${orbe(id)}<span class="nm">${x.n}</span></div>`;
+  if(S.k[id]==null)return `<div class="no oculto ${cls||""}"><span class="orbe">?</span></div>`;
+  return `<div class="no ${cls||""}">${orbe(id)}<span class="nm">${x.n}</span><span class="rc">${x.r?x.r.map(p=>E[p].e).join("+"):""}</span></div>`;
+}
+function arvore(){
+  const est={ausente:"não surgiu",abrigada:"abrigada",adaptada:"adaptada",refugio:"em refúgio",extinta:"extinta"};
+  const ram=["luz","calor","caca"].map(l=>{
+    const st=S.gelo?S.gelo[l]:null;
+    return `<div class="ramo ${st==="extinta"?"extinta":""}" style="--cor:${LINHAS[l].cor}"><h4>${LINHAS[l].n}${st?`<small>${est[st]}</small>`:""}</h4>${RAMO[l].map(id=>noArv(id)).join("")}</div>`;
+  }).join("");
+  return `<div class="tronco">${[...BASE1,...MATERIA.filter(i=>i!=="celula")].map(id=>noArv(id)).join("")}</div>${noArv("celula","nocel")}<div class="ramos">${ram}</div>`;
+}
+function pintarFim(){
+  const fin=S.fim,F=FINAIS[fin],c=cronica(fin);
+  $("#app").className=fin==="esteril"?"":"degelo";$("#frost").style.opacity=0;
+  $("#fim").innerHTML=`<div class="painel"><h1>${F.t}</h1><div class="cron">${c.map(p=>`<p>${p}</p>`).join("")}</div><p class="num">${descobertas()} de ${TOTAL} descobertas, ${Object.keys(S.ext).length} extintas, ${finais().length} de ${Object.keys(FINAIS).length} finais encontrados.</p>${arvore()}</div><div class="acoes"><button class="btn vazado" data-a="capa">Sair</button><button class="btn" data-a="nova">Jogar de novo</button></div>`;
+  tela("fim");
+}
+
+/* ---------- toques ---------- */
+function tocarEl(id){
+  if(G.trava)return;
+  G.res=null;G.info="";
+  if(!G.a){G.a=id;pintar();return}
+  G.b=id;pintar();
+  if(G.rapido)return resolver();
+  G.trava=true;
+  requestAnimationFrame(()=>{const f=$("#forja");if(f)f.classList.add("funde")});
+  setTimeout(resolver,360);
+}
+function resolver(){
+  const a=G.a,b=G.b;G.a=G.b=null;G.trava=false;
+  combinar(a,b);
+  pintar();
+  if(navigator.vibrate&&G.res&&G.res.novo)try{navigator.vibrate(18)}catch(e){}
+}
+function novaPartida(){S=nova();G.aba="mesa";G.a=G.b=null;G.res=null;G.dica=null;G.info="";encherPedidos();salvar();pintar()}
+document.addEventListener("click",ev=>{
+  const m=ev.target.closest("[data-m]");
+  if(m){const b=$("#modal")._b[+m.dataset.m];fechaModal();b.f();return}
+  const t=ev.target.closest("[data-el],[data-aba],[data-a],[data-ent],[data-prod],[data-ref],#sa,#sb");
+  if(!t)return;
+  if(t.id==="sa"||t.id==="sb"){if(!G.trava&&t.id==="sa"&&G.a){G.a=null;pintar()}return}
+  const d=t.dataset;
+  if(d.el)return tocarEl(d.el);
+  if(d.aba){G.aba=d.aba;return pintar()}
+  if(d.ent)return entregar(+d.ent);
+  if(d.prod)return produzir(+d.prod);
+  if(d.ref)return comprarRefugio(d.ref);
+  switch(d.a){
+    case "nova":return novaPartida();
+    case "continuar":S=carregar();G.aba="mesa";pintar();if(S&&S.en<=0&&S.fase!=="fim")zero();return;
+    case "como":return comoJogar();
+    case "capa":S=null;return pintarCapa();
+    case "reserva":comprarReserva();return pintar();
+    case "dica":return comprarDica();
+    case "encerrar":return modal({ic:"🌍",t:"Encerrar a era?",h:`<p>A história termina aqui, com o que estiver vivo agora.</p>`,b:[{t:"Encerrar",f:()=>finalizar()},{t:"Continuar jogando",c:"vazado",f:()=>{}}]});
+    case "menu":return modal({ic:"🌍",t:"Gênese",h:"",b:[{t:"Voltar ao jogo",f:()=>{}},{t:"Como jogar",c:"vazado",f:comoJogar},{t:"Recomeçar partida",c:"vazado",f:novaPartida},{t:"Sair para a capa",c:"vazado",f:()=>{S=null;pintarCapa()}}]});
+  }
+});
+window.__G={get S(){return S},G,E,RECEITA,chave,combinar,alcancaveis,novaPartida,pintar,entregar,produzir,FINAIS};
+pintarCapa();
+</script>
+</body>
+</html>

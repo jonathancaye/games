@@ -200,7 +200,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;border-top:1px solid 
    CATÁLOGO DE JOGOS
    Para adicionar um jogo novo:
    1. crie a pasta jogos/<nome-do-jogo>/ com um index.html dentro;
-   2. acrescente um item aqui embaixo (art pode ser "dados", "fod", "dw", "scd", "atb", "arr", "nfg", "grp", "fsg", "fnt", "imp" ou "soon";
+   2. acrescente um item aqui embaixo (art pode ser "dados", "fod", "dw", "scd", "atb", "arr", "nfg", "grp", "fsg", "fnt", "imp", "gns" ou "soon";
       para arte nova, crie uma função em ARTS).
    ===================================================================== */
 const GAMES = [
@@ -327,6 +327,17 @@ const GAMES = [
     art: "imp"
   },
   {
+    title: "Gênese",
+    url: "jogos/genese/",
+    desc: "Misture fogo, água, terra e ar até criar a vida. Escolha quais linhagens proteger antes do grande gelo e leia a história que o seu planeta contou.",
+    category: "Puzzle",
+    players: "1 jogador",
+    time: "10 min",
+    extra: ["Solo", "Descobertas", "Evolução"],
+    accent: "#5fd38d",
+    art: "gns"
+  },
+  {
     title: "Em breve",
     desc: "O próximo jogo da mesa está sendo preparado.",
     category: null,
@@ -400,6 +411,20 @@ const ARTS = {
       <rect x="40" y="74" width="120" height="6" rx="2" fill="#e9d3a6"/><rect x="42" y="80" width="116" height="22" rx="3" fill="#b97a45"/>
       <g stroke="#6fae3c" stroke-width="3.5"><line x1="34" y1="102" x2="40" y2="66"/><line x1="38" y1="102" x2="44" y2="68"/></g>
       <circle cx="60" cy="104" r="5" fill="#333"/><circle cx="140" cy="104" r="5" fill="#333"/></svg>`;
+  },
+  gns(){
+    const orb=(x,y,r,a,b)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${b}"/><circle cx="${x-r*.28}" cy="${y-r*.3}" r="${r*.42}" fill="${a}"/>`;
+    return `<svg viewBox="0 0 200 112" preserveAspectRatio="xMidYMid slice">
+      <defs><radialGradient id="gnsf" cx="50%" cy="35%" r="80%"><stop offset="0" stop-color="#0f5a56"/><stop offset="1" stop-color="#2b1420"/></radialGradient></defs>
+      <rect width="200" height="112" fill="url(#gnsf)"/>
+      <path class="gr1" d="M100 62 C88 46 66 44 52 26" stroke="#86d65a" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path class="gr2" d="M100 62 C100 44 104 36 100 16" stroke="#f97316" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path class="gr3" d="M100 62 C114 48 132 46 148 26" stroke="#8f9aa0" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="1 7"/>
+      <path d="M38 96 C60 92 76 84 100 62 C124 84 140 92 162 96" stroke="rgba(245,236,217,.35)" stroke-width="2" fill="none"/>
+      ${orb(38,96,10,"#ffd58a","#f97316")}${orb(162,96,10,"#c6fff3","#14b8a6")}
+      ${orb(100,62,14,"#fff7dd","#3fa58d")}${orb(52,24,8,"#d9f5b0","#5fae45")}${orb(100,14,8,"#ffd58a","#d9651a")}
+      <circle cx="148" cy="24" r="8" fill="#6f6b6a"/><path d="M0 0H200V8Q170 14 150 8T120 4H0Z" fill="#d3edf6" opacity=".22"/>
+    </svg>`;
   },
   imp(){
     return `<img class="cam" src="jogos/imperium/assets/camafeu4.webp" alt=""><img class="sel" src="jogos/imperium/assets/selo.webp" alt="">`;
