@@ -518,7 +518,7 @@ function crise(){
   });
   S.gelo=r;S.fase="degelo";S.en=EN3;S.enMax=EN3;S.res=0;S.guarda={};encherPedidos();salvar();
   const T={ausente:"Ainda não existia.",abrigada:"O calor do fundo manteve tudo vivo.",adaptada:"Dormiu e acordou depois do gelo.",refugio:"Sobreviveu no refúgio.",extinta:"Extinta. Receitas ligadas a ela fecharam."};
-  const h=`<p>A Terra virou uma bola de neve, de polo a polo.</p>`+ORDEM.map(l=>`<div class="vered"><b>${LINHAS[l].n}</b><span>${T[r[l]]}</span></div>`).join("");
+  const h=`<p>A Terra virou uma bola de neve, de polo a polo.</p>`+ORDEM.map(l=>`<div class="vered"><b>${LINHAS[l].n}</b><span>${r[l]==="adaptada"?`Salva por ${E[LINHAS[l].ad].n}: dormiu e acordou depois do gelo.`:T[r[l]]}</span></div>`).join("");
   modal({ic:"gelo",cor:"#2f8fb8",t:"A Grande Glaciação",h,cx:"gelo",b:[{t:"Ver o degelo",f:()=>{G.aba="mesa";pintar();if(!alcancaveis().length)fimDegelo()}}]});
 }
 function fimDegelo(){
@@ -696,7 +696,12 @@ function noArv(id,cls){
 const ST={ausente:["Não surgiu",""],abrigada:["Sobreviveu no calor","ok"],adaptada:["Sobreviveu","ok"],refugio:["Sobreviveu no refúgio","ok"],extinta:["Extinta","mal"],fora:["Ficou para trás",""],escapou:["Escapou","ok"]};
 function stVida(l){
   if(S.gelo2&&S.gelo2[l]==="extinta")return ST.extinta;
-  if(S.gelo)return ST[S.gelo[l]];
+  if(S.gelo){
+    const g=S.gelo[l];
+    if(g==="ausente"&&RAMO[l].some(id=>E[id].l===l&&S.k[id]!=null))return ["Surgiu depois do gelo","ok"];
+    if(g==="adaptada")return [`Salva por ${E[LINHAS[l].ad].n}`,"ok"];
+    return ST[g];
+  }
   if(!RAMO[l].some(id=>E[id].l===l&&vivo(id)))return ["Ainda não surgiu",""];
   if(l==="calor")return ["Fora de risco","ok"];
   if(S.k[LINHAS[l].ad]!=null)return [`Protegida por ${E[LINHAS[l].ad].n}`,"ok"];
@@ -704,7 +709,10 @@ function stVida(l){
   return ["Em risco","mal"];
 }
 function stEsp(l){
-  if(S.gelo2)return ST[S.gelo2[l]];
+  if(S.gelo2){
+    if(S.gelo2[l]==="adaptada")return [`Salva por ${E[CRISES[S.crise2].def[l]].n}`,"ok"];
+    return ST[S.gelo2[l]];
+  }
   if(!S.abre)return ["",""];
   if(!S.abre[l])return ST.fora;
   if(S.guarda[l])return ["Em refúgio","ok"];
