@@ -92,6 +92,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 /* pedidos */
 .pedidos{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:4px 12px 8px}
 .ped{min-height:84px;border-radius:14px;background:var(--vidro);padding:8px 10px;display:flex;flex-direction:column;gap:4px}
+.ped h5{margin:0;font-size:12px;font-weight:700;line-height:1.15;color:var(--suave)}
 .ped p{margin:0;font-size:13.5px;line-height:1.22;flex:1}
 .ped .pr{display:flex;align-items:center;justify-content:space-between;gap:6px}
 .ped .val{font-weight:800;font-size:13.5px;color:var(--luz);white-space:nowrap}
@@ -380,13 +381,13 @@ function novoPedido(){
   const ativos=S.ord.map(o=>o.id);
   const alc=alcancaveis().filter(id=>!ativos.includes(id));
   const prio=alc.filter(id=>E[id].ad&&(S.fase==="vida"||(revelada()&&Object.values(CRISES[S.crise2].def).includes(id))));
-  const est=Object.keys(S.k).filter(id=>E[id].r&&vivo(id)&&id!=="celula"&&!ativos.includes(id)&&(S.fase!=="materia"||E[id].nv>=2));
-  const val=(id,b)=>Math.min(3,b+Math.floor(E[id].nv/4));
-  const ped=id=>({id,q:1,v:val(id,1)});
+  const est=S.fase==="materia"?[]:Object.keys(S.k).filter(id=>E[id].r&&vivo(id)&&id!=="celula"&&!ativos.includes(id));
+  const val=(id,b,t)=>Math.min(t,b+Math.floor(E[id].nv/4));
+  const ped=id=>({id,q:1,v:val(id,1,3)});
   if(prio.length)return ped(sortear(prio));
   const temPista=S.ord.some(o=>S.k[o.id]==null);
   if(alc.length&&(!temPista||Math.random()<.5||!est.length))return ped(sortear(alc));
-  if(est.length){const id=sortear(est);return {id,q:2,v:val(id,2)}}
+  if(est.length){const id=sortear(est);return {id,q:2,v:val(id,2,4)}}
   return null;
 }
 function encherPedidos(){
@@ -571,7 +572,7 @@ function pintarCapa(){
   $("#app").className="";$("#frost").style.opacity=0;tela("capa");
 }
 function comoJogar(){
-  modal({ic:"celula",el:1,t:"Como jogar",h:`<p><b>Combine:</b> toque em dois elementos. Cada mistura nova gasta 1 de energia, certa ou errada.</p><p><b>Entregue:</b> os pedidos dão pistas e rendem Vitalidade, que compra ajuda na aba Evolução.</p><p><b>Sobreviva:</b> a energia é o tempo até a próxima crise. Linhagens sem proteção se extinguem, e as receitas ligadas a elas fecham.</p><p><b>Avance:</b> só as linhagens que chegam ao topo seguem para a Era das Espécies.</p><p>Elementos apagados já não têm nada a oferecer.</p>`,b:[{t:"Entendi",f:()=>{}}]});
+  modal({ic:"celula",el:1,t:"Como jogar",h:`<p><b>Combine:</b> toque em dois elementos. Cada mistura nova gasta 1 de energia, certa ou errada.</p><p><b>Entregue:</b> os pedidos dão pistas e rendem Vitalidade, que compra ajuda na aba Reforços.</p><p><b>Sobreviva:</b> a energia é o tempo até a próxima crise. Linhagens sem proteção se extinguem, e as receitas ligadas a elas fecham.</p><p><b>Avance:</b> só as linhagens que chegam ao topo seguem para a Era das Espécies.</p><p>Elementos apagados já não têm nada a oferecer.</p>`,b:[{t:"Entendi",f:()=>{}}]});
 }
 function pintar(){
   if(!S)return pintarCapa();
@@ -585,7 +586,7 @@ function pintar(){
   tela("jogo");
   const era={materia:"Era da Matéria",vida:"Era da Vida",degelo:"O Degelo",especies:"Era das Espécies",recup:"A Recuperação"}[S.fase];
   const topo=`<div class="hud"><button class="menu" data-a="menu" aria-label="Menu">${UI.menu}</button><h2>${era}</h2><span class="res${S.en<=4?" baixo":""}" aria-label="Energia">${UI.energia}${S.en}</span><span class="res vit" aria-label="Vitalidade">${UI.vit}${S.vit}</span></div>`;
-  const abas=`<nav class="abas">${[["mesa","Mesa"],["evo","Evolução"],["arv","Árvore"]].map(([k,n])=>`<button class="${G.aba===k?"on":""}" data-aba="${k}">${n}</button>`).join("")}</nav>`;
+  const abas=`<nav class="abas">${[["mesa","Mesa"],["evo","Reforços"],["arv","Árvore"]].map(([k,n])=>`<button class="${G.aba===k?"on":""}" data-aba="${k}">${n}</button>`).join("")}</nav>`;
   let corpo="";
   if(G.aba==="mesa")corpo=pintarMesa();
   else if(G.aba==="evo")corpo=`<div class="painel">${pintarEvo()}</div>`;
@@ -619,7 +620,8 @@ function pintarMesa(){
     const conhe=vivo(o.id),tem=conhe?S.k[o.id]:0;
     const txt=conhe?`${o.q>1?o.q+" × ":""}${mini(o.id)} ${E[o.id].n}`:`${UI.pista} ${E[o.id].c}`;
     const btn=!conhe?`<span class="aguarda">Descubra</span>`:tem>=o.q?`<button data-ent="${i}">Entregar</button>`:`<button class="prod" data-ent="${i}" ${o.q-tem>S.en?"disabled":""}>Entregar ${UI.energia}${o.q-tem}</button>`;
-    return `<div class="ped"><p>${txt}</p><div class="pr"><span class="val">+${o.v} ${UI.vit}</span>${btn}</div></div>`;
+    const tit=!conhe?"Pista de descoberta":tem>=o.q?"Pronto para entregar":"Trocar energia por Vitalidade";
+    return `<div class="ped"><h5>${tit}</h5><p>${txt}</p><div class="pr"><span class="val">+${o.v} ${UI.vit}</span>${btn}</div></div>`;
   }).join("");
   const ids=Object.keys(S.k).filter(id=>!S.ext[id]).map((id,i)=>({id,i,g:esgotado(id)?1:0})).sort((x,y)=>x.g-y.g||x.i-y.i);
   const els=ids.map(({id,g:ga})=>{
