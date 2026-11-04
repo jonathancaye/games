@@ -222,6 +222,80 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 .fossil{display:flex;align-items:center;gap:11px;margin:12px 0;padding:10px 12px;border-radius:14px;background:var(--vidro);font-size:14.5px;line-height:1.35}
 .fossil .orbe{flex:none;width:44px;height:44px}
 
+/* cenas */
+#cine{position:absolute;inset:0;z-index:9;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:calc(18px + env(safe-area-inset-top)) 18px calc(18px + env(safe-area-inset-bottom));overflow:hidden;text-align:center;cursor:pointer}
+#cine.on{display:flex}
+#cine.era,#cine.titulo{background:radial-gradient(120% 70% at 50% 30%,var(--fundo2),var(--fundo) 74%)}
+#cine.titulo h2{margin:0;font-family:var(--titulo);font-weight:800;font-size:44px;letter-spacing:-.02em;animation:sobe .6s ease both}
+#cine.titulo p{margin:6px 0 0;max-width:30ch;font-size:16.5px;line-height:1.4;animation:sobe .6s ease .25s both}
+@keyframes sobe{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.te{width:100%;max-width:340px;position:relative}
+.tl{position:relative;height:3px;margin:7px 9% 0;background:var(--fio);border-radius:3px}
+.tl i{position:absolute;left:0;top:0;bottom:0;background:var(--papel);border-radius:3px;animation:avanca 1s ease-in-out .15s both}
+@keyframes avanca{from{width:var(--a)}to{width:var(--b)}}
+.tp{display:grid;grid-template-columns:repeat(4,1fr);margin-top:-10px}
+.tp span{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--suave)}
+.tp u{width:14px;height:14px;border-radius:50%;background:var(--fundo);box-shadow:inset 0 0 0 2px var(--fio)}
+.tp .feita{color:var(--papel)}.tp .feita u{background:var(--papel)}
+.tp .nova{color:var(--papel)}.tp .nova u{box-shadow:0 0 0 4px rgba(255,241,214,.25);background:var(--papel);animation:brota .5s ease 1s both}
+.gal{width:100%;display:flex;flex-direction:column;align-items:center}
+.gal:empty{display:none}
+.gal .abertura{max-height:24vh;margin:4px 0 0}
+.gal .abertura .nucleo{animation-delay:0s}
+.gal .abertura .ramo-a{animation-delay:.1s;animation-duration:.8s}
+.gal .abertura .p1{animation-delay:.7s}.gal .abertura .p2{animation-delay:.8s}.gal .abertura .p3{animation-delay:.9s}
+.segue{display:grid;grid-template-columns:repeat(3,1fr);width:100%;max-width:340px;font-weight:800;font-size:13.5px;color:var(--suave)}
+.segue small{display:block;font-weight:600;font-size:11.5px}
+.segue .sim{color:var(--papel)}
+.nomeera{margin:8px 0 0;min-height:1.1em;font-family:var(--titulo);font-weight:800;font-size:38px;line-height:1.05;letter-spacing:-.02em;opacity:0}
+.fraseera{margin:0;max-width:33ch;font-size:16px;line-height:1.4;opacity:0;min-height:0}
+.nomeera.ve,.fraseera.ve{animation:sobe .6s ease both}
+.ofe{width:100%;max-width:360px}
+.hert{margin:10px 0 7px;font-family:var(--titulo);font-weight:500;font-size:18px}
+.hers{display:grid;grid-template-columns:1fr 1fr;gap:8px;animation:sobe .45s ease both}
+.her{padding:12px 9px;border-radius:16px;background:var(--vidro);box-shadow:inset 0 0 0 1.5px var(--fio)}
+.her b{display:block;font-family:var(--titulo);font-weight:800;font-size:16.5px;line-height:1.1}
+.her span{display:block;margin-top:5px;font-size:13.5px;line-height:1.25;color:var(--suave)}
+#cine.era.so{justify-content:center}
+#cine .fx{position:absolute;inset:0}
+#cine .fx svg{position:absolute;inset:0;width:100%;height:100%;opacity:.38}
+#cine .fx path{fill:none;stroke:#7a5428;stroke-width:3;stroke-dasharray:1;stroke-dashoffset:1;animation:cresce 1.5s ease-out .2s forwards}
+#cine .cen{position:relative;width:100%;max-width:360px;color:var(--t);transition:transform .5s}
+#cine .cen>.orbe{margin:0 auto;width:80px;height:80px;animation:brota .5s cubic-bezier(.2,1.5,.4,1) .55s both}
+#cine .cen h2{margin:10px 0 4px;font-family:var(--titulo);font-weight:800;font-size:37px;line-height:1.05;letter-spacing:-.02em;animation:sobe .6s ease .7s both}
+#cine .cen p{margin:0;font-size:16px;line-height:1.35;animation:sobe .6s ease 1s both}
+#cine.julga .cen{align-self:center}
+#cine.gelo{--t:#0b3440;--bt:#0b3440;--btx:#eaf8fc}
+#cine.gelo .fx{background:rgba(6,48,58,.2);animation:congela 1.4s ease-in forwards}
+@keyframes congela{from{box-shadow:inset 0 0 0 0 #dcf1f8}to{box-shadow:inset 0 0 0 70vh #dcf1f8}}
+#cine.seca{--t:#3f2a10;--bt:#3f2a10;--btx:#fbeed0}
+#cine.seca .fx{animation:vira 1.1s ease forwards;--bg:#f1dcae}
+#cine.fome{--t:#3a2c10;--bt:#3a2c10;--btx:#f8eecb}
+#cine.fome .fx{animation:vira 1.6s ease forwards;--bg:#efe1b4}
+#cine.peste{--t:#e4f5dc;--bt:#8fd27a;--btx:#10240f}
+#cine.peste .fx{animation:vira 1.4s ease forwards;--bg:#203026}
+@keyframes vira{from{background:transparent}to{background:var(--bg)}}
+#cine.meteoro{--t:#ffe9d6;--bt:#f06a2c;--btx:#2b1000}
+#cine.meteoro .fx{animation:clarao 1.3s ease forwards}
+@keyframes clarao{0%{background:transparent}30%{background:#fff7e6}38%{background:#fff7e6}100%{background:#2b1012}}
+#cine .btn{background:var(--bt);color:var(--btx);margin-top:12px}
+.ved{margin-top:8px;text-align:left}
+.ved:empty{margin:0}
+.vl{padding:7px 0;border-top:1px solid color-mix(in srgb,currentColor 24%,transparent)}
+.vt{display:flex;justify-content:space-between;align-items:baseline;font-size:16px}
+.vt i{font-style:normal;font-weight:800}
+.vl.viva .vt i{animation:brota .3s ease both}
+.vl.morta .vt i{color:#d4331f;animation:brota .3s ease both;font-size:18px}
+#cine.peste .vl.morta .vt i,#cine.meteoro .vl.morta .vt i{color:#ff9a6b}
+.vl.ausente{opacity:.6}
+.vd{display:block;font-size:13.5px;line-height:1.25;margin-top:1px}
+.cai{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px;min-height:0}
+.cai .mini{animation:cai 1s ease-in var(--d,0ms) forwards}
+.cai .mini .orbe{width:22px;height:22px;filter:grayscale(1)}
+@keyframes cai{0%{transform:none;opacity:1}100%{transform:translateY(46px) rotate(24deg);opacity:0}}
+.sal{margin-top:8px;font-weight:800;font-size:15px;min-height:1.2em}
+@media (max-height:700px){#cine .cen>.orbe{width:60px;height:60px}#cine .cen h2{font-size:30px}.nomeera{font-size:31px}.fraseera{font-size:14.5px}.gal .abertura{max-height:21vh}}
+
 /* modal */
 #modal{position:absolute;inset:0;z-index:10;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(10,6,10,.62)}
 #modal.on{display:flex}
@@ -244,7 +318,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 .vered{display:flex;gap:10px;align-items:baseline;padding:7px 0;border-top:1px solid color-mix(in srgb,currentColor 22%,transparent);font-size:15px;line-height:1.3}
 .vered b{flex:none;width:58px}
 @media (max-height:700px){.forja{height:84px}.slot{width:54px;height:54px}.crisol{width:76px;height:76px}.ped{min-height:72px}.info{min-height:36px;font-size:13.5px}}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.abertura .fa,.abertura .fb{opacity:0}.abertura .ramo-a{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.abertura .fa,.abertura .fb{opacity:0}.abertura .ramo-a{stroke-dashoffset:0}.nomeera,.fraseera{opacity:1}.fx path{stroke-dashoffset:0}}
 </style>
 </head>
 <body>
@@ -254,6 +328,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
   <section class="tela" id="fim"></section>
   <section class="tela" id="enc"></section>
   <div id="frost"></div>
+  <div id="cine"></div>
   <div id="modal"></div>
 </div>
 <script>
@@ -570,31 +645,35 @@ function seguirZero(){
 }
 function comprarReserva(){if(S.vit<custoReserva()||S.res>=RES_MAX)return;S.vit-=custoReserva();S.res++;S.en+=RES_GANHO;S.enMax=Math.max(S.enMax,S.en);salvar()}
 function comprarDica(){
-  if(S.vit<DICA)return;
+  if(S.vit<DICA&&!S.dicaGratis)return;
   const alc=alcancaveis();if(!alc.length)return;
   const ped=alc.find(id=>S.ord.some(o=>o.id===id));
   const id=ped||alc.sort((x,y)=>E[x].nv-E[y].nv)[0];
-  S.vit-=DICA;G.dica=E[id].r.slice();G.aba="mesa";G.info=`Sua intuição diz: tente <b>${E[E[id].r[0]].n}</b> com <b>${E[E[id].r[1]].n}</b>.`;salvar();pintar();
+  if(S.dicaGratis)S.dicaGratis--;else S.vit-=DICA;G.dica=E[id].r.slice();G.aba="mesa";G.info=`Sua intuição diz: tente <b>${E[E[id].r[0]].n}</b> com <b>${E[E[id].r[1]].n}</b>.`;salvar();pintar();
 }
-function comprarRefugio(l){if(S.vit<REFUGIO)return;S.vit-=REFUGIO;S.guarda[l]=1;salvar();pintar()}
+function comprarRefugio(l){if(S.vit<REFUGIO&&!S.refGratis)return;if(S.refGratis)S.refGratis--;else S.vit-=REFUGIO;S.guarda[l]=1;salvar();pintar()}
 function abrirEraVida(){
-  S.fase="vida";S.en=EN2;S.enMax=EN2;S.res=0;S.k.sol=1;S.ord=[];encherPedidos();salvar();
-  modal({ic:"celula",el:1,t:"A primeira célula",h:`<p>Começa a Era da Vida, e o Sol entra na sua mesa.</p><p>A vida pode seguir três caminhos: a <b>Luz</b>, o <b>Calor</b> das fontes e a <b>Caça</b>.</p><p>Cada combinação agora aproxima o gelo.</p>`,b:[{t:"Continuar",f:pintar}]});
+  S.fase="vida";S.en=EN2;S.enMax=EN2;S.res=0;S.k.sol=1;S.ord=[];S.ofertas=gerarOfertas();encherPedidos();salvar();
+  cenaEra({i:1,nome:"Era da Vida",frase:"Uma célula. Tudo o que vai viver descende dela. O Sol entra na sua mesa, e o gelo já começa a se formar."});
 }
-function crise(){
-  const r={};
+function julgar(lst,defDe,seguro){
+  const r={},p={};
   ORDEM.forEach(l=>{
-    const mem=RAMO[l].filter(id=>E[id].l===l&&vivo(id));
-    if(!mem.length)r[l]="ausente";
-    else if(l==="calor")r[l]="abrigada";
-    else if(S.k[LINHAS[l].ad]!=null)r[l]="adaptada";
+    const m=lst(l);
+    if(seguro(l,m))r[l]=seguro(l,m);
+    else if(S.k[defDe(l)]!=null)r[l]="adaptada";
     else if(S.guarda[l])r[l]="refugio";
-    else{r[l]="extinta";mem.forEach(id=>{S.ext[id]=1;delete S.k[id]})}
+    else{r[l]="extinta";p[l]=m;m.forEach(id=>{S.ext[id]=1;delete S.k[id]})}
   });
+  return {r,p};
+}
+function linhasVeredito(r,p,defDe,T){return ORDEM.map(l=>({l,st:r[l],ids:p[l]||[],txt:r[l]==="adaptada"?`Salva por ${E[defDe(l)].n}`:T[r[l]]}))}
+const TX={ausente:"Ainda não existia",fora:"Não chegou a esta era",abrigada:"O calor do fundo manteve tudo vivo",escapou:"Passou quase sem sentir",refugio:"Sobreviveu no refúgio",extinta:"Receitas ligadas a ela fecharam"};
+function crise(){
+  const defDe=l=>LINHAS[l].ad;
+  const {r,p}=julgar(l=>RAMO[l].filter(id=>E[id].l===l&&vivo(id)),defDe,(l,m)=>!m.length?"ausente":l==="calor"?"abrigada":null);
   S.gelo=r;S.fase="degelo";S.en=EN3;S.enMax=EN3;S.res=0;S.guarda={};encherPedidos();salvar();
-  const T={ausente:"Ainda não existia.",abrigada:"O calor do fundo manteve tudo vivo.",adaptada:"Dormiu e acordou depois do gelo.",refugio:"Sobreviveu no refúgio.",extinta:"Extinta. Receitas ligadas a ela fecharam."};
-  const h=`<p>A Terra virou uma bola de neve, de polo a polo.</p>`+ORDEM.map(l=>`<div class="vered"><b>${LINHAS[l].n}</b><span>${r[l]==="adaptada"?`Salva por ${E[LINHAS[l].ad].n}: dormiu e acordou depois do gelo.`:T[r[l]]}</span></div>`).join("");
-  modal({ic:"gelo",cor:"#2f8fb8",t:"A Grande Glaciação",h,cx:"gelo",b:[{t:"Ver o degelo",f:()=>{G.aba="mesa";pintar();if(!alcancaveis().length)fimDegelo()}}]});
+  cenaCrise({tipo:"gelo",ic:"gelo",cor:"#2f8fb8",nome:"A Grande Glaciação",intro:"A Terra virou uma bola de neve, de polo a polo.",lin:linhasVeredito(r,p,defDe,TX),btn:"Ver o degelo",cb:()=>{G.aba="mesa";pintar();cenaTitulo("O Degelo","O gelo recua, e os sobreviventes têm pouco tempo.",()=>{if(!alcancaveis().length)fimDegelo()})}});
 }
 function fimDegelo(){
   if(!algumTopo())return finalizar();
@@ -603,25 +682,14 @@ function fimDegelo(){
 function abrirEspecies(){
   S.abre={};ORDEM.forEach(l=>S.abre[l]=vivo(LINHAS[l].topo));
   S.crise2=sortear(Object.keys(CRISES));
-  S.fase="especies";S.en=EN4;S.enMax=EN4;S.res=0;S.guarda={};S.sinal=-1;S.ord=[];G.aba="mesa";atualizaSinal();encherPedidos();salvar();
-  const ab=ORDEM.filter(l=>S.abre[l]).map(l=>`<b>${LINHAS[l].n}</b> (${E[LINHAS[l].topo].n})`);
-  modal({ic:"planeta",t:"A Era das Espécies",h:`<p>Os seus topos abrem o caminho: ${ab.join(", ")}.</p><p>Uma nova crise se aproxima. Os primeiros sinais não dizem qual, e cada combinação deixa o tempo mais curto.</p>`,b:[{t:"Continuar",f:pintar}]});
+  S.fase="especies";S.en=EN4;S.enMax=EN4;S.res=0;S.guarda={};S.sinal=-1;S.ord=[];G.aba="mesa";S.ofertas=gerarOfertas();atualizaSinal();encherPedidos();salvar();
+  cenaEra({i:2,nome:"Era das Espécies",frase:"A vida sai da água e toma conta do mundo. Algo está mudando, mas os sinais ainda não dizem o quê.",ramos:ORDEM.map(l=>({l,id:LINHAS[l].topo,on:S.abre[l]}))});
 }
 function crise2(){
-  const c=CRISES[S.crise2],r={};
-  ORDEM.forEach(l=>{
-    const mem=[...RAMO[l],...RAMO2[l]].filter(id=>E[id].l===l&&vivo(id));
-    if(!S.abre[l]||!mem.length)r[l]="fora";
-    else if(l===c.escapa)r[l]="escapou";
-    else if(S.k[c.def[l]]!=null)r[l]="adaptada";
-    else if(S.guarda[l])r[l]="refugio";
-    else{r[l]="extinta";mem.forEach(id=>{S.ext[id]=1;delete S.k[id]})}
-  });
+  const c=CRISES[S.crise2],defDe=l=>c.def[l];
+  const {r,p}=julgar(l=>[...RAMO[l],...RAMO2[l]].filter(id=>E[id].l===l&&vivo(id)),defDe,(l,m)=>(!S.abre[l]||!m.length)?"fora":l===c.escapa?"escapou":null);
   S.gelo2=r;S.fase="recup";S.en=EN5;S.enMax=EN5;S.res=0;encherPedidos();salvar();
-  const T={fora:"Não chegou a esta era.",escapou:"Passou quase sem sentir.",refugio:"Sobreviveu no refúgio.",extinta:"Extinta. Receitas ligadas a ela fecharam."};
-  const txt=(l)=>r[l]==="adaptada"?`Salva por ${E[c.def[l]].n}.`:T[r[l]];
-  const h=`<p>${c.intro}</p>`+ORDEM.map(l=>`<div class="vered"><b>${LINHAS[l].n}</b><span>${txt(l)}</span></div>`).join("");
-  modal({ic:c.ic,cor:c.cor,t:c.nome,h,cx:c.cx,b:[{t:"Ver a recuperação",f:()=>{G.aba="mesa";pintar();if(!alcancaveis().length)fimRecup()}}]});
+  cenaCrise({tipo:c.cx,ic:c.ic,cor:c.cor,nome:c.nome,intro:c.intro,lin:linhasVeredito(r,p,defDe,TX),btn:"Ver a recuperação",cb:()=>{G.aba="mesa";pintar();cenaTitulo("A Recuperação","Quem sobrou tenta alcançar o topo.",()=>{if(!alcancaveis().length)fimRecup()})}});
 }
 function fimRecup(){
   if(!algumTopo2())return finalizar();
@@ -630,26 +698,14 @@ function fimRecup(){
 function abrirCiv(){
   S.abre2={};ORDEM.forEach(l=>S.abre2[l]=vivo(TOPO2[l]));
   S.crise3=sortear(Object.keys(CRISES3));
-  S.fase="civ";S.en=EN6;S.enMax=EN6;S.res=0;S.guarda={};S.sinal=-1;S.ord=[];G.aba="mesa";atualizaSinal();encherPedidos();salvar();
-  const N={luz:"a Colmeia",calor:"o Povo do Abismo",caca:"o Povo da Terra"};
-  const ab=ORDEM.filter(l=>S.abre2[l]).map(l=>`<b>${N[l]}</b> (${E[TOPO2[l]].n})`);
-  modal({ic:"cidade",el:1,t:"A Era da Civilização",h:`<p>Os seus topos dão origem a novos povos: ${ab.join(", ")}.</p><p>Quanto mais gente junta, maior o perigo. Uma nova crise se aproxima, e os primeiros sinais não dizem qual.</p>`,b:[{t:"Continuar",f:pintar}]});
+  S.fase="civ";S.en=EN6;S.enMax=EN6;S.res=0;S.guarda={};S.sinal=-1;S.ord=[];G.aba="mesa";S.ofertas=gerarOfertas();atualizaSinal();encherPedidos();salvar();
+  cenaEra({i:3,nome:"Era da Civilização",frase:"Alguém aprende a guardar o que sabe. Quanto mais gente junta, maior o perigo.",ramos:ORDEM.map(l=>({l,id:TOPO2[l],on:S.abre2[l]}))});
 }
 function crise3(){
-  const c=CRISES3[S.crise3],r={};
-  ORDEM.forEach(l=>{
-    const mem=[...RAMO[l],...RAMO2[l],...RAMO3[l]].filter(id=>E[id].l===l&&vivo(id));
-    if(!S.abre2[l]||!mem.length)r[l]="fora";
-    else if(l===c.escapa)r[l]="escapou";
-    else if(S.k[c.def[l]]!=null)r[l]="adaptada";
-    else if(S.guarda[l])r[l]="refugio";
-    else{r[l]="extinta";mem.forEach(id=>{S.ext[id]=1;delete S.k[id]})}
-  });
+  const c=CRISES3[S.crise3],defDe=l=>c.def[l];
+  const {r,p}=julgar(l=>[...RAMO[l],...RAMO2[l],...RAMO3[l]].filter(id=>E[id].l===l&&vivo(id)),defDe,(l,m)=>(!S.abre2[l]||!m.length)?"fora":l===c.escapa?"escapou":null);
   S.gelo3=r;S.fase="recons";S.en=EN7;S.enMax=EN7;S.res=0;encherPedidos();salvar();
-  const T={fora:"Não chegou a esta era.",escapou:"Passou quase sem sentir.",refugio:"Sobreviveu no refúgio.",extinta:"Extinta. Receitas ligadas a ela fecharam."};
-  const txt=l=>r[l]==="adaptada"?`Salva por ${E[c.def[l]].n}.`:T[r[l]];
-  const h=`<p>${c.intro}</p>`+ORDEM.map(l=>`<div class="vered"><b>${LINHAS[l].n}</b><span>${txt(l)}</span></div>`).join("");
-  modal({ic:c.ic,cor:c.cor,t:c.nome,h,cx:c.cx,b:[{t:"Ver a reconstrução",f:()=>{G.aba="mesa";pintar();if(!alcancaveis().length)finalizar()}}]});
+  cenaCrise({tipo:c.cx,ic:c.ic,cor:c.cor,nome:c.nome,intro:c.intro,lin:linhasVeredito(r,p,defDe,TX),btn:"Ver a reconstrução",cb:()=>{G.aba="mesa";pintar();cenaTitulo("A Reconstrução","O que sobrou ainda pode virar cidade.",()=>{if(!alcancaveis().length)finalizar()})}});
 }
 function escolherFinal(){
   const cc=vivo("cidade"),cj=vivo("cidadejardim"),ca=vivo("cidadeabissal");
@@ -819,12 +875,12 @@ function pintarEvo(){
   const c=custoReserva(),alc=alcancaveis().length;
   const tempo=S.fase==="vida"?", o que atrasa o gelo":S.fase==="especies"||S.fase==="civ"?", o que atrasa a crise":"";
   let h=`<div class="up"><div class="t"><h3>Reserva</h3><button class="pg" data-a="reserva" ${S.vit>=c&&S.res<RES_MAX?"":"disabled"}>${S.res>=RES_MAX?"Esgotada":c+" "+UI.vit}</button></div><p>+${RES_GANHO} de energia${tempo}. Até ${RES_MAX} por era (${S.res} ${S.res===1?"usada":"usadas"}).</p></div>
-  <div class="up"><div class="t"><h3>Intuição</h3><button class="pg" data-a="dica" ${S.vit>=DICA&&alc?"":"disabled"}>${DICA} ${UI.vit}</button></div><p>Mostra na mesa dois elementos que combinam.</p></div>`;
+  <div class="up"><div class="t"><h3>Intuição</h3><button class="pg" data-a="dica" ${(S.vit>=DICA||S.dicaGratis)&&alc?"":"disabled"}>${S.dicaGratis?`Grátis (${S.dicaGratis})`:DICA+" "+UI.vit}</button></div><p>Mostra na mesa dois elementos que combinam.</p></div>`;
   if(S.fase==="vida"||S.fase==="especies"||S.fase==="civ"){
     const cand=S.fase==="vida"?["luz","caca"]:ORDEM.filter(l=>(S.fase==="civ"?S.abre2:S.abre)[l]);
     const ls=cand.filter(l=>!S.guarda[l]&&ramoVivo(l));
     const pr=cand.filter(l=>S.guarda[l]).map(l=>LINHAS[l].n);
-    h+=`<div class="up"><div class="t"><h3>Refúgio</h3><span class="res vit">${REFUGIO} ${UI.vit}</span></div><p>Salva uma linhagem inteira da próxima crise, mesmo sem defesa.${pr.length?` Protegida: ${pr.join(" e ")}.`:""}</p><div class="lns">${ls.length?ls.map(l=>`<button class="pg" data-ref="${l}" ${S.vit>=REFUGIO?"":"disabled"}>${LINHAS[l].n}</button>`).join(""):`<p>Crie um ser de uma linhagem para poder protegê-la.</p>`}</div></div>`;
+    h+=`<div class="up"><div class="t"><h3>Refúgio</h3><span class="res vit">${S.refGratis?`Grátis (${S.refGratis})`:REFUGIO+" "+UI.vit}</span></div><p>Salva uma linhagem inteira da próxima crise, mesmo sem defesa.${pr.length?` Protegida: ${pr.join(" e ")}.`:""}</p><div class="lns">${ls.length?ls.map(l=>`<button class="pg" data-ref="${l}" ${S.vit>=REFUGIO||S.refGratis?"":"disabled"}>${LINHAS[l].n}</button>`).join(""):`<p>Crie um ser de uma linhagem para poder protegê-la.</p>`}</div></div>`;
   }
   return h;
 }
@@ -898,6 +954,86 @@ function pintarFim(){
   tela("fim");
 }
 
+/* ---------- cenas ---------- */
+const HER={
+  energia:{t:"Energia guardada",d:"+3 de energia nesta era",f(){S.en+=3;S.enMax=S.en}},
+  refugio:{t:"Abrigo antigo",d:"Um Refúgio de graça",f(){S.refGratis=(S.refGratis||0)+1}},
+  intuicao:{t:"Memória da vida",d:"Duas Intuições de graça",f(){S.dicaGratis=(S.dicaGratis||0)+2}},
+  visao:{t:"Presságio",d:"Saber agora qual crise vem",f(){S.sinal=Math.max(S.sinal,1)}}
+};
+function gerarOfertas(){
+  const b=["energia","refugio","intuicao"];if(S.fase!=="vida")b.push("visao");
+  const a=[];while(a.length<2){const x=sortear(b);if(!a.includes(x))a.push(x)}
+  return a;
+}
+function escolherHeranca(k){HER[k].f();S.ofertas=null;encherPedidos();G.info=`Herança: ${HER[k].t}.`;salvar();fechaCine();pintar()}
+let pular=null;
+const espera=ms=>new Promise(r=>{pular=r;setTimeout(r,ms)});
+const ci=()=>$("#cine");
+function fechaCine(){const c=ci();c.className="";c.innerHTML="";pular=null}
+const ERAS=["Matéria","Vida","Espécies","Civilização"];
+function tempoEras(i){
+  return `<div class="te" style="--a:${(i-1)/3*100}%;--b:${i/3*100}%"><div class="tl"><i></i></div><div class="tp">${ERAS.map((n,k)=>`<span class="${k<i?"feita":k===i?"nova":""}"><u></u>${n}</span>`).join("")}</div></div>`;
+}
+function galhos(rs){
+  const C={luz:"#86d65a",calor:"#f97316",caca:"#b596ff"},P={luz:[62,44,"M160 118C126 104 96 84 62 44"],calor:[160,26,"M160 118C160 88 160 60 160 26"],caca:[258,44,"M160 118C194 104 224 84 258 44"]};
+  const o=(x,y,r,id,cl,on)=>`<g class="${cl}"><circle cx="${x}" cy="${y}" r="${r}" fill="${on?E[id].t:"#4a4745"}"/><circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#fff1d6" stroke-opacity=".35" stroke-width="1.500"/><svg x="${x-r*.78}" y="${y-r*.78}" width="${r*1.56}" height="${r*1.56}" viewBox="0 0 48 48" ${on?"":'opacity=".3"'}>${ICO[id]}</svg></g>`;
+  return `<svg class="abertura" viewBox="0 0 320 162" aria-hidden="true">${rs.map(r=>`<path class="ramo-a" pathLength="1" d="${P[r.l][2]}" fill="none" stroke="${r.on?C[r.l]:"#5a5654"}" stroke-width="5" stroke-linecap="round" ${r.on?"":'stroke-dasharray="1" style="opacity:.5"'}/>`).join("")}${rs.map((r,k)=>o(P[r.l][0],P[r.l][1],24,r.id,"ponta p"+(k+1),r.on)).join("")}${o(160,122,38,"celula","nucleo",1)}</svg><div class="segue">${rs.map(r=>`<span class="${r.on?"sim":""}">${LINHAS[r.l].n}<small>${r.on?"segue":"ficou para trás"}</small></span>`).join("")}</div>`;
+}
+function ofertasHTML(){return `<h3 class="hert">Escolha uma herança</h3><div class="hers">${S.ofertas.map(k=>`<button class="her" data-her="${k}"><b>${HER[k].t}</b><span>${HER[k].d}</span></button>`).join("")}</div>`}
+async function cenaEra(o){
+  if(G.rapido){escolherHeranca(S.ofertas[0]);return}
+  const c=ci();const cl={1:"vida",2:"especies",3:"civ"}[o.i];
+  $("#app").className=cl;tela("jogo");$("#frost").style.opacity=0;
+  c.className="on era";
+  c.innerHTML=`${tempoEras(o.i)}<div class="gal"></div><h2 class="nomeera"></h2><p class="fraseera"></p><div class="ofe"></div>`;
+  await espera(1200);
+  if(!ci().classList.contains("era"))return;
+  if(o.ramos){$("#cine .gal").innerHTML=galhos(o.ramos);await espera(1500)}
+  if(!ci().classList.contains("era"))return;
+  const n=$("#cine .nomeera");n.textContent=o.nome;n.classList.add("ve");
+  await espera(650);
+  if(!ci().classList.contains("era"))return;
+  const f=$("#cine .fraseera");f.textContent=o.frase;f.classList.add("ve");
+  await espera(700);
+  if(!ci().classList.contains("era"))return;
+  $("#cine .ofe").innerHTML=ofertasHTML();pular=null;
+}
+async function cenaCrise(o){
+  if(G.rapido){o.cb();return}
+  const c=ci();
+  c.className="on crisec "+o.tipo;G.cenaCb=o.cb;
+  c.innerHTML=`<div class="fx">${o.tipo==="seca"?'<svg viewBox="0 0 390 844" preserveAspectRatio="none"><path pathLength="1" d="M195 0 170 150l60 90-50 130 40 100-60 150 30 224M170 150 40 230-10 300M230 240l130-40 40 30M180 370 60 430 0 540M220 470l120 60 60-10M160 620 60 700 20 844M190 620l110 90 40 134"/></svg>':""}</div><div class="cen"><span class="orbe" style="--tinta:${o.cor}">${svgI(o.ic)}</span><h2>${o.nome}</h2><p>${o.intro}</p><div class="ved"></div><div class="sal"></div><div class="fim2"></div></div>`;
+  await espera(2000);
+  c.classList.add("julga");
+  const v=$("#cine .ved");let perdas=0;
+  const ST2={extinta:"Extinta",adaptada:"Salva",refugio:"Salva",abrigada:"Salva",escapou:"Escapou"};
+  for(const x of o.lin){
+    const d=document.createElement("div");d.className="vl";
+    d.innerHTML=`<div class="vt"><b>${LINHAS[x.l].n}</b><i>...</i></div><span class="vd"></span><div class="cai"></div>`;
+    v.appendChild(d);
+    await espera(ST2[x.st]?700:250);
+    const m=ST2[x.st]||"Fora";
+    d.classList.add(x.st==="extinta"?"morta":ST2[x.st]?"viva":"ausente");
+    d.querySelector("i").textContent=m;d.querySelector(".vd").textContent=x.txt;
+    if(x.st==="extinta"){
+      perdas+=x.ids.length;
+      d.querySelector(".cai").innerHTML=x.ids.slice(0,10).map((id,k)=>`<span class="mini" style="--d:${k*60}ms">${orbe(id)}</span>`).join("");
+      if(navigator.vibrate)try{navigator.vibrate([50,40,90])}catch(e){}
+      await espera(1000);
+    }else await espera(ST2[x.st]?450:120);
+  }
+  $("#cine .sal").textContent=perdas?`${perdas} ${perdas>1?"elementos perdidos":"elemento perdido"}`:"Nenhuma perda nesta crise";
+  await espera(350);
+  $("#cine .fim2").innerHTML=`<button class="btn" data-cena="1">${o.btn}</button>`;pular=null;
+}
+async function cenaTitulo(n,sub,cb){
+  if(G.rapido){cb();return}
+  const c=ci();c.className="on titulo";c.innerHTML=`<h2>${n}</h2><p>${sub}</p>`;
+  await espera(1700);
+  fechaCine();cb();
+}
+
 /* ---------- toques ---------- */
 function tocarEl(id){
   if(G.trava)return;
@@ -946,6 +1082,11 @@ function detalheEnc(id){
   modal({ic:id,el:1,t:x.n,h:`<p class="rec">${mini(x.r[0])} ${E[x.r[0]].n} + ${mini(x.r[1])} ${E[x.r[1]].n}</p><p>${x.f}</p><p class="etq">${et}</p>`,b:[{t:"Fechar",f:()=>{}}]});
 }
 document.addEventListener("click",ev=>{
+  const he=ev.target.closest("[data-her]");
+  if(he)return escolherHeranca(he.dataset.her);
+  const ce=ev.target.closest("[data-cena]");
+  if(ce){const cb=G.cenaCb;fechaCine();return cb()}
+  if(ev.target.closest("#cine")){if(pular){const f=pular;pular=null;f()}return}
   const m=ev.target.closest("[data-m]");
   if(m){const b=$("#modal")._b[+m.dataset.m];fechaModal();b.f();return}
   const t=ev.target.closest("[data-el],[data-aba],[data-a],[data-ref],[data-enc],[data-enca],#sa,#sb");
@@ -959,7 +1100,7 @@ document.addEventListener("click",ev=>{
   if(d.ref)return comprarRefugio(d.ref);
   switch(d.a){
     case "nova":return novaPartida();
-    case "continuar":S=carregar();G.aba="mesa";if(S)encherPedidos();pintar();if(S&&S.en<=0&&S.fase!=="fim")zero();return;
+    case "continuar":S=carregar();G.aba="mesa";if(S)encherPedidos();pintar();if(S&&S.ofertas){const c=ci();c.className="on era so";c.innerHTML=ofertasHTML();return}if(S&&S.en<=0&&S.fase!=="fim")zero();return;
     case "como":return comoJogar();
     case "enc":return abrirEnc("capa");
     case "encvolta":return G.encVolta==="capa"?pintarCapa():pintar();
@@ -973,7 +1114,7 @@ document.addEventListener("click",ev=>{
     case "menu":return modal({ic:"planeta",t:"Gênese",h:"",b:[{t:"Voltar ao jogo",f:()=>{}},{t:"Como jogar",c:"vazado",f:comoJogar},{t:"Enciclopédia",c:"vazado",f:()=>abrirEnc("jogo")},{t:"Recomeçar partida",c:"vazado",f:novaPartida},{t:"Sair para a capa",c:"vazado",f:()=>{S=null;pintarCapa()}}]});
   }
 });
-window.__G={get S(){return S},G,E,ICO,RECEITA,chave,combinar,alcancaveis,novaPartida,pintar,FINAIS,CRISES,seguirZero,finalizar};
+window.__G={get S(){return S},G,HER,crise,crise2,crise3,abrirEspecies,E,ICO,RECEITA,chave,combinar,alcancaveis,novaPartida,pintar,FINAIS,CRISES,seguirZero,finalizar};
 pintarCapa();
 </script>
 </body>
