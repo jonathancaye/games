@@ -425,12 +425,12 @@ const RAMO3={luz:["colmeia","mel","propolis","cidadejardim"],calor:["sinal","rec
 const TOPO2={luz:"fruta",calor:"lula",caca:"primata"};
 const ORDEM=["luz","calor","caca"];
 const CRISES={
-  seca:{nome:"A Grande Seca",curto:"Seca",ic:"seca",cor:"#a8742c",cx:"seca",def:{luz:"semente",caca:"casca"},escapa:"calor",abre:"Os rios estão sumindo.",aviso:"Quem vive da chuva e dos rios precisa guardar água para depois.",aviso2:"Sementes e ovos atravessam a seca. O fundo do mar nem vai sentir.",intro:"Os rios secaram, e o verde virou pó.",fuga:"No fundo do mar, a seca nem foi notada."},
-  meteoro:{nome:"O Meteoro",curto:"Meteoro",ic:"meteoro",cor:"#5a1f1f",cx:"meteoro",def:{caca:"toca",calor:"concha"},escapa:"luz",abre:"Um ponto novo brilha no céu, cada noite maior.",aviso:"O impacto vai queimar a terra e azedar o mar. Quem vive neles precisa de abrigo.",aviso2:"Tocas salvam os bichos da terra, e conchas protegem o fundo. As plantas brotam de novo.",intro:"O céu escureceu, a terra queimou e o mar azedou.",fuga:"As plantas voltaram a brotar das cinzas."}
+  seca:{nome:"A Grande Seca",curto:"Seca",ic:"seca",cor:"#a8742c",cx:"seca",def:{luz:"semente",caca:"casca"},escapa:"calor",abre:"Os rios estão sumindo.",aviso:"Quem vive da chuva e dos rios precisa guardar água para depois.",dica:{luz:"Quem vive da chuva precisa guardar o futuro debaixo da terra.",caca:"Os bichos da terra precisam de ovos que aguentem a falta de água."},intro:"Os rios secaram, e o verde virou pó.",fuga:"No fundo do mar, a seca nem foi notada."},
+  meteoro:{nome:"O Meteoro",curto:"Meteoro",ic:"meteoro",cor:"#5a1f1f",cx:"meteoro",def:{caca:"toca",calor:"concha"},escapa:"luz",abre:"Um ponto novo brilha no céu, cada noite maior.",aviso:"O impacto vai queimar a terra e azedar o mar. Quem vive neles precisa de abrigo.",dica:{caca:"Os bichos da terra precisam de abrigo debaixo do chão.",calor:"Quem vive no fundo precisa de uma armadura contra o mar ácido."},intro:"O céu escureceu, a terra queimou e o mar azedou.",fuga:"As plantas voltaram a brotar das cinzas."}
 };
 const CRISES3={
-  peste:{nome:"A Grande Peste",curto:"Peste",ic:"peste",cor:"#3f6a46",cx:"peste",def:{caca:"remedio",luz:"propolis"},escapa:"calor",abre:"Uma tosse estranha se espalha de casa em casa.",aviso:"Onde muitos vivem juntos, a doença corre depressa.",aviso2:"Remédio protege as vilas, e própolis protege as colmeias. O fundo do mar fica longe de tudo.",intro:"A doença correu pelas ruas e pelas colmeias.",fuga:"No fundo do mar, a peste nunca chegou."},
-  fome:{nome:"A Grande Fome",curto:"Fome",ic:"fome",cor:"#8a6a2c",cx:"fome",def:{caca:"celeiro",calor:"viveiro"},escapa:"luz",abre:"Os estoques estão baixando, e as colheitas falham.",aviso:"Quem depende de comida guardada vai sofrer primeiro.",aviso2:"Celeiros salvam a terra, e viveiros salvam o mar. A Colmeia ainda tem flores.",intro:"Faltou comida por muitos anos seguidos.",fuga:"As flores seguiram alimentando a Colmeia."}
+  peste:{nome:"A Grande Peste",curto:"Peste",ic:"peste",cor:"#3f6a46",cx:"peste",def:{caca:"remedio",luz:"propolis"},escapa:"calor",abre:"Uma tosse estranha se espalha de casa em casa.",aviso:"Onde muitos vivem juntos, a doença corre depressa.",dica:{caca:"As vilas precisam aprender a cuidar dos doentes.",luz:"As colmeias precisam vedar a casa contra a doença."},intro:"A doença correu pelas ruas e pelas colmeias.",fuga:"No fundo do mar, a peste nunca chegou."},
+  fome:{nome:"A Grande Fome",curto:"Fome",ic:"fome",cor:"#8a6a2c",cx:"fome",def:{caca:"celeiro",calor:"viveiro"},escapa:"luz",abre:"Os estoques estão baixando, e as colheitas falham.",aviso:"Quem depende de comida guardada vai sofrer primeiro.",dica:{caca:"Quem planta precisa guardar comida para os anos ruins.",calor:"Quem vive no fundo precisa criar o próprio alimento."},intro:"Faltou comida por muitos anos seguidos.",fuga:"As flores seguiram alimentando a Colmeia."}
 };
 const TOTAL=Object.values(E).filter(x=>x.r).length;
 const chave=(a,b)=>[a,b].sort().join("+");
@@ -438,6 +438,7 @@ const RECEITA={};Object.keys(E).forEach(id=>{const x=E[id];if(x.r)RECEITA[chave(
 const nivel=id=>{const x=E[id];return x.r?1+Math.max(...x.r.map(nivel)):0};
 Object.keys(E).forEach(id=>E[id].nv=nivel(id));
 
+const DICA_GELO={luz:"O gelo avança sobre o mar. Quem vive da luz vai ficar no escuro.",caca:"Quem vive solto no mar precisa de um jeito de dormir até o frio passar."};
 const EN1=38,EN2=12,EN3=7,EN4=11,EN5=4,EN6=11,EN7=4,RES_MAX=2,RES_GANHO=4,DICA=5,REFUGIO=12,PREM_PISTA=1,PREM_INT=2,AJUDA_ERROS=3;
 const SINAIS=[[9,"Os polos estão mais brancos a cada ano."],[6,"O gelo avança sobre o mar. Quem vive da luz vai ficar no escuro."],[3,"Quem vive solto no mar precisa de um jeito de dormir até o frio passar."]];
 const FINAIS={
@@ -516,7 +517,7 @@ function encherPedidos(){
 }
 function sinaisDaFase(){
   if(S.fase==="vida")return SINAIS;
-  if(S.fase==="especies"||S.fase==="civ"){const c=criseAtual(),e=S.fase==="civ";return [[e?EN6:EN4,e?"Há algo errado no ar. Ainda não dá para saber o que vem.":"O clima está mudando. Ainda não dá para saber o que vem."],[6,c.aviso],[3,c.aviso2]]}
+  if(S.fase==="especies"||S.fase==="civ"){const c=criseAtual(),e=S.fase==="civ";return [[e?EN6:EN4,e?"Há algo errado no ar. Ainda não dá para saber o que vem.":"O clima está mudando. Ainda não dá para saber o que vem."],[6,c.aviso],[3,c.aviso]]}
   return [];
 }
 function gastar(){S.en=Math.max(0,S.en-1);atualizaSinal()}
@@ -752,6 +753,16 @@ function pintar(){
   $("#jogo").innerHTML=topo+corpo+abas;
   const n=document.querySelector(".mesa,.painel");if(n)n.scrollTop=y;
 }
+function textoSinal(si){
+  if(S.sinal<0)return "O ar está esfriando. Proteja o que você criar.";
+  if(S.sinal===0||(S.fase!=="vida"&&!revelada()))return si[0][1];
+  const f=S.fase,st=f==="vida"?stVida:f==="especies"?stEsp:stCiv;
+  const pend=ORDEM.filter(l=>st(l)[1]==="mal");
+  if(!pend.length)return "Nenhuma linhagem em perigo agora. Use o tempo para avançar.";
+  const d=f==="vida"?DICA_GELO:criseAtual().dica;
+  if(f==="vida")return d[pend[Math.min(S.sinal-1,pend.length-1)]];
+  return S.sinal>=2||pend.length===1?d[pend[0]]:criseAtual().aviso;
+}
 function selo(l){
   const f=S.fase,[t,c]=f==="vida"?stVida(l):f==="especies"?stEsp(l):stCiv(l),n=LINHAS[l].n;
   if(c==="ok")return `<span class="selo ok">${UI.escudo}${n} salva</span>`;
@@ -779,7 +790,7 @@ function pintarStatus(){
   }
   if(S.fase==="vida"||S.fase==="especies"||S.fase==="civ"){
     const si=sinaisDaFase();
-    const s=S.sinal>=0?si[S.sinal][1]:"O ar está esfriando. Proteja o que você criar.";
+    const s=textoSinal(si);
     return `<div class="status">${barraCrise()}<div class="sinal">${s}</div></div>`;
   }
   if(S.fase==="degelo")return `<div class="status lin"><b>${algumTopo()?"Mais topos abrem mais caminhos.":"Leve uma linhagem até o topo para seguir."}</b><button class="enc" data-a="encerrar">Encerrar era</button></div>`;
