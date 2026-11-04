@@ -16,30 +16,41 @@
   --titulo:"Fraunces",Georgia,serif;--corpo:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 #app.vida{--fundo:#06303a;--fundo2:#0b4d4e}
 #app.degelo{--fundo:#0d3a48;--fundo2:#1f6a62}
+#app.especies{--fundo:#1b2a18;--fundo2:#46531f}
+#app.recup{--fundo:#2a2138;--fundo2:#6a3d4e}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;overflow:hidden;background:#190b12;font-family:var(--corpo);color:var(--papel);touch-action:manipulation;-webkit-user-select:none;user-select:none}
 button{font-family:inherit;color:inherit;border:0;background:none;cursor:pointer}
 button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offset:2px}
 #app{position:relative;max-width:480px;height:100vh;height:100dvh;margin:0 auto;overflow:hidden;background:radial-gradient(120% 70% at 50% 18%,var(--fundo2),var(--fundo) 72%);display:flex;flex-direction:column}
 #frost{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:0;transition:opacity .6s;box-shadow:inset 0 0 70px 26px rgba(205,236,247,.9),inset 0 0 8px 3px #fff}
+#frost.seca{box-shadow:inset 0 0 74px 28px rgba(226,170,92,.85)}
+#frost.meteoro{box-shadow:inset 0 0 74px 28px rgba(232,74,34,.72)}
 .tela{position:absolute;inset:0;display:none;flex-direction:column}
 .tela.on{display:flex}
 
 /* capa */
-#capa{align-items:center;justify-content:center;padding:24px;text-align:center}
+#capa{align-items:center;justify-content:center;padding:calc(44px + env(safe-area-inset-top)) 24px calc(16px + env(safe-area-inset-bottom));text-align:center;background:radial-gradient(90% 46% at 50% 100%,rgba(249,115,22,.34),transparent 72%),radial-gradient(100% 50% at 50% 26%,rgba(20,184,166,.3),transparent 74%)}
 #capa .voltar{position:absolute;top:calc(14px + env(safe-area-inset-top));left:16px;color:var(--suave);text-decoration:none;font-size:14px;font-weight:600}
-.fusao{position:relative;width:190px;height:120px;margin-bottom:6px}
-.fusao i{position:absolute;top:30px;width:60px;height:60px;border-radius:50%;mix-blend-mode:screen}
-.fusao .a{left:12px;background:radial-gradient(circle at 35% 30%,#ffd58a,var(--magma) 60%,#7a2505);animation:fa 2.6s cubic-bezier(.6,0,.3,1) .3s both}
-.fusao .b{right:12px;background:radial-gradient(circle at 35% 30%,#c6fff3,var(--mar) 60%,#064a50);animation:fb 2.6s cubic-bezier(.6,0,.3,1) .3s both}
-.fusao .c{left:50%;top:50%;width:92px;height:92px;margin:-46px 0 0 -46px;opacity:0;mix-blend-mode:normal;background:radial-gradient(circle at 38% 32%,#fff7dd,#a7e7a0 42%,#2a9a7c 72%,#0b4d4e);box-shadow:0 0 44px rgba(140,240,190,.45);animation:fc 2.6s ease .3s both}
-@keyframes fa{to{transform:translateX(53px)}}
-@keyframes fb{to{transform:translateX(-53px)}}
-@keyframes fc{0%,62%{opacity:0;transform:scale(.5)}82%{opacity:1;transform:scale(1.1)}100%{opacity:1;transform:none}}
-#capa h1{font-family:var(--titulo);font-weight:800;font-size:clamp(64px,21vw,92px);letter-spacing:-.03em;line-height:1;margin:0}
-#capa p{max-width:30ch;margin:10px 0 0;font-size:17px;line-height:1.45;color:var(--papel)}
-#capa .acoes{display:flex;flex-direction:column;gap:10px;width:min(280px,100%);margin-top:26px}
-#capa small{display:block;margin-top:18px;color:var(--suave);font-size:13.5px}
+.abertura{width:min(330px,88vw);height:auto;max-height:36vh;margin-bottom:2px;overflow:visible}
+.abertura .sobe,.abertura .ponta,.abertura .nucleo,.abertura .ramo-a{transform-box:fill-box;transform-origin:center}
+.abertura .fa{animation:fa 1.1s cubic-bezier(.6,0,.3,1) .25s both}
+.abertura .fb{animation:fb 1.1s cubic-bezier(.6,0,.3,1) .25s both}
+.abertura .nucleo{animation:brota .6s cubic-bezier(.2,1.5,.4,1) 1.15s both}
+.abertura .ramo-a{stroke-dasharray:1;stroke-dashoffset:1;animation:cresce 1.1s ease-out 1.55s forwards}
+.abertura .ponta{animation:brota .5s cubic-bezier(.2,1.5,.4,1) both}
+.abertura .p1{animation-delay:2.35s}.abertura .p2{animation-delay:2.5s}.abertura .p3{animation-delay:2.65s}
+@keyframes fa{to{transform:translate(95px,-44px) scale(.5);opacity:0}}
+@keyframes fb{to{transform:translate(-95px,-44px) scale(.5);opacity:0}}
+@keyframes brota{from{transform:scale(0);opacity:0}to{transform:none;opacity:1}}
+@keyframes cresce{to{stroke-dashoffset:0}}
+#capa h1{font-family:var(--titulo);font-weight:800;font-size:clamp(62px,20vw,88px);letter-spacing:-.035em;line-height:1;margin:0}
+#capa .chamada{max-width:30ch;margin:8px 0 0;font-size:17px;line-height:1.42}
+#capa .acoes{display:flex;flex-direction:column;gap:9px;width:min(280px,100%);margin-top:20px}
+#capa .fins{display:block;margin-top:12px;color:var(--suave);font-size:13.5px}
+.credito{margin:0;font-family:var(--titulo);font-style:italic;font-size:15px;line-height:1.4;color:var(--papel)}
+#capa .credito{position:absolute;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom));padding:0 16px}
+@media (max-height:700px){#capa{justify-content:flex-start}.abertura{max-height:27vh}#capa h1{font-size:56px}#capa .chamada{font-size:15.5px}#capa .acoes{margin-top:12px}#capa .credito{font-size:13.5px}}
 .btn{display:block;width:100%;padding:14px 16px;border-radius:999px;font-weight:800;font-size:16px;background:var(--mar);color:#04262a;text-align:center;text-decoration:none}
 .btn.fogo{background:var(--magma);color:#2b1000}
 .btn.vazado{background:transparent;box-shadow:inset 0 0 0 1.5px var(--fio);color:var(--papel)}
@@ -47,12 +58,12 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 
 /* topo */
 .hud{display:flex;align-items:center;gap:8px;padding:10px 12px 6px;padding-top:calc(10px + env(safe-area-inset-top))}
-.hud .menu{width:36px;height:36px;font-size:20px;border-radius:50%}
+.hud .menu{width:36px;height:36px;font-size:22px;border-radius:50%;display:grid;place-items:center}
 .hud h2{flex:1;margin:0;font-family:var(--titulo);font-weight:500;font-size:20px;min-width:0;white-space:nowrap}
 .res{display:flex;align-items:center;gap:4px;padding:5px 11px;border-radius:999px;background:var(--vidro);font-weight:800;font-size:15.5px;font-variant-numeric:tabular-nums}
 .res.baixo{background:rgba(249,115,22,.3)}
-.res .i{font-size:13px}
-.res.vit .i{color:var(--luz)}
+.res .ui{color:#ffd27a;font-size:14px}
+.res.vit .ui,.val .ui{color:var(--luz)}
 .status{padding:0 14px;min-height:44px}
 .status b{font-size:14.5px;font-weight:700}
 .status .barra{height:5px;border-radius:9px;background:var(--vidro);margin-top:6px;overflow:hidden}
@@ -64,12 +75,13 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 
 /* forja */
 .forja{position:relative;height:104px;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:16px;flex:none}
-.slot{width:66px;height:66px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--fio);display:grid;place-items:center;font-size:32px;transition:transform .34s cubic-bezier(.6,0,.4,1),opacity .2s .24s;background:var(--vidro)}
-.slot.vazio{font-size:0}
-.crisol{width:94px;height:94px;border-radius:50%;display:grid;place-items:center;font-size:46px;box-shadow:inset 0 0 0 2px var(--fio);background:radial-gradient(circle at 50% 42%,rgba(255,235,200,.12),transparent 70%);position:relative;z-index:1}
+.slot{width:66px;height:66px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--fio);display:grid;place-items:center;transition:transform .34s cubic-bezier(.6,0,.4,1),opacity .2s .24s;background:var(--vidro)}
+.slot .orbe{width:100%;height:100%}
+.crisol{width:94px;height:94px;border-radius:50%;display:grid;place-items:center;box-shadow:inset 0 0 0 2px var(--fio);background:radial-gradient(circle at 50% 42%,rgba(255,235,200,.12),transparent 70%);position:relative;z-index:1}
 .crisol.novo{animation:pop .5s cubic-bezier(.2,1.5,.4,1);box-shadow:inset 0 0 0 2px var(--papel),0 0 40px rgba(255,235,190,.5)}
 .crisol.nada{animation:treme .32s}
-.crisol .x{font-size:24px;color:var(--suave)}
+.crisol .orbe{width:84%;height:84%}
+.crisol .x{width:30px;height:30px;color:var(--suave)}
 .forja.funde #sa{transform:translateX(86px) scale(.6);opacity:0}
 .forja.funde #sb{transform:translateX(-86px) scale(.6);opacity:0}
 @keyframes pop{from{transform:scale(.4)}to{transform:none}}
@@ -91,7 +103,11 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 /* elementos */
 .mesa{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:2px 10px 8px;display:grid;grid-template-columns:repeat(5,1fr);gap:6px 2px;align-content:start}
 .el{display:flex;flex-direction:column;align-items:center;gap:3px;padding:2px 0;position:relative;min-width:0}
-.orbe{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;font-size:26px;background:radial-gradient(circle at 36% 30%,rgba(255,255,255,.3),var(--tinta,#a98) 60%,rgba(0,0,0,.35));box-shadow:0 2px 6px rgba(0,0,0,.28)}
+.orbe{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 36% 28%,color-mix(in srgb,var(--tinta,#a98) 72%,#fff) 0,var(--tinta,#a98) 52%,color-mix(in srgb,var(--tinta,#a98) 62%,#000) 100%);box-shadow:inset 0 0 0 1.5px rgba(255,245,225,.26),0 2px 6px rgba(0,0,0,.3)}
+.orbe svg{width:78%;height:78%;display:block;overflow:visible}
+.mini{display:inline-grid;vertical-align:-4px;margin:0 1px}
+.mini .orbe{width:19px;height:19px;box-shadow:none}
+.ui{width:1em;height:1em;display:inline-block;vertical-align:-.13em}
 .el span.nm{font-size:12px;line-height:1.1;font-weight:600;text-align:center;max-width:100%}
 .el .q{position:absolute;top:0;right:6px;min-width:19px;padding:1px 4px;border-radius:999px;background:var(--papel);color:#2b1420;font-size:11.5px;font-weight:800;line-height:1.35}
 .el.gasto .orbe{opacity:.42}
@@ -120,42 +136,50 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 /* árvore */
 .tronco{display:grid;grid-template-columns:repeat(5,1fr);gap:8px 2px;margin-bottom:6px}
 .no{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;text-align:center}
-.no .orbe{width:38px;height:38px;font-size:19px}
+.no .orbe{width:40px;height:40px}
 .no .nm{font-size:11.5px;font-weight:600;line-height:1.1;max-width:100%}
-.no .rc{font-size:10.5px;line-height:1.1;opacity:.85}
+.no .rc{display:flex;align-items:center;justify-content:center;gap:1px;font-size:10.5px;line-height:1;opacity:.92;margin-top:1px}
+.no .rc .mini .orbe{width:15px;height:15px}
 .no.oculto .orbe{background:var(--vidro);box-shadow:inset 0 0 0 1px var(--fio);color:var(--suave);font-size:15px;font-weight:800}
 .no.morto .orbe{background:#55524f;filter:grayscale(1);opacity:.7}
 .no.morto .nm{color:var(--suave);text-decoration:line-through}
 .nocel{margin:8px auto 10px;width:90px}
-.nocel .orbe{width:52px;height:52px;font-size:26px}
+.nocel .orbe{width:54px;height:54px}
 .ramos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .ramo{display:flex;flex-direction:column;gap:9px;border-top:3px solid var(--cor);padding-top:7px;align-items:center;min-width:0}
 .ramo.extinta{--cor:var(--cinza)!important}
 .ramo h4{margin:0;font-size:14px;font-weight:800;text-align:center}
 .ramo h4 small{display:block;font-size:11.5px;font-weight:600;color:var(--suave);margin-top:1px}
+.secao{margin:18px 0 8px;font-family:var(--titulo);font-weight:500;font-size:19px;text-align:center}
 
 /* fim */
 #fim .painel{padding-top:calc(22px + env(safe-area-inset-top))}
 #fim h1{font-family:var(--titulo);font-weight:800;font-size:40px;line-height:1.02;letter-spacing:-.02em;margin:0}
 #fim .cron{font-family:var(--titulo);font-size:18.5px;line-height:1.5;margin:14px 0 6px}
 #fim .cron p{margin:0 0 9px}
-#fim .num{color:var(--suave);font-size:14.5px;margin:8px 0 16px}
+#fim .num{color:var(--suave);font-size:14.5px;margin:8px 0 6px}
+#fim .credito{margin-bottom:16px}
 #fim .acoes{display:flex;gap:8px;padding:10px 14px calc(12px + env(safe-area-inset-bottom));flex:none}
 
 /* modal */
 #modal{position:absolute;inset:0;z-index:10;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(10,6,10,.62)}
 #modal.on{display:flex}
 .caixa{width:100%;max-height:92%;overflow-y:auto;border-radius:20px;padding:20px 18px;background:var(--fundo);box-shadow:0 0 0 1px var(--fio),0 18px 50px rgba(0,0,0,.5)}
-.caixa .ic{font-size:44px;line-height:1;text-align:center}
+.caixa .ic{display:grid;place-items:center}
+.caixa .ic .orbe{width:76px;height:76px}
 .caixa h3{margin:8px 0 6px;font-family:var(--titulo);font-weight:800;font-size:27px;line-height:1.1;text-align:center}
 .caixa p{margin:0 0 10px;font-size:15.5px;line-height:1.42}
 .caixa .acoes{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 .caixa.gelo{background:#dcf1f8;color:#0b3440}
 .caixa.gelo .btn{background:#0b3440;color:#eaf8fc}
-.vered{display:flex;gap:10px;align-items:baseline;padding:7px 0;border-top:1px solid rgba(11,52,64,.2);font-size:15px;line-height:1.3}
+.caixa.seca{background:#f1dcae;color:#3f2a10}
+.caixa.seca .btn{background:#3f2a10;color:#fbeed0}
+.caixa.meteoro{background:#2b1012;color:#ffe9d6}
+.caixa.meteoro .btn{background:#f06a2c;color:#2b1000}
+.vered{display:flex;gap:10px;align-items:baseline;padding:7px 0;border-top:1px solid color-mix(in srgb,currentColor 22%,transparent);font-size:15px;line-height:1.3}
 .vered b{flex:none;width:58px}
-@media (max-height:700px){.forja{height:84px}.slot{width:54px;height:54px;font-size:26px}.crisol{width:76px;height:76px;font-size:36px}.ped{min-height:72px}.info{min-height:36px;font-size:13.5px}}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.fusao .a{transform:translateX(53px)}.fusao .b{transform:translateX(-53px)}.fusao .c{opacity:1}}
+@media (max-height:700px){.forja{height:84px}.slot{width:54px;height:54px}.crisol{width:76px;height:76px}.ped{min-height:72px}.info{min-height:36px;font-size:13.5px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.abertura .fa,.abertura .fb{opacity:0}.abertura .ramo-a{stroke-dashoffset:0}}
 </style>
 </head>
 <body>
@@ -168,62 +192,155 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 </div>
 <script>
 "use strict";
+/* ---------- ícones (desenhados à mão em grade de 48) ---------- */
+const CR="#fff1d6",ES="#2b1420",LI='fill="none" stroke-linecap="round" stroke-linejoin="round"';
+const NUVEM=(f,y)=>`<path fill="${f}" transform="translate(0 ${y||0})" d="M13 31a8 8 0 0 1-1-16 11 11 0 0 1 21-2 9 9 0 0 1 3 18z"/>`;
+const ICO={
+  fogo:`<path fill="#ffc35c" d="M25 3c2 9 14 14 14 27a15 15 0 0 1-30 0c0-7 4-12 6-16 1 3 2 5 4 6 2-6 3-11 6-17z"/><path fill="${CR}" d="M24 21c1 5 8 8 8 14a8 8 0 0 1-16 0c0-4 3-6 4-9 1 1 2 2 3 2 1-2 1-4 1-7z"/>`,
+  agua:`<path fill="#dff6ff" d="M24 3c7 11 14 17 14 27a14 14 0 0 1-28 0c0-10 7-16 14-27z"/><path ${LI} stroke="#2f8fb8" stroke-width="3" d="M17 31c0 4 3 7 7 8"/>`,
+  terra:`<path fill="#d9bd8f" d="M2 41 19 10l10 16 5-7 12 22z"/><path fill="#a98257" d="M19 10l10 16-6 15H2z" opacity=".55"/><path fill="${CR}" d="M19 10l-6 11 4-2 2 3 3-2 2 1z"/><path fill="${CR}" d="m34 19-3 5 3-1 2 2 1-1z"/>`,
+  ar:`<g ${LI} stroke="${CR}" stroke-width="4"><path d="M5 18h24a6 6 0 1 0-6-6"/><path d="M4 27h34a5.500 5.500 0 1 1-5 8"/><path d="M9 36h15a4 4 0 1 1-4 5"/></g>`,
+  sol:`<circle cx="24" cy="24" r="10" fill="${CR}"/><g ${LI} stroke="#fff1d6" stroke-width="4"><path d="M24 4v5M24 39v5M4 24h5M39 24h5M10 10l3.500 3.500M34.500 34.500 38 38M10 38l3.500-3.500M34.500 13.500 38 10"/></g>`,
+  vapor:`<g ${LI} stroke="${CR}" stroke-width="4"><path d="M13 42c-6-7 6-12 0-20-3-4-2-8 1-12"/><path d="M24 44c-6-8 6-14 0-23-3-5-2-11 1-16"/><path d="M35 42c-6-7 6-12 0-20-3-4-2-8 1-12"/></g>`,
+  lava:`<path fill="#3a2024" d="M3 43 17 15h14l14 28z"/><path fill="#ffc35c" d="M18 15h12l-3 8 4 7-5-3-1 16h-6l2-15-5 3 4-8z"/><path fill="${CR}" d="M20 15c-2-4 0-8 4-10 0 3 5 5 4 10z"/>`,
+  lama:`<path fill="#3f2a1c" d="M3 39c0-9 8-10 11-15 3-5 8-8 12-5 4 3 4 7 9 9 5 2 10 5 10 11 0 3-2 4-5 4H8c-3 0-5-1-5-4z"/><path fill="${CR}" opacity=".85" d="M22 22c3-3 7-1 7 2-2-1-4-1-7-2z"/><circle cx="35" cy="17" r="3" fill="none" stroke="#fff1d6" stroke-width="2"/><circle cx="41" cy="10" r="2" fill="none" stroke="#fff1d6" stroke-width="2"/>`,
+  poeira:`<path ${LI} stroke="${CR}" stroke-width="3.500" d="M4 32c10-8 20 4 40-9"/><g fill="${CR}"><circle cx="11" cy="18" r="3"/><circle cx="22" cy="12" r="2.200"/><circle cx="32" cy="15" r="3.200"/><circle cx="40" cy="9" r="2"/><circle cx="16" cy="25" r="1.800"/><circle cx="29" cy="24" r="2"/><circle cx="12" cy="40" r="2.200"/><circle cx="25" cy="38" r="3"/><circle cx="38" cy="36" r="2.200"/></g>`,
+  nuvem:NUVEM(CR,3),
+  chuva:`${NUVEM(CR,-4)}<g ${LI} stroke="#d8f0ff" stroke-width="3.500"><path d="m16 32-3 9M26 32l-3 9M36 32l-3 9"/></g>`,
+  raio:`${NUVEM("#e6def5",-5)}<path fill="#ffd96b" d="M27 19 15 34h8l-4 12 14-17h-9z"/>`,
+  rocha:`<path fill="#d7d2c8" d="M6 34 11 15l15-9 14 8 5 19-11 9H15z"/><path fill="#a9a398" d="m26 6 2 14 17 13-11 9-6-22-17-5z" opacity=".6"/><path fill="#fff" opacity=".55" d="m11 15 15-9 2 14-6 3z"/>`,
+  oceano:`<path fill="${CR}" d="M2 25c6-12 14-13 19-8-5 0-7 3-6 6 4-3 10-2 13 2 4-3 12-3 18 1v5H2z"/><g ${LI} stroke="${CR}" stroke-width="4"><path d="M3 37c5-4 9-4 14 0s9 4 14 0 9-4 14 0"/></g>`,
+  fonte:`<path fill="#3a2024" d="M9 45 18 18h12l9 27z"/><path fill="#ffc35c" d="M21 18h6l1 9-4 3-4-3z"/><path ${LI} stroke="${CR}" stroke-width="4" d="M24 14c-5-4 5-6 0-11"/><path ${LI} stroke="${CR}" stroke-width="3" d="M14 14c-3-3 3-5 0-8M34 14c-3-3 3-5 0-8"/>`,
+  argila:`<path fill="${CR}" d="M18 5h12v3l-3 2v3c9 4 12 11 9 20-2 5-5 9-8 10H20c-3-1-6-5-8-10-3-9 0-16 9-20v-3l-3-2z"/><g ${LI} stroke="#a85d33" stroke-width="2.600"><path d="M13 25c7 3 15 3 22 0M15 33c6 2 12 2 18 0"/></g>`,
+  sopa:`<path fill="#3a2a24" d="M4 22h40c0 13-6 21-14 22H18C10 43 4 35 4 22z"/><path fill="#c9db6b" d="M6 22h36v3c-5 3-8-1-12 1s-8 3-12 1-8 2-12-2z"/><g fill="#d9ea80"><circle cx="16" cy="13" r="4"/><circle cx="29" cy="9" r="3"/><circle cx="35" cy="16" r="2.400"/></g><circle cx="16" cy="13" r="1.400" fill="#fff"/>`,
+  rna:`<g ${LI}><path stroke="${CR}" stroke-width="4" d="M31 3c-13 9 3 18-10 27-3 2-5 5-5 15"/><g stroke="#ffc35c" stroke-width="3"><path d="M26 9h13M21 17h11M24 24h11"/></g><g stroke="#9ff0d8" stroke-width="3"><path d="M14 13h-5M19 30h13M16 38h12"/></g></g>`,
+  membrana:`<circle cx="24" cy="24" r="19" fill="#d8f6f4" opacity=".2"/><circle cx="24" cy="24" r="19" fill="none" stroke="${CR}" stroke-width="3.500"/><circle cx="24" cy="24" r="13.500" fill="none" stroke="${CR}" stroke-width="1.800" stroke-dasharray="1.500 3.500" stroke-linecap="round"/><path ${LI} stroke="#fff" stroke-width="3" d="M12 18c2-4 5-6 9-7"/>`,
+  celula:`<circle cx="24" cy="24" r="20" fill="${CR}"/><circle cx="24" cy="24" r="16" fill="#9fe6c5"/><circle cx="27" cy="26" r="7.500" fill="#2a8a70"/><circle cx="25" cy="24" r="2.400" fill="#c9fbe5"/><g fill="#2a8a70"><ellipse cx="14" cy="17" rx="3.200" ry="2" transform="rotate(-30 14 17)"/><circle cx="16" cy="32" r="1.800"/><circle cx="33" cy="14" r="1.800"/></g>`,
+  ciano:`<g transform="rotate(-38 24 24)"><rect x="3" y="14" width="42" height="20" rx="10" fill="${CR}"/><rect x="6" y="17" width="36" height="14" rx="7" fill="#7fd858"/><path ${LI} stroke="#2e7d3a" stroke-width="3" d="M15 17v14M24 17v14M33 17v14"/></g>`,
+  oxigenio:`<circle cx="17" cy="24" r="13" fill="${CR}"/><circle cx="31" cy="24" r="13" fill="#d8f0ff"/><circle cx="17" cy="24" r="13" fill="none" stroke="#3d7c93" stroke-width="2"/><circle cx="12" cy="19" r="3" fill="#fff"/><circle cx="33" cy="19" r="3" fill="#fff"/>`,
+  alga:`<g ${LI}><path stroke="#245f33" stroke-width="3" d="M24 45c-7-9 7-14 0-22-3-4-2-10 2-18"/></g><path fill="${CR}" d="M23 36c-8 1-12-3-14-8 7-1 12 2 14 8zM25 27c7 1 12-3 14-8-7-1-12 2-14 8zM23 19c-6 0-9-3-10-8 6 0 9 3 10 8z"/>`,
+  esporo:`<g ${LI} stroke="${CR}" stroke-width="3"><path d="M24 2v6M24 40v6M2 24h6M40 24h6M8 8l5 5M35 35l5 5M8 40l5-5M35 13l5-5"/></g><circle cx="24" cy="24" r="15" fill="${CR}"/><circle cx="24" cy="24" r="10.500" fill="#b5843f"/><g fill="#5f3d17"><circle cx="20" cy="21" r="2"/><circle cx="28" cy="20" r="1.600"/><circle cx="25" cy="29" r="2.200"/></g>`,
+  musgo:`<path fill="#26532b" d="M3 41c0-6 4-8 8-8 2-5 8-6 11-3 3-3 10-3 13 2 6-1 10 3 10 9 0 2-1 3-3 3H6c-2 0-3-1-3-3z"/><g ${LI} stroke="${CR}" stroke-width="3"><path d="M12 33V19M23 30V11M34 32V18"/></g><g fill="#c9f28a"><circle cx="12" cy="16" r="4"/><circle cx="23" cy="8" r="4"/><circle cx="34" cy="15" r="4"/></g>`,
+  samambaia:`<path ${LI} stroke="#245f33" stroke-width="2.600" d="M14 45C16 28 24 14 40 5"/>${[[38,8,0],[33,11,6],[29,15,10],[25,19,13],[22,24,15],[19,29,16],[17,35,17]].map(([x,y,r],i)=>{const l=5+i*1.3;return `<ellipse cx="${x-l*.6}" cy="${y-l*.75}" rx="${l}" ry="2.400" transform="rotate(${-62+i*-2} ${x} ${y}) translate(${l*.5} ${l*.3})" fill="${CR}"/><ellipse cx="${x+l*.75}" cy="${y+l*.6}" rx="${l}" ry="2.400" transform="rotate(${28-i*2} ${x+l*.75} ${y+l*.6})" fill="#d9f5a8"/>`}).join("")}`,
+  floresta:`<rect x="22" y="36" width="5" height="9" fill="#3a2a1c"/><rect x="8" y="38" width="4" height="7" fill="#3a2a1c"/><rect x="37" y="38" width="4" height="7" fill="#3a2a1c"/><path fill="#a9e27a" d="M10 12 19 40H1z"/><path fill="#a9e27a" d="M39 12l9 28H30z"/><path fill="${CR}" d="m24 2 8 13h-4l8 11h-5l9 13H8l9-13h-5l8-11h-4z"/>`,
+  extremo:`<g ${LI} stroke="#ffc35c" stroke-width="3"><path d="M9 9c-3-3 3-4 0-7M24 7c-3-3 3-4 0-7M39 9c-3-3 3-4 0-7"/></g><circle cx="24" cy="30" r="14" fill="${CR}"/><g ${LI} stroke="${CR}" stroke-width="3"><path d="M8 20 4 16M40 20l4-4M6 34H1M42 34h5M12 44l-3 3M36 44l3 3"/></g><circle cx="24" cy="30" r="9.500" fill="#e5602a"/><circle cx="21" cy="27" r="2.400" fill="#ffd27a"/><circle cx="28" cy="33" r="1.800" fill="#ffd27a"/>`,
+  verme:`<path fill="#3a2024" d="M7 47c1-3 4-4 10-4h14c6 0 9 1 10 4z"/><path fill="${CR}" d="M18 44V20h12v24z"/><g ${LI} stroke="#c9b48c" stroke-width="2"><path d="M18 26h12M18 32h12M18 38h12"/></g><path fill="#e8402f" d="M16 22C10 16 11 8 15 4c1 4 2 5 4 6 0-4 2-7 5-9 3 2 5 5 5 9 2-1 3-2 4-6 4 4 5 12-1 18z"/>`,
+  abissal:`<g ${LI} stroke="${CR}" stroke-width="4.500"><path d="M24 45V24M24 33 12 24V13M24 28l11-9V8M12 22 6 15M35 15l6-5M24 24l-2-14"/></g><g fill="#ff9a6b"><circle cx="12" cy="11" r="3.500"/><circle cx="35" cy="7" r="3.500"/><circle cx="6" cy="14" r="3"/><circle cx="41" cy="9" r="3"/><circle cx="22" cy="8" r="3.500"/></g>`,
+  colonia:`<g fill="${CR}"><circle cx="24" cy="24" r="10"/><circle cx="10" cy="17" r="8"/><circle cx="38" cy="17" r="8"/><circle cx="12" cy="35" r="8"/><circle cx="36" cy="35" r="8"/><circle cx="24" cy="8" r="6"/><circle cx="24" cy="41" r="6"/></g><g fill="#6c4bbd"><circle cx="24" cy="24" r="4"/><circle cx="10" cy="17" r="3"/><circle cx="38" cy="17" r="3"/><circle cx="12" cy="35" r="3"/><circle cx="36" cy="35" r="3"/><circle cx="24" cy="8" r="2.400"/><circle cx="24" cy="41" r="2.400"/></g>`,
+  ameba:`<path fill="${CR}" d="M23 4c5-1 6 4 10 5 5 1 11 3 10 9-1 5-6 5-6 9 0 5 7 9 2 14-4 4-9-1-13 0-5 1-8 6-13 3-5-3-1-9-5-12-3-3-7-6-4-11 3-4 8-2 10-6 2-5 4-10 9-11z"/><circle cx="26" cy="23" r="7" fill="#6c4bbd"/><circle cx="24" cy="21" r="2.200" fill="${CR}"/><circle cx="14" cy="30" r="2.400" fill="#b596ff"/><circle cx="32" cy="35" r="2" fill="#b596ff"/>`,
+  cisto:`<circle cx="24" cy="24" r="21" fill="#4a3280"/><circle cx="24" cy="24" r="21" fill="none" stroke="${CR}" stroke-width="3.500"/><circle cx="24" cy="24" r="15" fill="none" stroke="${CR}" stroke-width="2" stroke-dasharray="3 3"/><path fill="${CR}" d="M23 14c5 0 11 4 10 10-1 6-7 10-13 8-5-2-7-7-5-11 2-4 4-7 8-7z"/><circle cx="24" cy="23" r="3.500" fill="#6c4bbd"/>`,
+  esponja:`<path fill="${CR}" d="M12 4h24c1 0 2 1 2 2-3 12-1 26 2 37 0 2-1 3-3 3H11c-2 0-3-1-3-3 3-11 5-25 2-37 0-1 1-2 2-2z"/><ellipse cx="24" cy="6" rx="12" ry="3" fill="#6c4bbd"/><g fill="#8a6bd8"><circle cx="18" cy="16" r="2.800"/><circle cx="29" cy="15" r="2.200"/><circle cx="24" cy="25" r="3.200"/><circle cx="16" cy="32" r="2.400"/><circle cx="32" cy="31" r="2.800"/><circle cx="24" cy="39" r="2.200"/></g>`,
+  aguaviva:`<path fill="${CR}" d="M5 24C5 11 13 4 24 4s19 7 19 20c-3 3-6 0-9 2-3 2-7 2-10 0-3-2-7-2-10 0-3 2-6 1-9-2z"/><path fill="#d6c6ff" d="M12 20c1-6 6-10 12-10-5 3-8 6-8 11z"/><g ${LI} stroke="${CR}" stroke-width="2.800"><path d="M12 28c-3 6 3 8 0 15M20 29c3 6-3 9 0 17M28 29c-3 6 3 9 0 17M36 28c3 6-3 8 0 15"/></g>`,
+  trilobita:`<path fill="${CR}" d="M24 3c10 0 17 4 18 11 0 3-3 4-6 4 4 8 1 20-12 27C11 38 8 26 12 18c-3 0-6-1-6-4C7 7 14 3 24 3z"/><g ${LI} stroke="#6c4bbd" stroke-width="2.200"><path d="M13 21h22M12 26h24M13 31h22M16 36h16M19 41h10"/><path d="M19 18c-2 8-1 17 2 24M29 18c2 8 1 17-2 24"/></g><circle cx="15" cy="11" r="2.800" fill="#3a2a5c"/><circle cx="33" cy="11" r="2.800" fill="#3a2a5c"/>`,
+  peixe:`<path fill="${CR}" d="M2 24C9 12 21 9 31 14c3 2 6 5 7 7l8-8c1 7 1 15 0 22l-8-8c-1 2-4 5-7 7C21 39 9 36 2 24z"/><path fill="#b596ff" d="M18 13c3-4 7-6 11-6-1 3-1 5-2 7zM20 34l6 6c1-2 1-4 1-7z"/><g ${LI} stroke="#6c4bbd" stroke-width="2.200"><path d="M17 17c3 5 3 9 0 14M24 19c-2 3-2 7 0 10"/></g><circle cx="10" cy="21" r="2.400" fill="#3a2a5c"/>`,
+  flor:`${[0,72,144,216,288].map(a=>`<ellipse cx="24" cy="11" rx="8.500" ry="11" fill="${CR}" transform="rotate(${a} 24 24)"/>`).join("")}${[36,108,180,252,324].map(a=>`<path ${LI} stroke="#e58fb0" stroke-width="2" d="M24 16V5" transform="rotate(${a-36} 24 24)"/>`).join("")}<circle cx="24" cy="24" r="7" fill="#ffc35c"/><circle cx="24" cy="24" r="3" fill="#c9782a"/>`,
+  semente:`<path ${LI} stroke="#c9f28a" stroke-width="3.500" d="M24 21c0-5 1-9 2-11"/><path fill="#c9f28a" d="M26 11C27 5 33 2 40 3c0 7-5 11-14 8zM24 15c-2-5-7-7-13-5 1 6 6 8 13 5z"/><path fill="${CR}" d="M24 19c10 3 14 10 12 17-2 6-7 9-12 9s-10-3-12-9c-2-7 2-14 12-17z"/><path ${LI} stroke="#a26a2c" stroke-width="2.400" d="M24 24c-2 6-2 12 0 17"/>`,
+  inseto:`<path fill="${CR}" d="M22 21C17 8 8 3 3 5c-3 6 0 16 7 18-6 1-8 7-5 12 3 5 11 3 16-7z"/><path fill="${CR}" d="M26 21C31 8 40 3 45 5c3 6 0 16-7 18 6 1 8 7 5 12-3 5-11 3-16-7z"/><g fill="#e58f3a"><circle cx="11" cy="13" r="3"/><circle cx="37" cy="13" r="3"/><circle cx="11" cy="31" r="2.400"/><circle cx="37" cy="31" r="2.400"/></g><ellipse cx="24" cy="26" rx="2.800" ry="13" fill="#3a2a1c"/><g ${LI} stroke="#3a2a1c" stroke-width="2"><path d="M23 13c-1-4-3-6-6-7M25 13c1-4 3-6 6-7"/></g>`,
+  fruta:`<path ${LI} stroke="#3a2a1c" stroke-width="3" d="M24 15c0-4 1-7 3-10"/><path fill="#c9f28a" d="M26 11c2-6 8-8 14-6-1 6-7 9-14 6z"/><path fill="#ffd9c2" d="M24 16c5-5 18-4 19 8 1 11-8 22-14 21-3 0-3-1-5-1s-2 1-5 1C13 46 4 35 5 24 6 12 19 11 24 16z"/><path fill="#fff" opacity=".85" d="M12 23c1-3 3-5 6-5-2 3-3 5-3 9z"/>`,
+  anfibio:`<g fill="${CR}"><path d="M15 26 5 18l-3 5M15 26l-8-1M33 26l10-8 3 5M33 26l8-1" stroke="#fff1d6" stroke-width="3.500" stroke-linecap="round" fill="none"/><path d="M14 34 4 40l2 5M14 34l-3 10M34 34l10 6-2 5M34 34l3 10" stroke="#fff1d6" stroke-width="3.500" stroke-linecap="round" fill="none"/><ellipse cx="24" cy="28" rx="13" ry="15"/><circle cx="16" cy="13" r="6"/><circle cx="32" cy="13" r="6"/></g><circle cx="16" cy="12" r="2.800" fill="#3a2a5c"/><circle cx="32" cy="12" r="2.800" fill="#3a2a5c"/><g fill="#8a6bd8"><circle cx="20" cy="29" r="2.200"/><circle cx="29" cy="34" r="2.600"/><circle cx="27" cy="23" r="1.600"/></g>`,
+  reptil:`<path ${LI} stroke="${CR}" stroke-width="5" d="M23 31c1 7 7 12 16 9 4-1 5-5 2-6"/><g ${LI} stroke="${CR}" stroke-width="3.500"><path d="m19 15-9-4-2-4M28 16l9-5 2-5M18 26l-9 4-2 5M26 28l8 4 2 5"/></g><path fill="${CR}" d="M25 2c4 1 6 5 5 9-1 3-2 4-2 6 0 4 0 8-1 11-1 4-5 6-7 3-2-3-2-8-2-13 0-2-2-3-3-6-1-5 5-11 10-10z"/><circle cx="20" cy="8" r="1.800" fill="#3a2a5c"/><circle cx="26" cy="7" r="1.800" fill="#3a2a5c"/><g fill="#8a6bd8"><circle cx="23" cy="17" r="1.800"/><circle cx="23" cy="23" r="1.800"/></g>`,
+  casca:`<path fill="${CR}" d="M24 3c10 0 17 16 17 27 0 9-7 15-17 15S7 39 7 30C7 19 14 3 24 3z"/><path ${LI} stroke="#6c4bbd" stroke-width="2.600" d="m8 27 7-3 5 5 6-6 6 5 8-3"/><g fill="#c7b5f5"><circle cx="19" cy="14" r="2"/><circle cx="29" cy="17" r="1.600"/><circle cx="18" cy="37" r="2"/><circle cx="31" cy="35" r="2.400"/></g>`,
+  dino:`<g fill="${CR}"><ellipse cx="21" cy="29" rx="13" ry="9"/><path d="M28 24C34 20 33 12 37 8c3-3 8-3 9 0 1 2-1 4-4 4-2 0-3 1-4 3-3 6 0 11-5 17z"/><path d="M11 25C7 27 4 31 0 35c5 1 11 0 15-3z"/><rect x="11" y="32" width="6" height="12" rx="2.500"/><rect x="26" y="32" width="6" height="12" rx="2.500"/></g><circle cx="42" cy="8" r="1.300" fill="#3a2a5c"/><g fill="#8a6bd8"><circle cx="16" cy="26" r="2"/><circle cx="24" cy="24" r="2.400"/><circle cx="23" cy="31" r="1.600"/></g>`,
+  mamifero:`<path ${LI} stroke="${CR}" stroke-width="3" d="M9 32C3 32 2 26 5 22"/><path fill="${CR}" d="M8 34c-1-9 6-16 15-16 7 0 10 3 13 6 3 2 8 3 10 6 0 2-3 3-6 3-1 3-3 4-6 4H12c-2 0-4-1-4-3z"/><circle cx="29" cy="17" r="5" fill="${CR}"/><circle cx="29" cy="17" r="2.800" fill="#c7a1a1"/><circle cx="36" cy="26" r="1.800" fill="#3a2a5c"/><circle cx="46" cy="30" r="1.800" fill="#3a2a5c"/><rect x="13" y="35" width="5" height="6" rx="2" fill="${CR}"/><rect x="25" y="35" width="5" height="6" rx="2" fill="${CR}"/>`,
+  toca:`<path fill="#d7b98a" d="M1 19c7-4 13-1 20-2s18-5 26 1v28H1z"/><path fill="#2b1a10" d="M9 46c0-16 6-22 15-22s15 6 15 22z"/><g fill="#6c8e3c"><path d="m7 19-3-7 5 5 1-8 3 9zM35 16l-2-8 5 6 2-8 2 11z"/></g><circle cx="20" cy="36" r="2" fill="#ffd27a"/><circle cx="28" cy="36" r="2" fill="#ffd27a"/>`,
+  primata:`<circle cx="7" cy="23" r="6" fill="#7a4f33"/><circle cx="41" cy="23" r="6" fill="#7a4f33"/><circle cx="7" cy="23" r="3" fill="#f0c9a0"/><circle cx="41" cy="23" r="3" fill="#f0c9a0"/><circle cx="24" cy="23" r="19" fill="#7a4f33"/><path fill="#f0c9a0" d="M24 12c3-3 12-3 13 5 1 5-1 7-1 9 3 2 3 8 0 12-3 3-8 4-12 4s-9-1-12-4c-3-4-3-10 0-12 0-2-2-4-1-9 1-8 10-8 13-5z"/><circle cx="17" cy="21" r="2.600" fill="#2b1a10"/><circle cx="31" cy="21" r="2.600" fill="#2b1a10"/><g ${LI} stroke="#2b1a10" stroke-width="2"><path d="M22 29c1 1 3 1 4 0M16 35c5 3 11 3 16 0"/></g>`,
+  caranguejo:`<g ${LI} stroke="${CR}" stroke-width="3.200"><path d="M9 29 3 34l1 7M11 34l-4 6 3 6M37 34l4 6-3 6M39 29l6 5-1 7"/><path d="M12 22C7 21 6 17 8 13M36 22c5-1 6-5 4-9"/></g><path fill="${CR}" d="M8 15c-5-1-7-6-5-11l4 4 2-6c4 3 5 8 3 11-1 2-2 2-4 2zM40 15c5-1 7-6 5-11l-4 4-2-6c-4 3-5 8-3 11 1 2 2 2 4 2z"/><ellipse cx="24" cy="29" rx="16" ry="11" fill="${CR}"/><g fill="#d9551f"><circle cx="19" cy="27" r="2"/><circle cx="29" cy="27" r="2"/><circle cx="24" cy="33" r="2.400"/></g><path ${LI} stroke="${CR}" stroke-width="2.600" d="M19 19v-5M29 19v-5"/><circle cx="19" cy="13" r="2.400" fill="#3a2024"/><circle cx="29" cy="13" r="2.400" fill="#3a2024"/>`,
+  concha:`<path fill="${CR}" d="M24 44C12 40 2 28 3 18 10 7 17 4 24 4s14 3 21 14c1 10-9 22-21 26z"/><path fill="#e8a077" d="M17 42h14l-3 4H20z"/><g ${LI} stroke="#c9602c" stroke-width="2.200"><path d="M24 43V6M24 43C20 32 15 18 13 9M24 43c4-11 9-25 11-34M24 43C17 34 10 25 6 15M24 43c7-9 14-18 18-28"/></g>`,
+  lula:`<path fill="${CR}" d="M24 1c5 3 8 7 9 12l5 5-5 2c0 4-1 8-3 12H18c-2-4-3-8-3-12l-5-2 5-5c1-5 4-9 9-12z"/><g ${LI} stroke="${CR}" stroke-width="3"><path d="M19 31c-5 4-3 8-9 14M22 32c-2 5 0 9-4 15M26 32c2 5 0 9 4 15M29 31c5 4 3 8 9 14"/></g><circle cx="19" cy="24" r="3.400" fill="#3a2024"/><circle cx="29" cy="24" r="3.400" fill="#3a2024"/><circle cx="18" cy="23" r="1.100" fill="#fff"/><circle cx="28" cy="23" r="1.100" fill="#fff"/>`,
+  gelo:`<g ${LI} stroke="${CR}" stroke-width="3.500">${[0,60,120].map(a=>`<g transform="rotate(${a} 24 24)"><path d="M24 3v42M24 11l-5-5M24 11l5-5M24 37l-5 5M24 37l5 5"/></g>`).join("")}</g>`,
+  seca:`<path fill="#ffc35c" d="M3 21a21 21 0 0 1 42 0z" opacity=".95"/><path fill="${CR}" d="M1 21h46v24H1z"/><g ${LI} stroke="#8a5f2b" stroke-width="2.500"><path d="m24 21-3 8 5 5-4 11M21 29l-11 4-5 12M26 34l10-3 9 3M36 31l1-10M10 33 2 28"/></g>`,
+  meteoro:`<g ${LI}><path stroke="#ffc35c" stroke-width="5" d="M44 3 20 24"/><path stroke="${CR}" stroke-width="3.500" d="M33 3 16 18M45 15 30 29"/></g><circle cx="16" cy="31" r="13" fill="#3a2024"/><circle cx="16" cy="31" r="13" fill="none" stroke="#ffc35c" stroke-width="3"/><circle cx="12" cy="27" r="3" fill="#6a4048"/><circle cx="20" cy="35" r="2.400" fill="#6a4048"/>`,
+  planeta:`<circle cx="24" cy="24" r="20" fill="#2f8fb8"/><path fill="#a9e27a" d="M12 10c5-3 11-3 13 0 2 4-5 6-5 10 0 3 5 3 4 7-2 4-9 2-12-3-3-4-5-10 0-14zM31 21c4-3 11-1 12 3 0 6-5 13-10 14-3-3 1-8-1-11-2-2-3-5-1-6z"/><path ${LI} stroke="${CR}" stroke-width="2.600" d="M9 14c2-3 5-5 8-6" opacity=".7"/>`
+};
+const svgI=k=>`<svg viewBox="0 0 48 48" aria-hidden="true">${ICO[k]}</svg>`;
+const UI={
+  energia:`<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M14 1 4 14h6l-2 9 11-14h-7z"/></svg>`,
+  vit:`<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 22c-1-8-3-11-10-13C10 8 12 6 12 1c0 5 2 7 10 8-7 2-9 5-10 13z"/></svg>`,
+  menu:`<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.400" stroke-linecap="round" d="M3 6h18M3 12h18M3 18h12"/></svg>`,
+  nada:`<svg class="x" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.400" stroke-linecap="round" d="m6 6 12 12M18 6 6 18"/></svg>`,
+  pista:`<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.500" fill="currentColor" opacity=".22"/><path fill="none" stroke="currentColor" stroke-width="2.600" stroke-linecap="round" d="M8.500 9c.3-2.200 1.800-3.500 3.700-3.500 2 0 3.500 1.300 3.500 3.200 0 3-3.700 3-3.700 6"/><circle cx="12" cy="18.400" r="1.500" fill="currentColor"/></svg>`
+};
 /* ---------- conteúdo ---------- */
 const LINHAS={
-  luz:{n:"Luz",cor:"var(--luz)",tinta:"#5fae45",ad:"esporo"},
-  calor:{n:"Calor",cor:"var(--calor)",tinta:"#d9651a",ad:null},
-  caca:{n:"Caça",cor:"var(--caca)",tinta:"#8a6bd8",ad:"cisto"}
+  luz:{n:"Luz",cor:"var(--luz)",tinta:"#4f9a3c",ad:"esporo",topo:"floresta"},
+  calor:{n:"Calor",cor:"var(--calor)",tinta:"#c9551c",ad:null,topo:"abissal"},
+  caca:{n:"Caça",cor:"var(--caca)",tinta:"#7a5bc9",ad:"cisto",topo:"peixe"}
 };
 const E={
-  fogo:{n:"Fogo",e:"🔥",t:"#d9651a"},agua:{n:"Água",e:"💧",t:"#2f8fb8"},terra:{n:"Terra",e:"⛰️",t:"#8a6a48"},ar:{n:"Ar",e:"💨",t:"#9fb3bb"},
-  sol:{n:"Sol",e:"☀️",t:"#e0a92e"},
-  vapor:{n:"Vapor",e:"🌫️",t:"#9fb3bb",r:["agua","fogo"],c:"Água que aprendeu a subir",f:"O planeta jovem era quente demais para mares. A água vivia no ar."},
-  lava:{n:"Lava",e:"🌋",t:"#c94f1b",r:["terra","fogo"],c:"Chão que derrete",f:"A Terra começou como uma bola de rocha derretida."},
-  lama:{n:"Lama",e:"🟤",t:"#7a5a3e",r:["agua","terra"],c:"Chão que amolece com a água",f:"Mistura simples, mas é nela que a química encontra abrigo."},
-  poeira:{n:"Poeira",e:"🏜️",t:"#b4935f",r:["ar","terra"],c:"Chão levado pelo vento",f:"O vento carrega grãos minerais por continentes inteiros."},
-  nuvem:{n:"Nuvem",e:"☁️",t:"#9fb3bb",r:["vapor","ar"],c:"O vapor subiu alto e esfriou",f:"Com o planeta esfriando, o vapor começou a condensar."},
-  chuva:{n:"Chuva",e:"🌧️",t:"#4f85a5",r:["nuvem","agua"],c:"A nuvem ficou pesada",f:"Choveu por muito, muito tempo."},
-  raio:{n:"Relâmpago",e:"🌩️",t:"#7f78c9",r:["nuvem","fogo"],c:"Energia que nasce na nuvem",f:"Tempestades despejavam energia num mundo sem vida."},
-  rocha:{n:"Rocha",e:"🪨",t:"#7d7a78",r:["lava","agua"],c:"Lava que a água esfriou",f:"As rochas mais antigas conhecidas têm cerca de 4 bilhões de anos."},
-  oceano:{n:"Oceano",e:"🌊",t:"#23749e",r:["chuva","terra"],c:"Chuva sem fim enchendo a terra",f:"A chuva encheu as bacias e nasceu o mar."},
-  fonte:{n:"Fonte Termal",e:"♨️",t:"#c9542f",r:["oceano","lava"],c:"Onde o mar encontra o fogo da terra",f:"Fontes no fundo do mar foram descobertas em 1977, cheias de vida sem sol."},
-  argila:{n:"Argila",e:"🏺",t:"#b0693f",r:["lama","poeira"],c:"Lama e pó de grãos bem finos",f:"Grãos de argila ajudam moléculas a formar cadeias, em laboratório."},
-  sopa:{n:"Sopa Primordial",e:"🍲",t:"#8f9a3c",r:["oceano","raio"],c:"O mar levou um choque",f:"Em 1953, faíscas numa mistura de gases produziram aminoácidos em laboratório."},
-  rna:{n:"RNA",e:"🧬",t:"#3fa58d",r:["sopa","argila"],c:"A sopa ganhou um molde para se organizar",f:"O RNA guarda informação e acelera reações, por isso é candidato a primeira molécula da vida."},
-  membrana:{n:"Membrana",e:"🫧",t:"#5aa6b5",r:["sopa","fonte"],c:"A sopa aquecida forma bolhas",f:"Gorduras simples formam bolhas sozinhas na água."},
-  celula:{n:"Célula",e:"🦠",t:"#3fa58d",r:["rna","membrana"],c:"Uma receita dentro de uma bolha",f:"Toda a vida conhecida vem de um ancestral celular comum."},
-  ciano:{n:"Ciano\u00ADbactéria",e:"🟢",l:"luz",r:["celula","sol"],c:"Uma célula que come luz",f:"As primeiras a fazer fotossíntese liberando oxigênio."},
-  oxigenio:{n:"Oxigênio",e:"🌬️",t:"#7fb7c9",r:["ciano","oceano"],c:"O resíduo da luz enche o mar",f:"Há cerca de 2,4 bilhões de anos, esse gás mudou a atmosfera inteira."},
-  alga:{n:"Alga",e:"🍃",l:"luz",r:["ciano","celula"],c:"Uma célula engoliu outra e ficou com ela",f:"Cloroplastos são descendentes de cianobactérias engolidas."},
-  esporo:{n:"Esporo",e:"🌰",l:"luz",ad:1,r:["ciano","poeira"],c:"Seres da luz viajando dormentes no pó",f:"Formas dormentes atravessam frio e seca até o ambiente melhorar."},
-  musgo:{n:"Musgo",e:"🍀",l:"luz",r:["alga","rocha"],c:"A alga subiu na pedra",f:"Plantas assim foram das primeiras a colonizar a terra."},
-  samambaia:{n:"Samambaia",e:"🌿",l:"luz",r:["musgo","chuva"],c:"O musgo bebeu e cresceu",f:"Parentes das samambaias formaram as primeiras florestas."},
-  floresta:{n:"Floresta",e:"🌳",l:"luz",apex:1,r:["samambaia","terra"],c:"Verde cobrindo os continentes",f:"Florestas mudaram o clima, o solo e os rios."},
-  extremo:{n:"Extremófilo",e:"🌡️",l:"calor",r:["celula","fonte"],c:"Uma célula que gosta de ferver",f:"Alguns microrganismos crescem acima de 100 °C sob pressão."},
-  verme:{n:"Verme Tubular",e:"🪱",l:"calor",r:["extremo","rocha"],c:"Um tubo agarrado na pedra quente",f:"O verme gigante das fontes não tem boca: vive de bactérias dentro do corpo."},
-  abissal:{n:"Jardim Abissal",e:"🪸",l:"calor",apex:1,r:["verme","fonte"],c:"Uma cidade no escuro, ao redor do calor",f:"Ecossistemas inteiros vivem no fundo do mar sem nenhuma luz."},
-  colonia:{n:"Colônia",e:"🧫",l:"caca",r:["celula","celula"],c:"Uma célula encontrou outra igual",f:"Viver em grupo foi o primeiro passo para os corpos multicelulares."},
-  ameba:{n:"Ameba",e:"👾",l:"caca",r:["celula","oxigenio"],c:"Uma célula que respira e persegue",f:"Com oxigênio sobra energia, e surge quem caça."},
-  cisto:{n:"Cisto",e:"🥚",l:"caca",ad:1,r:["ameba","lama"],c:"A caçadora se fecha na lama para esperar",f:"Amebas formam cápsulas resistentes quando o ambiente piora."},
-  esponja:{n:"Esponja",e:"🧽",l:"caca",r:["colonia","oceano"],c:"A colônia se fixa no mar",f:"As esponjas estão entre os animais mais antigos."},
-  aguaviva:{n:"Água-viva",e:"🪼",l:"caca",r:["esponja","raio"],c:"Um corpo que levou um choque e se moveu",f:"Entre os primeiros animais com nervos: sinais elétricos no corpo."},
-  trilobita:{n:"Trilobita",e:"🪲",l:"caca",r:["aguaviva","rocha"],c:"Um corpo mole que vestiu pedra",f:"Tinham carapaça dura e olhos com lentes de mineral."},
-  peixe:{n:"Peixe",e:"🐟",l:"caca",apex:1,r:["trilobita","oxigenio"],c:"Um caçador rápido respirando o mar",f:"Os primeiros com coluna vertebral abriram caminho para nós."}
+  fogo:{n:"Fogo",t:"#b8431a"},agua:{n:"Água",t:"#2478a3"},terra:{n:"Terra",t:"#6e5238"},ar:{n:"Ar",t:"#5f7f8c"},
+  sol:{n:"Sol",t:"#d9941e"},
+  vapor:{n:"Vapor",t:"#6d8a96",r:["agua","fogo"],c:"Água que aprendeu a subir",f:"O planeta jovem era quente demais para mares. A água vivia no ar."},
+  lava:{n:"Lava",t:"#a83a14",r:["terra","fogo"],c:"Chão que derrete",f:"A Terra começou como uma bola de rocha derretida."},
+  lama:{n:"Lama",t:"#8a6a46",r:["agua","terra"],c:"Chão que amolece com a água",f:"Mistura simples, mas é nela que a química encontra abrigo."},
+  poeira:{n:"Poeira",t:"#a07f4a",r:["ar","terra"],c:"Chão levado pelo vento",f:"O vento carrega grãos minerais por continentes inteiros."},
+  nuvem:{n:"Nuvem",t:"#5f7f96",r:["vapor","ar"],c:"O vapor subiu alto e esfriou",f:"Com o planeta esfriando, o vapor começou a condensar."},
+  chuva:{n:"Chuva",t:"#3f6f96",r:["nuvem","agua"],c:"A nuvem ficou pesada",f:"Choveu por muito, muito tempo."},
+  raio:{n:"Relâmpago",t:"#5a50a8",r:["nuvem","fogo"],c:"Energia que nasce na nuvem",f:"Tempestades despejavam energia num mundo sem vida."},
+  rocha:{n:"Rocha",t:"#646170",r:["lava","agua"],c:"Lava que a água esfriou",f:"As rochas mais antigas conhecidas têm cerca de 4 bilhões de anos."},
+  oceano:{n:"Oceano",t:"#1c6a94",r:["chuva","terra"],c:"Chuva sem fim enchendo a terra",f:"A chuva encheu as bacias e nasceu o mar."},
+  fonte:{n:"Fonte Termal",t:"#a8432a",r:["oceano","lava"],c:"Onde o mar encontra o fogo da terra",f:"Fontes no fundo do mar foram descobertas em 1977, cheias de vida sem sol."},
+  argila:{n:"Argila",t:"#a85d33",r:["lama","poeira"],c:"Lama e pó de grãos bem finos",f:"Grãos de argila ajudam moléculas a formar cadeias, em laboratório."},
+  sopa:{n:"Sopa Primordial",t:"#7a8a2c",r:["oceano","raio"],c:"O mar levou um choque",f:"Em 1953, faíscas numa mistura de gases produziram aminoácidos em laboratório."},
+  rna:{n:"RNA",t:"#28806e",r:["sopa","argila"],c:"A sopa ganhou um molde para se organizar",f:"O RNA guarda informação e acelera reações, por isso é candidato a primeira molécula da vida."},
+  membrana:{n:"Membrana",t:"#2f8294",r:["sopa","fonte"],c:"A sopa aquecida forma bolhas",f:"Gorduras simples formam bolhas sozinhas na água."},
+  celula:{n:"Célula",t:"#227a66",r:["rna","membrana"],c:"Uma receita dentro de uma bolha",f:"Toda a vida conhecida vem de um ancestral celular comum."},
+  ciano:{n:"Ciano­bactéria",l:"luz",r:["celula","sol"],c:"Uma célula que come luz",f:"As primeiras a fazer fotossíntese liberando oxigênio."},
+  oxigenio:{n:"Oxigênio",t:"#3d7c93",r:["ciano","oceano"],c:"O resíduo da luz enche o mar",f:"Há cerca de 2,4 bilhões de anos, esse gás mudou a atmosfera inteira."},
+  alga:{n:"Alga",l:"luz",r:["ciano","celula"],c:"Uma célula engoliu outra e ficou com ela",f:"Cloroplastos são descendentes de cianobactérias engolidas."},
+  esporo:{n:"Esporo",l:"luz",ad:1,r:["ciano","poeira"],c:"Seres da luz viajando dormentes no pó",f:"Formas dormentes atravessam frio e seca até o ambiente melhorar."},
+  musgo:{n:"Musgo",l:"luz",r:["alga","rocha"],c:"A alga subiu na pedra",f:"Plantas assim foram das primeiras a colonizar a terra."},
+  samambaia:{n:"Samambaia",l:"luz",r:["musgo","chuva"],c:"O musgo bebeu e cresceu",f:"Parentes das samambaias formaram as primeiras florestas."},
+  floresta:{n:"Floresta",l:"luz",apex:1,r:["samambaia","terra"],c:"Verde cobrindo os continentes",f:"Florestas mudaram o clima, o solo e os rios."},
+  extremo:{n:"Extremófilo",l:"calor",r:["celula","fonte"],c:"Uma célula que gosta de ferver",f:"Alguns microrganismos crescem acima de 100 °C sob pressão."},
+  verme:{n:"Verme Tubular",l:"calor",r:["extremo","rocha"],c:"Um tubo agarrado na pedra quente",f:"O verme gigante das fontes não tem boca: vive de bactérias dentro do corpo."},
+  abissal:{n:"Jardim Abissal",l:"calor",apex:1,r:["verme","fonte"],c:"Uma cidade no escuro, ao redor do calor",f:"Ecossistemas inteiros vivem no fundo do mar sem nenhuma luz."},
+  colonia:{n:"Colônia",l:"caca",r:["celula","celula"],c:"Uma célula encontrou outra igual",f:"Viver em grupo foi o primeiro passo para os corpos multicelulares."},
+  ameba:{n:"Ameba",l:"caca",r:["celula","oxigenio"],c:"Uma célula que respira e persegue",f:"Com oxigênio sobra energia, e surge quem caça."},
+  cisto:{n:"Cisto",l:"caca",ad:1,r:["ameba","lama"],c:"A caçadora se fecha na lama para esperar",f:"Amebas formam cápsulas resistentes quando o ambiente piora."},
+  esponja:{n:"Esponja",l:"caca",r:["colonia","oceano"],c:"A colônia se fixa no mar",f:"As esponjas estão entre os animais mais antigos."},
+  aguaviva:{n:"Água-viva",l:"caca",r:["esponja","raio"],c:"Um corpo que levou um choque e se moveu",f:"Entre os primeiros animais com nervos: sinais elétricos no corpo."},
+  trilobita:{n:"Trilobita",l:"caca",r:["aguaviva","rocha"],c:"Um corpo mole que vestiu pedra",f:"Tinham carapaça dura e olhos com lentes de mineral."},
+  peixe:{n:"Peixe",l:"caca",apex:1,r:["trilobita","oxigenio"],c:"Um caçador rápido respirando o mar",f:"Os primeiros com coluna vertebral abriram caminho para nós."},
+  flor:{n:"Flor",t:"#c24d7f",l:"luz",era:3,r:["floresta","sol"],c:"A floresta aprendeu a chamar atenção",f:"As plantas com flor surgiram há mais de 130 milhões de anos e se espalharam depressa."},
+  semente:{n:"Semente",l:"luz",era:3,ad:1,r:["flor","terra"],c:"Uma flor guardou o futuro na terra",f:"Sementes podem esperar anos no solo até a chuva voltar."},
+  inseto:{n:"Inseto",l:"luz",era:3,r:["samambaia","ar"],c:"Algo pequeno levantou voo entre as folhas",f:"Os insetos foram os primeiros animais a voar."},
+  fruta:{n:"Fruta",t:"#c23d3d",l:"luz",era:3,apex:1,r:["flor","inseto"],c:"A flor pagou quem a visitou",f:"Frutas convencem os animais a espalhar sementes."},
+  anfibio:{n:"Anfíbio",l:"caca",era:3,r:["peixe","lama"],c:"O peixe tentou andar na lama",f:"Os primeiros anfíbios ainda precisavam da água para botar ovos."},
+  reptil:{n:"Réptil",l:"caca",era:3,r:["anfibio","rocha"],c:"O anfíbio endureceu a pele na pedra",f:"Com pele seca, os répteis se afastaram da água."},
+  casca:{n:"Casca",l:"caca",era:3,ad:1,r:["reptil","sol"],c:"Um ovo esquentando ao sol",f:"O ovo com casca leva a água para dentro e dispensa as lagoas."},
+  dino:{n:"Dinossauro",l:"caca",era:3,apex:1,r:["reptil","terra"],c:"O réptil tomou conta da terra",f:"Dominaram a terra por mais de 130 milhões de anos."},
+  mamifero:{n:"Mamífero",l:"caca",era:3,r:["reptil","fogo"],c:"Um réptil de sangue quente",f:"Os primeiros mamíferos eram pequenos e noturnos."},
+  toca:{n:"Toca",t:"#4f6b2c",l:"caca",era:3,ad:1,r:["mamifero","terra"],c:"O bicho pequeno cavou a terra",f:"Abrigos sob o solo protegem do frio, do calor e da fome."},
+  primata:{n:"Primata",l:"caca",era:3,apex:1,r:["mamifero","fruta"],c:"Um bicho curioso comendo fruta nas árvores",f:"Mãos que agarram e olhos para a frente vieram da vida nas árvores."},
+  caranguejo:{n:"Caranguejo",l:"calor",era:3,r:["abissal","rocha"],c:"O jardim do fundo ganhou pinças",f:"Há caranguejos que passam a vida inteira ao redor das fontes do fundo do mar."},
+  concha:{n:"Concha",l:"calor",era:3,ad:1,r:["caranguejo","oceano"],c:"Uma armadura feita com a química do mar",f:"Conchas são feitas de carbonato de cálcio retirado da água."},
+  lula:{n:"Lula Colossal",t:"#7a2f46",l:"calor",era:3,apex:1,r:["abissal","oceano"],c:"Um gigante saiu do jardim para o mar aberto",f:"Pode chegar a cerca de 10 metros e tem os maiores olhos do reino animal."}
 };
 const BASE1=["fogo","agua","terra","ar"];
 const MATERIA=["vapor","lava","lama","poeira","nuvem","chuva","raio","rocha","oceano","fonte","argila","sopa","rna","membrana","celula"];
 const RAMO={luz:["ciano","oxigenio","alga","esporo","musgo","samambaia","floresta"],calor:["extremo","verme","abissal"],caca:["colonia","ameba","cisto","esponja","aguaviva","trilobita","peixe"]};
+const RAMO2={luz:["flor","semente","inseto","fruta"],calor:["caranguejo","concha","lula"],caca:["anfibio","reptil","casca","dino","mamifero","toca","primata"]};
+const ORDEM=["luz","calor","caca"];
+const CRISES={
+  seca:{nome:"A Grande Seca",ic:"seca",cx:"seca",def:{luz:"semente",caca:"casca"},escapa:"calor",abre:"Os rios estão sumindo.",aviso:"Quem vive da chuva e dos rios precisa guardar água para depois.",aviso2:"Sementes e ovos atravessam a seca. O fundo do mar nem vai sentir.",intro:"Os rios secaram, e o verde virou pó.",fuga:"No fundo do mar, a seca nem foi notada."},
+  meteoro:{nome:"O Meteoro",ic:"meteoro",cx:"meteoro",def:{caca:"toca",calor:"concha"},escapa:"luz",abre:"Um ponto novo brilha no céu, cada noite maior.",aviso:"O impacto vai queimar a terra e azedar o mar. Quem vive neles precisa de abrigo.",aviso2:"Tocas salvam os bichos da terra, e conchas protegem o fundo. As plantas brotam de novo.",intro:"O céu escureceu, a terra queimou e o mar azedou.",fuga:"As plantas voltaram a brotar das cinzas."}
+};
 const TOTAL=Object.values(E).filter(x=>x.r).length;
 const chave=(a,b)=>[a,b].sort().join("+");
 const RECEITA={};Object.keys(E).forEach(id=>{const x=E[id];if(x.r)RECEITA[chave(...x.r)]=id;x.t=x.t||(x.l&&LINHAS[x.l].tinta)});
 const nivel=id=>{const x=E[id];return x.r?1+Math.max(...x.r.map(nivel)):0};
 Object.keys(E).forEach(id=>E[id].nv=nivel(id));
 
-const EN1=38,EN2=11,EN3=6,RES_MAX=2,RES_GANHO=4,DICA=4,REFUGIO=8;
+const EN1=38,EN2=11,EN3=6,EN4=10,EN5=4,RES_MAX=2,RES_GANHO=4,DICA=4,REFUGIO=8;
 const SINAIS=[[9,"Os polos estão mais brancos a cada ano."],[6,"O gelo avança sobre o mar. Quem vive da luz vai ficar no escuro."],[3,"Quem vive solto no mar precisa de um jeito de dormir até o frio passar."]];
 const FINAIS={
   esteril:{t:"Planeta Estéril",x:"A energia acabou antes da primeira célula. O planeta seguiu girando, em silêncio."},
-  pleno:{t:"Planeta Pleno",x:"Mares, terra e abismo: a vida ocupou tudo o que havia para ocupar."},
+  tudo:{t:"Planeta Pleno",x:"Primatas nas árvores, gigantes no mar, dinossauros em terra. Nenhum canto do mundo ficou vazio."},
+  caminho:{t:"O Caminho Aberto",x:"Um bicho curioso desceu da árvore e olhou para o céu. Alguma coisa estava prestes a começar."},
+  dino:{t:"Reino dos Dinossauros",x:"Nada na terra era maior, e nada parecia capaz de mudar isso."},
+  pomar:{t:"Pomar sem Fim",x:"Flores, frutos e insetos: um mundo inteiro de doçura, sem ninguém para colher."},
+  gigantes:{t:"Mar dos Gigantes",x:"A superfície ficou quieta. Os maiores olhos do planeta vigiavam o escuro."},
+  pleno:{t:"Três Reinos",x:"Mares, terra e abismo seguiram lado a lado, sem que ninguém desse o passo seguinte."},
   fp:{t:"Terra Verde, Mar Vivo",x:"Florestas em terra e caçadores na água. O planeta nunca mais seria quieto."},
   fa:{t:"Verde e Abismo",x:"A vida ficou nos dois extremos: no sol da superfície e no escuro do fundo."},
   pa:{t:"Dois Mares",x:"A terra seguiu nua. Toda a história aconteceu debaixo d'água."},
@@ -238,7 +355,7 @@ const FINAIS={
 const SAVE="genese_v1",FINS="genese_v1_finais";
 const G={rapido:false,dica:null,aba:"mesa",a:null,b:null,trava:false,info:"",res:null};
 let S=null;
-function nova(){return {fase:"materia",en:EN1,enMax:EN1,vit:0,k:{fogo:1,agua:1,terra:1,ar:1},ord:[],tent:{},ext:{},guarda:{},res:0,erros:0,sinal:-1,prim:null,gelo:null,ped:0}}
+function nova(){return {fase:"materia",en:EN1,enMax:EN1,vit:0,k:{fogo:1,agua:1,terra:1,ar:1},ord:[],tent:{},ext:{},guarda:{},res:0,erros:0,sinal:-1,prim:null,gelo:null,gelo2:null,abre:null,crise2:null,ped:0}}
 function salvar(){try{localStorage.setItem(SAVE,JSON.stringify(S))}catch(e){}}
 function carregar(){try{const s=localStorage.getItem(SAVE);return s?JSON.parse(s):null}catch(e){return null}}
 function limpar(){try{localStorage.removeItem(SAVE)}catch(e){}}
@@ -247,36 +364,42 @@ function marcarFinal(id){try{const f=finais();if(!f.includes(id)){f.push(id);loc
 
 /* ---------- regras ---------- */
 const vivo=id=>S.k[id]!=null&&!S.ext[id];
+const noFim=()=>S.fase==="especies"||S.fase==="recup";
+const travado=id=>E[id].era===3&&(!noFim()||!(S.abre&&S.abre[E[id].l]));
 const descobertas=()=>Object.keys(S.k).filter(id=>E[id].r).length+Object.keys(S.ext).length;
-function alcancaveis(){return Object.keys(E).filter(id=>{const x=E[id];return x.r&&S.k[id]==null&&!S.ext[id]&&x.r.every(vivo)})}
+function alcancaveis(){return Object.keys(E).filter(id=>{const x=E[id];return x.r&&S.k[id]==null&&!S.ext[id]&&!travado(id)&&x.r.every(vivo)})}
 function custoReserva(){return 5+3*S.res}
-function ramoVivo(l){return RAMO[l].some(id=>E[id].l===l&&vivo(id))}
+function ramoVivo(l){return [...RAMO[l],...RAMO2[l]].some(id=>E[id].l===l&&vivo(id))}
+function algumTopo(){return ORDEM.some(l=>vivo(LINHAS[l].topo))}
 function esgotado(id){
-  if(!E[id].r&&id!=="sol"&&!Object.values(E).some(x=>x.r&&x.r.includes(id)))return true;
-  return !Object.keys(E).some(o=>{const x=E[o];return x.r&&x.r.includes(id)&&S.k[o]==null&&!S.ext[o]&&x.r.every(p=>!S.ext[p])});
+  return !Object.keys(E).some(o=>{const x=E[o];return x.r&&x.r.includes(id)&&S.k[o]==null&&!S.ext[o]&&!travado(o)&&x.r.every(p=>!S.ext[p])});
 }
 function sortear(l){return l[Math.floor(Math.random()*l.length)]}
+function revelada(){return S.fase==="especies"&&S.sinal>=1}
 function novoPedido(){
   const ativos=S.ord.map(o=>o.id);
   const alc=alcancaveis().filter(id=>!ativos.includes(id));
-  const prio=alc.filter(id=>E[id].ad);
+  const prio=alc.filter(id=>E[id].ad&&(S.fase==="vida"||(revelada()&&Object.values(CRISES[S.crise2].def).includes(id))));
   const est=Object.keys(S.k).filter(id=>E[id].r&&vivo(id)&&id!=="celula"&&!ativos.includes(id)&&(S.fase!=="materia"||E[id].nv>=2));
-  const ped=id=>({id,q:1,v:1+Math.floor(E[id].nv/4)});
-  if(prio.length&&S.fase==="vida")return ped(sortear(prio));
+  const val=(id,b)=>Math.min(3,b+Math.floor(E[id].nv/4));
+  const ped=id=>({id,q:1,v:val(id,1)});
+  if(prio.length)return ped(sortear(prio));
   const temPista=S.ord.some(o=>S.k[o.id]==null);
   if(alc.length&&(!temPista||Math.random()<.5||!est.length))return ped(sortear(alc));
-  if(est.length){const id=sortear(est);return {id,q:2,v:2+Math.floor(E[id].nv/4)}}
+  if(est.length){const id=sortear(est);return {id,q:2,v:val(id,2)}}
   return null;
 }
 function encherPedidos(){
   S.ord=S.ord.filter(o=>!S.ext[o.id]);
   while(S.ord.length<2){const p=novoPedido();if(!p)break;S.ord.push(p)}
 }
-function gastar(){S.en=Math.max(0,S.en-1);atualizaSinal()}
-function atualizaSinal(){
-  if(S.fase!=="vida")return;
-  SINAIS.forEach((s,i)=>{if(S.en<=s[0]&&i>S.sinal)S.sinal=i});
+function sinaisDaFase(){
+  if(S.fase==="vida")return SINAIS;
+  if(S.fase==="especies"){const c=CRISES[S.crise2];return [[EN4,"O clima está mudando. Ainda não dá para saber o que vem."],[6,c.abre+" "+c.aviso],[3,c.aviso2]]}
+  return [];
 }
+function gastar(){S.en=Math.max(0,S.en-1);atualizaSinal()}
+function atualizaSinal(){sinaisDaFase().forEach((s,i)=>{if(S.en<=s[0]&&i>S.sinal)S.sinal=i})}
 function descobrir(id){
   S.k[id]=1;
   const l=E[id].l;
@@ -285,33 +408,36 @@ function descobrir(id){
   encherPedidos();
 }
 function combinar(a,b){
-  const k=chave(a,b),id=RECEITA[k];
+  const k=chave(a,b);let id=RECEITA[k];
   G.res=null;G.dica=null;
-  if(id&&S.ext[id]){G.res={x:"🧊"};G.info=`${E[id].n} se perdeu no gelo. Esse caminho fechou nesta partida.`;return}
+  if(id&&travado(id)){G.res={x:1};G.info="Essa mistura ainda não reage. Por enquanto, o mundo não está pronto para ela.";return}
+  if(id&&S.ext[id]){G.res={i:"gelo"};G.info=`${E[id].n} se perdeu para sempre. Esse caminho fechou nesta partida.`;return}
   if(id&&S.k[id]!=null){G.res={id};G.info=`Você já conhece ${E[id].n}. Essa repetição não gasta energia.`;return}
-  if(!id&&S.tent[k]){G.res={x:"✕"};G.info="Você já tentou essa mistura. Nada acontece, e a energia fica.";return}
+  if(!id&&S.tent[k]){G.res={x:1};G.info="Você já tentou essa mistura. Nada acontece, e a energia fica.";return}
   gastar();
   if(id){descobrir(id);G.res={id,novo:1};
     if(id==="celula"){salvar();abrirEraVida();return}
-  }else{S.tent[k]=1;S.erros++;G.res={x:"✕"};G.info="Nada se formou. Essa mistura custou 1 de energia."}
+  }else{S.tent[k]=1;S.erros++;G.res={x:1};G.info="Nada se formou. Essa mistura custou 1 de energia."}
   depois();
 }
 function depois(){
   salvar();
   if(S.en<=0)zero();
-  else if(!alcancaveis().length){if(S.fase==="vida")crise();else if(S.fase==="degelo")finalizar()}
+  else if(!alcancaveis().length)seguirZero();
 }
 function zero(){
   if(S.vit>=custoReserva()&&S.res<RES_MAX){
-    const msg={materia:"Sem energia, o planeta esfria antes de surgir a vida.",vida:"Sem energia, o gelo chega agora.",degelo:"Sem energia, esta história termina aqui."}[S.fase];
-    modal({ic:"⚡",t:"A energia acabou",h:`<p>${msg}</p>`,b:[
-      {t:`Comprar Reserva (+${RES_GANHO}) por ${custoReserva()} ✦`,f:()=>{comprarReserva();pintar()}},
+    const msg={materia:"Sem energia, o planeta esfria antes de surgir a vida.",vida:"Sem energia, o gelo chega agora.",degelo:"Sem energia, a era termina aqui.",especies:"Sem energia, a crise chega agora.",recup:"Sem energia, esta história termina aqui."}[S.fase];
+    modal({ic:"planeta",t:"A energia acabou",h:`<p>${msg}</p>`,b:[
+      {t:`Comprar Reserva (+${RES_GANHO}) por ${custoReserva()} ${UI.vit}`,f:()=>{comprarReserva();pintar()}},
       {t:"Seguir sem comprar",c:"vazado",f:seguirZero}]});
   }else seguirZero();
 }
 function seguirZero(){
   if(S.fase==="materia")finalizar("esteril");
   else if(S.fase==="vida")crise();
+  else if(S.fase==="degelo")fimDegelo();
+  else if(S.fase==="especies")crise2();
   else finalizar();
 }
 function comprarReserva(){if(S.vit<custoReserva()||S.res>=RES_MAX)return;S.vit-=custoReserva();S.res++;S.en+=RES_GANHO;S.enMax=Math.max(S.enMax,S.en);salvar()}
@@ -329,18 +455,18 @@ function entregar(i){
   if(falta>S.en)return;
   S.k[o.id]+=falta;for(let n=0;n<falta;n++)gastar();
   S.k[o.id]-=o.q;S.vit+=o.v;S.ped++;S.ord.splice(i,1);encherPedidos();
-  G.info=`Entregue: ${E[o.id].n}. Você ganhou ${o.v} ✦${falta?` e gastou ${falta} de energia`:""}.`;
+  G.info=`Entregue: ${E[o.id].n}. Você ganhou ${o.v} ${UI.vit}${falta?` e gastou ${falta} de energia`:""}.`;
   pintar();
   if(falta)depois();else salvar();
 }
 function abrirEraVida(){
   const bonus=Math.floor(S.en/3);
   S.vit+=bonus;S.fase="vida";S.en=EN2;S.enMax=EN2;S.res=0;S.k.sol=1;S.ord=[];encherPedidos();salvar();
-  modal({ic:"🦠",t:"A primeira célula",h:`<p>Começa a Era da Vida, e o Sol entra na sua mesa.</p><p>A vida pode seguir três caminhos: a <b>Luz</b>, o <b>Calor</b> das fontes e a <b>Caça</b>.</p><p>Cada combinação agora aproxima o gelo.${bonus?` A energia que sobrou virou ${bonus} ✦.`:""}</p>`,b:[{t:"Continuar",f:pintar}]});
+  modal({ic:"celula",el:1,t:"A primeira célula",h:`<p>Começa a Era da Vida, e o Sol entra na sua mesa.</p><p>A vida pode seguir três caminhos: a <b>Luz</b>, o <b>Calor</b> das fontes e a <b>Caça</b>.</p><p>Cada combinação agora aproxima o gelo.${bonus?` A energia que sobrou virou ${bonus} ${UI.vit}.`:""}</p>`,b:[{t:"Continuar",f:pintar}]});
 }
 function crise(){
   const r={};
-  ["luz","caca","calor"].forEach(l=>{
+  ORDEM.forEach(l=>{
     const mem=RAMO[l].filter(id=>E[id].l===l&&vivo(id));
     if(!mem.length)r[l]="ausente";
     else if(l==="calor")r[l]="abrigada";
@@ -348,29 +474,67 @@ function crise(){
     else if(S.guarda[l])r[l]="refugio";
     else{r[l]="extinta";mem.forEach(id=>{S.ext[id]=1;delete S.k[id]})}
   });
-  S.gelo=r;S.fase="degelo";S.en=EN3;S.enMax=EN3;S.res=0;encherPedidos();salvar();
+  S.gelo=r;S.fase="degelo";S.en=EN3;S.enMax=EN3;S.res=0;S.guarda={};encherPedidos();salvar();
   const T={ausente:"Ainda não existia.",abrigada:"O calor do fundo manteve tudo vivo.",adaptada:"Dormiu e acordou depois do gelo.",refugio:"Sobreviveu no refúgio.",extinta:"Extinta. Receitas ligadas a ela fecharam."};
-  const h=`<p>A Terra virou uma bola de neve, de polo a polo.</p>`+["luz","calor","caca"].map(l=>`<div class="vered"><b>${LINHAS[l].n}</b><span>${T[r[l]]}</span></div>`).join("");
-  modal({ic:"🧊",t:"A Grande Glaciação",h,gelo:1,b:[{t:"Ver o degelo",f:()=>{G.aba="mesa";pintar();if(!alcancaveis().length)finalizar()}}]});
+  const h=`<p>A Terra virou uma bola de neve, de polo a polo.</p>`+ORDEM.map(l=>`<div class="vered"><b>${LINHAS[l].n}</b><span>${T[r[l]]}</span></div>`).join("");
+  modal({ic:"gelo",cor:"#2f8fb8",t:"A Grande Glaciação",h,cx:"gelo",b:[{t:"Ver o degelo",f:()=>{G.aba="mesa";pintar();if(!alcancaveis().length)fimDegelo()}}]});
+}
+function fimDegelo(){
+  if(!algumTopo())return finalizar();
+  abrirEspecies();
+}
+function abrirEspecies(){
+  S.abre={};ORDEM.forEach(l=>S.abre[l]=vivo(LINHAS[l].topo));
+  S.crise2=sortear(Object.keys(CRISES));
+  S.fase="especies";S.en=EN4;S.enMax=EN4;S.res=0;S.guarda={};S.sinal=-1;S.ord=[];G.aba="mesa";atualizaSinal();encherPedidos();salvar();
+  const ab=ORDEM.filter(l=>S.abre[l]).map(l=>`<b>${LINHAS[l].n}</b> (${E[LINHAS[l].topo].n})`);
+  modal({ic:"planeta",t:"A Era das Espécies",h:`<p>Os seus topos abrem o caminho: ${ab.join(", ")}.</p><p>Uma nova crise se aproxima. Os primeiros sinais não dizem qual, e cada combinação deixa o tempo mais curto.</p>`,b:[{t:"Continuar",f:pintar}]});
+}
+function crise2(){
+  const c=CRISES[S.crise2],r={};
+  ORDEM.forEach(l=>{
+    const mem=[...RAMO[l],...RAMO2[l]].filter(id=>E[id].l===l&&vivo(id));
+    if(!S.abre[l]||!mem.length)r[l]="fora";
+    else if(l===c.escapa)r[l]="escapou";
+    else if(S.k[c.def[l]]!=null)r[l]="adaptada";
+    else if(S.guarda[l])r[l]="refugio";
+    else{r[l]="extinta";mem.forEach(id=>{S.ext[id]=1;delete S.k[id]})}
+  });
+  S.gelo2=r;S.fase="recup";S.en=EN5;S.enMax=EN5;S.res=0;encherPedidos();salvar();
+  const T={fora:"Não chegou a esta era.",escapou:"Passou quase sem sentir.",refugio:"Sobreviveu no refúgio.",extinta:"Extinta. Receitas ligadas a ela fecharam."};
+  const txt=(l)=>r[l]==="adaptada"?`Salva por ${E[c.def[l]].n}.`:T[r[l]];
+  const h=`<p>${c.intro}</p>`+ORDEM.map(l=>`<div class="vered"><b>${LINHAS[l].n}</b><span>${txt(l)}</span></div>`).join("");
+  modal({ic:c.ic,cor:c.ic==="seca"?"#a8742c":"#5a1f1f",t:c.nome,h,cx:c.cx,b:[{t:"Ver a recuperação",f:()=>{G.aba="mesa";pintar();if(!alcancaveis().length)finalizar()}}]});
 }
 function escolherFinal(){
-  const f=vivo("floresta"),p=vivo("peixe"),a=vivo("abissal");
+  const v=vivo,fr=v("fruta"),di=v("dino"),pr=v("primata"),lu=v("lula");
+  if(fr&&di&&pr&&lu)return "tudo";
+  if(pr)return "caminho";if(di)return "dino";if(fr)return "pomar";if(lu)return "gigantes";
+  const f=v("floresta"),p=v("peixe"),a=v("abissal");
   if(f&&p&&a)return "pleno";if(f&&p)return "fp";if(f&&a)return "fa";if(p&&a)return "pa";
   if(f)return "f";if(p)return "p";if(a)return "a";
-  return ["luz","calor","caca"].some(ramoVivo)?"micro":"fio";
+  return ORDEM.some(ramoVivo)?"micro":"fio";
 }
 function cronica(fin){
   const c=[];
   if(fin==="esteril")return [`Foram ${S.erros} misturas sem resultado até a energia acabar.`];
-  c.push(S.erros<=6?"A vida surgiu depressa, quase sem tropeços.":S.erros<=14?"A vida demorou, mas surgiu.":"O planeta errou muito antes de acertar a vida.");
+  c.push(S.erros<=8?"A vida surgiu depressa, quase sem tropeços.":S.erros<=20?"A vida demorou, mas surgiu.":"O planeta errou muito antes de acertar a vida.");
   if(S.prim)c.push({luz:"Os primeiros seres subiram em busca da luz.",calor:"Os primeiros seres desceram para o calor das fontes.",caca:"Os primeiros seres se juntaram em colônias."}[S.prim]);
   const r=S.gelo||{};
-  const F={luz:{extinta:"A grande glaciação apagou o sol, e a linhagem da Luz morreu no escuro.",adaptada:"A Luz atravessou o gelo dormindo em esporos.",refugio:"A Luz resistiu em um último refúgio."},
-    caca:{extinta:"Os caçadores não tinham onde se esconder, e o gelo acabou com eles.",adaptada:"Os caçadores se fecharam em cistos e esperaram o frio passar.",refugio:"Os caçadores resistiram em um último refúgio."},
+  const F={luz:{extinta:"A grande glaciação apagou o sol, e a linhagem da Luz morreu no escuro.",adaptada:"A Luz atravessou o gelo dormindo em esporos.",refugio:"A Luz resistiu ao gelo em um último refúgio."},
+    caca:{extinta:"Os caçadores não tinham onde se esconder, e o gelo acabou com eles.",adaptada:"Os caçadores se fecharam em cistos e esperaram o frio passar.",refugio:"Os caçadores resistiram ao gelo em um último refúgio."},
     calor:{abrigada:"No fundo do mar, as fontes quentes nem sentiram o gelo."}};
-  const fr=["luz","caca","calor"].map(l=>F[l][r[l]]).filter(Boolean);
+  const fr=ORDEM.map(l=>(F[l]||{})[r[l]]).filter(Boolean);
   c.push(...fr);
   if(!fr.length)c.push("O gelo cobriu um mundo de células solitárias.");
+  if(S.gelo2){
+    const q=S.crise2,g=S.gelo2,cs=CRISES[q],M={
+      seca:{luz:{extinta:"Quando a Grande Seca veio, a Luz não tinha guardado sementes.",adaptada:"Na Grande Seca, as sementes esperaram a chuva voltar.",refugio:"A Luz resistiu à seca em um refúgio."},caca:{extinta:"A sede acabou com os bichos da terra.",adaptada:"Ovos de casca dura atravessaram a seca.",refugio:"Os bichos da terra resistiram à seca em um refúgio."}},
+      meteoro:{caca:{extinta:"O meteoro escureceu o céu, e os animais da terra não voltaram.",adaptada:"Quando o meteoro caiu, os menores esperaram nas tocas.",refugio:"Os animais resistiram ao meteoro em um refúgio."},calor:{extinta:"O mar azedou, e o jardim do fundo se calou.",adaptada:"Conchas protegeram os seres do fundo quando o mar azedou.",refugio:"O fundo do mar resistiu ao meteoro em um refúgio."}}
+    }[q];
+    ORDEM.forEach(l=>{const t=(M[l]||{})[g[l]];if(t)c.push(t)});
+    if(g[cs.escapa]==="escapou")c.push(cs.fuga);
+  }
   c.push(FINAIS[fin].x);
   return c;
 }
@@ -381,31 +545,46 @@ function finalizar(id){
 
 /* ---------- desenho ---------- */
 const $=s=>document.querySelector(s);
-const orbe=(id)=>`<span class="orbe" style="--tinta:${E[id].t}">${E[id].e}</span>`;
+const orbe=id=>`<span class="orbe" style="--tinta:${E[id].t}">${svgI(id)}</span>`;
+const mini=id=>`<span class="mini">${orbe(id)}</span>`;
+const CREDITO=`<p class="credito">Idealizado por Jonathan Caye, criado por Claude</p>`;
 function tela(id){document.querySelectorAll(".tela").forEach(t=>t.classList.toggle("on",t.id===id))}
 function modal(o){
-  const m=$("#modal");
-  m.innerHTML=`<div class="caixa${o.gelo?" gelo":""}" role="dialog" aria-modal="true"><div class="ic">${o.ic}</div><h3>${o.t}</h3>${o.h}<div class="acoes">${o.b.map((b,i)=>`<button class="btn ${b.c||""}" data-m="${i}">${b.t}</button>`).join("")}</div></div>`;
+  const m=$("#modal"),ic=o.el?orbe(o.ic):`<span class="orbe" style="--tinta:${o.cor||"#1f6a62"}">${svgI(o.ic)}</span>`;
+  m.innerHTML=`<div class="caixa ${o.cx||""}" role="dialog" aria-modal="true"><div class="ic">${ic}</div><h3>${o.t}</h3>${o.h}<div class="acoes">${o.b.map((b,i)=>`<button class="btn ${b.c||""}" data-m="${i}">${b.t}</button>`).join("")}</div></div>`;
   m.classList.add("on");m._b=o.b;
 }
 function fechaModal(){const m=$("#modal");m.classList.remove("on");m.innerHTML=""}
+function abertura(){
+  const o=(x,y,r,id,cl,c)=>`<g class="${cl}" ><circle cx="${x}" cy="${y}" r="${r}" fill="${c||E[id].t}"/><circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#fff1d6" stroke-opacity=".35" stroke-width="1.500"/><svg x="${x-r*.78}" y="${y-r*.78}" width="${r*1.56}" height="${r*1.56}" viewBox="0 0 48 48">${ICO[id]}</svg></g>`;
+  const ramo=(d,c)=>`<path class="ramo-a" pathLength="1" d="${d}" fill="none" stroke="${c}" stroke-width="5" stroke-linecap="round"/>`;
+  return `<svg class="abertura" viewBox="0 0 320 214" aria-hidden="true">
+    ${ramo("M160 118C126 104 96 84 62 44","#86d65a")}${ramo("M160 118C160 88 160 60 160 26","#f97316")}${ramo("M160 118C194 104 224 84 258 44","#b596ff")}
+    ${o(62,42,24,"floresta","ponta p1")}${o(160,26,24,"lula","ponta p2")}${o(258,42,24,"primata","ponta p3")}
+    ${o(160,122,38,"celula","nucleo")}
+    ${o(65,178,26,"fogo","fa")}${o(255,178,26,"agua","fb")}
+  </svg>`;
+}
 function pintarCapa(){
   const s=carregar(),f=finais().length,tot=Object.keys(FINAIS).length;
-  $("#capa").innerHTML=`<a class="voltar" href="../../">← Mesa de Jogos</a><div class="fusao" aria-hidden="true"><i class="a"></i><i class="b"></i><i class="c"></i></div><h1>Gênese</h1><p>Misture os elementos, crie a vida e descubra o que sobrevive ao gelo.</p><div class="acoes">${s?`<button class="btn" data-a="continuar">Continuar partida</button>`:""}<button class="btn ${s?"vazado":"fogo"}" data-a="nova">Nova partida</button><button class="btn vazado" data-a="como">Como jogar</button></div>${f?`<small>Finais encontrados: ${f} de ${tot}</small>`:""}`;
+  $("#capa").innerHTML=`<a class="voltar" href="../../">← Mesa de Jogos</a>${abertura()}<h1>Gênese</h1><p class="chamada">Misture os elementos, crie a vida e descubra o que sobrevive às crises do planeta.</p><div class="acoes">${s?`<button class="btn" data-a="continuar">Continuar partida</button>`:""}<button class="btn ${s?"vazado":"fogo"}" data-a="nova">Nova partida</button><button class="btn vazado" data-a="como">Como jogar</button></div>${f?`<span class="fins">Finais encontrados: ${f} de ${tot}</span>`:""}${CREDITO}`;
   $("#app").className="";$("#frost").style.opacity=0;tela("capa");
 }
 function comoJogar(){
-  modal({ic:"🔥",t:"Como jogar",h:`<p><b>Combine:</b> toque em dois elementos. Cada mistura nova gasta 1 de energia, certa ou errada.</p><p><b>Entregue:</b> os pedidos dão pistas e rendem ✦ Vitalidade, que compra ajuda na aba Evolução.</p><p><b>Sobreviva:</b> na Era da Vida, a energia é o tempo até o gelo. Linhagens sem proteção se extinguem, e as receitas ligadas a elas fecham.</p><p>Elementos apagados já não têm nada a oferecer.</p>`,b:[{t:"Entendi",f:()=>{}}]});
+  modal({ic:"celula",el:1,t:"Como jogar",h:`<p><b>Combine:</b> toque em dois elementos. Cada mistura nova gasta 1 de energia, certa ou errada.</p><p><b>Entregue:</b> os pedidos dão pistas e rendem Vitalidade, que compra ajuda na aba Evolução.</p><p><b>Sobreviva:</b> a energia é o tempo até a próxima crise. Linhagens sem proteção se extinguem, e as receitas ligadas a elas fecham.</p><p><b>Avance:</b> só as linhagens que chegam ao topo seguem para a Era das Espécies.</p><p>Elementos apagados já não têm nada a oferecer.</p>`,b:[{t:"Entendi",f:()=>{}}]});
 }
 function pintar(){
   if(!S)return pintarCapa();
   if(S.fase==="fim")return pintarFim();
   const a=$("#app");a.className=S.fase==="materia"?"":S.fase;
-  document.querySelector('meta[name=theme-color]').content=S.fase==="materia"?"#2b1420":S.fase==="vida"?"#06303a":"#0d3a48";
-  $("#frost").style.opacity=S.fase==="vida"?(0.12+.75*(1-S.en/Math.max(S.enMax,1))).toFixed(2):0;
+  document.querySelector('meta[name=theme-color]').content={materia:"#2b1420",vida:"#06303a",degelo:"#0d3a48",especies:"#1b2a18",recup:"#2a2138"}[S.fase];
+  const fr=$("#frost");
+  const avanca=(S.fase==="vida"||revelada());
+  fr.className=S.fase==="especies"&&revelada()?S.crise2:"";
+  fr.style.opacity=avanca?(0.12+.75*(1-S.en/Math.max(S.enMax,1))).toFixed(2):0;
   tela("jogo");
-  const era={materia:"Era da Matéria",vida:"Era da Vida",degelo:"O Degelo"}[S.fase];
-  const topo=`<div class="hud"><button class="menu" data-a="menu" aria-label="Menu">☰</button><h2>${era}</h2><span class="res${S.en<=4?" baixo":""}" aria-label="Energia"><span class="i">⚡</span>${S.en}</span><span class="res vit" aria-label="Vitalidade"><span class="i">✦</span>${S.vit}</span></div>`;
+  const era={materia:"Era da Matéria",vida:"Era da Vida",degelo:"O Degelo",especies:"Era das Espécies",recup:"A Recuperação"}[S.fase];
+  const topo=`<div class="hud"><button class="menu" data-a="menu" aria-label="Menu">${UI.menu}</button><h2>${era}</h2><span class="res${S.en<=4?" baixo":""}" aria-label="Energia">${UI.energia}${S.en}</span><span class="res vit" aria-label="Vitalidade">${UI.vit}${S.vit}</span></div>`;
   const abas=`<nav class="abas">${[["mesa","Mesa"],["evo","Evolução"],["arv","Árvore"]].map(([k,n])=>`<button class="${G.aba===k?"on":""}" data-aba="${k}">${n}</button>`).join("")}</nav>`;
   let corpo="";
   if(G.aba==="mesa")corpo=pintarMesa();
@@ -420,24 +599,27 @@ function pintarStatus(){
     const n=MATERIA.filter(id=>S.k[id]!=null).length;
     return `<div class="status"><b>Objetivo: criar a primeira Célula</b><div class="barra"><i style="width:${n/MATERIA.length*100}%"></i></div></div>`;
   }
-  if(S.fase==="vida"){
-    const s=S.sinal>=0?SINAIS[S.sinal][1]:"O ar está esfriando. Proteja o que você criar.";
-    return `<div class="status"><b>Gelo em ${S.en} ${S.en===1?"combinação":"combinações"}</b><div class="sinal">${s}</div></div>`;
+  if(S.fase==="vida"||S.fase==="especies"){
+    const si=sinaisDaFase();
+    const s=S.sinal>=0?si[S.sinal][1]:"O ar está esfriando. Proteja o que você criar.";
+    const nome=S.fase==="vida"?"Gelo":revelada()?(S.crise2==="seca"?"Seca":"Meteoro"):"Crise";
+    return `<div class="status"><b>${nome} em ${S.en} ${S.en===1?"combinação":"combinações"}</b><div class="sinal">${s}</div></div>`;
   }
-  return `<div class="status lin"><b>O gelo recua. Leve uma linhagem até o topo.</b><button class="enc" data-a="encerrar">Encerrar era</button></div>`;
+  if(S.fase==="degelo")return `<div class="status lin"><b>${algumTopo()?"Mais topos abrem mais caminhos.":"Leve uma linhagem até o topo para seguir."}</b><button class="enc" data-a="encerrar">Encerrar era</button></div>`;
+  return `<div class="status lin"><b>A vida se recompõe. Alcance um novo topo.</b><button class="enc" data-a="encerrar">Encerrar era</button></div>`;
 }
 function pintarMesa(){
   const f=G.a,g=G.b,r=G.res;
-  const cen=r?(r.id?E[r.id].e:`<span class="x">${r.x}</span>`):"";
-  const forja=`<div class="forja" id="forja"><div class="slot${f?"":" vazio"}" id="sa">${f?E[f].e:""}</div><div class="crisol${r&&r.novo?" novo":""}${r&&!r.id?" nada":""}">${cen}</div><div class="slot${g?"":" vazio"}" id="sb">${g?E[g].e:""}</div></div>`;
+  const cen=r?(r.id?orbe(r.id):r.i?`<span class="orbe" style="--tinta:#3d7c93">${svgI(r.i)}</span>`:UI.nada):"";
+  const forja=`<div class="forja" id="forja"><div class="slot" id="sa">${f?orbe(f):""}</div><div class="crisol${r&&r.novo?" novo":""}${r&&!r.id?" nada":""}">${cen}</div><div class="slot" id="sb">${g?orbe(g):""}</div></div>`;
   const info=`<div class="info">${G.info||(f?"Agora escolha o segundo elemento.":"Toque em dois elementos para combinar.")}</div>`;
   const peds=[0,1].map(i=>{
     const o=S.ord[i];
     if(!o)return `<div class="ped"><p class="aguarda">Nenhum pedido agora.</p></div>`;
     const conhe=vivo(o.id),tem=conhe?S.k[o.id]:0;
-    const txt=conhe?`${o.q>1?o.q+" × ":""}${E[o.id].e} ${E[o.id].n}`:`❔ ${E[o.id].c}`;
-    const btn=!conhe?`<span class="aguarda">Descubra</span>`:tem>=o.q?`<button data-ent="${i}">Entregar</button>`:`<button class="prod" data-ent="${i}" ${o.q-tem>S.en?"disabled":""}>Entregar ⚡${o.q-tem}</button>`;
-    return `<div class="ped"><p>${txt}</p><div class="pr"><span class="val">+${o.v} ✦</span>${btn}</div></div>`;
+    const txt=conhe?`${o.q>1?o.q+" × ":""}${mini(o.id)} ${E[o.id].n}`:`${UI.pista} ${E[o.id].c}`;
+    const btn=!conhe?`<span class="aguarda">Descubra</span>`:tem>=o.q?`<button data-ent="${i}">Entregar</button>`:`<button class="prod" data-ent="${i}" ${o.q-tem>S.en?"disabled":""}>Entregar ${UI.energia}${o.q-tem}</button>`;
+    return `<div class="ped"><p>${txt}</p><div class="pr"><span class="val">+${o.v} ${UI.vit}</span>${btn}</div></div>`;
   }).join("");
   const ids=Object.keys(S.k).filter(id=>!S.ext[id]).map((id,i)=>({id,i,g:esgotado(id)?1:0})).sort((x,y)=>x.g-y.g||x.i-y.i);
   const els=ids.map(({id,g:ga})=>{
@@ -448,12 +630,14 @@ function pintarMesa(){
 }
 function pintarEvo(){
   const c=custoReserva(),alc=alcancaveis().length;
-  let h=`<div class="up"><div class="t"><h3>Reserva</h3><button class="pg" data-a="reserva" ${S.vit>=c&&S.res<RES_MAX?"":"disabled"}>${S.res>=RES_MAX?"Esgotada":c+" ✦"}</button></div><p>+${RES_GANHO} de energia${S.fase==="vida"?", o que atrasa o gelo":""}. Até ${RES_MAX} por era (${S.res} ${S.res===1?"usada":"usadas"}).</p></div>
-  <div class="up"><div class="t"><h3>Intuição</h3><button class="pg" data-a="dica" ${S.vit>=DICA&&alc?"":"disabled"}>${DICA} ✦</button></div><p>Mostra na mesa dois elementos que combinam.</p></div>`;
-  if(S.fase==="vida"){
-    const ls=["luz","caca"].filter(l=>!S.guarda[l]&&ramoVivo(l));
-    const pr=["luz","caca"].filter(l=>S.guarda[l]).map(l=>LINHAS[l].n);
-    h+=`<div class="up"><div class="t"><h3>Refúgio</h3><span class="res vit">${REFUGIO} ✦</span></div><p>Salva uma linhagem inteira do gelo, mesmo sem adaptação.${pr.length?` Protegida: ${pr.join(" e ")}.`:""}</p><div class="lns">${ls.length?ls.map(l=>`<button class="pg" data-ref="${l}" ${S.vit>=REFUGIO?"":"disabled"}>Proteger ${LINHAS[l].n}</button>`).join(""):`<p>Crie um ser da Luz ou da Caça para poder protegê-lo.</p>`}</div></div>`;
+  const tempo=S.fase==="vida"?", o que atrasa o gelo":S.fase==="especies"?", o que atrasa a crise":"";
+  let h=`<div class="up"><div class="t"><h3>Reserva</h3><button class="pg" data-a="reserva" ${S.vit>=c&&S.res<RES_MAX?"":"disabled"}>${S.res>=RES_MAX?"Esgotada":c+" "+UI.vit}</button></div><p>+${RES_GANHO} de energia${tempo}. Até ${RES_MAX} por era (${S.res} ${S.res===1?"usada":"usadas"}).</p></div>
+  <div class="up"><div class="t"><h3>Intuição</h3><button class="pg" data-a="dica" ${S.vit>=DICA&&alc?"":"disabled"}>${DICA} ${UI.vit}</button></div><p>Mostra na mesa dois elementos que combinam.</p></div>`;
+  if(S.fase==="vida"||S.fase==="especies"){
+    const cand=S.fase==="vida"?["luz","caca"]:ORDEM.filter(l=>S.abre[l]);
+    const ls=cand.filter(l=>!S.guarda[l]&&ramoVivo(l));
+    const pr=cand.filter(l=>S.guarda[l]).map(l=>LINHAS[l].n);
+    h+=`<div class="up"><div class="t"><h3>Refúgio</h3><span class="res vit">${REFUGIO} ${UI.vit}</span></div><p>Salva uma linhagem inteira da próxima crise, mesmo sem defesa.${pr.length?` Protegida: ${pr.join(" e ")}.`:""}</p><div class="lns">${ls.length?ls.map(l=>`<button class="pg" data-ref="${l}" ${S.vit>=REFUGIO?"":"disabled"}>${LINHAS[l].n}</button>`).join(""):`<p>Crie um ser de uma linhagem para poder protegê-la.</p>`}</div></div>`;
   }
   return h;
 }
@@ -461,20 +645,21 @@ function noArv(id,cls){
   const x=E[id];
   if(S.ext[id])return `<div class="no morto ${cls||""}">${orbe(id)}<span class="nm">${x.n}</span></div>`;
   if(S.k[id]==null)return `<div class="no oculto ${cls||""}"><span class="orbe">?</span></div>`;
-  return `<div class="no ${cls||""}">${orbe(id)}<span class="nm">${x.n}</span><span class="rc">${x.r?x.r.map(p=>E[p].e).join("+"):""}</span></div>`;
+  return `<div class="no ${cls||""}">${orbe(id)}<span class="nm">${x.n}</span>${x.r?`<span class="rc">${x.r.map(mini).join("+")}</span>`:""}</div>`;
 }
 function arvore(){
-  const est={ausente:"não surgiu",abrigada:"abrigada",adaptada:"adaptada",refugio:"em refúgio",extinta:"extinta"};
-  const ram=["luz","calor","caca"].map(l=>{
-    const st=S.gelo?S.gelo[l]:null;
-    return `<div class="ramo ${st==="extinta"?"extinta":""}" style="--cor:${LINHAS[l].cor}"><h4>${LINHAS[l].n}${st?`<small>${est[st]}</small>`:""}</h4>${RAMO[l].map(id=>noArv(id)).join("")}</div>`;
+  const est={ausente:"não surgiu",abrigada:"abrigada",adaptada:"adaptada",refugio:"em refúgio",extinta:"extinta",fora:"ficou para trás",escapou:"escapou"};
+  const col=(m,g)=>ORDEM.map(l=>{
+    const st=S.gelo2&&S.gelo2[l]==="extinta"?"extinta":g?g[l]:null;
+    return `<div class="ramo ${st==="extinta"?"extinta":""}" style="--cor:${LINHAS[l].cor}"><h4>${LINHAS[l].n}${st?`<small>${est[st]}</small>`:""}</h4>${m[l].map(id=>noArv(id)).join("")}</div>`;
   }).join("");
-  return `<div class="tronco">${[...BASE1,...MATERIA.filter(i=>i!=="celula")].map(id=>noArv(id)).join("")}</div>${noArv("celula","nocel")}<div class="ramos">${ram}</div>`;
+  const eraNova=S.abre?`<h3 class="secao">Era das Espécies</h3><div class="ramos">${col(RAMO2,S.gelo2)}</div>`:"";
+  return `<div class="tronco">${[...BASE1,...MATERIA.filter(i=>i!=="celula")].map(id=>noArv(id)).join("")}</div>${noArv("celula","nocel")}<div class="ramos">${col(RAMO,S.gelo)}</div>${eraNova}`;
 }
 function pintarFim(){
   const fin=S.fim,F=FINAIS[fin],c=cronica(fin);
   $("#app").className=fin==="esteril"?"":"degelo";$("#frost").style.opacity=0;
-  $("#fim").innerHTML=`<div class="painel"><h1>${F.t}</h1><div class="cron">${c.map(p=>`<p>${p}</p>`).join("")}</div><p class="num">${descobertas()} de ${TOTAL} descobertas, ${Object.keys(S.ext).length} extintas, ${finais().length} de ${Object.keys(FINAIS).length} finais encontrados.</p>${arvore()}</div><div class="acoes"><button class="btn vazado" data-a="capa">Sair</button><button class="btn" data-a="nova">Jogar de novo</button></div>`;
+  $("#fim").innerHTML=`<div class="painel"><h1>${F.t}</h1><div class="cron">${c.map(p=>`<p>${p}</p>`).join("")}</div><p class="num">${descobertas()} de ${TOTAL} descobertas, ${Object.keys(S.ext).length} extintas, ${finais().length} de ${Object.keys(FINAIS).length} finais encontrados.</p>${CREDITO}${arvore()}</div><div class="acoes"><button class="btn vazado" data-a="capa">Sair</button><button class="btn" data-a="nova">Jogar de novo</button></div>`;
   tela("fim");
 }
 
@@ -514,11 +699,14 @@ document.addEventListener("click",ev=>{
     case "capa":S=null;return pintarCapa();
     case "reserva":comprarReserva();return pintar();
     case "dica":return comprarDica();
-    case "encerrar":return modal({ic:"🌍",t:"Encerrar a era?",h:`<p>A história termina aqui, com o que estiver vivo agora.</p>`,b:[{t:"Encerrar",f:()=>finalizar()},{t:"Continuar jogando",c:"vazado",f:()=>{}}]});
-    case "menu":return modal({ic:"🌍",t:"Gênese",h:"",b:[{t:"Voltar ao jogo",f:()=>{}},{t:"Como jogar",c:"vazado",f:comoJogar},{t:"Recomeçar partida",c:"vazado",f:novaPartida},{t:"Sair para a capa",c:"vazado",f:()=>{S=null;pintarCapa()}}]});
+    case "encerrar":{
+      const dg=S.fase==="degelo",seg=dg&&algumTopo();
+      return modal({ic:"planeta",t:"Encerrar a era?",h:`<p>${seg?"O que ainda não foi descoberto aqui fica para trás, e a Era das Espécies começa.":"A história termina aqui, com o que estiver vivo agora."}</p>`,b:[{t:seg?"Seguir para a próxima era":"Encerrar",f:seguirZero},{t:"Continuar jogando",c:"vazado",f:()=>{}}]});
+    }
+    case "menu":return modal({ic:"planeta",t:"Gênese",h:"",b:[{t:"Voltar ao jogo",f:()=>{}},{t:"Como jogar",c:"vazado",f:comoJogar},{t:"Recomeçar partida",c:"vazado",f:novaPartida},{t:"Sair para a capa",c:"vazado",f:()=>{S=null;pintarCapa()}}]});
   }
 });
-window.__G={get S(){return S},G,E,RECEITA,chave,combinar,alcancaveis,novaPartida,pintar,entregar,FINAIS};
+window.__G={get S(){return S},G,E,ICO,RECEITA,chave,combinar,alcancaveis,novaPartida,pintar,entregar,FINAIS,CRISES,seguirZero,finalizar};
 pintarCapa();
 </script>
 </body>
