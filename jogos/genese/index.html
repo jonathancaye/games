@@ -306,52 +306,52 @@ const LINHAS={
 const E={
   fogo:{n:"Fogo",t:"#b8431a"},agua:{n:"Água",t:"#2478a3"},terra:{n:"Terra",t:"#6e5238"},ar:{n:"Ar",t:"#5f7f8c"},
   sol:{n:"Sol",t:"#d9941e"},
-  vapor:{n:"Vapor",t:"#6d8a96",r:["agua","fogo"],c:"Água que aprendeu a subir",f:"O planeta jovem era quente demais para mares. A água vivia no ar."},
-  lava:{n:"Lava",t:"#a83a14",r:["terra","fogo"],c:"Chão que derrete",f:"A Terra começou como uma bola de rocha derretida."},
-  lama:{n:"Lama",t:"#8a6a46",r:["agua","terra"],c:"Chão que amolece com a água",f:"Mistura simples, mas é nela que a química encontra abrigo."},
-  poeira:{n:"Poeira",t:"#a07f4a",r:["ar","terra"],c:"Chão levado pelo vento",f:"O vento carrega grãos minerais por continentes inteiros."},
-  nuvem:{n:"Nuvem",t:"#5f7f96",r:["vapor","ar"],c:"O vapor subiu alto e esfriou",f:"Com o planeta esfriando, o vapor começou a condensar."},
-  chuva:{n:"Chuva",t:"#3f6f96",r:["nuvem","agua"],c:"A nuvem ficou pesada",f:"Choveu por muito, muito tempo."},
-  raio:{n:"Relâmpago",t:"#5a50a8",r:["nuvem","fogo"],c:"Energia que nasce na nuvem",f:"Tempestades despejavam energia num mundo sem vida."},
-  rocha:{n:"Rocha",t:"#646170",r:["lava","agua"],c:"Lava que a água esfriou",f:"As rochas mais antigas conhecidas têm cerca de 4 bilhões de anos."},
-  oceano:{n:"Oceano",t:"#1c6a94",r:["chuva","terra"],c:"Chuva sem fim enchendo a terra",f:"A chuva encheu as bacias e nasceu o mar."},
-  fonte:{n:"Fonte Termal",t:"#a8432a",r:["oceano","lava"],c:"Onde o mar encontra o fogo da terra",f:"Fontes no fundo do mar foram descobertas em 1977, cheias de vida sem sol."},
-  argila:{n:"Argila",t:"#a85d33",r:["lama","poeira"],c:"Lama e pó de grãos bem finos",f:"Grãos de argila ajudam moléculas a formar cadeias, em laboratório."},
-  sopa:{n:"Sopa Primordial",t:"#7a8a2c",r:["oceano","raio"],c:"O mar levou um choque",f:"Em 1953, faíscas numa mistura de gases produziram aminoácidos em laboratório."},
-  rna:{n:"RNA",t:"#28806e",r:["sopa","argila"],c:"A sopa ganhou um molde para se organizar",f:"O RNA guarda informação e acelera reações, por isso é candidato a primeira molécula da vida."},
-  membrana:{n:"Membrana",t:"#2f8294",r:["sopa","fonte"],c:"A sopa aquecida forma bolhas",f:"Gorduras simples formam bolhas sozinhas na água."},
-  celula:{n:"Célula",t:"#227a66",r:["rna","membrana"],c:"Uma receita dentro de uma bolha",f:"Toda a vida conhecida vem de um ancestral celular comum."},
-  ciano:{n:"Ciano­bactéria",l:"luz",r:["celula","sol"],c:"Uma célula que come luz",f:"As primeiras a fazer fotossíntese liberando oxigênio."},
-  oxigenio:{n:"Oxigênio",t:"#3d7c93",r:["ciano","oceano"],c:"O resíduo da luz enche o mar",f:"Há cerca de 2,4 bilhões de anos, esse gás mudou a atmosfera inteira."},
-  alga:{n:"Alga",l:"luz",r:["ciano","celula"],c:"Uma célula engoliu outra e ficou com ela",f:"Cloroplastos são descendentes de cianobactérias engolidas."},
-  esporo:{n:"Esporo",l:"luz",ad:1,r:["ciano","poeira"],c:"Seres da luz viajando dormentes no pó",f:"Formas dormentes atravessam frio e seca até o ambiente melhorar."},
-  musgo:{n:"Musgo",l:"luz",r:["alga","rocha"],c:"A alga subiu na pedra",f:"Plantas assim foram das primeiras a colonizar a terra."},
-  samambaia:{n:"Samambaia",l:"luz",r:["musgo","chuva"],c:"O musgo bebeu e cresceu",f:"Parentes das samambaias formaram as primeiras florestas."},
-  floresta:{n:"Floresta",l:"luz",apex:1,r:["samambaia","terra"],c:"Verde cobrindo os continentes",f:"Florestas mudaram o clima, o solo e os rios."},
-  extremo:{n:"Extremófilo",l:"calor",r:["celula","fonte"],c:"Uma célula que gosta de ferver",f:"Alguns microrganismos crescem acima de 100 °C sob pressão."},
-  verme:{n:"Verme Tubular",l:"calor",r:["extremo","rocha"],c:"Um tubo agarrado na pedra quente",f:"O verme gigante das fontes não tem boca: vive de bactérias dentro do corpo."},
-  abissal:{n:"Jardim Abissal",l:"calor",apex:1,r:["verme","fonte"],c:"Uma cidade no escuro, ao redor do calor",f:"Ecossistemas inteiros vivem no fundo do mar sem nenhuma luz."},
-  colonia:{n:"Colônia",l:"caca",r:["celula","celula"],c:"Uma célula encontrou outra igual",f:"Viver em grupo foi o primeiro passo para os corpos multicelulares."},
-  ameba:{n:"Ameba",l:"caca",r:["celula","oxigenio"],c:"Uma célula que respira e persegue",f:"Com oxigênio sobra energia, e surge quem caça."},
-  cisto:{n:"Cisto",l:"caca",ad:1,r:["ameba","lama"],c:"A caçadora se fecha na lama para esperar",f:"Amebas formam cápsulas resistentes quando o ambiente piora."},
-  esponja:{n:"Esponja",l:"caca",r:["colonia","oceano"],c:"A colônia se fixa no mar",f:"As esponjas estão entre os animais mais antigos."},
-  aguaviva:{n:"Água-viva",l:"caca",r:["esponja","raio"],c:"Um corpo que levou um choque e se moveu",f:"Entre os primeiros animais com nervos: sinais elétricos no corpo."},
-  trilobita:{n:"Trilobita",l:"caca",r:["aguaviva","rocha"],c:"Um corpo mole que vestiu pedra",f:"Tinham carapaça dura e olhos com lentes de mineral."},
-  peixe:{n:"Peixe",l:"caca",apex:1,r:["trilobita","oxigenio"],c:"Um caçador rápido respirando o mar",f:"Os primeiros com coluna vertebral abriram caminho para nós."},
-  flor:{n:"Flor",t:"#c24d7f",l:"luz",era:3,r:["floresta","sol"],c:"A floresta aprendeu a chamar atenção",f:"As plantas com flor surgiram há mais de 130 milhões de anos e se espalharam depressa."},
-  semente:{n:"Semente",l:"luz",era:3,ad:1,r:["flor","terra"],c:"Uma flor guardou o futuro na terra",f:"Sementes podem esperar anos no solo até a chuva voltar."},
-  inseto:{n:"Inseto",l:"luz",era:3,r:["samambaia","ar"],c:"Algo pequeno levantou voo entre as folhas",f:"Os insetos foram os primeiros animais a voar."},
-  fruta:{n:"Fruta",t:"#c23d3d",l:"luz",era:3,apex:1,r:["flor","inseto"],c:"A flor pagou quem a visitou",f:"Frutas convencem os animais a espalhar sementes."},
-  anfibio:{n:"Anfíbio",l:"caca",era:3,r:["peixe","lama"],c:"O peixe tentou andar na lama",f:"Os primeiros anfíbios ainda precisavam da água para botar ovos."},
-  reptil:{n:"Réptil",l:"caca",era:3,r:["anfibio","rocha"],c:"O anfíbio endureceu a pele na pedra",f:"Com pele seca, os répteis se afastaram da água."},
-  casca:{n:"Casca",l:"caca",era:3,ad:1,r:["reptil","sol"],c:"Um ovo esquentando ao sol",f:"O ovo com casca leva a água para dentro e dispensa as lagoas."},
-  dino:{n:"Dinossauro",l:"caca",era:3,apex:1,r:["reptil","terra"],c:"O réptil tomou conta da terra",f:"Dominaram a terra por mais de 130 milhões de anos."},
-  mamifero:{n:"Mamífero",l:"caca",era:3,r:["reptil","fogo"],c:"Um réptil de sangue quente",f:"Os primeiros mamíferos eram pequenos e noturnos."},
-  toca:{n:"Toca",t:"#4f6b2c",l:"caca",era:3,ad:1,r:["mamifero","terra"],c:"O bicho pequeno cavou a terra",f:"Abrigos sob o solo protegem do frio, do calor e da fome."},
-  primata:{n:"Primata",l:"caca",era:3,apex:1,r:["mamifero","fruta"],c:"Um bicho curioso comendo fruta nas árvores",f:"Mãos que agarram e olhos para a frente vieram da vida nas árvores."},
-  caranguejo:{n:"Caranguejo",l:"calor",era:3,r:["abissal","rocha"],c:"O jardim do fundo ganhou pinças",f:"Há caranguejos que passam a vida inteira ao redor das fontes do fundo do mar."},
-  concha:{n:"Concha",l:"calor",era:3,ad:1,r:["caranguejo","oceano"],c:"Uma armadura feita com a química do mar",f:"Conchas são feitas de carbonato de cálcio retirado da água."},
-  lula:{n:"Lula Colossal",t:"#7a2f46",l:"calor",era:3,apex:1,r:["abissal","oceano"],c:"Um gigante saiu do jardim para o mar aberto",f:"Pode chegar a cerca de 10 metros e tem os maiores olhos do reino animal."}
+  vapor:{n:"Vapor",t:"#6d8a96",r:["agua","fogo"],c:"Some no ar quando a panela ferve",f:"O planeta jovem era quente demais para mares. A água vivia no ar."},
+  lava:{n:"Lava",t:"#a83a14",r:["terra","fogo"],c:"Um rio que queima tudo por onde passa",f:"A Terra começou como uma bola de rocha derretida."},
+  lama:{n:"Lama",t:"#8a6a46",r:["agua","terra"],c:"Gruda na bota depois da tempestade",f:"Mistura simples, mas é nela que a química encontra abrigo."},
+  poeira:{n:"Poeira",t:"#a07f4a",r:["ar","terra"],c:"Entra pelas frestas e cobre os móveis",f:"O vento carrega grãos minerais por continentes inteiros."},
+  nuvem:{n:"Nuvem",t:"#5f7f96",r:["vapor","ar"],c:"Muda de forma lá no alto",f:"Com o planeta esfriando, o vapor começou a condensar."},
+  chuva:{n:"Chuva",t:"#3f6f96",r:["nuvem","agua"],c:"Faz todo mundo correr para debaixo do toldo",f:"Choveu por muito, muito tempo."},
+  raio:{n:"Relâmpago",t:"#5a50a8",r:["nuvem","fogo"],c:"Clareia a noite antes do trovão",f:"Tempestades despejavam energia num mundo sem vida."},
+  rocha:{n:"Rocha",t:"#646170",r:["lava","agua"],c:"Dura, pesada e muito antiga",f:"As rochas mais antigas conhecidas têm cerca de 4 bilhões de anos."},
+  oceano:{n:"Oceano",t:"#1c6a94",r:["chuva","terra"],c:"Não dá para ver a outra margem",f:"A chuva encheu as bacias e nasceu o mar."},
+  fonte:{n:"Fonte Termal",t:"#a8432a",r:["oceano","lava"],c:"Uma chaminé quente onde a luz nunca chega",f:"Fontes no fundo do mar foram descobertas em 1977, cheias de vida sem sol."},
+  argila:{n:"Argila",t:"#a85d33",r:["lama","poeira"],c:"Nas mãos do oleiro, vira vaso",f:"Grãos de argila ajudam moléculas a formar cadeias, em laboratório."},
+  sopa:{n:"Sopa Primordial",t:"#7a8a2c",r:["oceano","raio"],c:"Um caldo morno onde tudo pode começar",f:"Em 1953, faíscas numa mistura de gases produziram aminoácidos em laboratório."},
+  rna:{n:"RNA",t:"#28806e",r:["sopa","argila"],c:"Uma mensagem escrita em uma fita só",f:"O RNA guarda informação e acelera reações, por isso é candidato a primeira molécula da vida."},
+  membrana:{n:"Membrana",t:"#2f8294",r:["sopa","fonte"],c:"Separa o dentro do fora",f:"Gorduras simples formam bolhas sozinhas na água."},
+  celula:{n:"Célula",t:"#227a66",r:["rna","membrana"],c:"A menor coisa que se pode chamar de viva",f:"Toda a vida conhecida vem de um ancestral celular comum."},
+  ciano:{n:"Ciano­bactéria",l:"luz",r:["celula","sol"],c:"Pequenina, verde e faminta por claridade",f:"As primeiras a fazer fotossíntese liberando oxigênio."},
+  oxigenio:{n:"Oxigênio",t:"#3d7c93",r:["ciano","oceano"],c:"Você está respirando agora",f:"Há cerca de 2,4 bilhões de anos, esse gás mudou a atmosfera inteira."},
+  alga:{n:"Alga",l:"luz",r:["ciano","celula"],c:"O verde que balança sob as ondas",f:"Cloroplastos são descendentes de cianobactérias engolidas."},
+  esporo:{n:"Esporo",l:"luz",ad:1,r:["ciano","poeira"],c:"Minúsculo, dorme por anos e viaja com o vento",f:"Formas dormentes atravessam frio e seca até o ambiente melhorar."},
+  musgo:{n:"Musgo",l:"luz",r:["alga","rocha"],c:"Um tapete verde onde antes só havia chão duro",f:"Plantas assim foram das primeiras a colonizar a terra."},
+  samambaia:{n:"Samambaia",l:"luz",r:["musgo","chuva"],c:"Folhas em leque, como as da varanda da sua avó",f:"Parentes das samambaias formaram as primeiras florestas."},
+  floresta:{n:"Floresta",l:"luz",apex:1,r:["samambaia","terra"],c:"Tanta árvore que a claridade mal chega ao chão",f:"Florestas mudaram o clima, o solo e os rios."},
+  extremo:{n:"Extremófilo",l:"calor",r:["celula","fonte"],c:"Vive onde qualquer outro ser cozinharia",f:"Alguns microrganismos crescem acima de 100 °C sob pressão."},
+  verme:{n:"Verme Tubular",l:"calor",r:["extremo","rocha"],c:"Mora em um cano e não tem boca",f:"O verme gigante das fontes não tem boca: vive de bactérias dentro do corpo."},
+  abissal:{n:"Jardim Abissal",l:"calor",apex:1,r:["verme","fonte"],c:"Uma cidade viva no escuro total",f:"Ecossistemas inteiros vivem no fundo do mar sem nenhuma luz."},
+  colonia:{n:"Colônia",l:"caca",r:["celula","celula"],c:"Sozinho não dá, então ficaram juntos",f:"Viver em grupo foi o primeiro passo para os corpos multicelulares."},
+  ameba:{n:"Ameba",l:"caca",r:["celula","oxigenio"],c:"Sem forma fixa, engole o que encontra",f:"Com oxigênio sobra energia, e surge quem caça."},
+  cisto:{n:"Cisto",l:"caca",ad:1,r:["ameba","lama"],c:"Uma cápsula para dormir até o perigo passar",f:"Amebas formam cápsulas resistentes quando o ambiente piora."},
+  esponja:{n:"Esponja",l:"caca",r:["colonia","oceano"],c:"Um animal parado e cheio de furos",f:"As esponjas estão entre os animais mais antigos."},
+  aguaviva:{n:"Água-viva",l:"caca",r:["esponja","raio"],c:"Pulsa na água e queima quem encosta",f:"Entre os primeiros animais com nervos: sinais elétricos no corpo."},
+  trilobita:{n:"Trilobita",l:"caca",r:["aguaviva","rocha"],c:"Uma couraça em três partes, famosa nos fósseis",f:"Tinham carapaça dura e olhos com lentes de mineral."},
+  peixe:{n:"Peixe",l:"caca",apex:1,r:["trilobita","oxigenio"],c:"Respira sem sair da água",f:"Os primeiros com coluna vertebral abriram caminho para nós."},
+  flor:{n:"Flor",t:"#c24d7f",l:"luz",era:3,r:["floresta","sol"],c:"Colorida, perfumada e cheia de visitas",f:"As plantas com flor surgiram há mais de 130 milhões de anos e se espalharam depressa."},
+  semente:{n:"Semente",l:"luz",era:3,ad:1,r:["flor","terra"],c:"Cabe na mão e guarda uma árvore inteira",f:"Sementes podem esperar anos no solo até a chuva voltar."},
+  inseto:{n:"Inseto",l:"luz",era:3,r:["samambaia","ar"],c:"Seis patas e um zumbido no ouvido",f:"Os insetos foram os primeiros animais a voar."},
+  fruta:{n:"Fruta",t:"#c23d3d",l:"luz",era:3,apex:1,r:["flor","inseto"],c:"Doce por fora, com o futuro no caroço",f:"Frutas convencem os animais a espalhar sementes."},
+  anfibio:{n:"Anfíbio",l:"caca",era:3,r:["peixe","lama"],c:"Começa a vida na água e termina na beira dela",f:"Os primeiros anfíbios ainda precisavam da água para botar ovos."},
+  reptil:{n:"Réptil",l:"caca",era:3,r:["anfibio","rocha"],c:"Escamas no corpo e sangue que espera o dia esquentar",f:"Com pele seca, os répteis se afastaram da água."},
+  casca:{n:"Casca",l:"caca",era:3,ad:1,r:["reptil","sol"],c:"Uma parede fina que protege quem vai nascer",f:"O ovo com casca leva a água para dentro e dispensa as lagoas."},
+  dino:{n:"Dinossauro",l:"caca",era:3,apex:1,r:["reptil","terra"],c:"Nenhum museu fica sem os ossos dele",f:"Dominaram a terra por mais de 130 milhões de anos."},
+  mamifero:{n:"Mamífero",l:"caca",era:3,r:["reptil","fogo"],c:"Pelos, sangue quente e leite para os filhotes",f:"Os primeiros mamíferos eram pequenos e noturnos."},
+  toca:{n:"Toca",t:"#4f6b2c",l:"caca",era:3,ad:1,r:["mamifero","terra"],c:"Um buraco escuro que é casa",f:"Abrigos sob o solo protegem do frio, do calor e da fome."},
+  primata:{n:"Primata",l:"caca",era:3,apex:1,r:["mamifero","fruta"],c:"Mãos que agarram e um olhar curioso",f:"Mãos que agarram e olhos para a frente vieram da vida nas árvores."},
+  caranguejo:{n:"Caranguejo",l:"calor",era:3,r:["abissal","rocha"],c:"Anda de lado e belisca",f:"Há caranguejos que passam a vida inteira ao redor das fontes do fundo do mar."},
+  concha:{n:"Concha",l:"calor",era:3,ad:1,r:["caranguejo","oceano"],c:"Encoste no ouvido e escute o mar",f:"Conchas são feitas de carbonato de cálcio retirado da água."},
+  lula:{n:"Lula Colossal",t:"#7a2f46",l:"calor",era:3,apex:1,r:["abissal","oceano"],c:"O maior olho do mar, com muitos braços",f:"Pode chegar a cerca de 10 metros e tem os maiores olhos do reino animal."}
 };
 const BASE1=["fogo","agua","terra","ar"];
 const MATERIA=["vapor","lava","lama","poeira","nuvem","chuva","raio","rocha","oceano","fonte","argila","sopa","rna","membrana","celula"];
@@ -368,7 +368,7 @@ const RECEITA={};Object.keys(E).forEach(id=>{const x=E[id];if(x.r)RECEITA[chave(
 const nivel=id=>{const x=E[id];return x.r?1+Math.max(...x.r.map(nivel)):0};
 Object.keys(E).forEach(id=>E[id].nv=nivel(id));
 
-const EN1=38,EN2=11,EN3=6,EN4=10,EN5=4,RES_MAX=2,RES_GANHO=4,DICA=4,REFUGIO=8;
+const EN1=38,EN2=11,EN3=6,EN4=10,EN5=4,RES_MAX=2,RES_GANHO=4,DICA=4,REFUGIO=8,INT1=2,INT2=3,AJUDA_ERROS=3;
 const SINAIS=[[9,"Os polos estão mais brancos a cada ano."],[6,"O gelo avança sobre o mar. Quem vive da luz vai ficar no escuro."],[3,"Quem vive solto no mar precisa de um jeito de dormir até o frio passar."]];
 const FINAIS={
   esteril:{t:"Planeta Estéril",x:"A energia acabou antes da primeira célula. O planeta seguiu girando, em silêncio."},
@@ -424,15 +424,17 @@ function novoPedido(){
   const prio=alc.filter(id=>E[id].ad&&(S.fase==="vida"||(revelada()&&Object.values(CRISES[S.crise2].def).includes(id))));
   const est=S.fase==="materia"?[]:Object.keys(S.k).filter(id=>E[id].r&&vivo(id)&&id!=="celula"&&!ativos.includes(id));
   const val=(id,b,t)=>Math.min(t,b+Math.floor(E[id].nv/4));
-  const ped=id=>({id,q:1,v:val(id,1,3)});
-  if(prio.length)return ped(sortear(prio));
+  const ped=id=>({id,q:1,v:S.fase==="materia"?1:2});
   const temPista=S.ord.some(o=>S.k[o.id]==null);
-  if(alc.length&&(!temPista||Math.random()<.5||!est.length))return ped(sortear(alc));
+  if(!temPista&&prio.length)return ped(sortear(prio));
+  if(!temPista&&alc.length)return ped(sortear(alc));
   if(est.length){const id=sortear(est);return {id,q:2,v:val(id,2,4)}}
   return null;
 }
 function encherPedidos(){
   S.ord=S.ord.filter(o=>!S.ext[o.id]);
+  const urgente=alcancaveis().some(id=>E[id].ad&&(S.fase==="vida"||(revelada()&&Object.values(CRISES[S.crise2].def).includes(id))));
+  if(urgente)S.ord=S.ord.filter(o=>S.k[o.id]!=null||E[o.id].ad);
   while(S.ord.length<2){const p=novoPedido();if(!p)break;S.ord.push(p)}
 }
 function sinaisDaFase(){
@@ -442,24 +444,28 @@ function sinaisDaFase(){
 }
 function gastar(){S.en=Math.max(0,S.en-1);atualizaSinal()}
 function atualizaSinal(){sinaisDaFase().forEach((s,i)=>{if(S.en<=s[0]&&i>S.sinal)S.sinal=i})}
-function descobrir(id){
-  S.k[id]=1;registrar(id);
+function descobrir(id,semBonus){
+  const pista=S.ord.some(o=>o.id===id);
+  S.k[id]=1;S.erroSeg=0;registrar(id);
   const l=E[id].l;
   if(l&&!S.prim)S.prim=l;
-  G.info=`<span><b>${E[id].n}.</b> ${E[id].f}</span>`;
+  let extra="";
+  if(!pista&&!semBonus){const b=S.fase==="materia"?INT1:INT2;S.vit+=b;extra=`<b>Intuição: +${b} ${UI.vit}.</b> `}
+  G.info=`<span>${extra}<b>${E[id].n}.</b> ${E[id].f}</span>`;
   encherPedidos();
 }
 function combinar(a,b){
   const k=chave(a,b);let id=RECEITA[k];
+  const comDica=G.dica&&chave(...G.dica)===k;
   G.res=null;G.dica=null;
   if(id&&travado(id)){G.res={x:1};G.info="Essa mistura ainda não reage. Por enquanto, o mundo não está pronto para ela.";return}
   if(id&&S.ext[id]){G.res={i:"gelo"};G.info=`${E[id].n} se perdeu para sempre. Esse caminho fechou nesta partida.`;return}
   if(id&&S.k[id]!=null){G.res={id};G.info=`Você já conhece ${E[id].n}. Essa repetição não gasta energia.`;return}
   if(!id&&S.tent[k]){G.res={x:1};G.info="Você já tentou essa mistura. Nada acontece, e a energia fica.";return}
   gastar();
-  if(id){descobrir(id);G.res={id,novo:1};
+  if(id){descobrir(id,comDica);G.res={id,novo:1};
     if(id==="celula"){salvar();abrirEraVida();return}
-  }else{S.tent[k]=1;S.erros++;G.res={x:1};G.info="Nada se formou. Essa mistura custou 1 de energia."}
+  }else{S.tent[k]=1;S.erros++;S.erroSeg=(S.erroSeg||0)+1;G.res={x:1};G.info="Nada se formou. Essa mistura custou 1 de energia."}
   depois();
 }
 function depois(){
@@ -616,7 +622,7 @@ function pintarCapa(){
   $("#app").className="";$("#frost").style.opacity=0;tela("capa");
 }
 function comoJogar(){
-  modal({ic:"celula",el:1,t:"Como jogar",h:`<p><b>Combine:</b> toque em dois elementos. Cada mistura nova gasta 1 de energia, certa ou errada.</p><p><b>Entregue:</b> os pedidos dão pistas e rendem Vitalidade, que compra ajuda na aba Reforços.</p><p><b>Sobreviva:</b> a energia é o tempo até a próxima crise. Linhagens sem proteção se extinguem, e as receitas ligadas a elas fecham.</p><p><b>Avance:</b> só as linhagens que chegam ao topo seguem para a Era das Espécies.</p><p><b>Recomece:</b> linhagens extintas deixam fósseis, que dão Vitalidade na partida seguinte.</p><p>Elementos apagados já não têm nada a oferecer.</p>`,b:[{t:"Entendi",f:()=>{}}]});
+  modal({ic:"celula",el:1,t:"Como jogar",h:`<p><b>Combine:</b> toque em dois elementos. Cada mistura nova gasta 1 de energia, certa ou errada.</p><p><b>Explore:</b> descobrir algo sem pista rende mais Vitalidade. Depois de 3 erros seguidos, a pista mostra um ingrediente.</p><p><b>Entregue:</b> pedidos também rendem Vitalidade, que compra ajuda na aba Reforços.</p><p><b>Sobreviva:</b> a energia é o tempo até a próxima crise. Linhagens sem proteção se extinguem, e as receitas ligadas a elas fecham.</p><p><b>Avance:</b> só as linhagens que chegam ao topo seguem para a Era das Espécies.</p><p><b>Recomece:</b> linhagens extintas deixam fósseis, que dão Vitalidade na partida seguinte.</p><p>Elementos apagados já não têm nada a oferecer.</p>`,b:[{t:"Entendi",f:()=>{}}]});
 }
 function pintar(){
   if(!S)return pintarCapa();
@@ -660,10 +666,11 @@ function pintarMesa(){
   const info=`<div class="info">${G.info||(f?"Agora escolha o segundo elemento.":"Toque em dois elementos para combinar.")}</div>`;
   const peds=[0,1].map(i=>{
     const o=S.ord[i];
-    if(!o)return `<div class="ped"><p class="aguarda">Nenhum pedido agora.</p></div>`;
+    if(!o)return `<div class="ped"><p class="aguarda">Sem pedido aqui. Descobrir algo sem pista rende mais ${UI.vit}.</p></div>`;
     const conhe=vivo(o.id),tem=conhe?S.k[o.id]:0;
     const txt=conhe?`${o.q>1?o.q+" × ":""}${mini(o.id)} ${E[o.id].n}`:`${UI.pista} ${E[o.id].c}`;
-    const btn=!conhe?`<span class="aguarda">Descubra</span>`:tem>=o.q?`<button data-ent="${i}">Entregar</button>`:`<button class="prod" data-ent="${i}" ${o.q-tem>S.en?"disabled":""}>Entregar ${UI.energia}${o.q-tem}</button>`;
+    const ing=!conhe&&(S.erroSeg||0)>=AJUDA_ERROS?E[o.id].r[0]:null;
+    const btn=!conhe?`<span class="aguarda">${ing?`Usa ${mini(ing)} ${E[ing].n}`:"Descubra"}</span>`:tem>=o.q?`<button data-ent="${i}">Entregar</button>`:`<button class="prod" data-ent="${i}" ${o.q-tem>S.en?"disabled":""}>Entregar ${UI.energia}${o.q-tem}</button>`;
     const tit=!conhe?"Pista de descoberta":tem>=o.q?"Pronto para entregar":"Trocar energia por Vitalidade";
     return `<div class="ped"><h5>${tit}</h5><p>${txt}</p><div class="pr"><span class="val">+${o.v} ${UI.vit}</span>${btn}</div></div>`;
   }).join("");
