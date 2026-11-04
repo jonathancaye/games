@@ -28,6 +28,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 #frost{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:0;transition:opacity .6s;box-shadow:inset 0 0 70px 26px rgba(205,236,247,.9),inset 0 0 8px 3px #fff}
 #frost.seca{box-shadow:inset 0 0 74px 28px rgba(226,170,92,.85)}
 #frost.meteoro{box-shadow:inset 0 0 74px 28px rgba(232,74,34,.72)}
+#frost.erupcao{box-shadow:inset 0 0 74px 28px rgba(255,110,50,.72)}
 #frost.peste{box-shadow:inset 0 0 74px 28px rgba(120,190,110,.72)}
 #frost.fome{box-shadow:inset 0 0 74px 28px rgba(214,178,96,.78)}
 .tela{position:absolute;inset:0;display:none;flex-direction:column}
@@ -275,6 +276,8 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 #cine.peste{--t:#e4f5dc;--bt:#8fd27a;--btx:#10240f}
 #cine.peste .fx{animation:vira 1.4s ease forwards;--bg:#203026}
 @keyframes vira{from{background:transparent}to{background:var(--bg)}}
+#cine.erupcao{--t:#ffe9d6;--bt:#ff7a3c;--btx:#2b1000}
+#cine.erupcao .fx{animation:vira 1.3s ease forwards;--bg:#3a1410}
 #cine.meteoro{--t:#ffe9d6;--bt:#f06a2c;--btx:#2b1000}
 #cine.meteoro .fx{animation:clarao 1.3s ease forwards}
 @keyframes clarao{0%{background:transparent}30%{background:#fff7e6}38%{background:#fff7e6}100%{background:#2b1012}}
@@ -286,7 +289,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 .vt i{font-style:normal;font-weight:800}
 .vl.viva .vt i{animation:brota .3s ease both}
 .vl.morta .vt i{color:#d4331f;animation:brota .3s ease both;font-size:18px}
-#cine.peste .vl.morta .vt i,#cine.meteoro .vl.morta .vt i{color:#ff9a6b}
+#cine.peste .vl.morta .vt i,#cine.meteoro .vl.morta .vt i,#cine.erupcao .vl.morta .vt i{color:#ff9a6b}
 .vl.ausente{opacity:.6}
 .vd{display:block;font-size:13.5px;line-height:1.25;margin-top:1px}
 .cai{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px;min-height:0}
@@ -405,6 +408,12 @@ const ICO={
   cidadeabissal:`<path fill="#d8f6f4" opacity=".28" d="M4 40a20 20 0 0 1 40 0z"/><path ${LI} stroke="${CR}" stroke-width="3" d="M4 40a20 20 0 0 1 40 0"/><path fill="${CR}" d="M14 40V24h7v16zM24 40V16h8v24z"/><g fill="#ffd96b"><path d="M16 27h3v3h-3zM16 33h3v3h-3zM26 20h4v3h-4zM26 27h4v3h-4zM26 33h4v3h-4z"/></g><path fill="#3a2024" d="M1 40h46v5H1z"/>`,
   peste:`<g ${LI} stroke="${CR}" stroke-width="3"><path d="M24 3v8M24 37v8M3 24h8M37 24h8M9 9l6 6M33 33l6 6M9 39l6-6M33 15l6-6"/></g><circle cx="24" cy="24" r="14" fill="${CR}"/><g fill="#4f7a4a"><circle cx="19" cy="20" r="3.400"/><circle cx="29" cy="22" r="2.600"/><circle cx="23" cy="30" r="3"/></g>`,
   fome:`<path fill="${CR}" d="M4 22h40c0 13-7 21-15 22H19C11 43 4 35 4 22z"/><path fill="#6e4a2c" d="M9 22h30c0 2-1 3-2 3H11c-1 0-2-1-2-3z"/><g ${LI} stroke="${CR}" stroke-width="3"><path d="M18 15V4M30 15V6M24 16V9"/></g><path ${LI} stroke="#6e4a2c" stroke-width="2.400" d="m24 29-3 6 5 3-2 6"/>`,
+  ave:`<path fill="${CR}" d="M3 30C12 15 24 13 34 17l11-7-4 12c2 7-2 15-12 17-9 2-18-1-26-9z"/><path fill="#b596ff" d="M15 27c6-9 14-12 23-10-3 9-11 14-23 10z"/><path fill="#ffc35c" d="m3 30 7-3-1 5z"/><circle cx="12" cy="27" r="1.900" fill="#3a2a5c"/>`,
+  ninhal:`<path fill="#d7d2c8" d="M6 45 12 33h24l6 12z"/><path fill="#8a6a46" d="M4 26c5 8 35 8 40 0-2 11-10 15-20 15S6 37 4 26z"/><g ${LI} stroke="#c9a877" stroke-width="2.200"><path d="M7 31c8 3 26 3 34 0M11 36c7 2 19 2 26 0"/></g><g fill="${CR}"><ellipse cx="17" cy="24" rx="6" ry="7.500"/><ellipse cx="31" cy="24" rx="6" ry="7.500"/><ellipse cx="24" cy="22" rx="6" ry="8"/></g>`,
+  rota:`<g fill="${CR}"><path d="m24 8 6 7-6-2-6 2zM13 19l6 7-6-2-6 2zM35 19l6 7-6-2-6 2zM4 30l5 6-5-2-3 2zM44 30l3 6-3-2-5 2z"/></g><path ${LI} stroke="${CR}" stroke-width="2.600" stroke-dasharray="1 6" d="M24 19v26"/>`,
+  ninhoalto:`<path fill="#7a5a3e" d="M20 22h8l3 23H17z"/><path fill="#d9bd8f" d="M9 12c4 7 26 7 30 0-1 7-7 10-15 10S10 19 9 12z"/><g fill="${CR}"><ellipse cx="20" cy="10" rx="4.500" ry="5.500"/><ellipse cx="29" cy="10" rx="4.500" ry="5.500"/></g>`,
+  cidadealta:`<path fill="#7a6a5a" d="M3 45 12 24l7 6 7-11 7 8 12 18z"/><path fill="${CR}" d="M16 30V14h6v16zM25 26V6h7v21z"/><path fill="${CR}" d="m16 14 3-5 3 5zM25 6l3.500-5L32 6z"/><g fill="#5a4a7a"><path d="M18 18h2v3h-2zM27 11h3v3h-3zM27 18h3v3h-3z"/></g><g ${LI} stroke="${CR}" stroke-width="2"><path d="M4 12c2-2 3-2 5 0 2-2 3-2 5 0M36 16c2-2 3-2 4 0 2-2 3-2 4 0"/></g>`,
+  erupcao:`<path fill="#3a2024" d="M2 45 17 22h14l15 23z"/><path fill="#ffc35c" d="M20 22h8l-1 8 4 15H18l3-15z"/><g fill="${CR}"><circle cx="24" cy="12" r="6"/><circle cx="15" cy="7" r="3.500"/><circle cx="33" cy="8" r="4"/></g><g ${LI} stroke="#ffc35c" stroke-width="2.600"><path d="m14 16-5 4M34 16l5 4"/></g>`,
   gelo:`<g ${LI} stroke="${CR}" stroke-width="3.500">${[0,60,120].map(a=>`<g transform="rotate(${a} 24 24)"><path d="M24 3v42M24 11l-5-5M24 11l5-5M24 37l-5 5M24 37l5 5"/></g>`).join("")}</g>`,
   seca:`<path fill="#ffc35c" d="M3 21a21 21 0 0 1 42 0z" opacity=".95"/><path fill="${CR}" d="M1 21h46v24H1z"/><g ${LI} stroke="#8a5f2b" stroke-width="2.500"><path d="m24 21-3 8 5 5-4 11M21 29l-11 4-5 12M26 34l10-3 9 3M36 31l1-10M10 33 2 28"/></g>`,
   meteoro:`<g ${LI}><path stroke="#ffc35c" stroke-width="5" d="M44 3 20 24"/><path stroke="${CR}" stroke-width="3.500" d="M33 3 16 18M45 15 30 29"/></g><circle cx="16" cy="31" r="13" fill="#3a2024"/><circle cx="16" cy="31" r="13" fill="none" stroke="#ffc35c" stroke-width="3"/><circle cx="12" cy="27" r="3" fill="#6a4048"/><circle cx="20" cy="35" r="2.400" fill="#6a4048"/>`,
@@ -470,6 +479,7 @@ const E={
   reptil:{n:"Réptil",l:"caca",era:3,r:["anfibio","rocha"],c:"Escamas no corpo e sangue que espera o dia esquentar",f:"Com pele seca, os répteis se afastaram da água."},
   casca:{n:"Casca",l:"caca",era:3,ad:1,r:["reptil","sol"],c:"Uma parede fina que protege quem vai nascer",f:"O ovo com casca leva a água para dentro e dispensa as lagoas."},
   dino:{n:"Dinossauro",l:"caca",era:3,apex:1,r:["reptil","terra"],c:"Nenhum museu fica sem os ossos dele",f:"Dominaram a terra por mais de 130 milhões de anos."},
+  ave:{n:"Ave",l:"caca",era:3,apex:1,r:["dino","ar"],c:"Um dinossauro pequeno que aprendeu a voar",f:"As aves são dinossauros: uma linhagem deles sobreviveu até hoje."},
   mamifero:{n:"Mamífero",l:"caca",era:3,r:["reptil","fogo"],c:"Pelos, sangue quente e leite para os filhotes",f:"Os primeiros mamíferos eram pequenos e noturnos."},
   toca:{n:"Toca",t:"#4f6b2c",l:"caca",era:3,ad:1,r:["mamifero","terra"],c:"Um buraco escuro que é casa",f:"Abrigos sob o solo protegem do frio, do calor e da fome."},
   primata:{n:"Primata",l:"caca",era:3,apex:1,r:["mamifero","fruta"],c:"Mãos que agarram e um olhar curioso",f:"Mãos que agarram e olhos para a frente vieram da vida nas árvores."},
@@ -483,6 +493,10 @@ const E={
   remedio:{n:"Remédio",t:"#2f7f7a",l:"caca",era:4,ad:1,r:["fogueira","agua"],c:"Cura o que a doença estraga",f:"Ferver a água mata muitos micróbios causadores de doenças."},
   vila:{n:"Vila",t:"#7a5a3e",l:"caca",era:4,r:["agricultura","fogueira"],c:"Casas perto umas das outras",f:"Quem planta precisa ficar, e assim nasceram as aldeias permanentes."},
   cidade:{n:"Cidade",t:"#5a4a7a",l:"caca",era:4,apex:1,r:["vila","rocha"],c:"Milhares de desconhecidos, lado a lado",f:"Uruk, na Mesopotâmia, foi uma das primeiras grandes cidades."},
+  ninhal:{n:"Ninhal",t:"#6e5238",l:"caca",era:4,r:["ave","rocha"],c:"Milhares de casas penduradas nas pedras",f:"Certas aves fazem colônias com milhares de ninhos."},
+  rota:{n:"Rota de Migração",t:"#3d6f96",l:"caca",era:4,ad:1,r:["ninhal","ar"],c:"Um caminho que passa de geração em geração",f:"Muitas aves cruzam continentes e voltam ao mesmo lugar todo ano."},
+  ninhoalto:{n:"Ninho Alto",t:"#5a7a4a",l:"caca",era:4,ad:1,r:["ninhal","floresta"],c:"Criar os filhotes longe de tudo",f:"Ninhos altos ficam longe de muitos predadores e parasitas."},
+  cidadealta:{n:"Cidade das Alturas",t:"#5a4a7a",l:"caca",era:4,apex:1,r:["ninhal","sol"],c:"Uma cidade que só se alcança voando",f:"Corvos e papagaios resolvem problemas e usam ferramentas simples."},
   colmeia:{n:"Colmeia",t:"#b98a1e",l:"luz",era:4,r:["inseto","fruta"],c:"Uma casa de milhares, com uma rainha",f:"As abelhas dividem o trabalho e se comunicam por danças."},
   mel:{n:"Mel",t:"#8a5a14",l:"luz",era:4,r:["colmeia","flor"],c:"Um doce que quase nunca estraga",f:"Mel bem selado pode durar séculos."},
   propolis:{n:"Própolis",t:"#6e5238",l:"luz",era:4,ad:1,r:["colmeia","floresta"],c:"A resina que mantém a casa limpa",f:"As abelhas usam própolis para vedar a colmeia e conter micróbios."},
@@ -495,17 +509,18 @@ const E={
 const BASE1=["fogo","agua","terra","ar"];
 const MATERIA=["vapor","lava","lama","poeira","nuvem","chuva","raio","rocha","oceano","fonte","argila","sopa","rna","membrana","celula"];
 const RAMO={luz:["ciano","oxigenio","alga","esporo","musgo","samambaia","floresta"],calor:["extremo","verme","abissal"],caca:["colonia","ameba","cisto","esponja","aguaviva","trilobita","peixe"]};
-const RAMO2={luz:["flor","semente","inseto","fruta"],calor:["caranguejo","concha","lula"],caca:["anfibio","reptil","casca","dino","mamifero","toca","primata"]};
-const RAMO3={luz:["colmeia","mel","propolis","cidadejardim"],calor:["sinal","recife","viveiro","cidadeabissal"],caca:["ferramenta","fogueira","agricultura","celeiro","remedio","vila","cidade"]};
+const RAMO2={luz:["flor","semente","inseto","fruta"],calor:["caranguejo","concha","lula"],caca:["anfibio","reptil","casca","dino","ave","mamifero","toca","primata"]};
+const RAMO3={luz:["colmeia","mel","propolis","cidadejardim"],calor:["sinal","recife","viveiro","cidadeabissal"],caca:["ferramenta","fogueira","agricultura","celeiro","remedio","vila","cidade","ninhal","rota","ninhoalto","cidadealta"]};
 const TOPO2={luz:"fruta",calor:"lula",caca:"primata"};
 const ORDEM=["luz","calor","caca"];
 const CRISES={
   seca:{nome:"A Grande Seca",curto:"Seca",ic:"seca",cor:"#a8742c",cx:"seca",def:{luz:"semente",caca:"casca"},escapa:"calor",abre:"Os rios estão sumindo.",aviso:"Quem vive da chuva e dos rios precisa guardar água para depois.",dica:{luz:"Quem vive da chuva precisa guardar o futuro debaixo da terra.",caca:"Os bichos da terra precisam de ovos que aguentem a falta de água."},intro:"Os rios secaram, e o verde virou pó.",fuga:"No fundo do mar, a seca nem foi notada."},
+  erupcao:{nome:"A Grande Erupção",curto:"Erupção",ic:"erupcao",cor:"#7a2a1c",cx:"erupcao",def:{calor:"concha",luz:"semente"},escapa:"caca",abre:"O fundo do mar está tremendo.",aviso:"As fontes vão explodir, e a cinza vai cobrir o sol.",dica:{calor:"Quem vive no fundo precisa de uma armadura contra o mar fervendo.",luz:"Quem vive do sol precisa guardar o futuro debaixo da terra."},intro:"O fundo do mar explodiu, e a cinza cobriu o céu.",fuga:"Os bichos da terra mal sentiram o mar ferver."},
   meteoro:{nome:"O Meteoro",curto:"Meteoro",ic:"meteoro",cor:"#5a1f1f",cx:"meteoro",def:{caca:"toca",calor:"concha"},escapa:"luz",abre:"Um ponto novo brilha no céu, cada noite maior.",aviso:"O impacto vai queimar a terra e azedar o mar. Quem vive neles precisa de abrigo.",dica:{caca:"Os bichos da terra precisam de abrigo debaixo do chão.",calor:"Quem vive no fundo precisa de uma armadura contra o mar ácido."},intro:"O céu escureceu, a terra queimou e o mar azedou.",fuga:"As plantas voltaram a brotar das cinzas."}
 };
 const CRISES3={
-  peste:{nome:"A Grande Peste",curto:"Peste",ic:"peste",cor:"#3f6a46",cx:"peste",def:{caca:"remedio",luz:"propolis"},escapa:"calor",abre:"Uma tosse estranha se espalha de casa em casa.",aviso:"Onde muitos vivem juntos, a doença corre depressa.",dica:{caca:"As vilas precisam aprender a cuidar dos doentes.",luz:"As colmeias precisam vedar a casa contra a doença."},intro:"A doença correu pelas ruas e pelas colmeias.",fuga:"No fundo do mar, a peste nunca chegou."},
-  fome:{nome:"A Grande Fome",curto:"Fome",ic:"fome",cor:"#8a6a2c",cx:"fome",def:{caca:"celeiro",calor:"viveiro"},escapa:"luz",abre:"Os estoques estão baixando, e as colheitas falham.",aviso:"Quem depende de comida guardada vai sofrer primeiro.",dica:{caca:"Quem planta precisa guardar comida para os anos ruins.",calor:"Quem vive no fundo precisa criar o próprio alimento."},intro:"Faltou comida por muitos anos seguidos.",fuga:"As flores seguiram alimentando a Colmeia."}
+  peste:{nome:"A Grande Peste",curto:"Peste",ic:"peste",cor:"#3f6a46",cx:"peste",def:{caca:"remedio",luz:"propolis"},alt:{caca:"ninhoalto"},dicaCeu:{caca:"Quem vive em bando precisa criar os filhotes longe da doença."},escapa:"calor",abre:"Uma tosse estranha se espalha de casa em casa.",aviso:"Onde muitos vivem juntos, a doença corre depressa.",dica:{caca:"As vilas precisam aprender a cuidar dos doentes.",luz:"As colmeias precisam vedar a casa contra a doença."},intro:"A doença correu pelas ruas e pelas colmeias.",fuga:"No fundo do mar, a peste nunca chegou."},
+  fome:{nome:"A Grande Fome",curto:"Fome",ic:"fome",cor:"#8a6a2c",cx:"fome",def:{caca:"celeiro",calor:"viveiro"},alt:{caca:"rota"},dicaCeu:{caca:"Quem voa precisa saber para onde ir nos anos ruins."},escapa:"luz",abre:"Os estoques estão baixando, e as colheitas falham.",aviso:"Quem depende de comida guardada vai sofrer primeiro.",dica:{caca:"Quem planta precisa guardar comida para os anos ruins.",calor:"Quem vive no fundo precisa criar o próprio alimento."},intro:"Faltou comida por muitos anos seguidos.",fuga:"As flores seguiram alimentando a Colmeia."}
 };
 const TOTAL=Object.values(E).filter(x=>x.r).length;
 const chave=(a,b)=>[a,b].sort().join("+");
@@ -518,7 +533,12 @@ const EN1=38,EN2=12,EN3=7,EN4=11,EN5=4,EN6=11,EN7=4,RES_MAX=2,RES_GANHO=4,DICA=5
 const SINAIS=[[9,"Os polos estão mais brancos a cada ano."],[6,"O gelo avança sobre o mar. Quem vive da luz vai ficar no escuro."],[3,"Quem vive solto no mar precisa de um jeito de dormir até o frio passar."]];
 const FINAIS={
   esteril:{t:"Planeta Estéril",x:"A energia acabou antes da primeira célula. O planeta seguiu girando, em silêncio."},
-  civs:{t:"Três Civilizações",x:"Na terra, nos jardins e no abismo, três povos olharam para o céu ao mesmo tempo."},
+  quatro:{t:"Planeta das Cidades",x:"Na terra, no ar, nos jardins e no abismo: quatro povos dividiram o mundo e olharam para as estrelas."},
+  civs:{t:"Três Civilizações",x:"Três povos muito diferentes dividiram o planeta e olharam para o céu ao mesmo tempo."},
+  ceu_terra:{t:"Céu e Terra",x:"Mãos construíam embaixo, asas vigiavam em cima, e os dois povos aprenderam a se entender."},
+  asas:{t:"Asas e Mel",x:"As aves levavam notícias, as colmeias guardavam o doce, e nenhum tijolo foi preciso."},
+  ceu_abismo:{t:"Céu e Abismo",x:"Dois povos nos extremos do mundo, um voando alto e outro acendendo o escuro."},
+  alturas:{t:"Cidade das Alturas",x:"Nos penhascos, um povo de asas guardou sua história em cantos passados de geração em geração."},
   cj:{t:"Pedra e Mel",x:"Duas civilizações dividiram a superfície e aprenderam a trocar mais do que lutar."},
   cc_a:{t:"Terra e Abismo",x:"Dois povos viveram sem saber um do outro, até uma luz subir do fundo do mar."},
   j_a:{t:"Colmeia e Abismo",x:"Uma civilização sem palavras e outra feita de clarões encheram o planeta de sinais."},
@@ -527,6 +547,7 @@ const FINAIS={
   abismo:{t:"Cidade Abissal",x:"Lá embaixo, onde nenhum sol chega, as luzes nunca se apagam."},
   tudo:{t:"Planeta Pleno",x:"Primatas nas árvores, gigantes no mar, dinossauros em terra. Nenhum canto do mundo ficou vazio."},
   caminho:{t:"O Caminho Aberto",x:"Um bicho curioso desceu da árvore e olhou para o céu. Alguma coisa estava prestes a começar."},
+  aves:{t:"Reino das Aves",x:"Os últimos dinossauros encheram o céu, e o mundo inteiro passou a acordar cantando."},
   dino:{t:"Reino dos Dinossauros",x:"Nada na terra era maior, e nada parecia capaz de mudar isso."},
   pomar:{t:"Pomar sem Fim",x:"Flores, frutos e insetos: um mundo inteiro de doçura, sem ninguém para colher."},
   gigantes:{t:"Mar dos Gigantes",x:"A superfície ficou quieta. Os maiores olhos do planeta vigiavam o escuro."},
@@ -567,14 +588,17 @@ function alcancaveis(){return Object.keys(E).filter(id=>{const x=E[id];return x.
 function custoReserva(){return 8+4*S.res}
 function ramoVivo(l){return [...RAMO[l],...RAMO2[l],...RAMO3[l]].some(id=>E[id].l===l&&vivo(id))}
 function algumTopo(){return ORDEM.some(l=>vivo(LINHAS[l].topo))}
-function algumTopo2(){return ORDEM.some(l=>vivo(TOPO2[l]))}
+function algumTopo2(){return ORDEM.some(l=>vivo(TOPO2[l]))||vivo("ave")}
+const protDe=(c,l)=>c.alt&&c.alt[l]&&S.k[c.alt[l]]!=null?c.alt[l]:c.def[l];
+const defesasDe=c=>[...Object.values(c.def),...Object.values(c.alt||{})];
+const povoCaca=()=>S.abre2&&S.abre2.ceu&&!S.abre2.terra?"o Povo dos Céus":S.abre2&&S.abre2.ceu?"os povos da Caça":"o Povo da Terra";
 function criseAtual(){return S.fase==="civ"?CRISES3[S.crise3]:CRISES[S.crise2]}
 function esgotado(id){
   return !Object.keys(E).some(o=>{const x=E[o];return x.r&&x.r.includes(id)&&S.k[o]==null&&!S.ext[o]&&!travado(o)&&x.r.every(p=>!S.ext[p])});
 }
 function sortear(l){return l[Math.floor(Math.random()*l.length)]}
 function revelada(){return (S.fase==="especies"||S.fase==="civ")&&S.sinal>=1}
-function defesasUrgentes(l){return l.filter(id=>E[id].ad&&(S.fase==="vida"||(revelada()&&Object.values(criseAtual().def).includes(id))))}
+function defesasUrgentes(l){return l.filter(id=>E[id].ad&&(S.fase==="vida"||(revelada()&&defesasDe(criseAtual()).includes(id))))}
 function encherPedidos(){
   const alc=alcancaveis();
   S.ord=S.ord.filter(o=>S.k[o.id]==null&&alc.includes(o.id)).map(o=>({id:o.id}));
@@ -696,24 +720,26 @@ function fimRecup(){
   abrirCiv();
 }
 function abrirCiv(){
-  S.abre2={};ORDEM.forEach(l=>S.abre2[l]=vivo(TOPO2[l]));
+  S.abre2={};ORDEM.forEach(l=>S.abre2[l]=vivo(TOPO2[l]));S.abre2.terra=vivo("primata");S.abre2.ceu=vivo("ave");if(S.abre2.ceu)S.abre2.caca=true;
   S.crise3=sortear(Object.keys(CRISES3));
   S.fase="civ";S.en=EN6;S.enMax=EN6;S.res=0;S.guarda={};S.sinal=-1;S.ord=[];G.aba="mesa";S.ofertas=gerarOfertas();atualizaSinal();encherPedidos();salvar();
-  cenaEra({i:3,nome:"Era da Civilização",frase:"Alguém aprende a guardar o que sabe. Quanto mais gente junta, maior o perigo.",ramos:ORDEM.map(l=>({l,id:TOPO2[l],on:S.abre2[l]}))});
+  cenaEra({i:3,nome:"Era da Civilização",frase:"Alguém aprende a guardar o que sabe. Quanto mais gente junta, maior o perigo.",ramos:ORDEM.map(l=>({l,id:l==="caca"&&!S.abre2.terra&&S.abre2.ceu?"ave":TOPO2[l],on:S.abre2[l]}))});
 }
 function crise3(){
-  const c=CRISES3[S.crise3],defDe=l=>c.def[l];
+  const c=CRISES3[S.crise3],defDe=l=>protDe(c,l);
   const {r,p}=julgar(l=>[...RAMO[l],...RAMO2[l],...RAMO3[l]].filter(id=>E[id].l===l&&vivo(id)),defDe,(l,m)=>(!S.abre2[l]||!m.length)?"fora":l===c.escapa?"escapou":null);
   S.gelo3=r;S.fase="recons";S.en=EN7;S.enMax=EN7;S.res=0;encherPedidos();salvar();
   cenaCrise({tipo:c.cx,ic:c.ic,cor:c.cor,nome:c.nome,intro:c.intro,lin:linhasVeredito(r,p,defDe,TX),btn:"Ver a reconstrução",cb:()=>{G.aba="mesa";pintar();cenaTitulo("A Reconstrução","O que sobrou ainda pode virar cidade.",()=>{if(!alcancaveis().length)finalizar()})}});
 }
 function escolherFinal(){
-  const cc=vivo("cidade"),cj=vivo("cidadejardim"),ca=vivo("cidadeabissal");
-  if(cc&&cj&&ca)return "civs";if(cc&&cj)return "cj";if(cc&&ca)return "cc_a";if(cj&&ca)return "j_a";
-  if(cc)return "cidade";if(cj)return "jardim";if(ca)return "abismo";
+  const cc=vivo("cidade"),cj=vivo("cidadejardim"),ca=vivo("cidadeabissal"),cl=vivo("cidadealta"),nc=[cc,cj,ca,cl].filter(Boolean).length;
+  if(nc===4)return "quatro";if(nc===3)return "civs";
+  if(cc&&cl)return "ceu_terra";if(cl&&cj)return "asas";if(cl&&ca)return "ceu_abismo";
+  if(cc&&cj)return "cj";if(cc&&ca)return "cc_a";if(cj&&ca)return "j_a";
+  if(cc)return "cidade";if(cl)return "alturas";if(cj)return "jardim";if(ca)return "abismo";
   const v=vivo,fr=v("fruta"),di=v("dino"),pr=v("primata"),lu=v("lula");
   if(fr&&di&&pr&&lu)return "tudo";
-  if(pr)return "caminho";if(di)return "dino";if(fr)return "pomar";if(lu)return "gigantes";
+  if(pr)return "caminho";if(vivo("ave"))return "aves";if(di)return "dino";if(fr)return "pomar";if(lu)return "gigantes";
   const f=v("floresta"),p=v("peixe"),a=v("abissal");
   if(f&&p&&a)return "pleno";if(f&&p)return "fp";if(f&&a)return "fa";if(p&&a)return "pa";
   if(f)return "f";if(p)return "p";if(a)return "a";
@@ -734,6 +760,7 @@ function cronica(fin){
   if(S.gelo2){
     const q=S.crise2,g=S.gelo2,cs=CRISES[q],M={
       seca:{luz:{extinta:"Quando a Grande Seca veio, a Luz não tinha guardado sementes.",adaptada:"Na Grande Seca, as sementes esperaram a chuva voltar.",refugio:"A Luz resistiu à seca em um refúgio."},caca:{extinta:"A sede acabou com os bichos da terra.",adaptada:"Ovos de casca dura atravessaram a seca.",refugio:"Os bichos da terra resistiram à seca em um refúgio."}},
+      erupcao:{calor:{extinta:"A erupção destruiu as fontes, e o jardim do fundo se apagou.",adaptada:"Conchas protegeram o fundo durante a erupção.",refugio:"O fundo do mar resistiu à erupção em um refúgio."},luz:{extinta:"A cinza cobriu o céu, e a Luz não tinha guardado sementes.",adaptada:"As sementes esperaram a cinza baixar.",refugio:"A Luz resistiu à erupção em um refúgio."}},
       meteoro:{caca:{extinta:"O meteoro escureceu o céu, e os animais da terra não voltaram.",adaptada:"Quando o meteoro caiu, os menores esperaram nas tocas.",refugio:"Os animais resistiram ao meteoro em um refúgio."},calor:{extinta:"O mar azedou, e o jardim do fundo se calou.",adaptada:"Conchas protegeram os seres do fundo quando o mar azedou.",refugio:"O fundo do mar resistiu ao meteoro em um refúgio."}}
     }[q];
     ORDEM.forEach(l=>{const t=(M[l]||{})[g[l]];if(t)c.push(t)});
@@ -741,8 +768,8 @@ function cronica(fin){
   }
   if(S.gelo3){
     const q=S.crise3,g=S.gelo3,cs=CRISES3[q],M={
-      peste:{caca:{extinta:"A peste esvaziou as vilas, e não sobrou quem contasse a história.",adaptada:"Na Grande Peste, a água fervida salvou as vilas.",refugio:"O Povo da Terra resistiu à peste em um refúgio."},luz:{extinta:"A peste silenciou as colmeias, uma a uma.",adaptada:"A própolis manteve a peste do lado de fora das colmeias.",refugio:"A Colmeia resistiu à peste em um refúgio."}},
-      fome:{caca:{extinta:"Sem nada guardado, a Grande Fome acabou com o Povo da Terra.",adaptada:"Os celeiros atravessaram a Grande Fome.",refugio:"O Povo da Terra resistiu à fome em um refúgio."},calor:{extinta:"A fome esvaziou o fundo do mar, e o Povo do Abismo se apagou.",adaptada:"Os viveiros alimentaram o Povo do Abismo na Grande Fome.",refugio:"O Povo do Abismo resistiu à fome em um refúgio."}}
+      peste:{caca:{extinta:`A peste acabou com ${povoCaca()}, e não sobrou quem contasse a história.`,adaptada:S.k.ninhoalto!=null&&S.k.remedio==null?"Na Grande Peste, os ninhos altos ficaram longe da doença.":"Na Grande Peste, a água fervida salvou as vilas.",refugio:`A peste não alcançou ${povoCaca()}, em seu refúgio.`},luz:{extinta:"A peste silenciou as colmeias, uma a uma.",adaptada:"A própolis manteve a peste do lado de fora das colmeias.",refugio:"A Colmeia resistiu à peste em um refúgio."}},
+      fome:{caca:{extinta:`Sem nada guardado, a Grande Fome acabou com ${povoCaca()}.`,adaptada:S.k.rota!=null&&S.k.celeiro==null?"As rotas de migração atravessaram a Grande Fome.":"Os celeiros atravessaram a Grande Fome.",refugio:`A fome não alcançou ${povoCaca()}, em seu refúgio.`},calor:{extinta:"A fome esvaziou o fundo do mar, e o Povo do Abismo se apagou.",adaptada:"Os viveiros alimentaram o Povo do Abismo na Grande Fome.",refugio:"O Povo do Abismo resistiu à fome em um refúgio."}}
     }[q];
     ORDEM.forEach(l=>{const t=(M[l]||{})[g[l]];if(t)c.push(t)});
     if(g[cs.escapa]==="escapou")c.push(cs.fuga);
@@ -815,7 +842,7 @@ function textoSinal(si){
   const f=S.fase,st=f==="vida"?stVida:f==="especies"?stEsp:stCiv;
   const pend=ORDEM.filter(l=>st(l)[1]==="mal");
   if(!pend.length)return "Nenhuma linhagem em perigo agora. Use o tempo para avançar.";
-  const d=f==="vida"?DICA_GELO:criseAtual().dica;
+  const d=f==="vida"?DICA_GELO:{...criseAtual().dica,...(f==="civ"&&S.abre2.ceu&&!S.abre2.terra?criseAtual().dicaCeu:{})};
   if(f==="vida")return d[pend[Math.min(S.sinal-1,pend.length-1)]];
   return S.sinal>=2||pend.length===1?d[pend[0]]:criseAtual().aviso;
 }
@@ -827,7 +854,7 @@ function selo(l){
   return `<span class="selo apagado">${n} ${f==="vida"?"não surgiu":"fora"}</span>`;
 }
 const PARTIDAS="genese_v1_partidas",mostraLegenda=()=>(+lerLista(PARTIDAS)||0)<=3;
-const COR_CRISE={gelo:"#bfe6f5",seca:"#e8b765",meteoro:"#f0652c",peste:"#8fd27a",fome:"#d9b860"};
+const COR_CRISE={gelo:"#bfe6f5",seca:"#e8b765",meteoro:"#f0652c",erupcao:"#ff7a3c",peste:"#8fd27a",fome:"#d9b860"};
 function barraCrise(){
   const vida=S.fase==="vida",rev=revelada(),c=vida?{nome:"A Grande Glaciação",ic:"gelo",cor:"#2f8fb8"}:rev?criseAtual():null;
   const med=c?`<span class="orbe" style="--tinta:${c.cor}">${svgI(c.ic)}</span>`:`<span class="orbe desc">?</span>`;
@@ -923,7 +950,7 @@ function stEsp(l){
 }
 function stCiv(l){
   if(S.gelo3){
-    if(S.gelo3[l]==="adaptada")return [`Salva por ${E[CRISES3[S.crise3].def[l]].n}`,"ok"];
+    if(S.gelo3[l]==="adaptada")return [`Salva por ${E[protDe(CRISES3[S.crise3],l)].n}`,"ok"];
     return ST[S.gelo3[l]];
   }
   if(!S.abre2)return ["",""];
@@ -932,7 +959,7 @@ function stCiv(l){
   if(!revelada())return ["Crise desconhecida",""];
   const c=CRISES3[S.crise3];
   if(l===c.escapa)return ["Fora de risco","ok"];
-  if(S.k[c.def[l]]!=null)return [`Protegida por ${E[c.def[l]].n}`,"ok"];
+  if(S.k[protDe(c,l)]!=null)return [`Protegida por ${E[protDe(c,l)].n}`,"ok"];
   return ["Em risco","mal"];
 }
 function arvore(){
@@ -1077,7 +1104,7 @@ function pintarEnc(){
 }
 function detalheEnc(id){
   const x=E[id],era=MATERIA.includes(id)?"Era da Matéria":x.era===4?"Era da Civilização":x.era===3?"Era das Espécies":"Era da Vida";
-  const tipo={esporo:"Defesa contra a Grande Glaciação",cisto:"Defesa contra a Grande Glaciação",semente:"Defesa contra a Grande Seca",casca:"Defesa contra a Grande Seca",toca:"Defesa contra o Meteoro",concha:"Defesa contra o Meteoro",remedio:"Defesa contra a Grande Peste",propolis:"Defesa contra a Grande Peste",celeiro:"Defesa contra a Grande Fome",viveiro:"Defesa contra a Grande Fome"}[id]||(x.apex?"Topo de linhagem":"");
+  const tipo={esporo:"Defesa contra a Grande Glaciação",cisto:"Defesa contra a Grande Glaciação",semente:"Defesa contra a Seca e a Erupção",casca:"Defesa contra a Grande Seca",toca:"Defesa contra o Meteoro",concha:"Defesa contra o Meteoro e a Erupção",remedio:"Defesa contra a Grande Peste",propolis:"Defesa contra a Grande Peste",celeiro:"Defesa contra a Grande Fome",viveiro:"Defesa contra a Grande Fome",rota:"Defesa contra a Grande Fome",ninhoalto:"Defesa contra a Grande Peste"}[id]||(x.apex?"Topo de linhagem":"");
   const et=[era,x.l?LINHAS[x.l].n:"",tipo].filter(Boolean).join(", ");
   modal({ic:id,el:1,t:x.n,h:`<p class="rec">${mini(x.r[0])} ${E[x.r[0]].n} + ${mini(x.r[1])} ${E[x.r[1]].n}</p><p>${x.f}</p><p class="etq">${et}</p>`,b:[{t:"Fechar",f:()=>{}}]});
 }
@@ -1114,7 +1141,7 @@ document.addEventListener("click",ev=>{
     case "menu":return modal({ic:"planeta",t:"Gênese",h:"",b:[{t:"Voltar ao jogo",f:()=>{}},{t:"Como jogar",c:"vazado",f:comoJogar},{t:"Enciclopédia",c:"vazado",f:()=>abrirEnc("jogo")},{t:"Recomeçar partida",c:"vazado",f:novaPartida},{t:"Sair para a capa",c:"vazado",f:()=>{S=null;pintarCapa()}}]});
   }
 });
-window.__G={get S(){return S},G,HER,crise,crise2,crise3,abrirEspecies,E,ICO,RECEITA,chave,combinar,alcancaveis,novaPartida,pintar,FINAIS,CRISES,seguirZero,finalizar};
+window.__G={get S(){return S},G,CRISES3,HER,crise,crise2,crise3,abrirEspecies,E,ICO,RECEITA,chave,combinar,alcancaveis,novaPartida,pintar,FINAIS,CRISES,seguirZero,finalizar};
 pintarCapa();
 </script>
 </body>
