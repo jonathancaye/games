@@ -77,6 +77,22 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 #app.vida .status .barra i{background:var(--gelo)}
 .status .sinal{font-size:13.5px;line-height:1.3;color:var(--gelo);margin-top:4px}
 .status.lin{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.crise{display:flex;align-items:center;gap:10px;width:100%;padding:7px 10px 8px 7px;border-radius:16px;background:rgba(0,0,0,.24);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--fio) 55%,transparent);text-align:left}
+.crise>.orbe{flex:none;width:46px;height:46px}
+.crise .orbe.desc{--tinta:#55524f;font-family:var(--titulo);font-size:24px;font-weight:800}
+.crise .cc{flex:1;min-width:0;display:block}
+.crise b{display:block;font-family:var(--titulo);font-weight:800;font-size:17.5px;line-height:1.15;color:var(--papel);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tempo{display:flex;gap:4px;margin-top:6px}
+.pacote{display:flex;gap:2px;flex:var(--p,4) 1 0;min-width:0}
+.pacote i{flex:1;height:13px;min-width:0;border-radius:3px}
+.pacote i.g{background:var(--fio)}
+.pacote i.v{background:#2dd4bf}
+.pacote i.r{box-shadow:inset 0 0 0 1.5px #ffd27a}
+.pacote i.r.nao{box-shadow:inset 0 0 0 1px rgba(255,210,122,.35)}
+.crise.urg .pacote i.v{background:#ff8a3c;animation:alerta .9s ease-in-out infinite}
+.crise.urg>.orbe{animation:alerta .9s ease-in-out infinite}
+@keyframes alerta{50%{opacity:.5}}
+.legenda{margin-top:4px;font-size:12px;color:#ffd27a}
 .status .enc{padding:6px 12px;border-radius:999px;background:var(--mar);color:#04262a;font-weight:800;font-size:13.5px;white-space:nowrap}
 
 /* forja */
@@ -728,6 +744,18 @@ function pintar(){
   $("#jogo").innerHTML=topo+corpo+abas;
   const n=document.querySelector(".mesa,.painel");if(n)n.scrollTop=y;
 }
+const COR_CRISE={gelo:"#bfe6f5",seca:"#e8b765",meteoro:"#f0652c",peste:"#8fd27a",fome:"#d9b860"};
+function barraCrise(){
+  const vida=S.fase==="vida",rev=revelada(),c=vida?{nome:"A Grande Glaciação",ic:"gelo",cor:"#2f8fb8"}:rev?criseAtual():null;
+  const med=c?`<span class="orbe" style="--tinta:${c.cor}">${svgI(c.ic)}</span>`:`<span class="orbe desc">?</span>`;
+  const fio=c?COR_CRISE[c.ic]:"#b9b3a8",titulo=c?`${c.nome} se aproxima`:"Uma crise se aproxima";
+  const gasto=Math.max(0,S.enMax-S.en),urg=S.en<=3;
+  const cel=(n,cl)=>Array.from({length:n},()=>`<i class="${cl}"></i>`).join("");
+  let extra="",resta=S.vit,res=S.res,ha=0;
+  for(;res<RES_MAX;res++){const p=8+4*res,pode=resta>=p;if(pode)resta-=p;extra+=`<span class="pacote">${cel(RES_GANHO,pode?"r":"r nao")}</span>`;ha=1}
+  return `<button class="crise${urg?" urg":""}" style="--fio:${fio}" data-aba="evo" aria-label="${titulo}. Faltam ${S.en} combinações. Toque para ver os Reforços.">
+    ${med}<span class="cc"><b>${titulo}</b><span class="tempo"><span class="pacote cheio" style="--p:${S.enMax}">${cel(gasto,"g")}${cel(S.en,"v")}</span>${extra}</span></span></button>${ha?`<div class="legenda">Contorno dourado: tempo extra que a Reserva compra</div>`:""}`;
+}
 function pintarStatus(){
   if(S.fase==="materia"){
     const n=MATERIA.filter(id=>S.k[id]!=null).length;
@@ -736,8 +764,7 @@ function pintarStatus(){
   if(S.fase==="vida"||S.fase==="especies"||S.fase==="civ"){
     const si=sinaisDaFase();
     const s=S.sinal>=0?si[S.sinal][1]:"O ar está esfriando. Proteja o que você criar.";
-    const nome=S.fase==="vida"?"Gelo":revelada()?criseAtual().curto:"Crise";
-    return `<div class="status"><b>${nome} em ${S.en} ${S.en===1?"combinação":"combinações"}</b><div class="sinal">${s}</div></div>`;
+    return `<div class="status">${barraCrise()}<div class="sinal">${s}</div></div>`;
   }
   if(S.fase==="degelo")return `<div class="status lin"><b>${algumTopo()?"Mais topos abrem mais caminhos.":"Leve uma linhagem até o topo para seguir."}</b><button class="enc" data-a="encerrar">Encerrar era</button></div>`;
   if(S.fase==="recons")return `<div class="status lin"><b>Reconstrua o que restou. Erga uma cidade.</b><button class="enc" data-a="encerrar">Encerrar era</button></div>`;
