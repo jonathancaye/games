@@ -85,6 +85,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 .ped .val{font-weight:800;font-size:13.5px;color:var(--luz);white-space:nowrap}
 .ped button{padding:5px 10px;border-radius:999px;background:var(--mar);color:#04262a;font-weight:800;font-size:13px;white-space:nowrap}
 .ped button.prod{background:var(--papel);color:#2b1420}
+.ped button:disabled{opacity:.45}
 .ped .aguarda{font-size:12.5px;color:var(--suave)}
 
 /* elementos */
@@ -323,13 +324,14 @@ function comprarDica(){
 }
 function comprarRefugio(l){if(S.vit<REFUGIO)return;S.vit-=REFUGIO;S.guarda[l]=1;salvar();pintar()}
 function entregar(i){
-  const o=S.ord[i];if(!o||!vivo(o.id)||S.k[o.id]<o.q)return;
+  const o=S.ord[i];if(!o||!vivo(o.id))return;
+  const falta=Math.max(0,o.q-S.k[o.id]);
+  if(falta>S.en)return;
+  S.k[o.id]+=falta;for(let n=0;n<falta;n++)gastar();
   S.k[o.id]-=o.q;S.vit+=o.v;S.ped++;S.ord.splice(i,1);encherPedidos();
-  G.info=`Entregue: ${E[o.id].n}. Você ganhou ${o.v} ✦.`;salvar();pintar();
-}
-function produzir(i){
-  const o=S.ord[i];if(!o||!vivo(o.id)||S.en<=0)return;
-  S.k[o.id]++;gastar();G.info=`Mais uma unidade de ${E[o.id].n} por 1 de energia.`;pintar();depois();
+  G.info=`Entregue: ${E[o.id].n}. Você ganhou ${o.v} ✦${falta?` e gastou ${falta} de energia`:""}.`;
+  pintar();
+  if(falta)depois();else salvar();
 }
 function abrirEraVida(){
   const bonus=Math.floor(S.en/3);
@@ -434,7 +436,7 @@ function pintarMesa(){
     if(!o)return `<div class="ped"><p class="aguarda">Nenhum pedido agora.</p></div>`;
     const conhe=vivo(o.id),tem=conhe?S.k[o.id]:0;
     const txt=conhe?`${o.q>1?o.q+" × ":""}${E[o.id].e} ${E[o.id].n}`:`❔ ${E[o.id].c}`;
-    const btn=!conhe?`<span class="aguarda">Descubra</span>`:tem>=o.q?`<button data-ent="${i}">Entregar</button>`:`<button class="prod" data-prod="${i}">Produzir ⚡1</button>`;
+    const btn=!conhe?`<span class="aguarda">Descubra</span>`:tem>=o.q?`<button data-ent="${i}">Entregar</button>`:`<button class="prod" data-ent="${i}" ${o.q-tem>S.en?"disabled":""}>Entregar ⚡${o.q-tem}</button>`;
     return `<div class="ped"><p>${txt}</p><div class="pr"><span class="val">+${o.v} ✦</span>${btn}</div></div>`;
   }).join("");
   const ids=Object.keys(S.k).filter(id=>!S.ext[id]).map((id,i)=>({id,i,g:esgotado(id)?1:0})).sort((x,y)=>x.g-y.g||x.i-y.i);
@@ -497,14 +499,13 @@ function novaPartida(){S=nova();G.aba="mesa";G.a=G.b=null;G.res=null;G.dica=null
 document.addEventListener("click",ev=>{
   const m=ev.target.closest("[data-m]");
   if(m){const b=$("#modal")._b[+m.dataset.m];fechaModal();b.f();return}
-  const t=ev.target.closest("[data-el],[data-aba],[data-a],[data-ent],[data-prod],[data-ref],#sa,#sb");
+  const t=ev.target.closest("[data-el],[data-aba],[data-a],[data-ent],[data-ref],#sa,#sb");
   if(!t)return;
   if(t.id==="sa"||t.id==="sb"){if(!G.trava&&t.id==="sa"&&G.a){G.a=null;pintar()}return}
   const d=t.dataset;
   if(d.el)return tocarEl(d.el);
   if(d.aba){G.aba=d.aba;return pintar()}
   if(d.ent)return entregar(+d.ent);
-  if(d.prod)return produzir(+d.prod);
   if(d.ref)return comprarRefugio(d.ref);
   switch(d.a){
     case "nova":return novaPartida();
@@ -517,7 +518,7 @@ document.addEventListener("click",ev=>{
     case "menu":return modal({ic:"🌍",t:"Gênese",h:"",b:[{t:"Voltar ao jogo",f:()=>{}},{t:"Como jogar",c:"vazado",f:comoJogar},{t:"Recomeçar partida",c:"vazado",f:novaPartida},{t:"Sair para a capa",c:"vazado",f:()=>{S=null;pintarCapa()}}]});
   }
 });
-window.__G={get S(){return S},G,E,RECEITA,chave,combinar,alcancaveis,novaPartida,pintar,entregar,produzir,FINAIS};
+window.__G={get S(){return S},G,E,RECEITA,chave,combinar,alcancaveis,novaPartida,pintar,entregar,FINAIS};
 pintarCapa();
 </script>
 </body>
