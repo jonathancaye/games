@@ -47,6 +47,8 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 #capa h1{font-family:var(--titulo);font-weight:800;font-size:clamp(62px,20vw,88px);letter-spacing:-.035em;line-height:1;margin:0}
 #capa .chamada{max-width:30ch;margin:8px 0 0;font-size:17px;line-height:1.42}
 #capa .acoes{display:flex;flex-direction:column;gap:9px;width:min(280px,100%);margin-top:20px}
+#capa .dupla{display:flex;gap:9px}
+#capa .dupla .btn{padding-left:6px;padding-right:6px;font-size:15px}
 #capa .fins{display:block;margin-top:12px;color:var(--suave);font-size:13.5px}
 .credito{margin:0;font-family:var(--titulo);font-style:italic;font-size:15px;line-height:1.4;color:var(--papel)}
 #capa .credito{position:absolute;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom));padding:0 16px}
@@ -172,6 +174,27 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 #fim .credito{margin-bottom:16px}
 #fim .acoes{display:flex;gap:8px;padding:10px 14px calc(12px + env(safe-area-inset-bottom));flex:none}
 
+/* enciclopédia */
+.enctopo{display:flex;align-items:center;gap:8px;padding:12px 12px 6px;padding-top:calc(12px + env(safe-area-inset-top))}
+.enctopo button{font-weight:700;font-size:14.5px;color:var(--suave);padding:6px 8px 6px 2px;white-space:nowrap}
+.enctopo h2{margin:0;font-family:var(--titulo);font-weight:800;font-size:25px;letter-spacing:-.01em}
+.encnum{padding:0 14px 8px;font-size:14px;font-weight:700}
+.encnum .barra{height:5px;border-radius:9px;background:var(--vidro);margin-top:6px;overflow:hidden}
+.encnum .barra i{display:block;height:100%;background:var(--mar);border-radius:9px}
+.encnum .fos{display:flex;align-items:center;gap:6px;margin-top:7px;font-weight:600;color:var(--suave);font-size:13.5px}
+.encnum .fos .mini .orbe{width:21px;height:21px}
+.encgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px 2px;margin-bottom:8px}
+.lin-t{margin:12px 0 7px;font-size:14px;font-weight:800;color:var(--cor)}
+.fimlin{padding:10px 0;border-bottom:1px solid var(--fio)}
+.fimlin:last-child{border:0}
+.fimlin b{display:block;font-family:var(--titulo);font-weight:500;font-size:18.5px}
+.fimlin span{display:block;margin-top:2px;font-size:14px;line-height:1.35;color:var(--suave)}
+.fimlin.nao b{color:var(--suave)}
+.rec{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px;font-weight:600;font-size:14.5px;margin-bottom:10px!important}
+.etq{text-align:center;color:var(--suave);font-size:14px}
+.fossil{display:flex;align-items:center;gap:11px;margin:12px 0;padding:10px 12px;border-radius:14px;background:var(--vidro);font-size:14.5px;line-height:1.35}
+.fossil .orbe{flex:none;width:44px;height:44px}
+
 /* modal */
 #modal{position:absolute;inset:0;z-index:10;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(10,6,10,.62)}
 #modal.on{display:flex}
@@ -198,6 +221,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
   <section class="tela on" id="capa"></section>
   <section class="tela" id="jogo"></section>
   <section class="tela" id="fim"></section>
+  <section class="tela" id="enc"></section>
   <div id="frost"></div>
   <div id="modal"></div>
 </div>
@@ -261,6 +285,7 @@ const ICO={
   gelo:`<g ${LI} stroke="${CR}" stroke-width="3.500">${[0,60,120].map(a=>`<g transform="rotate(${a} 24 24)"><path d="M24 3v42M24 11l-5-5M24 11l5-5M24 37l-5 5M24 37l5 5"/></g>`).join("")}</g>`,
   seca:`<path fill="#ffc35c" d="M3 21a21 21 0 0 1 42 0z" opacity=".95"/><path fill="${CR}" d="M1 21h46v24H1z"/><g ${LI} stroke="#8a5f2b" stroke-width="2.500"><path d="m24 21-3 8 5 5-4 11M21 29l-11 4-5 12M26 34l10-3 9 3M36 31l1-10M10 33 2 28"/></g>`,
   meteoro:`<g ${LI}><path stroke="#ffc35c" stroke-width="5" d="M44 3 20 24"/><path stroke="${CR}" stroke-width="3.500" d="M33 3 16 18M45 15 30 29"/></g><circle cx="16" cy="31" r="13" fill="#3a2024"/><circle cx="16" cy="31" r="13" fill="none" stroke="#ffc35c" stroke-width="3"/><circle cx="12" cy="27" r="3" fill="#6a4048"/><circle cx="20" cy="35" r="2.400" fill="#6a4048"/>`,
+  fossil:`<circle cx="24" cy="24" r="21" fill="#3f2f27"/><path fill="none" stroke="#fff1d6" stroke-width="5" stroke-linecap="round" d="M24 24c2-3 7-1 6 3-1 5-8 6-12 2-4-5-2-13 5-15 9-2 16 5 15 14-1 9-11 15-21 11"/><g fill="none" stroke="#3f2f27" stroke-width="2"><path d="m33 12-3 5M39 20l-5 2M40 30l-5-1M34 38l-3-4M24 43l-1-5M15 41l2-4"/></g>`,
   planeta:`<circle cx="24" cy="24" r="20" fill="#2f8fb8"/><path fill="#a9e27a" d="M12 10c5-3 11-3 13 0 2 4-5 6-5 10 0 3 5 3 4 7-2 4-9 2-12-3-3-4-5-10 0-14zM31 21c4-3 11-1 12 3 0 6-5 13-10 14-3-3 1-8-1-11-2-2-3-5-1-6z"/><path ${LI} stroke="${CR}" stroke-width="2.600" d="M9 14c2-3 5-5 8-6" opacity=".7"/>`
 };
 const svgI=k=>`<svg viewBox="0 0 48 48" aria-hidden="true">${ICO[k]}</svg>`;
@@ -374,6 +399,11 @@ function limpar(){try{localStorage.removeItem(SAVE)}catch(e){}}
 function finais(){try{return JSON.parse(localStorage.getItem(FINS))||[]}catch(e){return []}}
 function marcarFinal(id){try{const f=finais();if(!f.includes(id)){f.push(id);localStorage.setItem(FINS,JSON.stringify(f))}}catch(e){}}
 
+const ENC="genese_v1_enc",FOS="genese_v1_fosseis",FOS_BONUS=3,FOS_MAX=2;
+function lerLista(k){try{return JSON.parse(localStorage.getItem(k))||[]}catch(e){return []}}
+function gravarLista(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function registrar(id){const v=lerLista(ENC);if(!v.includes(id)){v.push(id);gravarLista(ENC,v)}}
+
 /* ---------- regras ---------- */
 const vivo=id=>S.k[id]!=null&&!S.ext[id];
 const noFim=()=>S.fase==="especies"||S.fase==="recup";
@@ -413,7 +443,7 @@ function sinaisDaFase(){
 function gastar(){S.en=Math.max(0,S.en-1);atualizaSinal()}
 function atualizaSinal(){sinaisDaFase().forEach((s,i)=>{if(S.en<=s[0]&&i>S.sinal)S.sinal=i})}
 function descobrir(id){
-  S.k[id]=1;
+  S.k[id]=1;registrar(id);
   const l=E[id].l;
   if(l&&!S.prim)S.prim=l;
   G.info=`<span><b>${E[id].n}.</b> ${E[id].f}</span>`;
@@ -552,7 +582,10 @@ function cronica(fin){
 }
 function finalizar(id){
   const fin=id||escolherFinal();
-  marcarFinal(fin);S.fase="fim";S.fim=fin;limpar();pintar();
+  marcarFinal(fin);S.fase="fim";S.fim=fin;limpar();
+  S.fossil=ORDEM.filter(l=>Object.keys(S.ext).some(i=>E[i].l===l));
+  gravarLista(FOS,[...lerLista(FOS),...S.fossil]);
+  pintar();
 }
 
 /* ---------- desenho ---------- */
@@ -579,11 +612,11 @@ function abertura(){
 }
 function pintarCapa(){
   const s=carregar(),f=finais().length,tot=Object.keys(FINAIS).length;
-  $("#capa").innerHTML=`<a class="voltar" href="../../">← Mesa de Jogos</a>${abertura()}<h1>Gênese</h1><p class="chamada">Misture os elementos, crie a vida e descubra o que sobrevive às crises do planeta.</p><div class="acoes">${s?`<button class="btn" data-a="continuar">Continuar partida</button>`:""}<button class="btn ${s?"vazado":"fogo"}" data-a="nova">Nova partida</button><button class="btn vazado" data-a="como">Como jogar</button></div>${f?`<span class="fins">Finais encontrados: ${f} de ${tot}</span>`:""}${CREDITO}`;
+  $("#capa").innerHTML=`<a class="voltar" href="../../">← Mesa de Jogos</a>${abertura()}<h1>Gênese</h1><p class="chamada">Misture os elementos, crie a vida e descubra o que sobrevive às crises do planeta.</p><div class="acoes">${s?`<button class="btn" data-a="continuar">Continuar partida</button>`:""}<button class="btn ${s?"vazado":"fogo"}" data-a="nova">Nova partida</button><div class="dupla"><button class="btn vazado" data-a="como">Como jogar</button><button class="btn vazado" data-a="enc">Enciclopédia</button></div></div>${f?`<span class="fins">Finais encontrados: ${f} de ${tot}</span>`:""}${CREDITO}`;
   $("#app").className="";$("#frost").style.opacity=0;tela("capa");
 }
 function comoJogar(){
-  modal({ic:"celula",el:1,t:"Como jogar",h:`<p><b>Combine:</b> toque em dois elementos. Cada mistura nova gasta 1 de energia, certa ou errada.</p><p><b>Entregue:</b> os pedidos dão pistas e rendem Vitalidade, que compra ajuda na aba Reforços.</p><p><b>Sobreviva:</b> a energia é o tempo até a próxima crise. Linhagens sem proteção se extinguem, e as receitas ligadas a elas fecham.</p><p><b>Avance:</b> só as linhagens que chegam ao topo seguem para a Era das Espécies.</p><p>Elementos apagados já não têm nada a oferecer.</p>`,b:[{t:"Entendi",f:()=>{}}]});
+  modal({ic:"celula",el:1,t:"Como jogar",h:`<p><b>Combine:</b> toque em dois elementos. Cada mistura nova gasta 1 de energia, certa ou errada.</p><p><b>Entregue:</b> os pedidos dão pistas e rendem Vitalidade, que compra ajuda na aba Reforços.</p><p><b>Sobreviva:</b> a energia é o tempo até a próxima crise. Linhagens sem proteção se extinguem, e as receitas ligadas a elas fecham.</p><p><b>Avance:</b> só as linhagens que chegam ao topo seguem para a Era das Espécies.</p><p><b>Recomece:</b> linhagens extintas deixam fósseis, que dão Vitalidade na partida seguinte.</p><p>Elementos apagados já não têm nada a oferecer.</p>`,b:[{t:"Entendi",f:()=>{}}]});
 }
 function pintar(){
   if(!S)return pintarCapa();
@@ -695,7 +728,7 @@ function arvore(){
 function pintarFim(){
   const fin=S.fim,F=FINAIS[fin],c=cronica(fin);
   $("#app").className=fin==="esteril"?"":"degelo";$("#frost").style.opacity=0;
-  $("#fim").innerHTML=`<div class="painel"><h1>${F.t}</h1><div class="cron">${c.map(p=>`<p>${p}</p>`).join("")}</div><p class="num">${descobertas()} de ${TOTAL} descobertas, ${Object.keys(S.ext).length} extintas, ${finais().length} de ${Object.keys(FINAIS).length} finais encontrados.</p>${CREDITO}${arvore()}</div><div class="acoes"><button class="btn vazado" data-a="capa">Sair</button><button class="btn" data-a="nova">Jogar de novo</button></div>`;
+  $("#fim").innerHTML=`<div class="painel"><h1>${F.t}</h1><div class="cron">${c.map(p=>`<p>${p}</p>`).join("")}</div><p class="num">${descobertas()} de ${TOTAL} descobertas, ${Object.keys(S.ext).length} extintas, ${finais().length} de ${Object.keys(FINAIS).length} finais encontrados.</p>${(S.fossil||[]).length?`<div class="fossil"><span class="orbe" style="--tinta:#6e5238">${svgI("fossil")}</span><span>${S.fossil.length>1?"Você encontrou fósseis":"Você encontrou um fóssil"}: ${S.fossil.map(l=>LINHAS[l].n).join(", ")}. Cada um vale +${FOS_BONUS} de Vitalidade na próxima partida.</span></div>`:""}${CREDITO}${arvore()}</div><div class="acoes"><button class="btn vazado" data-a="capa">Sair</button><button class="btn" data-a="nova">Jogar de novo</button></div>`;
   tela("fim");
 }
 
@@ -716,22 +749,54 @@ function resolver(){
   pintar();
   if(navigator.vibrate&&G.res&&G.res.novo)try{navigator.vibrate(18)}catch(e){}
 }
-function novaPartida(){S=nova();G.aba="mesa";G.a=G.b=null;G.res=null;G.dica=null;G.info="";encherPedidos();salvar();pintar()}
+function novaPartida(){
+  S=nova();G.aba="mesa";G.a=G.b=null;G.res=null;G.dica=null;G.info="";
+  const fs=lerLista(FOS),usa=fs.slice(0,FOS_MAX);
+  gravarLista(FOS,fs.slice(usa.length));
+  S.vit+=usa.length*FOS_BONUS;
+  encherPedidos();salvar();pintar();
+  if(usa.length)modal({ic:"fossil",cor:"#6e5238",t:usa.length>1?"Fósseis encontrados":"Fóssil encontrado",h:`<p>Restos de ${usa.map(l=>LINHAS[l].n).join(" e de ")} ajudam este novo planeta: você começa com +${usa.length*FOS_BONUS} de Vitalidade.</p>`,b:[{t:"Começar",f:()=>{}}]});
+}
+function abrirEnc(volta){G.encVolta=volta;G.encAba="desc";$("#frost").style.opacity=0;pintarEnc()}
+function pintarEnc(){
+  const v=lerLista(ENC),fin=finais(),nf=Object.keys(FINAIS).length,fos=lerLista(FOS).length;
+  const item=id=>v.includes(id)?`<button class="el" data-enc="${id}">${orbe(id)}<span class="nm">${E[id].n}</span></button>`:`<div class="no oculto"><span class="nob"><span class="orbe">?</span></span></div>`;
+  const grade=l=>`<div class="encgrid">${l.map(item).join("")}</div>`;
+  const faixa=n=>`<h3 class="faixa">${n}</h3>`;
+  const linhas=m=>ORDEM.map(l=>`<div class="lin-t" style="--cor:${LINHAS[l].cor}">${LINHAS[l].n}</div>${grade(m[l])}`).join("");
+  const num=G.encAba==="desc"?[v.length,TOTAL,"descobertas"]:[fin.length,nf,"finais"];
+  const fh=fos?`<div class="fos">${`<span class="mini"><span class="orbe" style="--tinta:#6e5238">${svgI("fossil")}</span></span>`}${fos} ${fos>1?"fósseis guardados":"fóssil guardado"} para a próxima partida</div>`:"";
+  const corpo=G.encAba==="desc"
+    ?faixa("Era da Matéria")+grade(MATERIA)+faixa("Era da Vida")+linhas(RAMO)+faixa("Era das Espécies")+linhas(RAMO2)
+    :Object.keys(FINAIS).map(k=>fin.includes(k)?`<div class="fimlin"><b>${FINAIS[k].t}</b><span>${FINAIS[k].x}</span></div>`:`<div class="fimlin nao"><b>?</b><span>Final ainda não encontrado.</span></div>`).join("");
+  $("#enc").innerHTML=`<div class="enctopo"><button data-a="encvolta">← Voltar</button><h2>Enciclopédia</h2></div><div class="encnum">${num[0]} de ${num[1]} ${num[2]}<div class="barra"><i style="width:${num[0]/num[1]*100}%"></i></div>${fh}</div><div class="painel">${corpo}</div><nav class="abas"><button class="${G.encAba==="desc"?"on":""}" data-enca="desc">Descobertas</button><button class="${G.encAba==="fin"?"on":""}" data-enca="fin">Finais</button></nav>`;
+  tela("enc");
+}
+function detalheEnc(id){
+  const x=E[id],era=MATERIA.includes(id)?"Era da Matéria":x.era===3?"Era das Espécies":"Era da Vida";
+  const tipo={esporo:"Defesa contra a Grande Glaciação",cisto:"Defesa contra a Grande Glaciação",semente:"Defesa contra a Grande Seca",casca:"Defesa contra a Grande Seca",toca:"Defesa contra o Meteoro",concha:"Defesa contra o Meteoro"}[id]||(x.apex?"Topo de linhagem":"");
+  const et=[era,x.l?LINHAS[x.l].n:"",tipo].filter(Boolean).join(", ");
+  modal({ic:id,el:1,t:x.n,h:`<p class="rec">${mini(x.r[0])} ${E[x.r[0]].n} + ${mini(x.r[1])} ${E[x.r[1]].n}</p><p>${x.f}</p><p class="etq">${et}</p>`,b:[{t:"Fechar",f:()=>{}}]});
+}
 document.addEventListener("click",ev=>{
   const m=ev.target.closest("[data-m]");
   if(m){const b=$("#modal")._b[+m.dataset.m];fechaModal();b.f();return}
-  const t=ev.target.closest("[data-el],[data-aba],[data-a],[data-ent],[data-ref],#sa,#sb");
+  const t=ev.target.closest("[data-el],[data-aba],[data-a],[data-ent],[data-ref],[data-enc],[data-enca],#sa,#sb");
   if(!t)return;
   if(t.id==="sa"||t.id==="sb"){if(!G.trava&&t.id==="sa"&&G.a){G.a=null;pintar()}return}
   const d=t.dataset;
   if(d.el)return tocarEl(d.el);
   if(d.aba){G.aba=d.aba;return pintar()}
+  if(d.enc)return detalheEnc(d.enc);
+  if(d.enca){G.encAba=d.enca;return pintarEnc()}
   if(d.ent)return entregar(+d.ent);
   if(d.ref)return comprarRefugio(d.ref);
   switch(d.a){
     case "nova":return novaPartida();
     case "continuar":S=carregar();G.aba="mesa";pintar();if(S&&S.en<=0&&S.fase!=="fim")zero();return;
     case "como":return comoJogar();
+    case "enc":return abrirEnc("capa");
+    case "encvolta":return G.encVolta==="capa"?pintarCapa():pintar();
     case "capa":S=null;return pintarCapa();
     case "reserva":comprarReserva();return pintar();
     case "dica":return comprarDica();
@@ -739,7 +804,7 @@ document.addEventListener("click",ev=>{
       const dg=S.fase==="degelo",seg=dg&&algumTopo();
       return modal({ic:"planeta",t:"Encerrar a era?",h:`<p>${seg?"O que ainda não foi descoberto aqui fica para trás, e a Era das Espécies começa.":"A história termina aqui, com o que estiver vivo agora."}</p>`,b:[{t:seg?"Seguir para a próxima era":"Encerrar",f:seguirZero},{t:"Continuar jogando",c:"vazado",f:()=>{}}]});
     }
-    case "menu":return modal({ic:"planeta",t:"Gênese",h:"",b:[{t:"Voltar ao jogo",f:()=>{}},{t:"Como jogar",c:"vazado",f:comoJogar},{t:"Recomeçar partida",c:"vazado",f:novaPartida},{t:"Sair para a capa",c:"vazado",f:()=>{S=null;pintarCapa()}}]});
+    case "menu":return modal({ic:"planeta",t:"Gênese",h:"",b:[{t:"Voltar ao jogo",f:()=>{}},{t:"Como jogar",c:"vazado",f:comoJogar},{t:"Enciclopédia",c:"vazado",f:()=>abrirEnc("jogo")},{t:"Recomeçar partida",c:"vazado",f:novaPartida},{t:"Sair para a capa",c:"vazado",f:()=>{S=null;pintarCapa()}}]});
   }
 });
 window.__G={get S(){return S},G,E,ICO,RECEITA,chave,combinar,alcancaveis,novaPartida,pintar,entregar,FINAIS,CRISES,seguirZero,finalizar};
