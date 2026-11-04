@@ -75,9 +75,9 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 .status .barra{height:5px;border-radius:9px;background:var(--vidro);margin-top:6px;overflow:hidden}
 .status .barra i{display:block;height:100%;background:var(--magma);border-radius:9px;transition:width .35s}
 #app.vida .status .barra i{background:var(--gelo)}
-.status .sinal{font-size:13.5px;line-height:1.3;color:var(--gelo);margin-top:4px}
+.status .sinal{font-size:13.5px;line-height:1.3;color:var(--gelo);margin-top:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .status.lin{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.crise{display:flex;align-items:center;gap:10px;width:100%;padding:7px 10px 8px 7px;border-radius:16px;background:rgba(0,0,0,.24);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--fio) 55%,transparent);text-align:left}
+.crise{display:flex;flex-wrap:wrap;align-items:center;gap:7px 10px;width:100%;padding:7px 10px 8px 7px;border-radius:16px;background:rgba(0,0,0,.24);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--fio) 55%,transparent);text-align:left}
 .crise>.orbe{flex:none;width:46px;height:46px}
 .crise .orbe.desc{--tinta:#55524f;font-family:var(--titulo);font-size:24px;font-weight:800}
 .crise .cc{flex:1;min-width:0;display:block}
@@ -92,6 +92,13 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 .crise.urg .pacote i.v{background:#ff8a3c;animation:alerta .9s ease-in-out infinite}
 .crise.urg>.orbe{animation:alerta .9s ease-in-out infinite}
 @keyframes alerta{50%{opacity:.5}}
+.selos{flex:0 0 100%;display:flex;justify-content:space-between;gap:4px;padding-left:3px}
+.selo{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:700;line-height:1.1;color:var(--suave);white-space:nowrap}
+.selo .ui{font-size:13px;flex:none}
+.selo.ok{color:#8fe8c4}
+.selo.mal{color:#ffb27a}
+.selo.apagado{opacity:.72}
+.crise.urg .selo.mal{animation:alerta .9s ease-in-out infinite}
 .legenda{margin-top:4px;font-size:12px;color:#ffd27a}
 .status .enc{padding:6px 12px;border-radius:999px;background:var(--mar);color:#04262a;font-weight:800;font-size:13.5px;white-space:nowrap}
 
@@ -336,6 +343,7 @@ const UI={
   menu:`<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.400" stroke-linecap="round" d="M3 6h18M3 12h18M3 18h12"/></svg>`,
   nada:`<svg class="x" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.400" stroke-linecap="round" d="m6 6 12 12M18 6 6 18"/></svg>`,
   escudo:`<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 1.500 21 5v6.500c0 5.500-3.700 9.300-9 11-5.300-1.700-9-5.500-9-11V5z"/><path fill="none" stroke="#10302f" stroke-width="2.400" stroke-linecap="round" stroke-linejoin="round" d="m8 12 3 3 5-6"/></svg>`,
+  alerta:`<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2 23 21.500H1z"/><path fill="none" stroke="#2b1420" stroke-width="2.600" stroke-linecap="round" d="M12 9.500v5"/><circle cx="12" cy="18" r="1.500" fill="#2b1420"/></svg>`,
   pista:`<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.500" fill="currentColor" opacity=".22"/><path fill="none" stroke="currentColor" stroke-width="2.600" stroke-linecap="round" d="M8.500 9c.3-2.200 1.800-3.500 3.700-3.500 2 0 3.500 1.300 3.500 3.200 0 3-3.700 3-3.700 6"/><circle cx="12" cy="18.400" r="1.500" fill="currentColor"/></svg>`
 };
 /* ---------- conteúdo ---------- */
@@ -508,7 +516,7 @@ function encherPedidos(){
 }
 function sinaisDaFase(){
   if(S.fase==="vida")return SINAIS;
-  if(S.fase==="especies"||S.fase==="civ"){const c=criseAtual(),e=S.fase==="civ";return [[e?EN6:EN4,e?"Há algo errado no ar. Ainda não dá para saber o que vem.":"O clima está mudando. Ainda não dá para saber o que vem."],[6,c.abre+" "+c.aviso],[3,c.aviso2]]}
+  if(S.fase==="especies"||S.fase==="civ"){const c=criseAtual(),e=S.fase==="civ";return [[e?EN6:EN4,e?"Há algo errado no ar. Ainda não dá para saber o que vem.":"O clima está mudando. Ainda não dá para saber o que vem."],[6,c.aviso],[3,c.aviso2]]}
   return [];
 }
 function gastar(){S.en=Math.max(0,S.en-1);atualizaSinal()}
@@ -744,6 +752,14 @@ function pintar(){
   $("#jogo").innerHTML=topo+corpo+abas;
   const n=document.querySelector(".mesa,.painel");if(n)n.scrollTop=y;
 }
+function selo(l){
+  const f=S.fase,[t,c]=f==="vida"?stVida(l):f==="especies"?stEsp(l):stCiv(l),n=LINHAS[l].n;
+  if(c==="ok")return `<span class="selo ok">${UI.escudo}${n} salva</span>`;
+  if(c==="mal")return `<span class="selo mal">${UI.alerta}${n} em perigo</span>`;
+  if(t==="Crise desconhecida")return `<span class="selo">${UI.pista}${n} incerta</span>`;
+  return `<span class="selo apagado">${n} ${f==="vida"?"não surgiu":"fora"}</span>`;
+}
+const PARTIDAS="genese_v1_partidas",mostraLegenda=()=>(+lerLista(PARTIDAS)||0)<=3;
 const COR_CRISE={gelo:"#bfe6f5",seca:"#e8b765",meteoro:"#f0652c",peste:"#8fd27a",fome:"#d9b860"};
 function barraCrise(){
   const vida=S.fase==="vida",rev=revelada(),c=vida?{nome:"A Grande Glaciação",ic:"gelo",cor:"#2f8fb8"}:rev?criseAtual():null;
@@ -754,7 +770,7 @@ function barraCrise(){
   let extra="",resta=S.vit,res=S.res,ha=0;
   for(;res<RES_MAX;res++){const p=8+4*res,pode=resta>=p;if(pode)resta-=p;extra+=`<span class="pacote">${cel(RES_GANHO,pode?"r":"r nao")}</span>`;ha=1}
   return `<button class="crise${urg?" urg":""}" style="--fio:${fio}" data-aba="evo" aria-label="${titulo}. Faltam ${S.en} combinações. Toque para ver os Reforços.">
-    ${med}<span class="cc"><b>${titulo}</b><span class="tempo"><span class="pacote cheio" style="--p:${S.enMax}">${cel(gasto,"g")}${cel(S.en,"v")}</span>${extra}</span></span></button>${ha?`<div class="legenda">Contorno dourado: tempo extra que a Reserva compra</div>`:""}`;
+    ${med}<span class="cc"><b>${titulo}</b><span class="tempo"><span class="pacote cheio" style="--p:${S.enMax}">${cel(gasto,"g")}${cel(S.en,"v")}</span>${extra}</span></span><span class="selos">${ORDEM.map(selo).join("")}</span></button>${ha&&mostraLegenda()?`<div class="legenda">Contorno dourado: tempo extra que a Reserva compra</div>`:""}`;
 }
 function pintarStatus(){
   if(S.fase==="materia"){
@@ -889,6 +905,7 @@ function resolver(){
   if(navigator.vibrate&&G.res&&G.res.novo)try{navigator.vibrate(18)}catch(e){}
 }
 function novaPartida(){
+  gravarLista(PARTIDAS,(+lerLista(PARTIDAS)||0)+1);
   S=nova();G.aba="mesa";G.a=G.b=null;G.res=null;G.dica=null;G.info="";
   const fs=lerLista(FOS),usa=fs.slice(0,FOS_MAX);
   gravarLista(FOS,fs.slice(usa.length));
