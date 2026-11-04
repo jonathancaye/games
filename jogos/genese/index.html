@@ -98,9 +98,10 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 .ped p{margin:0;font-size:13.5px;line-height:1.22;flex:1}
 .ped .pr{display:flex;align-items:center;justify-content:space-between;gap:6px}
 .ped .val{font-weight:800;font-size:13.5px;color:var(--luz);white-space:nowrap}
-.ped button{padding:5px 10px;border-radius:999px;background:var(--mar);color:#04262a;font-weight:800;font-size:13px;white-space:nowrap}
-.ped button.prod{background:var(--papel);color:#2b1420}
-.ped button:disabled{opacity:.45}
+.ped.def{background:rgba(255,210,122,.15);box-shadow:inset 0 0 0 1.5px #ffd27a}
+.ped.def h5{color:#ffd27a}
+.ped h5 .ui{font-size:14px;margin-right:3px}
+.pedidos.um{grid-template-columns:1fr}
 .ped .aguarda{font-size:12.5px;color:var(--suave)}
 
 /* elementos */
@@ -112,7 +113,6 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 .mini .orbe{width:19px;height:19px;box-shadow:none}
 .ui{width:1em;height:1em;display:inline-block;vertical-align:-.13em}
 .el span.nm{font-size:12px;line-height:1.1;font-weight:600;text-align:center;max-width:100%}
-.el .q{position:absolute;top:0;right:6px;min-width:19px;padding:1px 4px;border-radius:999px;background:var(--papel);color:#2b1420;font-size:11.5px;font-weight:800;line-height:1.35}
 .el.gasto .orbe{opacity:.42}
 .el.gasto span.nm{color:var(--suave)}
 .el.sel .orbe{box-shadow:0 0 0 3px var(--papel)}
@@ -368,7 +368,7 @@ const RECEITA={};Object.keys(E).forEach(id=>{const x=E[id];if(x.r)RECEITA[chave(
 const nivel=id=>{const x=E[id];return x.r?1+Math.max(...x.r.map(nivel)):0};
 Object.keys(E).forEach(id=>E[id].nv=nivel(id));
 
-const EN1=38,EN2=11,EN3=6,EN4=10,EN5=4,RES_MAX=2,RES_GANHO=4,DICA=4,REFUGIO=8,INT1=2,INT2=3,AJUDA_ERROS=3;
+const EN1=38,EN2=12,EN3=7,EN4=11,EN5=4,RES_MAX=2,RES_GANHO=4,DICA=5,REFUGIO=12,PREM_PISTA=1,PREM_INT=2,AJUDA_ERROS=3;
 const SINAIS=[[9,"Os polos estão mais brancos a cada ano."],[6,"O gelo avança sobre o mar. Quem vive da luz vai ficar no escuro."],[3,"Quem vive solto no mar precisa de um jeito de dormir até o frio passar."]];
 const FINAIS={
   esteril:{t:"Planeta Estéril",x:"A energia acabou antes da primeira célula. O planeta seguiu girando, em silêncio."},
@@ -410,7 +410,7 @@ const noFim=()=>S.fase==="especies"||S.fase==="recup";
 const travado=id=>E[id].era===3&&(!noFim()||!(S.abre&&S.abre[E[id].l]));
 const descobertas=()=>Object.keys(S.k).filter(id=>E[id].r).length+Object.keys(S.ext).length;
 function alcancaveis(){return Object.keys(E).filter(id=>{const x=E[id];return x.r&&S.k[id]==null&&!S.ext[id]&&!travado(id)&&x.r.every(vivo)})}
-function custoReserva(){return 5+3*S.res}
+function custoReserva(){return 8+4*S.res}
 function ramoVivo(l){return [...RAMO[l],...RAMO2[l]].some(id=>E[id].l===l&&vivo(id))}
 function algumTopo(){return ORDEM.some(l=>vivo(LINHAS[l].topo))}
 function esgotado(id){
@@ -418,24 +418,21 @@ function esgotado(id){
 }
 function sortear(l){return l[Math.floor(Math.random()*l.length)]}
 function revelada(){return S.fase==="especies"&&S.sinal>=1}
-function novoPedido(){
-  const ativos=S.ord.map(o=>o.id);
-  const alc=alcancaveis().filter(id=>!ativos.includes(id));
-  const prio=alc.filter(id=>E[id].ad&&(S.fase==="vida"||(revelada()&&Object.values(CRISES[S.crise2].def).includes(id))));
-  const est=S.fase==="materia"?[]:Object.keys(S.k).filter(id=>E[id].r&&vivo(id)&&id!=="celula"&&!ativos.includes(id));
-  const val=(id,b,t)=>Math.min(t,b+Math.floor(E[id].nv/4));
-  const ped=id=>({id,q:1,v:S.fase==="materia"?1:2});
-  const temPista=S.ord.some(o=>S.k[o.id]==null);
-  if(!temPista&&prio.length)return ped(sortear(prio));
-  if(!temPista&&alc.length)return ped(sortear(alc));
-  if(est.length){const id=sortear(est);return {id,q:2,v:val(id,2,4)}}
-  return null;
-}
+function defesasUrgentes(l){return l.filter(id=>E[id].ad&&(S.fase==="vida"||(revelada()&&Object.values(CRISES[S.crise2].def).includes(id))))}
 function encherPedidos(){
-  S.ord=S.ord.filter(o=>!S.ext[o.id]);
-  const urgente=alcancaveis().some(id=>E[id].ad&&(S.fase==="vida"||(revelada()&&Object.values(CRISES[S.crise2].def).includes(id))));
-  if(urgente)S.ord=S.ord.filter(o=>S.k[o.id]!=null||E[o.id].ad);
-  while(S.ord.length<2){const p=novoPedido();if(!p)break;S.ord.push(p)}
+  const alc=alcancaveis();
+  S.ord=S.ord.filter(o=>S.k[o.id]==null&&alc.includes(o.id)).map(o=>({id:o.id}));
+  const urg=defesasUrgentes(alc);
+  if(urg.length&&!S.ord.some(o=>E[o.id].ad)){
+    if(S.ord.length>=2)S.ord.pop();
+    S.ord.unshift({id:sortear(urg)});
+  }
+  while(S.ord.length<2){
+    const cand=alc.filter(id=>!S.ord.some(o=>o.id===id));
+    if(!cand.length)break;
+    const dif=cand.filter(id=>!E[id].ad&&E[id].l&&!S.ord.some(o=>E[o.id].l===E[id].l));
+    S.ord.push({id:sortear(dif.length?dif:cand)});
+  }
 }
 function sinaisDaFase(){
   if(S.fase==="vida")return SINAIS;
@@ -449,9 +446,9 @@ function descobrir(id,semBonus){
   S.k[id]=1;S.erroSeg=0;registrar(id);
   const l=E[id].l;
   if(l&&!S.prim)S.prim=l;
-  let extra="";
-  if(!pista&&!semBonus){const b=S.fase==="materia"?INT1:INT2;S.vit+=b;extra=`<b>Intuição: +${b} ${UI.vit}.</b> `}
-  G.info=`<span>${extra}<b>${E[id].n}.</b> ${E[id].f}</span>`;
+  const b=pista||semBonus?PREM_PISTA:PREM_INT;
+  S.vit+=b;
+  G.info=`<span><b>${!pista&&!semBonus?"Intuição: ":""}+${b} ${UI.vit}. ${E[id].n}.</b> ${E[id].f}</span>`;
   encherPedidos();
 }
 function combinar(a,b){
@@ -497,20 +494,9 @@ function comprarDica(){
   S.vit-=DICA;G.dica=E[id].r.slice();G.aba="mesa";G.info=`Sua intuição diz: tente <b>${E[E[id].r[0]].n}</b> com <b>${E[E[id].r[1]].n}</b>.`;salvar();pintar();
 }
 function comprarRefugio(l){if(S.vit<REFUGIO)return;S.vit-=REFUGIO;S.guarda[l]=1;salvar();pintar()}
-function entregar(i){
-  const o=S.ord[i];if(!o||!vivo(o.id))return;
-  const falta=Math.max(0,o.q-S.k[o.id]);
-  if(falta>S.en)return;
-  S.k[o.id]+=falta;for(let n=0;n<falta;n++)gastar();
-  S.k[o.id]-=o.q;S.vit+=o.v;S.ped++;S.ord.splice(i,1);encherPedidos();
-  G.info=`Entregue: ${E[o.id].n}. Você ganhou ${o.v} ${UI.vit}${falta?` e gastou ${falta} de energia`:""}.`;
-  pintar();
-  if(falta)depois();else salvar();
-}
 function abrirEraVida(){
-  const bonus=Math.floor(S.en/3);
-  S.vit+=bonus;S.fase="vida";S.en=EN2;S.enMax=EN2;S.res=0;S.k.sol=1;S.ord=[];encherPedidos();salvar();
-  modal({ic:"celula",el:1,t:"A primeira célula",h:`<p>Começa a Era da Vida, e o Sol entra na sua mesa.</p><p>A vida pode seguir três caminhos: a <b>Luz</b>, o <b>Calor</b> das fontes e a <b>Caça</b>.</p><p>Cada combinação agora aproxima o gelo.${bonus?` A energia que sobrou virou ${bonus} ${UI.vit}.`:""}</p>`,b:[{t:"Continuar",f:pintar}]});
+  S.fase="vida";S.en=EN2;S.enMax=EN2;S.res=0;S.k.sol=1;S.ord=[];encherPedidos();salvar();
+  modal({ic:"celula",el:1,t:"A primeira célula",h:`<p>Começa a Era da Vida, e o Sol entra na sua mesa.</p><p>A vida pode seguir três caminhos: a <b>Luz</b>, o <b>Calor</b> das fontes e a <b>Caça</b>.</p><p>Cada combinação agora aproxima o gelo.</p>`,b:[{t:"Continuar",f:pintar}]});
 }
 function crise(){
   const r={};
@@ -622,7 +608,7 @@ function pintarCapa(){
   $("#app").className="";$("#frost").style.opacity=0;tela("capa");
 }
 function comoJogar(){
-  modal({ic:"celula",el:1,t:"Como jogar",h:`<p><b>Combine:</b> toque em dois elementos. Cada mistura nova gasta 1 de energia, certa ou errada.</p><p><b>Explore:</b> descobrir algo sem pista rende mais Vitalidade. Depois de 3 erros seguidos, a pista mostra um ingrediente.</p><p><b>Entregue:</b> pedidos também rendem Vitalidade, que compra ajuda na aba Reforços.</p><p><b>Sobreviva:</b> a energia é o tempo até a próxima crise. Linhagens sem proteção se extinguem, e as receitas ligadas a elas fecham.</p><p><b>Avance:</b> só as linhagens que chegam ao topo seguem para a Era das Espécies.</p><p><b>Recomece:</b> linhagens extintas deixam fósseis, que dão Vitalidade na partida seguinte.</p><p>Elementos apagados já não têm nada a oferecer.</p>`,b:[{t:"Entendi",f:()=>{}}]});
+  modal({ic:"celula",el:1,t:"Como jogar",h:`<p><b>Combine:</b> toque em dois elementos. Cada mistura nova gasta 1 de energia, certa ou errada.</p><p><b>Explore:</b> cada descoberta rende Vitalidade, que compra ajuda na aba Reforços. Sem usar as pistas, você ganha mais. Depois de 3 erros seguidos, uma pista mostra um ingrediente.</p><p><b>Sobreviva:</b> a energia é o tempo até a próxima crise. Linhagens sem proteção se extinguem, e as receitas ligadas a elas fecham.</p><p><b>Avance:</b> só as linhagens que chegam ao topo seguem para a Era das Espécies.</p><p><b>Recomece:</b> linhagens extintas deixam fósseis, que dão Vitalidade na partida seguinte.</p><p>Elementos apagados já não têm nada a oferecer.</p>`,b:[{t:"Entendi",f:()=>{}}]});
 }
 function pintar(){
   if(!S)return pintarCapa();
@@ -664,22 +650,18 @@ function pintarMesa(){
   const cen=r?(r.id?orbe(r.id):r.i?`<span class="orbe" style="--tinta:#3d7c93">${svgI(r.i)}</span>`:UI.nada):"";
   const forja=`<div class="forja" id="forja"><div class="slot" id="sa">${f?orbe(f):""}</div><div class="crisol${r&&r.novo?" novo":""}${r&&!r.id?" nada":""}">${cen}</div><div class="slot" id="sb">${g?orbe(g):""}</div></div>`;
   const info=`<div class="info">${G.info||(f?"Agora escolha o segundo elemento.":"Toque em dois elementos para combinar.")}</div>`;
-  const peds=[0,1].map(i=>{
-    const o=S.ord[i];
-    if(!o)return `<div class="ped"><p class="aguarda">Sem pedido aqui. Descobrir algo sem pista rende mais ${UI.vit}.</p></div>`;
-    const conhe=vivo(o.id),tem=conhe?S.k[o.id]:0;
-    const txt=conhe?`${o.q>1?o.q+" × ":""}${mini(o.id)} ${E[o.id].n}`:`${UI.pista} ${E[o.id].c}`;
-    const ing=!conhe&&(S.erroSeg||0)>=AJUDA_ERROS?E[o.id].r[0]:null;
-    const btn=!conhe?`<span class="aguarda">${ing?`Usa ${mini(ing)} ${E[ing].n}`:"Descubra"}</span>`:tem>=o.q?`<button data-ent="${i}">Entregar</button>`:`<button class="prod" data-ent="${i}" ${o.q-tem>S.en?"disabled":""}>Entregar ${UI.energia}${o.q-tem}</button>`;
-    const tit=!conhe?"Pista de descoberta":tem>=o.q?"Pronto para entregar":"Trocar energia por Vitalidade";
-    return `<div class="ped"><h5>${tit}</h5><p>${txt}</p><div class="pr"><span class="val">+${o.v} ${UI.vit}</span>${btn}</div></div>`;
+  const lista=S.ord.filter(o=>S.k[o.id]==null);
+  const aj=(S.erroSeg||0)>=AJUDA_ERROS?(lista.find(o=>!E[o.id].ad)||lista[0]):null;
+  const peds=lista.map(o=>{
+    const x=E[o.id],ing=aj===o?x.r[0]:null,def=x.ad;
+    return `<div class="ped${def?" def":""}"><h5>${def?UI.escudo+"Pista de defesa":"Pista de descoberta"}</h5><p>${def?"":UI.pista+" "}${x.c}</p><div class="pr"><span class="val">+${PREM_PISTA} ${UI.vit}</span><span class="aguarda">${ing?`Usa ${mini(ing)} ${E[ing].n}`:"Descubra"}</span></div></div>`;
   }).join("");
   const ids=Object.keys(S.k).filter(id=>!S.ext[id]).map((id,i)=>({id,i,g:esgotado(id)?1:0})).sort((x,y)=>x.g-y.g||x.i-y.i);
   const els=ids.map(({id,g:ga})=>{
-    const q=S.k[id],d=G.dica&&G.dica.includes(id),sel=G.a===id||G.b===id;
-    return `<button class="el${ga?" gasto":""}${sel?" sel":""}${d?" dica":""}" data-el="${id}">${orbe(id)}<span class="nm">${E[id].n}</span>${E[id].r&&q>1?`<span class="q">${q}</span>`:""}</button>`;
+    const d=G.dica&&G.dica.includes(id),sel=G.a===id||G.b===id;
+    return `<button class="el${ga?" gasto":""}${sel?" sel":""}${d?" dica":""}" data-el="${id}">${orbe(id)}<span class="nm">${E[id].n}</span></button>`;
   }).join("");
-  return pintarStatus()+forja+info+`<div class="pedidos">${peds}</div><div class="mesa">${els}</div>`;
+  return pintarStatus()+forja+info+`${lista.length?`<div class="pedidos${lista.length<2?" um":""}">${peds}</div>`:""}<div class="mesa">${els}</div>`;
 }
 function pintarEvo(){
   const c=custoReserva(),alc=alcancaveis().length;
@@ -796,7 +778,7 @@ function detalheEnc(id){
 document.addEventListener("click",ev=>{
   const m=ev.target.closest("[data-m]");
   if(m){const b=$("#modal")._b[+m.dataset.m];fechaModal();b.f();return}
-  const t=ev.target.closest("[data-el],[data-aba],[data-a],[data-ent],[data-ref],[data-enc],[data-enca],#sa,#sb");
+  const t=ev.target.closest("[data-el],[data-aba],[data-a],[data-ref],[data-enc],[data-enca],#sa,#sb");
   if(!t)return;
   if(t.id==="sa"||t.id==="sb"){if(!G.trava&&t.id==="sa"&&G.a){G.a=null;pintar()}return}
   const d=t.dataset;
@@ -804,11 +786,10 @@ document.addEventListener("click",ev=>{
   if(d.aba){G.aba=d.aba;return pintar()}
   if(d.enc)return detalheEnc(d.enc);
   if(d.enca){G.encAba=d.enca;return pintarEnc()}
-  if(d.ent)return entregar(+d.ent);
   if(d.ref)return comprarRefugio(d.ref);
   switch(d.a){
     case "nova":return novaPartida();
-    case "continuar":S=carregar();G.aba="mesa";pintar();if(S&&S.en<=0&&S.fase!=="fim")zero();return;
+    case "continuar":S=carregar();G.aba="mesa";if(S)encherPedidos();pintar();if(S&&S.en<=0&&S.fase!=="fim")zero();return;
     case "como":return comoJogar();
     case "enc":return abrirEnc("capa");
     case "encvolta":return G.encVolta==="capa"?pintarCapa():pintar();
@@ -822,7 +803,7 @@ document.addEventListener("click",ev=>{
     case "menu":return modal({ic:"planeta",t:"Gênese",h:"",b:[{t:"Voltar ao jogo",f:()=>{}},{t:"Como jogar",c:"vazado",f:comoJogar},{t:"Enciclopédia",c:"vazado",f:()=>abrirEnc("jogo")},{t:"Recomeçar partida",c:"vazado",f:novaPartida},{t:"Sair para a capa",c:"vazado",f:()=>{S=null;pintarCapa()}}]});
   }
 });
-window.__G={get S(){return S},G,E,ICO,RECEITA,chave,combinar,alcancaveis,novaPartida,pintar,entregar,FINAIS,CRISES,seguirZero,finalizar};
+window.__G={get S(){return S},G,E,ICO,RECEITA,chave,combinar,alcancaveis,novaPartida,pintar,FINAIS,CRISES,seguirZero,finalizar};
 pintarCapa();
 </script>
 </body>
