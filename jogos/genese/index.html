@@ -1033,7 +1033,7 @@ function pintarMesa(){
   const lista=S.ord.filter(o=>S.k[o.id]==null);
   const aj=(S.erroSeg||0)>=AJUDA_ERROS?(lista.find(o=>!E[o.id].ad)||lista[0]):null;
   const peds=lista.map(o=>{
-    const x=E[o.id],ing=aj===o?x.r[0]:null,def=x.ad;
+    const x=E[o.id],ing=aj===o?x.r[0]:null,def=escudoVisivel(o.id);
     return `<div class="ped${def?" def":""}"><h5>${def?UI.escudo+"Pista de defesa":"Pista de descoberta"}</h5><p>${def?"":UI.pista+" "}${x.c}</p><div class="pr"><span class="val">+${PREM_PISTA} ${UI.vit}</span><span class="aguarda">${ing?`Usa ${mini(ing)} ${E[ing].n}`:"Descubra"}</span></div></div>`;
   }).join("");
   const ids=Object.keys(S.k).filter(id=>!S.ext[id]).map((id,i)=>({id,i,g:esgotado(id)?1:0})).sort((x,y)=>x.g-y.g||x.i-y.i);
@@ -1059,8 +1059,15 @@ function pintarEvo(){
 const ABRE={celula:"Abre a Era da Vida",floresta:"Abre Flora e Insetos",abissal:"Abre o Abismo",peixe:"Abre Répteis e Mamíferos",fruta:"Sustenta os povos",enxame:"Abre a Colmeia",lula:"Abre o Povo do Abismo",ave:"Abre o Povo dos Céus",primata:"Abre o Povo da Terra",cidade:"Abre o Motor",cidadejardim:"Abre o Jardim",cidadeabissal:"Abre o Reator",cidadealta:"Abre a Navegação",motor:"Módulo da Arca",navegacao:"Módulo da Arca",jardimbordo:"Módulo da Arca",reator:"Módulo da Arca"};
 const VEIO={flora:"floresta",insetos:"floresta",abismo:"abissal",repteis:"peixe",mamiferos:"peixe"},VEIO2={insetos:"enxame",abismo:"lula",repteis:"ave",mamiferos:"primata"};
 const DA={cidade:"da Cidade",cidadejardim:"da Cidade-Jardim",cidadeabissal:"da Cidade Abissal",cidadealta:"da Cidade das Alturas",floresta:"da Floresta",abissal:"do Jardim Abissal",peixe:"do Peixe",enxame:"do Enxame",lula:"da Lula Colossal",ave:"da Ave",primata:"do Primata"};
+function escudoVisivel(id){
+  const x=E[id];
+  if(!x.ad)return false;
+  if(x.era===3)return !!S.crise2&&(!!S.gelo2||(S.fase==="especies"&&revelada()))&&Object.values(CRISES[S.crise2].def).includes(id);
+  if(x.era===4)return !!S.crise3&&(!!S.gelo3||(S.fase==="civ"&&revelada()))&&Object.values(CRISES3[S.crise3].def).includes(id);
+  return true;
+}
 function noArv(id,cls){
-  const x=E[id],esc=x.ad?`<span class="esc" title="Defesa">${UI.escudo}</span>`:"",top=x.apex?`<span class="tp-e" title="Topo">${UI.estrela}</span>`:"";
+  const x=E[id],esc=escudoVisivel(id)?`<span class="esc" title="Defesa">${UI.escudo}</span>`:"",top=x.apex?`<span class="tp-e" title="Topo">${UI.estrela}</span>`:"";
   const cl=`${x.apex?"topo ":""}${cls||""}`,ab=x.apex&&ABRE[id]?`<span class="abre">${ABRE[id]}</span>`:"";
   if(S.ext[id])return `<div class="no morto ${cl}"><span class="nob">${orbe(id)}${esc}${top}</span><span class="nm">${x.n}</span></div>`;
   if(S.k[id]==null)return `<div class="no oculto ${cl}"><span class="nob"><span class="orbe">?</span>${esc}${top}</span>${ab}</div>`;
