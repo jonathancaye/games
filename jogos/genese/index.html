@@ -510,7 +510,7 @@ const LINHAS={
 };
 const ORD1=["luz","calor","caca"],ORD2=["flora","insetos","abismo","repteis","mamiferos"],POVOS=["insetos","abismo","repteis","mamiferos"];
 const PAI={flora:"luz",insetos:"luz",abismo:"calor",repteis:"caca",mamiferos:"caca"};
-const TOPO3={flora:"fruta",insetos:"enxame",abismo:"lula",repteis:"dino",mamiferos:"primata"};
+const TOPO3={flora:"fruta",insetos:"enxame",abismo:"lula",repteis:"ave",mamiferos:"primata"};
 const NOME_POVO={insetos:"a Colmeia",abismo:"o Povo do Abismo",repteis:"o Povo dos Céus",mamiferos:"o Povo da Terra"};
 const E={
   fogo:{n:"Fogo",t:"#b8431a"},agua:{n:"Água",t:"#2478a3"},terra:{n:"Terra",t:"#6e5238"},ar:{n:"Ar",t:"#5f7f8c"},
@@ -556,8 +556,8 @@ const E={
   anfibio:{n:"Anfíbio",l:"repteis",era:3,r:["peixe","lama"],c:"Começa a vida na água e termina na beira dela",f:"Os primeiros anfíbios ainda precisavam da água para botar ovos."},
   reptil:{n:"Réptil",l:"repteis",era:3,r:["anfibio","rocha"],c:"Escamas no corpo e sangue que espera o dia esquentar",f:"Com pele seca, os répteis se afastaram da água."},
   casca:{n:"Casca",l:"repteis",era:3,ad:1,r:["reptil","sol"],c:"Uma parede fina que protege quem vai nascer",f:"O ovo com casca leva a água para dentro e dispensa as lagoas."},
-  dino:{n:"Dinossauro",l:"repteis",era:3,apex:1,r:["reptil","terra"],c:"Nenhum museu fica sem os ossos dele",f:"Dominaram a terra por mais de 130 milhões de anos."},
-  ave:{n:"Ave",l:"repteis",era:3,r:["dino","ar"],c:"Um dinossauro pequeno que aprendeu a voar",f:"As aves são dinossauros: uma linhagem deles sobreviveu até hoje."},
+  dino:{n:"Dinossauro",l:"repteis",era:3,r:["reptil","terra"],c:"Nenhum museu fica sem os ossos dele",f:"Dominaram a terra por mais de 130 milhões de anos."},
+  ave:{n:"Ave",l:"repteis",era:3,apex:1,r:["dino","ar"],c:"Um dinossauro pequeno que aprendeu a voar",f:"As aves são dinossauros: uma linhagem deles sobreviveu até hoje."},
   mamifero:{n:"Mamífero",l:"mamiferos",era:3,r:["reptil","fogo"],c:"Pelos, sangue quente e leite para os filhotes",f:"Os primeiros mamíferos eram pequenos e noturnos."},
   toca:{n:"Toca",t:"#4f6b2c",l:"mamiferos",era:3,ad:1,r:["mamifero","terra"],c:"Um buraco escuro que é casa",f:"Abrigos sob o solo protegem do frio, do calor e da fome."},
   primata:{n:"Primata",l:"mamiferos",era:3,apex:1,r:["mamifero","fruta"],c:"Mãos que agarram e um olhar curioso",f:"Mãos que agarram e olhos para a frente vieram da vida nas árvores."},
@@ -606,7 +606,7 @@ const E={
 const BASE1=["fogo","agua","terra","ar"];
 const MATERIA=["vapor","lava","lama","poeira","nuvem","chuva","raio","rocha","oceano","fonte","argila","sopa","rna","membrana","celula"];
 const RAMO={luz:["ciano","oxigenio","alga","esporo","musgo","samambaia","floresta"],calor:["extremo","verme","abissal"],caca:["colonia","ameba","cisto","esponja","aguaviva","trilobita","peixe"]};
-const RAMO2={flora:["flor","semente","fruta"],insetos:["inseto","casulo","enxame"],abismo:["caranguejo","concha","lula"],repteis:["anfibio","reptil","casca","ave","dino"],mamiferos:["mamifero","toca","primata"]};
+const RAMO2={flora:["flor","semente","fruta"],insetos:["inseto","casulo","enxame"],abismo:["caranguejo","concha","lula"],repteis:["anfibio","reptil","casca","dino","ave"],mamiferos:["mamifero","toca","primata"]};
 const RAMO4={flora:[],insetos:["estufa","cera","jardimbordo"],abismo:["cristal","manto","reator"],repteis:["mapa","bussola","navegacao"],mamiferos:["metal","casco","motor"]};
 const CID={mamiferos:"cidade",repteis:"cidadealta",insetos:"cidadejardim",abismo:"cidadeabissal"},MODULOS={mamiferos:"motor",repteis:"navegacao",insetos:"jardimbordo",abismo:"reator"};
 const RAMO3={flora:[],insetos:["colmeia","mel","propolis","cidadejardim"],abismo:["sinal","recife","viveiro","cidadeabissal"],repteis:["ninhal","rota","ninhoalto","cidadealta"],mamiferos:["ferramenta","fogueira","agricultura","celeiro","remedio","vila","cidade"]};
@@ -1056,9 +1056,9 @@ function pintarEvo(){
   }
   return h;
 }
-const ABRE={celula:"Abre a Era da Vida",floresta:"Abre Flora e Insetos",abissal:"Abre o Abismo",peixe:"Abre Répteis e Mamíferos",fruta:"Sustenta os povos",enxame:"Abre a Colmeia",lula:"Abre o Povo do Abismo",dino:"Abre o Povo dos Céus",primata:"Abre o Povo da Terra",cidade:"Abre o Motor",cidadejardim:"Abre o Jardim",cidadeabissal:"Abre o Reator",cidadealta:"Abre a Navegação",motor:"Módulo da Arca",navegacao:"Módulo da Arca",jardimbordo:"Módulo da Arca",reator:"Módulo da Arca"};
-const VEIO={flora:"floresta",insetos:"floresta",abismo:"abissal",repteis:"peixe",mamiferos:"peixe"},VEIO2={insetos:"enxame",abismo:"lula",repteis:"dino",mamiferos:"primata"};
-const DA={cidade:"da Cidade",cidadejardim:"da Cidade-Jardim",cidadeabissal:"da Cidade Abissal",cidadealta:"da Cidade das Alturas",floresta:"da Floresta",abissal:"do Jardim Abissal",peixe:"do Peixe",enxame:"do Enxame",lula:"da Lula Colossal",dino:"do Dinossauro",primata:"do Primata"};
+const ABRE={celula:"Abre a Era da Vida",floresta:"Abre Flora e Insetos",abissal:"Abre o Abismo",peixe:"Abre Répteis e Mamíferos",fruta:"Sustenta os povos",enxame:"Abre a Colmeia",lula:"Abre o Povo do Abismo",ave:"Abre o Povo dos Céus",primata:"Abre o Povo da Terra",cidade:"Abre o Motor",cidadejardim:"Abre o Jardim",cidadeabissal:"Abre o Reator",cidadealta:"Abre a Navegação",motor:"Módulo da Arca",navegacao:"Módulo da Arca",jardimbordo:"Módulo da Arca",reator:"Módulo da Arca"};
+const VEIO={flora:"floresta",insetos:"floresta",abismo:"abissal",repteis:"peixe",mamiferos:"peixe"},VEIO2={insetos:"enxame",abismo:"lula",repteis:"ave",mamiferos:"primata"};
+const DA={cidade:"da Cidade",cidadejardim:"da Cidade-Jardim",cidadeabissal:"da Cidade Abissal",cidadealta:"da Cidade das Alturas",floresta:"da Floresta",abissal:"do Jardim Abissal",peixe:"do Peixe",enxame:"do Enxame",lula:"da Lula Colossal",ave:"da Ave",primata:"do Primata"};
 function noArv(id,cls){
   const x=E[id],esc=x.ad?`<span class="esc" title="Defesa">${UI.escudo}</span>`:"",top=x.apex?`<span class="tp-e" title="Topo">${UI.estrela}</span>`:"";
   const cl=`${x.apex?"topo ":""}${cls||""}`,ab=x.apex&&ABRE[id]?`<span class="abre">${ABRE[id]}</span>`:"";
