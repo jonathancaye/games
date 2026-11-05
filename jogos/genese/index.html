@@ -177,7 +177,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 .nocel{margin:8px auto 10px;width:90px}
 .nocel .orbe{width:54px;height:54px}
 .ramos{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:5px}
-.ramo{display:flex;flex-direction:column;gap:9px;border-top:3px solid var(--cor);padding-top:7px;align-items:center;min-width:0}
+.ramo{display:flex;flex-direction:column;gap:10px;border-top:3px solid var(--cor);padding-top:7px;align-items:center;min-width:0}
 .ramo.extinta{--cor:var(--cinza)!important}
 .ramo h4{margin:0;font-size:14px;font-weight:800;text-align:center}
 .ramo h4 small{display:block;font-size:11.5px;font-weight:600;color:var(--suave);margin-top:1px}
@@ -191,6 +191,15 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--papel);outline-offs
 .leg{margin:-4px 0 10px;text-align:center;font-size:12.5px;color:var(--suave)}
 .leg .ui{color:#ffd27a;font-size:14px}
 .nob{position:relative;display:block}
+.tp-e{position:absolute;right:-5px;top:-4px;font-size:17px;line-height:0;color:#ffd27a;filter:drop-shadow(0 1px 1px rgba(0,0,0,.55))}
+.no.topo .orbe{width:48px;height:48px;box-shadow:0 0 0 2px #ffd27a,0 0 14px rgba(255,210,122,.45)}
+.no.topo.morto .orbe{box-shadow:0 0 0 2px #7a7671}
+.no.topo.morto .tp-e{color:#7a7671}
+.no.topo.oculto .orbe{background:rgba(255,210,122,.1);color:#ffd27a}
+.nocel.topo .orbe{width:56px;height:56px}
+.abre{margin-top:3px;font-size:10.5px;font-weight:700;line-height:1.15;color:#ffd27a}
+.ramo h4 em{display:block;font-style:italic;font-weight:600;font-size:11px;line-height:1.1;margin-top:1px;color:var(--papel);opacity:.8}
+.leg .sep{display:inline-block;width:10px}
 .esc{position:absolute;right:-5px;bottom:-3px;font-size:17px;line-height:0;color:#ffd27a;filter:drop-shadow(0 1px 1px rgba(0,0,0,.5))}
 
 /* fim */
@@ -430,6 +439,7 @@ const UI={
   nada:`<svg class="x" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.400" stroke-linecap="round" d="m6 6 12 12M18 6 6 18"/></svg>`,
   escudo:`<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 1.500 21 5v6.500c0 5.500-3.700 9.300-9 11-5.300-1.700-9-5.500-9-11V5z"/><path fill="none" stroke="#10302f" stroke-width="2.400" stroke-linecap="round" stroke-linejoin="round" d="m8 12 3 3 5-6"/></svg>`,
   alerta:`<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2 23 21.500H1z"/><path fill="none" stroke="#2b1420" stroke-width="2.600" stroke-linecap="round" d="M12 9.500v5"/><circle cx="12" cy="18" r="1.500" fill="#2b1420"/></svg>`,
+  estrela:`<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="m12 1.500 3.200 6.800 7.300.9-5.400 5 1.400 7.300L12 18l-6.500 3.500 1.400-7.300-5.400-5 7.300-.9z"/></svg>`,
   pista:`<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.500" fill="currentColor" opacity=".22"/><path fill="none" stroke="currentColor" stroke-width="2.600" stroke-linecap="round" d="M8.500 9c.3-2.200 1.800-3.500 3.700-3.500 2 0 3.500 1.300 3.500 3.200 0 3-3.700 3-3.700 6"/><circle cx="12" cy="18.400" r="1.500" fill="currentColor"/></svg>`
 };
 /* ---------- conteúdo ---------- */
@@ -464,7 +474,7 @@ const E={
   sopa:{n:"Sopa Primordial",t:"#7a8a2c",r:["oceano","raio"],c:"Um caldo morno onde tudo pode começar",f:"Em 1953, faíscas numa mistura de gases produziram aminoácidos em laboratório."},
   rna:{n:"RNA",t:"#28806e",r:["sopa","argila"],c:"Uma mensagem escrita em uma fita só",f:"O RNA guarda informação e acelera reações, por isso é candidato a primeira molécula da vida."},
   membrana:{n:"Membrana",t:"#2f8294",r:["sopa","fonte"],c:"Separa o dentro do fora",f:"Gorduras simples formam bolhas sozinhas na água."},
-  celula:{n:"Célula",t:"#227a66",r:["rna","membrana"],c:"A menor coisa que se pode chamar de viva",f:"Toda a vida conhecida vem de um ancestral celular comum."},
+  celula:{n:"Célula",t:"#227a66",apex:1,r:["rna","membrana"],c:"A menor coisa que se pode chamar de viva",f:"Toda a vida conhecida vem de um ancestral celular comum."},
   ciano:{n:"Ciano­bactéria",l:"luz",r:["celula","sol"],c:"Pequenina, verde e faminta por claridade",f:"As primeiras a fazer fotossíntese liberando oxigênio."},
   oxigenio:{n:"Oxigênio",t:"#3d7c93",r:["ciano","oceano"],c:"Você está respirando agora",f:"Há cerca de 2,4 bilhões de anos, esse gás mudou a atmosfera inteira."},
   alga:{n:"Alga",l:"luz",r:["ciano","celula"],c:"O verde que balança sob as ondas",f:"Cloroplastos são descendentes de cianobactérias engolidas."},
@@ -522,7 +532,7 @@ const E={
 const BASE1=["fogo","agua","terra","ar"];
 const MATERIA=["vapor","lava","lama","poeira","nuvem","chuva","raio","rocha","oceano","fonte","argila","sopa","rna","membrana","celula"];
 const RAMO={luz:["ciano","oxigenio","alga","esporo","musgo","samambaia","floresta"],calor:["extremo","verme","abissal"],caca:["colonia","ameba","cisto","esponja","aguaviva","trilobita","peixe"]};
-const RAMO2={flora:["flor","semente","fruta"],insetos:["inseto","casulo","enxame"],abismo:["caranguejo","concha","lula"],repteis:["anfibio","reptil","casca","dino","ave"],mamiferos:["mamifero","toca","primata"]};
+const RAMO2={flora:["flor","semente","fruta"],insetos:["inseto","casulo","enxame"],abismo:["caranguejo","concha","lula"],repteis:["anfibio","reptil","casca","ave","dino"],mamiferos:["mamifero","toca","primata"]};
 const RAMO3={flora:[],insetos:["colmeia","mel","propolis","cidadejardim"],abismo:["sinal","recife","viveiro","cidadeabissal"],repteis:["ninhal","rota","ninhoalto","cidadealta"],mamiferos:["ferramenta","fogueira","agricultura","celeiro","remedio","vila","cidade"]};
 const CRISES={
   seca:{nome:"A Grande Seca",curto:"Seca",ic:"seca",cor:"#a8742c",cx:"seca",def:{flora:"semente",insetos:"casulo",repteis:"casca"},aviso:"Os rios estão sumindo. Quem vive deles precisa guardar água para depois.",dica:{flora:"As plantas precisam guardar o futuro debaixo da terra.",insetos:"Os insetos precisam se fechar até a seca passar.",repteis:"Os répteis precisam de ovos que aguentem a falta de água."},intro:"Os rios secaram, e o verde virou pó.",fuga:"Longe da superfície, a seca quase não foi notada."},
@@ -937,11 +947,15 @@ function pintarEvo(){
   }
   return h;
 }
+const ABRE={celula:"Abre a Era da Vida",floresta:"Abre Flora e Insetos",abissal:"Abre o Abismo",peixe:"Abre Répteis e Mamíferos",fruta:"Sustenta os povos",enxame:"Abre a Colmeia",lula:"Abre o Povo do Abismo",dino:"Abre o Povo dos Céus",primata:"Abre o Povo da Terra",cidade:"Fim da linha nesta versão",cidadejardim:"Fim da linha nesta versão",cidadeabissal:"Fim da linha nesta versão",cidadealta:"Fim da linha nesta versão"};
+const VEIO={flora:"floresta",insetos:"floresta",abismo:"abissal",repteis:"peixe",mamiferos:"peixe"},VEIO2={insetos:"enxame",abismo:"lula",repteis:"dino",mamiferos:"primata"};
+const DA={floresta:"da Floresta",abissal:"do Jardim Abissal",peixe:"do Peixe",enxame:"do Enxame",lula:"da Lula Colossal",dino:"do Dinossauro",primata:"do Primata"};
 function noArv(id,cls){
-  const x=E[id],esc=x.ad?`<span class="esc" title="Defesa">${UI.escudo}</span>`:"";
-  if(S.ext[id])return `<div class="no morto ${cls||""}"><span class="nob">${orbe(id)}${esc}</span><span class="nm">${x.n}</span></div>`;
-  if(S.k[id]==null)return `<div class="no oculto ${cls||""}"><span class="nob"><span class="orbe">?</span>${esc}</span></div>`;
-  return `<div class="no ${cls||""}"><span class="nob">${orbe(id)}${esc}</span><span class="nm">${x.n}</span>${x.r?`<span class="rc">${x.r.map(mini).join("+")}</span>`:""}</div>`;
+  const x=E[id],esc=x.ad?`<span class="esc" title="Defesa">${UI.escudo}</span>`:"",top=x.apex?`<span class="tp-e" title="Topo">${UI.estrela}</span>`:"";
+  const cl=`${x.apex?"topo ":""}${cls||""}`,ab=x.apex&&ABRE[id]?`<span class="abre">${ABRE[id]}</span>`:"";
+  if(S.ext[id])return `<div class="no morto ${cl}"><span class="nob">${orbe(id)}${esc}${top}</span><span class="nm">${x.n}</span></div>`;
+  if(S.k[id]==null)return `<div class="no oculto ${cl}"><span class="nob"><span class="orbe">?</span>${esc}${top}</span>${ab}</div>`;
+  return `<div class="no ${cl}"><span class="nob">${orbe(id)}${esc}${top}</span><span class="nm">${x.n}</span>${x.r?`<span class="rc">${x.r.map(mini).join("+")}</span>`:""}${ab}</div>`;
 }
 const ST={ausente:["Não surgiu",""],abrigada:["Sobreviveu no calor","ok"],adaptada:["Sobreviveu","ok"],refugio:["Sobreviveu no refúgio","ok"],extinta:["Extinta","mal"],fora:["Ficou para trás",""],escapou:["Escapou","ok"]};
 function stVida(l){
@@ -978,16 +992,16 @@ function stCrise(l,g,abre,c,ativa){
 function stEsp(l){return stCrise(l,S.gelo2,S.abre,S.crise2?CRISES[S.crise2]:null,S.fase==="especies")}
 function stCiv(l){return stCrise(l,S.gelo3,S.abre2,S.crise3?CRISES3[S.crise3]:null,S.fase==="civ")}
 function arvore(){
-  const col=(ord,m,f)=>`<div class="ramos" style="--n:${ord.length}">${ord.map(l=>{
-    const [t,c]=f(l);
-    return `<div class="ramo ${t==="Extinta"?"extinta":""}" style="--cor:${LINHAS[l].cor}"><h4>${LINHAS[l].n}${t?`<small class="${c}">${t}</small>`:""}</h4>${m[l].map(id=>noArv(id)).join("")}</div>`;
+  const col=(ord,m,f,orig)=>`<div class="ramos" style="--n:${ord.length}">${ord.map(l=>{
+    const [t,c]=f(l),o=orig&&orig[l],vd=o&&(S.k[o]!=null||S.ext[o])?`<em>Veio ${DA[o]}</em>`:"";
+    return `<div class="ramo ${t==="Extinta"?"extinta":""}" style="--cor:${LINHAS[l].cor}"><h4>${LINHAS[l].n}${vd}${t?`<small class="${c}">${t}</small>`:""}</h4>${m[l].map(id=>noArv(id)).join("")}</div>`;
   }).join("")}</div>`;
   const faixa=(n,on)=>`<h3 class="faixa${on?" agora":""}">${n}</h3>`;
   const f=S.fase;
   return faixa("Era da Matéria",f==="materia")+`<div class="tronco">${[...BASE1,...MATERIA.filter(i=>i!=="celula")].map(id=>noArv(id)).join("")}</div>${noArv("celula","nocel")}`
-    +faixa("Era da Vida",f==="vida"||f==="degelo")+`<p class="leg">${UI.escudo} marca uma defesa contra a crise da era</p>${col(ORD1,RAMO,stVida)}`
-    +faixa("Era das Espécies",f==="especies"||f==="recup")+col(ORD2,RAMO2,stEsp)
-    +faixa("Era da Civilização",f==="civ"||f==="recons")+col(POVOS,RAMO3,stCiv);
+    +faixa("Era da Vida",f==="vida"||f==="degelo")+`<p class="leg">${UI.escudo} defesa contra a crise da era <span class="sep"></span>${UI.estrela} topo da linhagem</p>${col(ORD1,RAMO,stVida)}`
+    +faixa("Era das Espécies",f==="especies"||f==="recup")+col(ORD2,RAMO2,stEsp,VEIO)
+    +faixa("Era da Civilização",f==="civ"||f==="recons")+col(POVOS,RAMO3,stCiv,VEIO2);
 }
 function pintarFim(){
   const fin=S.fim,F=FINAIS[fin],c=cronica(fin);
@@ -1106,7 +1120,8 @@ function novaPartida(){
 function abrirEnc(volta){G.encVolta=volta;G.encAba="desc";$("#frost").style.opacity=0;pintarEnc()}
 function pintarEnc(){
   const v=lerLista(ENC),fin=finais(),nf=Object.keys(FINAIS).length,fos=lerLista(FOS).length;
-  const item=id=>v.includes(id)?`<button class="el" data-enc="${id}">${orbe(id)}<span class="nm">${E[id].n}</span></button>`:`<div class="no oculto"><span class="nob"><span class="orbe">?</span></span></div>`;
+  const est=id=>E[id].apex?`<span class="tp-e">${UI.estrela}</span>`:"";
+  const item=id=>v.includes(id)?`<button class="el${E[id].apex?" no topo":""}" data-enc="${id}"><span class="nob">${orbe(id)}${est(id)}</span><span class="nm">${E[id].n}</span></button>`:`<div class="no oculto${E[id].apex?" topo":""}"><span class="nob"><span class="orbe">?</span>${est(id)}</span></div>`;
   const grade=l=>`<div class="encgrid">${l.map(item).join("")}</div>`;
   const faixa=n=>`<h3 class="faixa">${n}</h3>`;
   const linhas=(ord,m)=>ord.map(l=>`<div class="lin-t" style="--cor:${LINHAS[l].cor}">${LINHAS[l].n}</div>${grade(m[l])}`).join("");
