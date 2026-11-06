@@ -17,6 +17,7 @@ jogos/
   arrancada-402/index.html
   imperium/index.html
   genese/index.html
+  regra-nova/index.html
 ```
 
 ## Publicar no GitHub Pages

@@ -161,6 +161,11 @@ a.game:hover .nfg .m{transform:translate(0,12.5px)}
 @keyframes fntt{0%,100%{opacity:.35}50%{opacity:1}}
 @media (prefers-reduced-motion:reduce){.fnt .ty{animation:none}}
 
+.art.rgn{background:#1d6a4b}
+.rgn svg{position:absolute;inset:0;width:100%;height:100%}
+.rgn .pp{transition:transform .35s cubic-bezier(.3,1.4,.5,1);transform-origin:150px 40px}
+a.game:hover .rgn .pp{transform:rotate(-4deg) scale(1.03)}
+
 /* em breve */
 .game.soon{border-style:dashed;background:transparent}
 .art.soon{background:repeating-linear-gradient(-45deg,rgba(255,255,255,.025) 0 10px,transparent 10px 20px)}
@@ -200,7 +205,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;border-top:1px solid 
    CATÁLOGO DE JOGOS
    Para adicionar um jogo novo:
    1. crie a pasta jogos/<nome-do-jogo>/ com um index.html dentro;
-   2. acrescente um item aqui embaixo (art pode ser "dados", "fod", "dw", "scd", "atb", "arr", "nfg", "grp", "fsg", "fnt", "imp", "gns" ou "soon";
+   2. acrescente um item aqui embaixo (art pode ser "dados", "fod", "dw", "scd", "atb", "arr", "nfg", "grp", "fsg", "fnt", "imp", "gns", "rgn" ou "soon";
       para arte nova, crie uma função em ARTS).
    ===================================================================== */
 const GAMES = [
@@ -338,6 +343,17 @@ const GAMES = [
     art: "gns"
   },
   {
+    title: "Regra Nova",
+    url: "jogos/regra-nova/",
+    desc: "Peteleco em que a Federação muda o esporte a cada rodada. Escolha as regras, sobreviva às combinações e batize o jogo que você inventou.",
+    category: "Esporte",
+    players: "1 jogador",
+    time: "25 min/temporada",
+    extra: ["Solo", "Roguelike", "Regras malucas"],
+    accent: "#f2c94c",
+    art: "rgn"
+  },
+  {
     title: "Em breve",
     desc: "O próximo jogo da mesa está sendo preparado.",
     category: null,
@@ -424,6 +440,19 @@ const ARTS = {
       ${orb(38,96,10,"#ffd58a","#f97316")}${orb(162,96,10,"#c6fff3","#14b8a6")}
       ${orb(100,62,14,"#fff7dd","#3fa58d")}${orb(52,24,8,"#d9f5b0","#5fae45")}${orb(100,14,8,"#ffd58a","#d9651a")}
       <circle cx="148" cy="24" r="8" fill="#6f6b6a"/><path d="M0 0H200V8Q170 14 150 8T120 4H0Z" fill="#d3edf6" opacity=".22"/>
+    </svg>`;
+  },
+  rgn(){
+    const pc=(x,y,c)=>`<circle cx="${x+1}" cy="${y+2}" r="9" fill="rgba(0,0,0,.3)"/><circle cx="${x}" cy="${y}" r="9" fill="${c}"/><circle cx="${x}" cy="${y}" r="6.2" fill="none" stroke="#fff" stroke-opacity=".6"/>`;
+    return `<svg viewBox="0 0 200 112" preserveAspectRatio="xMidYMid slice">
+      <rect width="200" height="112" fill="#1d6a4b"/>
+      <g fill="none" stroke="#f6f4e8" stroke-opacity=".8" stroke-width="1.5"><rect x="6" y="6" width="188" height="100"/><line x1="100" y1="6" x2="100" y2="106"/><circle cx="100" cy="56" r="17"/><rect x="6" y="32" width="26" height="48"/></g>
+      ${pc(46,38,"#2bc2b3")}${pc(38,76,"#2bc2b3")}${pc(70,62,"#2bc2b3")}${pc(92,30,"#ff9348")}
+      <path d="M70 62 L84 58" stroke="#fff" stroke-width="1.6" stroke-dasharray="3 3"/>
+      <circle cx="90" cy="56" r="4.5" fill="#fbfaf2" stroke="#1a1a1a"/>
+      <g class="pp"><g transform="rotate(5 150 56)"><rect x="112" y="14" width="74" height="86" fill="#f7e588"/>
+        <rect x="119" y="22" width="46" height="4" fill="#2f2378"/><rect x="119" y="31" width="60" height="2.6" fill="#2f2378" fill-opacity=".6"/><rect x="119" y="38" width="54" height="2.6" fill="#2f2378" fill-opacity=".6"/><rect x="119" y="45" width="58" height="2.6" fill="#2f2378" fill-opacity=".6"/><rect x="119" y="52" width="38" height="2.6" fill="#2f2378" fill-opacity=".6"/>
+        <g transform="rotate(-11 149 76)"><rect x="123" y="66" width="54" height="20" rx="2.5" fill="none" stroke="#c4182c" stroke-width="2.4"/><text x="150" y="80" text-anchor="middle" font-size="11" font-weight="900" fill="#c4182c" font-family="Georgia,serif">NOVA</text></g></g></g>
     </svg>`;
   },
   imp(){
