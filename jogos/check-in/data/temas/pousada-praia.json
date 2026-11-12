@@ -1,0 +1,255 @@
+{
+  "id": "pousada-praia",
+  "nome": "Pousada de praia",
+  "hotel": "Pousada Maré Mansa",
+  "tipos": {
+    "eco": {
+      "nome": "Econômico",
+      "curto": "Eco",
+      "rank": 0,
+      "preco": 120,
+      "min": 60,
+      "max": 240
+    },
+    "std": {
+      "nome": "Standard",
+      "curto": "Std",
+      "rank": 1,
+      "preco": 190,
+      "min": 100,
+      "max": 360
+    },
+    "sui": {
+      "nome": "Suíte",
+      "curto": "Suíte",
+      "rank": 2,
+      "preco": 300,
+      "min": 160,
+      "max": 540
+    }
+  },
+  "predio": {
+    "andares": [
+      {
+        "n": 2,
+        "quartos": [
+          {
+            "id": "201",
+            "tipo": "std",
+            "vista": false
+          },
+          {
+            "id": "202",
+            "tipo": "std",
+            "vista": false
+          },
+          {
+            "id": "203",
+            "tipo": "sui",
+            "vista": true
+          },
+          {
+            "id": "204",
+            "tipo": "sui",
+            "vista": true
+          }
+        ]
+      },
+      {
+        "n": 1,
+        "quartos": [
+          {
+            "id": "101",
+            "tipo": "eco",
+            "vista": false
+          },
+          {
+            "id": "102",
+            "tipo": "eco",
+            "vista": false
+          },
+          {
+            "id": "103",
+            "tipo": "std",
+            "vista": true
+          },
+          {
+            "id": "104",
+            "tipo": "std",
+            "vista": true
+          }
+        ]
+      }
+    ],
+    "terreo": [
+      {
+        "nome": "Recepção",
+        "barulho": 1,
+        "sob": [
+          0,
+          1
+        ]
+      },
+      {
+        "nome": "Café da manhã",
+        "barulho": 0,
+        "sob": [
+          2,
+          3
+        ]
+      }
+    ]
+  },
+  "perfis": {
+    "familia": {
+      "nome": "Família",
+      "plural": "Famílias",
+      "cor": "#ff9348",
+      "barulho": 2,
+      "sens": 1,
+      "orc": 240,
+      "minTipo": 1,
+      "prefs": [
+        "baixo"
+      ],
+      "peso": {
+        "semana": 0.2,
+        "fim": 0.32
+      },
+      "nomes": [
+        "Família Souza",
+        "Família Oliveira",
+        "Família Santos",
+        "Família Pereira",
+        "Família Costa",
+        "Família Almeida",
+        "Família Ribeiro",
+        "Família Carvalho",
+        "Família Gomes",
+        "Família Rocha"
+      ]
+    },
+    "casal": {
+      "nome": "Casal em lua de mel",
+      "plural": "Casais",
+      "cor": "#e4485d",
+      "barulho": 0.5,
+      "sens": 3,
+      "orc": 340,
+      "minTipo": 1,
+      "prefs": [
+        "vista"
+      ],
+      "peso": {
+        "semana": 0.25,
+        "fim": 0.24
+      },
+      "nomes": [
+        "Ana e Léo",
+        "Bruna e Caio",
+        "Júlia e Pedro",
+        "Marina e Davi",
+        "Lara e Theo",
+        "Clara e Rafael",
+        "Bia e Gustavo",
+        "Nina e Lucas",
+        "Duda e Vítor",
+        "Sofia e André"
+      ]
+    },
+    "surf": {
+      "nome": "Surfistas",
+      "plural": "Surfistas",
+      "cor": "#2bc2b3",
+      "barulho": 1,
+      "sens": 2,
+      "orc": 160,
+      "minTipo": 0,
+      "prefs": [],
+      "peso": {
+        "semana": 0.35,
+        "fim": 0.18
+      },
+      "nomes": [
+        "Turma do Rafa",
+        "Galera do Kiko",
+        "Dupla Teco e Tito",
+        "Prancha da Mari",
+        "Crew do Jota",
+        "Irmãos Prado",
+        "Galera do Biel",
+        "Dupla Zeca e Malu"
+      ]
+    },
+    "turma": {
+      "nome": "Turma de amigos",
+      "plural": "Turmas",
+      "cor": "#8b6bd8",
+      "barulho": 3,
+      "sens": 0.5,
+      "orc": 215,
+      "minTipo": 0,
+      "prefs": [],
+      "peso": {
+        "semana": 0.2,
+        "fim": 0.26
+      },
+      "nomes": [
+        "Turma da Bia",
+        "Amigos da faculdade",
+        "Despedida do Rodrigo",
+        "Turma do vôlei",
+        "Galera da firma",
+        "Turma da Carol",
+        "Amigas da Rê",
+        "Turma do churrasco"
+      ]
+    }
+  },
+  "temporadas": [
+    {
+      "n": 1,
+      "nome": "Baixa temporada",
+      "resumo": "Pouca gente na praia e caixa apertado. Aprenda a encaixar cada hóspede no quarto certo.",
+      "dias": 30,
+      "caixaInicial": 5000,
+      "custoFixo": 450,
+      "custoQuarto": 35,
+      "chegadas": [
+        2,
+        2,
+        2,
+        3,
+        5,
+        4,
+        1
+      ],
+      "feriado": {
+        "nome": "Feriadão",
+        "dias": [
+          19,
+          20,
+          21
+        ],
+        "extra": 3
+      },
+      "metas": [
+        {
+          "estrelas": 1,
+          "caixa": 10000,
+          "rep": 3.3
+        },
+        {
+          "estrelas": 2,
+          "caixa": 13000,
+          "rep": 3.7
+        },
+        {
+          "estrelas": 3,
+          "caixa": 16000,
+          "rep": 4.0
+        }
+      ]
+    }
+  ]
+}

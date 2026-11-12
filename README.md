@@ -18,6 +18,7 @@ jogos/
   imperium/index.html
   genese/index.html
   regra-nova/index.html
+  check-in/           ← vários arquivos: index.html, css/, js/ (lógica + render/), data/temas/
 ```
 
 ## Publicar no GitHub Pages
