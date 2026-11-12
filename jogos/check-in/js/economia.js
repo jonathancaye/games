@@ -22,6 +22,25 @@ export function procura(tema, estado) {
   return out;
 }
 
+// Estimativa do dia com os preços atuais: quem topa entra no melhor quarto que pode pagar.
+export function estimativaDia(tema, estado) {
+  const temp = temporadaAtual(tema, estado);
+  const livres = {};
+  for (const q of listaQuartos(tema)) if (!estado.quartos[q.id]) livres[q.tipo] = (livres[q.tipo] || 0) + 1;
+  const casa = Object.values(estado.quartos).filter(Boolean);
+  let receita = casa.reduce((s, h) => s + h.preco, 0), ocupados = casa.length;
+  const tipos = Object.entries(tema.tipos).sort((a, b) => b[1].rank - a[1].rank);
+  for (const h of [...estado.fila].sort((a, b) => b.orc - a.orc)) {
+    for (const [k, t] of tipos) {
+      if (livres[k] && t.rank >= tema.perfis[h.perfil].minTipo && estado.precos[k] <= h.orc) {
+        livres[k]--; receita += estado.precos[k]; ocupados++; break;
+      }
+    }
+  }
+  const custos = temp.custoFixo + ocupados * temp.custoQuarto;
+  return { receita, custos, lucro: receita - custos, ocupados, fixo: temp.custoFixo, porQuarto: temp.custoQuarto };
+}
+
 export function previsao(tema, estado) {
   const m = chegadasPrevistas(tema, estado);
   return { min: Math.max(0, Math.round(m) - 1), max: Math.round(m) + 1 };

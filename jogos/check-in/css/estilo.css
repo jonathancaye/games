@@ -107,7 +107,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
 
 /* preços */
 .precos{display:flex;flex-direction:column;gap:8px}
-.preco{display:grid;grid-template-columns:78px 1fr 70px;align-items:center;gap:10px}
+.preco{display:grid;grid-template-columns:104px 1fr 74px;align-items:center;gap:10px}
 .preco .nm{font:700 14px/1.1 var(--corpo)}
 .preco .nm small{display:block;font-weight:700;font-size:11px;color:var(--mut);margin-top:2px}
 .preco .vl{text-align:right;font:600 17px var(--display)}
@@ -163,7 +163,9 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 .quadro .ln{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px dashed var(--linha);font-size:14px}
 .quadro .ln:first-child{border-top:0}
 .quadro .ln span:first-child{color:var(--mut);font-weight:700}
-.quadro .ln span:last-child{font-weight:800}
+.quadro .ln span:last-child{font-weight:800;text-align:right}
+.quadro .m{color:var(--feliz)}.quadro .n{color:var(--bravo)}
+.painel .quadro .ln{font-size:12.5px;padding:6px 0}
 .rolar{overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0;flex:0 1 auto;display:flex;flex-direction:column;gap:8px}
 .aval{display:grid;grid-template-columns:36px 1fr;gap:10px;align-items:start;background:#fff;border:1px solid var(--linha);border-radius:12px;padding:8px 10px}
 .aval .av{width:36px;height:30px;border-radius:9px;display:grid;place-items:end center;background:var(--fundo-perfil,#eee);overflow:hidden}

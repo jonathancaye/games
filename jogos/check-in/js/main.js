@@ -6,7 +6,7 @@ import {
   DIAS_SEMANA, diaSemana, ehFimDeSemana, ehFeriado, temporadaAtual,
   podeFicar, satisfacao, efeitoNosVizinhos, humor, colocar, recusar, desfazer
 } from "./hospedes.js";
-import { iniciarDia, procura, abrirCheckin, encerrarCheckin, fecharDia, proximoDia, resumoTemporada } from "./economia.js";
+import { iniciarDia, procura, estimativaDia, abrirCheckin, encerrarCheckin, fecharDia, proximoDia, resumoTemporada } from "./economia.js";
 import { montarCena, desenharPredio, figura, fundoPerfil } from "./render/corte-lateral.js";
 
 const TEMAS = [
@@ -96,6 +96,7 @@ function comoJogar(volta = "abertura") {
     <h2>Cada dia tem manhã, check-in e noite</h2>
     <ol class="passos">
       <li><span><b>Manhã:</b> defina o preço de cada tipo de quarto. Preço alto rende mais, mas nem todo grupo topa pagar.</span></li>
+      <li><span><b>Custos:</b> você paga R$ 450 por dia (equipe e contas), mesmo vazio, e mais R$ 35 por quarto ocupado (limpeza e café). Cada quarto deixa a diária menos R$ 35. A estimativa da manhã mostra o lucro provável com os preços que você escolheu.</span></li>
       <li><span><b>Check-in:</b> escolha um grupo da fila e toque num quarto para ver a satisfação prevista. Toque de novo para confirmar.</span></li>
       <li><span><b>Vizinhança:</b> o barulho atravessa a parede e o teto. Turmas e famílias fazem barulho; casais e surfistas querem silêncio. Famílias vizinhas se dão bem.</span></li>
       <li><span><b>Preferências:</b> casais querem vista para o mar; famílias preferem o 1º andar.</span></li>
@@ -244,21 +245,34 @@ function painelManha() {
   const pr = procura(tema, estado);
   const n = estado.fila.length;
   const ocup = Object.values(estado.quartos).filter(Boolean);
+  const total = listaQuartos(tema).length;
   const chips = [];
   if (ehFeriado(temp, estado.dia)) chips.push(`<span class="pil laranja">${temp.feriado.nome}</span>`);
   else if (ehFimDeSemana(estado.dia)) chips.push(`<span class="pil laranja">Fim de semana</span>`);
-  if (ocup.length) chips.push(`<span class="pil">${ocup.length} ${ocup.length === 1 ? "quarto ocupado" : "quartos ocupados"}</span>`);
+  chips.push(`<span class="pil">${total - ocup.length} de ${total} quartos livres</span>`);
+  if (n) {
+    const orcs = estado.fila.map(h => h.orc);
+    const mi = Math.min(...orcs), ma = Math.max(...orcs);
+    chips.push(`<span class="pil teal">${mi === ma ? `${n === 1 ? "paga" : "pagam"} até ${reais(ma)}` : `pagam de ${reais(mi)} a ${reais(ma)}`}</span>`);
+  }
   return `${blocoFoco()}
     <div class="linha-tit"><div><div class="rotulo">Manhã · ${NOMES_DIA[diaSemana(estado.dia)]}</div><h2>${n} ${n === 1 ? "pedido de reserva" : "pedidos de reserva"} hoje</h2></div></div>
-    ${chips.length ? `<div class="pilulas">${chips.join("")}</div>` : ""}
-    <div class="precos">${Object.entries(tema.tipos).map(([k, t]) => {
-      const qtd = listaQuartos(tema).filter(q => q.tipo === k).length;
-      const livres = listaQuartos(tema).filter(q => q.tipo === k && !estado.quartos[q.id]).length;
-      return `<label class="preco"><span class="nm">${t.nome}<small>${livres} de ${qtd} livres</small></span>
+    <div class="pilulas">${chips.join("")}</div>
+    <div class="precos">${Object.entries(tema.tipos).map(([k, t]) => `<label class="preco"><span class="nm">${t.nome}<small id="lc-${k}">${lucroTxt(k)}</small></span>
         <input type="range" min="${t.min}" max="${t.max}" step="10" value="${estado.precos[k]}" data-tipo="${k}" aria-label="Preço ${t.nome}">
-        <span class="vl" id="vl-${k}">${reais(estado.precos[k])}<small>${procuraTxt(pr[k], n)}</small></span></label>`;
-    }).join("")}</div>
+        <span class="vl" id="vl-${k}">${reais(estado.precos[k])}<small>${procuraTxt(pr[k], n)}</small></span></label>`).join("")}</div>
+    <div class="quadro" id="estim">${estimTxt()}</div>
     <button class="btn" data-abrir>Abrir o check-in →</button>`;
+}
+
+function lucroTxt(k) {
+  return `deixa ${reais(estado.precos[k] - temporadaAtual(tema, estado).custoQuarto)}/noite`;
+}
+
+function estimTxt() {
+  const e = estimativaDia(tema, estado);
+  return `<div class="ln"><span>Custos de hoje</span><span>${reais(e.fixo)} fixo + ${reais(e.porQuarto)} por quarto</span></div>
+    <div class="ln"><span>Estimativa · ${e.ocupados} ${e.ocupados === 1 ? "quarto" : "quartos"}</span><span>${reais(e.receita)} − ${reais(e.custos)} = <b class="${e.lucro >= 0 ? "m" : "n"}">${reais(e.lucro)}</b></span></div>`;
 }
 
 function procuraTxt(x, n) {
@@ -281,7 +295,11 @@ function mudarPreco(e) {
   for (const k of Object.keys(tema.tipos)) {
     const v = $("vl-" + k);
     if (v) v.innerHTML = `${reais(estado.precos[k])}<small>${procuraTxt(pr[k], n)}</small>`;
+    const l = $("lc-" + k);
+    if (l) l.textContent = lucroTxt(k);
   }
+  const es = $("estim");
+  if (es) es.innerHTML = estimTxt();
   salvar(estado);
 }
 
