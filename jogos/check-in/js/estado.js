@@ -1,6 +1,8 @@
 // Estado do jogo: criação, sorteio (com semente) e save no navegador.
 // Não sabe nada de desenho.
 
+import { novoEstoque } from "./estoque.js";
+
 const CHAVE = "checkin.save.v1";
 const CHAVE_RECORDE = "checkin.recorde.v1";
 
@@ -44,7 +46,8 @@ export function novoEstado(tema, nTemporada = 1, semente) {
     usados: {},             // nomes já usados (para não repetir muito)
     historico: [],          // um registro por dia fechado
     balanco: null,          // resultado do último fechamento
-    recusadosHoje: 0
+    recusadosHoje: 0,
+    estoque: novoEstoque(tema)
   };
 }
 

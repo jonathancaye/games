@@ -8,7 +8,8 @@ import {
 } from "./hospedes.js";
 import { iniciarDia, procura, estimativaDia, abrirCheckin, encerrarCheckin, fecharDia, proximoDia, resumoTemporada } from "./economia.js";
 import { montarCena, desenharPredio, figura, fundoPerfil, iconePedido } from "./render/corte-lateral.js";
-import { iniciarEstadia, textoPedido, efeitoPedido, atender, avancar, encerrarEstadia } from "./pedidos.js";
+import { iniciarEstadia, textoPedido, efeitoPedido, atender, avancar, encerrarEstadia, situacaoPedido } from "./pedidos.js";
+import { disponivel, ajustarCompra, custoCompras, consumoMedio, venceAmanha } from "./estoque.js";
 
 const TEMAS = [
   { id: "pousada-praia", nome: "Pousada de praia" },
@@ -29,6 +30,7 @@ const estrelasTxt = n => "★".repeat(n) + `<i>${"★".repeat(5 - n)}</i>`;
 let tema = null;
 let estado = null;
 let ui = { sel: null, alvo: null, foco: null };
+let abaManha = "precos";
 
 async function iniciar() {
   try {
@@ -98,6 +100,7 @@ function comoJogar(volta = "abertura") {
     <ol class="passos">
       <li><span><b>Manhã:</b> defina o preço de cada tipo de quarto. Preço alto rende mais, mas nem todo grupo topa pagar.</span></li>
       <li><span><b>Custos:</b> você paga R$ 450 por dia (equipe e contas), mesmo vazio, e mais R$ 35 por quarto ocupado (limpeza e café). Cada quarto deixa a diária menos R$ 35. A estimativa da manhã mostra o lucro provável com os preços que você escolheu.</span></li>
+      <li><span><b>Compras:</b> na aba Compras da manhã você repõe toalhas, peças de manutenção e ingredientes do jantar. Toalhas voltam da lavanderia no dia seguinte, peças demoram um dia para chegar e ingredientes vencem. Sem estoque, só resta a emergência: salva a nota, mas dá prejuízo.</span></li>
       <li><span><b>Check-in:</b> escolha um grupo da fila e toque num quarto para ver a satisfação prevista. Toque de novo para confirmar.</span></li>
       <li><span><b>Vizinhança:</b> o barulho atravessa a parede e o teto. Turmas e famílias fazem barulho; casais e surfistas querem silêncio. Famílias vizinhas se dão bem.</span></li>
       <li><span><b>Preferências:</b> casais querem vista para o mar; famílias preferem o 1º andar.</span></li>
@@ -261,13 +264,41 @@ function painelManha() {
     const mi = Math.min(...orcs), ma = Math.max(...orcs);
     chips.push(`<span class="pil teal">${mi === ma ? `${n === 1 ? "paga" : "pagam"} até ${reais(ma)}` : `pagam ${reais(mi)}–${reais(ma).replace("R$ ", "")}`}</span>`);
   }
-  return `<div class="linha-tit"><h2>${n} ${n === 1 ? "pedido" : "pedidos"} hoje</h2><span class="rotulo">Manhã · ${NOMES_DIA[diaSemana(estado.dia)]}</span></div>
-    <div class="pilulas">${chips.join("")}</div>
+  const abas = `<div class="abas"><button class="${abaManha === "precos" ? "on" : ""}" data-aba="precos">Preços</button><button class="${abaManha === "compras" ? "on" : ""}" data-aba="compras">Compras${alertaEstoque() ? ` <i class="alerta"></i>` : ""}</button></div>`;
+  const conteudo = abaManha === "compras" ? blocoCompras() : `<div class="pilulas">${chips.join("")}</div>
     <div class="precos">${Object.entries(tema.tipos).map(([k, t]) => `<label class="preco"><span class="nm">${t.nome}<small id="lc-${k}">${lucroTxt(k)}</small></span>
         <input type="range" min="${t.min}" max="${t.max}" step="10" value="${estado.precos[k]}" data-tipo="${k}" aria-label="Preço ${t.nome}">
-        <span class="vl" id="vl-${k}">${reais(estado.precos[k])}<small>${procuraTxt(pr[k], n)}</small></span></label>`).join("")}</div>
+        <span class="vl" id="vl-${k}">${reais(estado.precos[k])}<small>${procuraTxt(pr[k], n)}</small></span></label>`).join("")}</div>`;
+  return `<div class="linha-tit"><h2>${n} ${n === 1 ? "pedido" : "pedidos"} hoje</h2><span class="rotulo">Manhã · ${NOMES_DIA[diaSemana(estado.dia)]}</span></div>
+    ${abas}
+    ${conteudo}
     <div class="estim" id="estim">${estimTxt()}</div>
     <button class="btn" data-abrir>Abrir o check-in →</button>`;
+}
+
+function alertaEstoque() {
+  if (!estado.estoque) return false;
+  const ocup = Object.values(estado.quartos).filter(Boolean).length;
+  return disponivel(estado, "toalha") + estado.estoque.compras.toalha < Math.min(8, ocup + estado.fila.length) ||
+    disponivel(estado, "peca") + estado.estoque.peca.chegando + estado.estoque.compras.peca < 1;
+}
+
+function blocoCompras() {
+  const st = estado.estoque, c = tema.estoque;
+  const med = k => { const m = consumoMedio(estado, k); return m === null ? "" : ` · usa ~${dec(m).replace(",0", "")}/dia`; };
+  const info = {
+    toalha: `${disponivel(estado, "toalha")} limpas${med("toalha")}`,
+    peca: `${disponivel(estado, "peca")} em estoque${st.peca.chegando ? ` · +${st.peca.chegando} chegando` : ""}${med("peca")}`,
+    jantar: (() => { const v = venceAmanha(tema, estado); return `${disponivel(estado, "jantar")} porções${v ? ` · ${v} vence${v > 1 ? "m" : ""} amanhã` : ""}${med("jantar")}`; })()
+  };
+  const linhas = Object.entries(c).map(([k, it]) => {
+    const n = st.compras[k];
+    return `<div class="compra"><div class="ci"><b>${it.nome}</b><small>${info[k]}</small></div>
+      <div class="step"><button data-comp="${k}" data-d="-1" ${n ? "" : "disabled"} aria-label="Menos">−</button><span>${n ? "+" + n : "0"}</span><button data-comp="${k}" data-d="1" aria-label="Mais">+</button></div>
+      <div class="cv">${n ? reais(n * it.preco) : "—"}<small>${reais(it.preco)} ${it.um}</small></div></div>`;
+  }).join("");
+  return `<div class="compras">${linhas}</div>
+    <p class="dica">Toalhas voltam da lavanderia amanhã. Peças compradas hoje chegam amanhã. Ingredientes vencem em 2 dias.</p>`;
 }
 
 function lucroTxt(k) {
@@ -345,11 +376,16 @@ function painelEstadia() {
     ? `<div class="peds">${e.pedidos.map(p => {
         const h = estado.quartos[p.quarto];
         const ef = efeitoPedido(tema, p);
-        const extra = ef.receita ? ` · <span class="m">+${reais(ef.receita)}</span>` : ef.custo ? ` · custa ${reais(ef.custo)}` : "";
+        const extra = ef.receita ? ` · <span class="m">+${reais(ef.receita)}</span>` : "";
         const esp = p.desde < e.momento;
+        const sit = situacaoPedido(tema, estado, p);
+        const est = sit.item ? ` · <span class="${sit.estoque ? "" : "n"}">${sit.estoque ? `estoque ${sit.qtd}` : "sem estoque"}</span>` : "";
+        const botao = sit.estoque
+          ? `<button class="btn teal" data-atender="${p.id}" ${e.pontos ? "" : "disabled"}>Atender</button>`
+          : `<button class="btn emerg" data-emerg="${p.id}" ${e.pontos ? "" : "disabled"}><small>${tema.estoque[sit.item].emergenciaTxt}</small>${reais(sit.emergencia)}</button>`;
         return `<div class="ped${esp ? " esperando" : ""}"><span class="ic">${iconePedido(p.tipo)}</span>
-          <span class="tx"><b>${p.quarto} · ${esc(textoPedido(tema, p, h))}</b><span>${esc(h.nome)}${esp ? " · esperando" : ""} · <span class="m">+${ef.bom}</span> / <span class="n">${ef.ruim}</span>${extra}</span></span>
-          <button class="btn teal" data-atender="${p.id}" ${e.pontos ? "" : "disabled"}>Atender</button></div>`;
+          <span class="tx"><b>${p.quarto} · ${esc(textoPedido(tema, p, h))}</b><span>${esp ? "esperando · " : ""}<span class="m">+${ef.bom}</span> / <span class="n">${ef.ruim}</span>${extra}${est}</span></span>
+          ${botao}</div>`;
       }).join("")}</div>`
     : `<div class="vazio">Nenhum pedido agora. Tudo tranquilo.</div>`;
   const prox = ultimo
@@ -397,12 +433,14 @@ function tocarCena(e) {
   else toast(`Quarto ${id} vago · ${tema.tipos[quarto(tema, id).tipo].nome}${quarto(tema, id).vista ? " com vista" : ""}`);
 }
 
-function atenderPedido(pid) {
+function atenderPedido(pid, emerg = false) {
   const e = estado.estadia;
   if (!e.pontos) { toast("Sem atendimentos neste momento. Avance o relógio."); return; }
   const p = e.pedidos.find(x => x.id === pid);
   const nome = p && estado.quartos[p.quarto]?.nome;
-  if (atender(tema, estado, pid)) {
+  const sit = p && situacaoPedido(tema, estado, p);
+  if (sit && !sit.estoque && !emerg) { toast(`Sem ${tema.estoque[sit.item].nome.toLowerCase()} no estoque. Use a emergência no painel.`); return; }
+  if (atender(tema, estado, pid, emerg)) {
     ui.foco = null;
     salvar(estado); desenhar();
     if (nome) toast(`Pedido do ${p.quarto} atendido`);
@@ -440,8 +478,18 @@ function tocarPainel(e) {
     desenhar();
     return;
   }
+  const ab = t.closest("[data-aba]");
+  if (ab) { abaManha = ab.dataset.aba; desenharPainel(); return; }
+  const cp = t.closest("[data-comp]");
+  if (cp) {
+    ajustarCompra(tema, estado, cp.dataset.comp, +cp.dataset.d);
+    salvar(estado); desenharPainel(); return;
+  }
+  const em = t.closest("[data-emerg]");
+  if (em) return atenderPedido(+em.dataset.emerg, true);
   if (t.closest("[data-abrir]")) {
-    abrirCheckin(estado);
+    abaManha = "precos";
+    abrirCheckin(estado, tema);
     ui = { sel: estado.fila[0]?.id ?? null, alvo: null, foco: null };
     salvar(estado); desenhar(); return;
   }
@@ -497,7 +545,10 @@ function balanco() {
   const avisos = [];
   if (b.saida.recusados) avisos.push(`${b.saida.recusados} ${b.saida.recusados === 1 ? "grupo recusado" : "grupos recusados"} com quarto vago (reputação caiu)`);
   if (b.saida.caros) avisos.push(`${b.saida.caros} ${b.saida.caros === 1 ? "grupo achou caro e foi embora" : "grupos acharam caro e foram embora"}`);
-  if (b.pedidos && (b.pedidos.atendidos || b.pedidos.ignorados)) avisos.push(`Pedidos: ${b.pedidos.atendidos} ${b.pedidos.atendidos === 1 ? "atendido" : "atendidos"}${b.pedidos.ignorados ? `, ${b.pedidos.ignorados} sem resposta` : ""}${b.pedidos.receita ? ` · serviço de quarto +${reais(b.pedidos.receita)}` : ""}${b.pedidos.custo ? ` · consertos ${reais(b.pedidos.custo)}` : ""}`);
+  if (b.pedidos && (b.pedidos.atendidos || b.pedidos.ignorados)) avisos.push(`Pedidos: ${b.pedidos.atendidos} ${b.pedidos.atendidos === 1 ? "atendido" : "atendidos"}${b.pedidos.ignorados ? `, ${b.pedidos.ignorados} sem resposta` : ""}${b.pedidos.receita ? ` · serviço de quarto +${reais(b.pedidos.receita)}` : ""}${b.pedidos.emergencias ? ` · ${b.pedidos.emergencias} na emergência` : ""}`);
+  if (b.pedidos && b.pedidos.semToalha) avisos.push(`${b.pedidos.semToalha} ${b.pedidos.semToalha === 1 ? "quarto ficou" : "quartos ficaram"} sem toalha limpa`);
+  if (b.estoque && b.estoque.estragou) avisos.push(`${b.estoque.estragou} ${b.estoque.estragou === 1 ? "porção venceu" : "porções venceram"} (${reais(b.estoque.estragouValor)} no lixo)`);
+  if (b.estoque && b.estoque.perdidas) avisos.push(`${b.estoque.perdidas} ${b.estoque.perdidas === 1 ? "jogo de toalha sumiu" : "jogos de toalha sumiram"} na lavanderia`);
   if (b.saida.semVaga) avisos.push(`${b.saida.semVaga} ${b.saida.semVaga === 1 ? "grupo ficou" : "grupos ficaram"} sem quarto`);
   const proxDia = ultimo ? "" : `${NOMES_DIA[diaSemana(estado.dia + 1)]}, dia ${estado.dia + 1}`;
   camada(`<div class="folha">
@@ -512,6 +563,8 @@ function balanco() {
       <div class="ln"><span>Diária média (ADR)</span><span>${reais(b.adr)}</span></div>
       <div class="ln"><span>Receita por quarto (RevPAR)</span><span>${reais(b.revpar)}</span></div>
       <div class="ln"><span>Reputação</span><span>★ ${dec(b.rep)}</span></div>
+      ${b.estoque ? `<div class="ln"><span>Gasto com estoque</span><span>${reais(b.estoque.custo)}</span></div>
+      <div class="ln"><span>Para amanhã</span><span>${b.estoque.toalhas} toalhas · ${b.estoque.pecas + b.estoque.chegando} ${b.estoque.pecas + b.estoque.chegando === 1 ? "peça" : "peças"} · ${b.estoque.jantar} porç.</span></div>` : ""}
     </div>
     ${avisos.length ? `<ul class="avisos">${avisos.map(a => `<li>${a}</li>`).join("")}</ul>` : ""}
     <div class="rotulo">${b.avaliacoes.length ? "Avaliações de quem saiu" : "Ninguém saiu hoje"}</div>

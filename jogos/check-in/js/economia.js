@@ -2,12 +2,15 @@
 
 import { rng } from "./estado.js";
 import { listaQuartos, quarto } from "./predio.js";
+import { novoEstoque, manha, efetivarCompras, custoCompras, custoDoDia, fecharEstoque, disponivel } from "./estoque.js";
 import {
   temporadaAtual, gerarChegadas, satisfacao, estrelasDe, comentario, tinhaVaga, chegadasPrevistas
 } from "./hospedes.js";
 
 // Começo do dia: chegam os grupos de hoje.
 export function iniciarDia(tema, estado) {
+  if (!estado.estoque) estado.estoque = novoEstoque(tema);
+  manha(tema, estado);
   estado.fila = gerarChegadas(tema, estado);
   estado.desfazer = [];
   estado.fase = "manha";
@@ -37,7 +40,8 @@ export function estimativaDia(tema, estado) {
       }
     }
   }
-  const custos = temp.custoFixo + ocupados * temp.custoQuarto;
+  const extra = (estado.estoque ? custoCompras(tema, estado) : 0) + ocupados * (tema.estoque ? tema.estoque.toalha.lavanderia : 0);
+  const custos = temp.custoFixo + ocupados * temp.custoQuarto + extra;
   return { receita, custos, lucro: receita - custos, ocupados, fixo: temp.custoFixo, porQuarto: temp.custoQuarto };
 }
 
@@ -46,7 +50,8 @@ export function previsao(tema, estado) {
   return { min: Math.max(0, Math.round(m) - 1), max: Math.round(m) + 1 };
 }
 
-export function abrirCheckin(estado) {
+export function abrirCheckin(estado, tema) {
+  if (tema && estado.estoque) efetivarCompras(tema, estado);
   estado.fase = "checkin";
   estado.desfazer = [];
 }
@@ -99,7 +104,9 @@ export function fecharDia(tema, estado) {
 
   const est = estado.estadia;
   if (est) receita += est.receita;
-  const custos = temp.custoFixo + ocupados * temp.custoQuarto + (est ? est.custo : 0);
+  const custoEstoque = estado.estoque ? custoDoDia(estado) : 0;
+  const custos = temp.custoFixo + ocupados * temp.custoQuarto + (est ? est.custo : 0) + custoEstoque;
+  const resEstoque = estado.estoque ? fecharEstoque(estado) : null;
   const lucro = receita - custos;
   for (const h of Object.values(estado.quartos)) if (h) { h.ajustes = []; h.pedidosHoje = 0; }
   estado.caixa += lucro;
@@ -110,7 +117,8 @@ export function fecharDia(tema, estado) {
     revpar: receita / total,
     avaliacoes, rep: estado.rep, caixa: estado.caixa,
     saida: estado.saidaCheckin || { recusados: 0, caros: 0, semVaga: 0 },
-    pedidos: est ? { atendidos: est.atendidos, ignorados: est.ignorados, receita: est.receita, custo: est.custo } : null,
+    estoque: resEstoque ? { ...resEstoque, custo: custoEstoque, toalhas: disponivel(estado, "toalha") + estado.estoque.toalha.usadas, pecas: disponivel(estado, "peca"), chegando: estado.estoque.peca.chegando, jantar: disponivel(estado, "jantar") } : null,
+    pedidos: est ? { atendidos: est.atendidos, ignorados: est.ignorados, receita: est.receita, custo: est.custo, semToalha: est.semToalha || 0, emergencias: est.emergencias || 0 } : null,
     humores
   };
   estado.historico.push(reg);

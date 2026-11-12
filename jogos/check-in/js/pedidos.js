@@ -3,12 +3,22 @@
 
 import { rng, sorteiaPeso } from "./estado.js";
 import { satisfacao } from "./hospedes.js";
+import { consumir, emergencia, disponivel } from "./estoque.js";
 
 export function iniciarEstadia(tema, estado) {
   const cfg = tema.pedidos;
   estado.fase = "estadia";
   estado.estadia = { momento: 0, pontos: cfg.atendimentos, pedidos: [], atendidos: 0, ignorados: 0, receita: 0, custo: 0, prox: 1 };
   for (const h of Object.values(estado.quartos)) if (h) { h.ajustes = h.ajustes || []; h.pedidosHoje = 0; }
+  // Troca diária de toalhas: um jogo por quarto ocupado.
+  if (estado.estoque) {
+    let faltou = 0;
+    for (const h of Object.values(estado.quartos)) {
+      if (!h) continue;
+      if (!consumir(tema, estado, "toalha")) { h.ajustes.push({ txt: tema.semToalha.txt, d: tema.semToalha.d, chave: "semtoalha" }); faltou++; }
+    }
+    estado.estadia.semToalha = faltou;
+  }
   gerarPedidos(tema, estado);
 }
 
@@ -41,14 +51,28 @@ export function textoPedido(tema, p, h) {
 export function efeitoPedido(tema, p) {
   const t = tema.pedidos.tipos[p.tipo];
   const bom = p.tipo === "barulho" ? Math.ceil(p.pen / 2) : t.bom;
-  return { bom, ruim: t.ruim, custo: t.custo || 0, receita: t.receita || 0 };
+  return { bom, ruim: t.ruim, custo: t.custo || 0, receita: t.receita || 0, usa: t.usa || null };
 }
 
-export function atender(tema, estado, pedidoId) {
+// Pode atender com estoque? Senão, só com emergência.
+export function situacaoPedido(tema, estado, p) {
+  const t = tema.pedidos.tipos[p.tipo];
+  if (!t.usa || !estado.estoque) return { estoque: true };
+  const n = disponivel(estado, t.usa);
+  return { estoque: n > 0, qtd: n, item: t.usa, emergencia: tema.estoque[t.usa].emergencia };
+}
+
+export function atender(tema, estado, pedidoId, usarEmergencia = false) {
   const e = estado.estadia;
   const i = e.pedidos.findIndex(p => p.id === pedidoId);
   if (i < 0 || e.pontos < 1) return false;
   const p = e.pedidos[i];
+  const usa = tema.pedidos.tipos[p.tipo].usa;
+  if (usa && estado.estoque) {
+    if (disponivel(estado, usa) > 0) consumir(tema, estado, usa);
+    else if (usarEmergencia) { emergencia(tema, estado, usa); e.emergencias = (e.emergencias || 0) + 1; }
+    else return false;
+  }
   const h = estado.quartos[p.quarto];
   const t = tema.pedidos.tipos[p.tipo];
   const ef = efeitoPedido(tema, p);

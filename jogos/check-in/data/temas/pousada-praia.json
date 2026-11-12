@@ -214,7 +214,7 @@
       "dias": 30,
       "caixaInicial": 5000,
       "custoFixo": 450,
-      "custoQuarto": 35,
+      "custoQuarto": 31,
       "chegadas": [
         2,
         2,
@@ -236,18 +236,18 @@
       "metas": [
         {
           "estrelas": 1,
-          "caixa": 10500,
+          "caixa": 10000,
           "rep": 3.3
         },
         {
           "estrelas": 2,
-          "caixa": 13500,
+          "caixa": 13000,
           "rep": 3.8
         },
         {
           "estrelas": 3,
-          "caixa": 16500,
-          "rep": 4.2
+          "caixa": 15500,
+          "rep": 4.15
         }
       ]
     }
@@ -272,7 +272,8 @@
           "casal": 1,
           "surf": 2,
           "turma": 1.2
-        }
+        },
+        "usa": "toalha"
       },
       "ar": {
         "txt": "O ar-condicionado parou",
@@ -280,13 +281,13 @@
         "ruimTxt": "O ar-condicionado ficou quebrado",
         "bom": 2,
         "ruim": -14,
-        "custo": 40,
         "perfis": {
           "familia": 1,
           "casal": 1,
           "surf": 1,
           "turma": 1
-        }
+        },
+        "usa": "peca"
       },
       "servico": {
         "txt": "Quer jantar no quarto",
@@ -300,7 +301,8 @@
           "casal": 3,
           "surf": 0.4,
           "turma": 2.4
-        }
+        },
+        "usa": "jantar"
       },
       "dica": {
         "txt": "Pediu dica de passeio",
@@ -328,5 +330,48 @@
         "vizinhoTxt": "Pediram para fazermos silêncio"
       }
     }
+  },
+  "estoque": {
+    "toalha": {
+      "nome": "Toalhas",
+      "unidade": "jogos",
+      "um": "jogo",
+      "preco": 30,
+      "inicial": 8,
+      "tipo": "reutilizavel",
+      "lavanderia": 4,
+      "emergencia": 60,
+      "emergenciaTxt": "loja da esquina",
+      "regra": "Cada quarto ocupado usa 1 jogo por noite. Voltam da lavanderia no dia seguinte (R$ 4 cada); alguns somem ou mancham.",
+      "perda": 0.06
+    },
+    "peca": {
+      "nome": "Peças de manutenção",
+      "unidade": "peças",
+      "um": "peça",
+      "preco": 40,
+      "inicial": 1,
+      "tipo": "consumivel",
+      "entrega": 1,
+      "emergencia": 120,
+      "emergenciaTxt": "técnico de fora",
+      "regra": "Cada conserto de ar usa 1 peça. Comprada hoje, chega amanhã."
+    },
+    "jantar": {
+      "nome": "Ingredientes do jantar",
+      "unidade": "porções",
+      "um": "porção",
+      "preco": 25,
+      "inicial": 2,
+      "tipo": "perecivel",
+      "validade": 2,
+      "emergencia": 85,
+      "emergenciaTxt": "delivery",
+      "regra": "Cada jantar usa 1 porção e rende R$ 70. Vence em 2 dias."
+    }
+  },
+  "semToalha": {
+    "txt": "Quarto sem toalhas limpas",
+    "d": -12
   }
 }
