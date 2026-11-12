@@ -164,12 +164,10 @@ function desenhar() {
 
 function desenharTopo() {
   const temp = temporadaAtual(tema, estado);
-  const fases = { manha: "Manhã", checkin: "Check-in", noite: "Noite", fim: "Fim" };
   $("topo").innerHTML = `
-    <div class="dia">Dia ${Math.min(estado.dia, temp.dias)}<small>${DIAS_SEMANA[diaSemana(estado.dia)]} · de ${temp.dias}</small></div>
-    <span class="fase ${estado.fase}">${fases[estado.fase]}</span>
-    <div class="num">${reais(estado.caixa)}<small>caixa</small></div>
-    <div class="num"><span class="estrela">★</span> ${dec(estado.rep)}<small>reputação</small></div>
+    <div class="dia">Dia ${Math.min(estado.dia, temp.dias)}<span>/${temp.dias}</span> <small>${DIAS_SEMANA[diaSemana(estado.dia)]}</small></div>
+    <div class="num">${reais(estado.caixa)}</div>
+    <div class="num"><span class="estrela">★</span> ${dec(estado.rep)}</div>
     <button class="menu" data-menu aria-label="Menu">☰</button>`;
 }
 
@@ -211,30 +209,31 @@ function avatar(h, cls = "av") {
   return `<span class="${cls}" style="--fundo-perfil:${fundoPerfil(p.cor)}">${figura(h.perfil, p.cor, h.id)}</span>`;
 }
 
-function blocoFoco() {
-  if (!ui.foco) return "";
+function painelFoco() {
   const h = estado.quartos[ui.foco];
   const q = quarto(tema, ui.foco);
-  if (!h) return "";
   const s = satisfacao(tema, estado, h, ui.foco);
   const hm = humor(s.valor);
-  return `<div class="previa">
-    <div class="topo-p"><span class="nota ${hm}">${s.valor}</span>
-      <div style="flex:1"><div class="hosp-nm" style="font-weight:800">${esc(h.nome)} · ${q.id}</div>
-      <div class="dica">${tema.perfis[h.perfil].nome} · ${h.noites} ${h.noites === 1 ? "noite" : "noites"} restantes · ${reais(h.preco)}/noite</div></div>
-      <button class="pil" data-fechar-foco>fechar</button></div>
+  return `<div class="cab-p"><span class="nota ${hm}">${s.valor}</span>
+      <div class="cab-tx"><div class="rotulo">Quarto ${q.id} · ${tema.tipos[q.tipo].nome}</div>
+      <h2>${esc(h.nome)}</h2>
+      <div class="dica">${tema.perfis[h.perfil].nome} · ${h.noites} ${h.noites === 1 ? "noite restante" : "noites restantes"} · ${reais(h.preco)}/noite</div></div></div>
     ${listaFatores(s.fatores)}
-  </div>`;
+    <div class="botoes base"><button class="btn sec peq" data-fechar-foco>← Voltar</button></div>`;
 }
 
-function listaFatores(f) {
+function listaFatores(f, max = 4) {
   if (!f.length) return `<p class="dica">Nada a reclamar, nada a elogiar.</p>`;
-  return `<ul class="fatores">${f.map(x => `<li><span>${esc(x.txt)}</span><b class="${x.d > 0 ? "m" : "n"}">${x.d > 0 ? "+" : ""}${x.d}</b></li>`).join("")}</ul>`;
+  const ord = [...f].sort((a, b) => Math.abs(b.d) - Math.abs(a.d));
+  const extra = ord.length > max ? `<li class="mais">e mais ${ord.length - max}</li>` : "";
+  return `<ul class="fatores">${ord.slice(0, max).map(x => `<li><span>${esc(x.txt)}</span><b class="${x.d > 0 ? "m" : "n"}">${x.d > 0 ? "+" : ""}${x.d}</b></li>`).join("")}${extra}</ul>`;
 }
 
 function desenharPainel() {
   const el = $("painel");
-  if (estado.fase === "manha") el.innerHTML = painelManha();
+  el.className = "painel " + estado.fase;
+  if (ui.foco && estado.quartos[ui.foco] && (estado.fase === "manha" || (estado.fase === "checkin" && !ui.alvo))) el.innerHTML = painelFoco();
+  else if (estado.fase === "manha") el.innerHTML = painelManha();
   else if (estado.fase === "checkin") el.innerHTML = painelCheckin();
   else el.innerHTML = `<div class="dica">Fim do dia.</div>`;
   el.querySelectorAll("input[type=range]").forEach(pintaRange);
@@ -249,30 +248,29 @@ function painelManha() {
   const chips = [];
   if (ehFeriado(temp, estado.dia)) chips.push(`<span class="pil laranja">${temp.feriado.nome}</span>`);
   else if (ehFimDeSemana(estado.dia)) chips.push(`<span class="pil laranja">Fim de semana</span>`);
-  chips.push(`<span class="pil">${total - ocup.length} de ${total} quartos livres</span>`);
+  chips.push(`<span class="pil">${total - ocup.length} de ${total} livres</span>`);
   if (n) {
     const orcs = estado.fila.map(h => h.orc);
     const mi = Math.min(...orcs), ma = Math.max(...orcs);
-    chips.push(`<span class="pil teal">${mi === ma ? `${n === 1 ? "paga" : "pagam"} até ${reais(ma)}` : `pagam de ${reais(mi)} a ${reais(ma)}`}</span>`);
+    chips.push(`<span class="pil teal">${mi === ma ? `${n === 1 ? "paga" : "pagam"} até ${reais(ma)}` : `pagam ${reais(mi)}–${reais(ma).replace("R$ ", "")}`}</span>`);
   }
-  return `${blocoFoco()}
-    <div class="linha-tit"><div><div class="rotulo">Manhã · ${NOMES_DIA[diaSemana(estado.dia)]}</div><h2>${n} ${n === 1 ? "pedido de reserva" : "pedidos de reserva"} hoje</h2></div></div>
+  return `<div class="linha-tit"><h2>${n} ${n === 1 ? "pedido" : "pedidos"} hoje</h2><span class="rotulo">Manhã · ${NOMES_DIA[diaSemana(estado.dia)]}</span></div>
     <div class="pilulas">${chips.join("")}</div>
     <div class="precos">${Object.entries(tema.tipos).map(([k, t]) => `<label class="preco"><span class="nm">${t.nome}<small id="lc-${k}">${lucroTxt(k)}</small></span>
         <input type="range" min="${t.min}" max="${t.max}" step="10" value="${estado.precos[k]}" data-tipo="${k}" aria-label="Preço ${t.nome}">
         <span class="vl" id="vl-${k}">${reais(estado.precos[k])}<small>${procuraTxt(pr[k], n)}</small></span></label>`).join("")}</div>
-    <div class="quadro" id="estim">${estimTxt()}</div>
+    <div class="estim" id="estim">${estimTxt()}</div>
     <button class="btn" data-abrir>Abrir o check-in →</button>`;
 }
 
 function lucroTxt(k) {
-  return `deixa ${reais(estado.precos[k] - temporadaAtual(tema, estado).custoQuarto)}/noite`;
+  return `lucro ${reais(estado.precos[k] - temporadaAtual(tema, estado).custoQuarto)}`;
 }
 
 function estimTxt() {
   const e = estimativaDia(tema, estado);
-  return `<div class="ln"><span>Custos de hoje</span><span>${reais(e.fixo)} fixo + ${reais(e.porQuarto)} por quarto</span></div>
-    <div class="ln"><span>Estimativa · ${e.ocupados} ${e.ocupados === 1 ? "quarto" : "quartos"}</span><span>${reais(e.receita)} − ${reais(e.custos)} = <b class="${e.lucro >= 0 ? "m" : "n"}">${reais(e.lucro)}</b></span></div>`;
+  return `<div class="l1"><span class="rotulo">Estimativa · ${e.ocupados} ${e.ocupados === 1 ? "quarto" : "quartos"}</span><b class="${e.lucro >= 0 ? "m" : "n"}">${reais(e.lucro)}</b></div>
+    <small>Receita ${reais(e.receita)} − custos ${reais(e.custos)} (fixo ${reais(e.fixo)})</small>`;
 }
 
 function procuraTxt(x, n) {
@@ -305,36 +303,30 @@ function mudarPreco(e) {
 
 function painelCheckin() {
   const h = hospSel();
-  const fila = estado.fila.length
-    ? `<div class="fila">${estado.fila.map(x => `<button class="hosp${x.id === ui.sel ? " sel" : ""}" data-hosp="${x.id}">
-        <span class="cab">${avatar(x)}<span><span class="nm">${esc(x.nome)}</span><br><span class="pf">${tema.perfis[x.perfil].nome}</span></span></span>
-        <span class="dd"><span>${x.noites} ${x.noites === 1 ? "noite" : "noites"}</span><span>até <b>${reais(x.orc)}</b></span></span>
-        <span class="pilulas">${chipsHosp(x)}</span></button>`).join("")}</div>`
-    : `<div class="vazio">Fila vazia. Hora de fechar o dia.</div>`;
-
-  let meio = "";
   if (h && ui.alvo) {
     const q = quarto(tema, ui.alvo);
     const s = satisfacao(tema, estado, h, ui.alvo, { ...estado.quartos, [ui.alvo]: h });
     const hm = humor(s.valor);
     const viz = efeitoNosVizinhos(tema, estado, h, ui.alvo);
-    meio = `<div class="previa">
-      <div class="topo-p"><span class="nota ${hm}">${s.valor}</span>
-        <div><div style="font-weight:800">${esc(h.nome)} no ${q.id}</div>
+    return `<div class="cab-p"><span class="nota ${hm}">${s.valor}</span>
+        <div class="cab-tx"><div class="rotulo">Prévia · quarto ${q.id}</div><h2>${esc(h.nome)}</h2>
         <div class="dica">${tema.tipos[q.tipo].nome} · ${reais(estado.precos[q.tipo])}/noite · ${h.noites} ${h.noites === 1 ? "noite" : "noites"}</div></div></div>
-      ${listaFatores(s.fatores)}
-      ${viz.length ? `<div class="pilulas">${viz.map(v => `<span class="pil ${v.delta < 0 ? "vermelho" : "teal"}">Vizinhos do ${v.id}: ${v.delta > 0 ? "+" : ""}${v.delta}</span>`).join("")}</div>` : ""}
-    </div>
-    <div class="botoes"><button class="btn sec peq" data-cancelar>Escolher outro</button><button class="btn peq" data-confirmar>Check-in no ${q.id}</button></div>`;
-  } else if (h) {
-    meio = `<p class="dica">Toque num quarto vago para ver como <b>${esc(h.nome)}</b> ficaria.</p>
-    <div class="botoes"><button class="btn sec peq" data-desfazer ${estado.desfazer.length ? "" : "disabled"}>Desfazer</button><button class="btn sec peq" data-recusar>Recusar</button><button class="btn peq" data-encerrar>${ui.encerrar ? "Confirmar" : "Encerrar"}</button></div>`;
-  } else {
-    meio = `${blocoFoco() || (estado.fila.length ? `<p class="dica">Escolha um grupo da fila.</p>` : "")}
-    <div class="botoes"><button class="btn sec peq" data-desfazer ${estado.desfazer.length ? "" : "disabled"}>Desfazer</button><button class="btn peq" data-encerrar>${ui.encerrar ? "Confirmar: encerrar" : "Encerrar o dia →"}</button></div>`;
+      ${listaFatores(s.fatores, 3)}
+      ${viz.length ? `<div class="pilulas">${viz.map(v => `<span class="pil ${v.delta < 0 ? "vermelho" : "teal"}">vizinhos do ${v.id}: ${v.delta > 0 ? "+" : ""}${v.delta}</span>`).join("")}</div>` : ""}
+      <div class="botoes base"><button class="btn sec peq" data-cancelar>Outro quarto</button><button class="btn peq" data-confirmar>Check-in no ${q.id}</button></div>`;
   }
-  return `<div class="linha-tit"><div class="rotulo">Check-in · fila</div><div class="rotulo">${estado.fila.length} ${estado.fila.length === 1 ? "grupo" : "grupos"}</div></div>
-    ${fila}${meio}`;
+  const n = estado.fila.length;
+  const fila = n
+    ? `<div class="fila">${estado.fila.map(x => `<button class="hosp${x.id === ui.sel ? " sel" : ""}" data-hosp="${x.id}">${avatar(x)}
+        <span class="tx"><span class="nm">${esc(x.nome)}</span><span class="mini">${x.noites}n · até ${reais(x.orc)}</span></span></button>`).join("")}</div>`
+    : `<div class="vazio">Fila vazia. Hora de fechar o dia.</div>`;
+  const det = h
+    ? `<div class="detalhe"><b>${tema.perfis[h.perfil].nome}</b>${chipsHosp(h)}</div><p class="dica">Toque num quarto vago para ver a prévia.</p>`
+    : (n ? `<p class="dica">Escolha um grupo da fila.</p>` : "");
+  const enc = ui.encerrar ? "Confirmar" : "Encerrar";
+  return `<div class="linha-tit"><h2>Check-in</h2><span class="rotulo">${n} ${n === 1 ? "grupo" : "grupos"} na fila</span></div>
+    ${fila}${det}
+    <div class="botoes base"><button class="btn sec peq" data-desfazer ${estado.desfazer.length ? "" : "disabled"}>Desfazer</button>${h ? `<button class="btn sec peq" data-recusar>Recusar</button>` : ""}<button class="btn peq" data-encerrar>${enc}</button></div>`;
 }
 
 /* ---------------- toques ---------------- */
@@ -355,11 +347,11 @@ function tocarCena(e) {
   const id = b.dataset.id;
   const h = estado.fase === "checkin" && hospSel();
   if (h) {
-    if (estado.quartos[id]) { ui.foco = null; toast(`Quarto ${id} ocupado por ${estado.quartos[id].nome}`); return; }
+    if (estado.quartos[id]) { ui.alvo = null; ui.foco = ui.foco === id ? null : id; desenhar(); return; }
     const r = podeFicar(tema, estado, h, id);
     if (!r.ok) { toast(`${id}: ${r.motivo.toLowerCase()} para ${h.nome}`); return; }
     if (ui.alvo === id) return confirmar();
-    ui.alvo = id;
+    ui.alvo = id; ui.foco = null;
     desenhar();
     return;
   }
