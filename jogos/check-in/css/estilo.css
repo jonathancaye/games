@@ -28,6 +28,8 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
   background:linear-gradient(180deg,var(--ceu1) 0%,var(--ceu2) 58%)}
 .cena .fundo{position:absolute;inset:0;width:100%;height:100%}
 .cena.noite{background:linear-gradient(180deg,#1b2350 0%,#3a3f78 60%)}
+.cena.tarde{background:linear-gradient(180deg,#f6a66b 0%,#fde2c2 58%)}
+.cena.tarde .fundo .sol{fill:#ffcf7a}
 .cena.noite .fundo .sol{fill:#f4f1d8}
 .cena.noite .fundo .mar{fill:#1d4f6b}.cena.noite .fundo .mar2{fill:#163d55}
 .cena.noite .fundo .areia{fill:#9b8a68}.cena.noite .fundo .areia2{fill:#857556}
@@ -67,6 +69,28 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
 .balao.feliz{background:var(--feliz)}.balao.ok{background:var(--ok)}.balao.bravo{background:var(--bravo)}
 .qto .noites{position:absolute;left:1.6cqi;bottom:1.4cqi;font:800 2.4cqi/1 var(--corpo);color:#6f5d45;background:rgba(255,255,255,.7);padding:.6cqi 1.2cqi;border-radius:999px;z-index:2}
 @keyframes entra{from{transform:translateX(-50%) scale(.3);opacity:0}to{transform:translateX(-50%) scale(1);opacity:1}}
+
+/* pedidos */
+.qto .pedido{position:absolute;left:4%;top:34%;width:10cqi;height:10cqi;border-radius:50%;background:#fff;border:.8cqi solid var(--laranja);display:grid;place-items:center;z-index:3;box-shadow:0 .8cqi 0 rgba(0,0,0,.15);animation:chama 1s ease-in-out infinite alternate}
+.qto .pedido::after{content:"";position:absolute;right:-1.2cqi;bottom:-1.2cqi;width:3cqi;height:3cqi;background:#fff;border-right:.8cqi solid var(--laranja);border-bottom:.8cqi solid var(--laranja);transform:rotate(45deg) translate(-60%,-30%);border-radius:0 0 .6cqi 0;display:none}
+.qto .pedido svg{width:72%;height:72%}
+.qto .pedido.esperando{border-color:var(--bravo)}
+@keyframes chama{to{transform:translateY(-1cqi) scale(1.06)}}
+.equipe{display:flex;align-items:center;gap:8px;font:800 12.5px var(--corpo);color:var(--tinta)}
+.equipe .pts{display:inline-flex;gap:4px}
+.equipe .pts i{width:12px;height:12px;border-radius:50%;background:var(--teal)}
+.equipe .pts i.gasto{background:var(--linha)}
+.peds{display:flex;flex-direction:column;gap:6px;overflow-y:auto;max-height:168px;min-height:0;margin:0 -2px;padding:0 2px}
+.ped{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;background:#fff;border:2px solid var(--linha);border-radius:12px;padding:6px 8px}
+.ped.esperando{border-color:#f6b7b2}
+.ped .ic{width:34px;height:34px;border-radius:50%;background:var(--laranja-soft);display:grid;place-items:center}
+.ped .ic svg{width:22px;height:22px}
+.ped .tx{min-width:0}
+.ped .tx b{display:block;font:800 13px/1.2 var(--corpo);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ped .tx > span{display:block;font:700 11.5px/1.25 var(--corpo);color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ped .tx .m{color:var(--feliz)}.ped .tx .n{color:var(--bravo)}
+.ped .btn{min-height:38px;padding:6px 12px;font-size:14px;width:auto;box-shadow:0 3px 0 var(--teal-esc)}
+.painel.estadia{min-height:228px}
 
 /* prévia de check-in */
 .qto.bloq{opacity:.42;filter:grayscale(.6)}

@@ -97,8 +97,11 @@ export function fecharDia(tema, estado) {
     }
   }
 
-  const custos = temp.custoFixo + ocupados * temp.custoQuarto;
+  const est = estado.estadia;
+  if (est) receita += est.receita;
+  const custos = temp.custoFixo + ocupados * temp.custoQuarto + (est ? est.custo : 0);
   const lucro = receita - custos;
+  for (const h of Object.values(estado.quartos)) if (h) { h.ajustes = []; h.pedidosHoje = 0; }
   estado.caixa += lucro;
   const reg = {
     dia: estado.dia, receita, custos, lucro, ocupados, total,
@@ -107,11 +110,14 @@ export function fecharDia(tema, estado) {
     revpar: receita / total,
     avaliacoes, rep: estado.rep, caixa: estado.caixa,
     saida: estado.saidaCheckin || { recusados: 0, caros: 0, semVaga: 0 },
+    pedidos: est ? { atendidos: est.atendidos, ignorados: est.ignorados, receita: est.receita, custo: est.custo } : null,
     humores
   };
   estado.historico.push(reg);
   estado.balanco = reg;
   estado.saidaCheckin = null;
+  estado.estadia = null;
+  estado.fase = "noite";
   return reg;
 }
 

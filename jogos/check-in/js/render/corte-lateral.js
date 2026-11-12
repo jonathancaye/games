@@ -37,6 +37,18 @@ export function fundoPerfil(cor) {
   return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},.16)`;
 }
 
+export function iconePedido(tipo) {
+  const c = "#14322f";
+  const I = {
+    toalha: `<rect x="5" y="6" width="14" height="12" rx="2" fill="#4fb6e8"/><rect x="5" y="10" width="14" height="2" fill="#fff"/><rect x="5" y="14" width="14" height="1.6" fill="#fff"/>`,
+    ar: `<g stroke="${c}" stroke-width="2" stroke-linecap="round"><path d="M12 4v16M5 8l14 8M19 8L5 16"/></g><circle cx="12" cy="12" r="2.2" fill="#4fb6e8"/>`,
+    servico: `<path d="M4 16h16" stroke="${c}" stroke-width="2" stroke-linecap="round"/><path d="M6 15a6 6 0 0 1 12 0z" fill="#ff8a3d"/><circle cx="12" cy="7.6" r="1.4" fill="${c}"/>`,
+    dica: `<path d="M12 21s-6-6.2-6-10.5a6 6 0 0 1 12 0C18 14.8 12 21 12 21z" fill="#e4485d"/><circle cx="12" cy="10.4" r="2.3" fill="#fff"/>`,
+    barulho: `<path d="M4 10h3l4-3v10l-4-3H4z" fill="${c}"/><g stroke="#e2463f" stroke-width="2" fill="none" stroke-linecap="round"><path d="M14 9q2 3 0 6"/><path d="M17 6.5q4 5.5 0 11"/></g>`
+  };
+  return `<svg viewBox="0 0 24 24">${I[tipo] || ""}</svg>`;
+}
+
 export function rosto(h) {
   const boca = h === "feliz" ? `<path d="M7 13.5q5 4.5 10 0" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/>`
     : h === "ok" ? `<path d="M7.5 15h9" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>`
@@ -80,7 +92,9 @@ export function montarCena(el, tema) {
 
 // ui: { prev: {id: {ok, motivo, valor, humor}}, alvo, deltas: {id: n}, foco }
 export function desenharPredio(el, tema, estado, ui = {}, humorDe) {
-  el.classList.toggle("noite", estado.fase === "noite");
+  const m = estado.fase === "estadia" && estado.estadia ? estado.estadia.momento : -1;
+  el.classList.toggle("noite", estado.fase === "noite" || m >= 2);
+  el.classList.toggle("tarde", m === 1);
   for (const q of listaQuartos(tema)) {
     const b = el.querySelector(`.qto[data-id="${q.id}"]`);
     if (!b) continue;
@@ -96,6 +110,8 @@ export function desenharPredio(el, tema, estado, ui = {}, humorDe) {
         <span class="balao ${hm}">${rosto(hm)}</span>
         <span class="noites">${h.noites} ${h.noites === 1 ? "noite" : "noites"}</span>`;
     }
+    const ped = ui.pedidos && ui.pedidos[q.id];
+    if (ped) html += `<span class="pedido${ped.esperando ? " esperando" : ""}">${iconePedido(ped.tipo)}</span>`;
     if (pv && !pv.ok && !h) html += `<span class="motivo">${pv.motivo}</span>`;
     if (pv && pv.ok) html += `<span class="prev">${pv.valor}</span>`;
     const d = ui.deltas && ui.deltas[q.id];

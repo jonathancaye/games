@@ -69,7 +69,7 @@ export function satisfacao(tema, estado, h, id, ocupacao = estado.quartos, preco
   const p = tema.perfis[h.perfil];
   const fatores = [];
   let v = 70;
-  const add = (txt, d, chave) => { v += d; fatores.push({ txt, d, chave }); };
+  const add = (txt, d, chave, de) => { v += d; fatores.push({ txt, d, chave, de }); };
 
   if (p.prefs.includes("vista")) q.vista ? add("Vista para o mar", 14, "vista+") : add("Sem vista para o mar", -12, "vista-");
   if (p.prefs.includes("baixo")) q.andar === 1 ? add("Andar baixo, bom para as crianças", 10, "baixo+") : add("Escada demais com as crianças", -10, "baixo-");
@@ -91,13 +91,14 @@ export function satisfacao(tema, estado, h, id, ocupacao = estado.quartos, preco
     }
     const fator = viz.rel === "lado" ? 1 : 0.7;
     const pen = Math.round(po.barulho * p.sens * 3.5 * fator);
-    if (pen >= 2) add(`Barulho ${viz.rel === "lado" ? "no quarto ao lado" : viz.rel === "cima" ? "no andar de cima" : "no andar de baixo"} (${viz.id})`, -pen, "barulho");
+    if (pen >= 2) add(`Barulho ${viz.rel === "lado" ? "no quarto ao lado" : viz.rel === "cima" ? "no andar de cima" : "no andar de baixo"} (${viz.id})`, -pen, "barulho", viz.id);
   }
   const t = barulhoTerreo(tema, id);
   if (t) {
     const pen = Math.round(t.barulho * p.sens * 3.5 * 0.7);
     if (pen >= 2) add(`Movimento da ${t.nome.toLowerCase()} embaixo`, -pen, "terreo");
   }
+  for (const a of h.ajustes || []) add(a.txt, a.d, a.chave);
   return { valor: Math.max(5, Math.min(100, Math.round(v))), fatores };
 }
 

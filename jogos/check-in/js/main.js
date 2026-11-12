@@ -7,7 +7,8 @@ import {
   podeFicar, satisfacao, efeitoNosVizinhos, humor, colocar, recusar, desfazer
 } from "./hospedes.js";
 import { iniciarDia, procura, estimativaDia, abrirCheckin, encerrarCheckin, fecharDia, proximoDia, resumoTemporada } from "./economia.js";
-import { montarCena, desenharPredio, figura, fundoPerfil } from "./render/corte-lateral.js";
+import { montarCena, desenharPredio, figura, fundoPerfil, iconePedido } from "./render/corte-lateral.js";
+import { iniciarEstadia, textoPedido, efeitoPedido, atender, avancar, encerrarEstadia } from "./pedidos.js";
 
 const TEMAS = [
   { id: "pousada-praia", nome: "Pousada de praia" },
@@ -93,13 +94,14 @@ function abertura() {
 function comoJogar(volta = "abertura") {
   camada(`<div class="folha">
     <div class="rotulo">Como jogar</div>
-    <h2>Cada dia tem manhã, check-in e noite</h2>
+    <h2>Cada dia tem manhã, check-in, estadia e noite</h2>
     <ol class="passos">
       <li><span><b>Manhã:</b> defina o preço de cada tipo de quarto. Preço alto rende mais, mas nem todo grupo topa pagar.</span></li>
       <li><span><b>Custos:</b> você paga R$ 450 por dia (equipe e contas), mesmo vazio, e mais R$ 35 por quarto ocupado (limpeza e café). Cada quarto deixa a diária menos R$ 35. A estimativa da manhã mostra o lucro provável com os preços que você escolheu.</span></li>
       <li><span><b>Check-in:</b> escolha um grupo da fila e toque num quarto para ver a satisfação prevista. Toque de novo para confirmar.</span></li>
       <li><span><b>Vizinhança:</b> o barulho atravessa a parede e o teto. Turmas e famílias fazem barulho; casais e surfistas querem silêncio. Famílias vizinhas se dão bem.</span></li>
       <li><span><b>Preferências:</b> casais querem vista para o mar; famílias preferem o 1º andar.</span></li>
+      <li><span><b>Estadia:</b> durante a tarde e a noite aparecem pedidos nos quartos. Você tem poucos atendimentos em cada momento: escolha quais resolver. Pedido sem resposta tira nota; serviço de quarto rende dinheiro; reclamação de barulho acalma os vizinhos.</span></li>
       <li><span><b>Noite:</b> as diárias entram no caixa e quem sai deixa avaliação. Recusar grupo com quarto vago custa reputação.</span></li>
       <li><span><b>Meta:</b> em 30 dias, feche com caixa e reputação acima da meta para ganhar até 3 estrelas.</span></li>
     </ol>
@@ -175,6 +177,10 @@ function hospSel() { return estado.fila.find(h => h.id === ui.sel); }
 
 function uiPredio() {
   const out = { foco: ui.foco, alvo: ui.alvo };
+  if (estado.fase === "estadia" && estado.estadia) {
+    out.pedidos = {};
+    for (const p of estado.estadia.pedidos) out.pedidos[p.quarto] = { tipo: p.tipo, esperando: p.desde < estado.estadia.momento };
+  }
   const h = estado.fase === "checkin" && hospSel();
   if (h) {
     out.prev = {};
@@ -232,7 +238,8 @@ function listaFatores(f, max = 4) {
 function desenharPainel() {
   const el = $("painel");
   el.className = "painel " + estado.fase;
-  if (ui.foco && estado.quartos[ui.foco] && (estado.fase === "manha" || (estado.fase === "checkin" && !ui.alvo))) el.innerHTML = painelFoco();
+  if (ui.foco && estado.quartos[ui.foco] && (estado.fase === "manha" || estado.fase === "estadia" || (estado.fase === "checkin" && !ui.alvo))) el.innerHTML = painelFoco();
+  else if (estado.fase === "estadia" && estado.estadia) el.innerHTML = painelEstadia();
   else if (estado.fase === "manha") el.innerHTML = painelManha();
   else if (estado.fase === "checkin") el.innerHTML = painelCheckin();
   else el.innerHTML = `<div class="dica">Fim do dia.</div>`;
@@ -329,6 +336,31 @@ function painelCheckin() {
     <div class="botoes base"><button class="btn sec peq" data-desfazer ${estado.desfazer.length ? "" : "disabled"}>Desfazer</button>${h ? `<button class="btn sec peq" data-recusar>Recusar</button>` : ""}<button class="btn peq" data-encerrar>${enc}</button></div>`;
 }
 
+function painelEstadia() {
+  const e = estado.estadia, cfg = tema.pedidos;
+  const nm = cfg.momentos[e.momento];
+  const ultimo = e.momento >= cfg.momentos.length - 1;
+  const pts = Array.from({ length: cfg.atendimentos }, (_, i) => `<i class="${i < e.pontos ? "" : "gasto"}"></i>`).join("");
+  const lista = e.pedidos.length
+    ? `<div class="peds">${e.pedidos.map(p => {
+        const h = estado.quartos[p.quarto];
+        const ef = efeitoPedido(tema, p);
+        const extra = ef.receita ? ` · <span class="m">+${reais(ef.receita)}</span>` : ef.custo ? ` · custa ${reais(ef.custo)}` : "";
+        const esp = p.desde < e.momento;
+        return `<div class="ped${esp ? " esperando" : ""}"><span class="ic">${iconePedido(p.tipo)}</span>
+          <span class="tx"><b>${p.quarto} · ${esc(textoPedido(tema, p, h))}</b><span>${esc(h.nome)}${esp ? " · esperando" : ""} · <span class="m">+${ef.bom}</span> / <span class="n">${ef.ruim}</span>${extra}</span></span>
+          <button class="btn teal" data-atender="${p.id}" ${e.pontos ? "" : "disabled"}>Atender</button></div>`;
+      }).join("")}</div>`
+    : `<div class="vazio">Nenhum pedido agora. Tudo tranquilo.</div>`;
+  const prox = ultimo
+    ? (e.pedidos.length ? `Fechar o dia · ${e.pedidos.length} sem resposta` : "Fechar o dia →")
+    : `Avançar para ${cfg.momentos[e.momento + 1].toLowerCase()} →`;
+  return `<div class="linha-tit"><h2>Estadia · ${nm}</h2><span class="rotulo">${e.momento + 1} de ${cfg.momentos.length}</span></div>
+    <div class="equipe"><span class="pts">${pts}</span>${e.pontos} ${e.pontos === 1 ? "atendimento" : "atendimentos"} neste momento</div>
+    ${lista}
+    <div class="botoes base"><button class="btn${ultimo ? "" : " sec"} peq" data-avancar>${prox}</button></div>`;
+}
+
 /* ---------------- toques ---------------- */
 
 function toast(txt) {
@@ -345,6 +377,12 @@ function tocarCena(e) {
   const b = e.target.closest(".qto");
   if (!b) return;
   const id = b.dataset.id;
+  if (estado.fase === "estadia") {
+    const p = estado.estadia.pedidos.find(x => x.quarto === id);
+    if (p) return atenderPedido(p.id);
+    if (estado.quartos[id]) { ui.foco = ui.foco === id ? null : id; desenhar(); }
+    return;
+  }
   const h = estado.fase === "checkin" && hospSel();
   if (h) {
     if (estado.quartos[id]) { ui.alvo = null; ui.foco = ui.foco === id ? null : id; desenhar(); return; }
@@ -357,6 +395,27 @@ function tocarCena(e) {
   }
   if (estado.quartos[id]) { ui.foco = ui.foco === id ? null : id; desenhar(); }
   else toast(`Quarto ${id} vago · ${tema.tipos[quarto(tema, id).tipo].nome}${quarto(tema, id).vista ? " com vista" : ""}`);
+}
+
+function atenderPedido(pid) {
+  const e = estado.estadia;
+  if (!e.pontos) { toast("Sem atendimentos neste momento. Avance o relógio."); return; }
+  const p = e.pedidos.find(x => x.id === pid);
+  const nome = p && estado.quartos[p.quarto]?.nome;
+  if (atender(tema, estado, pid)) {
+    ui.foco = null;
+    salvar(estado); desenhar();
+    if (nome) toast(`Pedido do ${p.quarto} atendido`);
+  }
+}
+
+function fecharONoite() {
+  if (estado.estadia) encerrarEstadia(tema, estado);
+  fecharDia(tema, estado);
+  ui = { sel: null, alvo: null, foco: null };
+  salvar(estado);
+  desenhar();
+  balanco();
 }
 
 function confirmar() {
@@ -408,11 +467,24 @@ function tocarPainel(e) {
       return;
     }
     encerrarCheckin(tema, estado);
-    fecharDia(tema, estado);
     ui = { sel: null, alvo: null, foco: null };
-    salvar(estado);
-    desenhar();
-    balanco();
+    if (Object.values(estado.quartos).some(Boolean)) {
+      iniciarEstadia(tema, estado);
+      salvar(estado); desenhar();
+      return;
+    }
+    fecharONoite();
+    return;
+  }
+  const at = t.closest("[data-atender]");
+  if (at) return atenderPedido(+at.dataset.atender);
+  if (t.closest("[data-avancar]")) {
+    const e = estado.estadia;
+    const ultimo = e.momento >= tema.pedidos.momentos.length - 1;
+    if (ultimo && e.pedidos.length && !ui.fechar) { ui.fechar = true; toast("Os pedidos sem resposta tiram nota. Toque de novo para fechar."); return; }
+    if (avancar(tema, estado)) return fecharONoite();
+    ui.fechar = false; ui.foco = null;
+    salvar(estado); desenhar();
   }
 }
 
@@ -425,6 +497,7 @@ function balanco() {
   const avisos = [];
   if (b.saida.recusados) avisos.push(`${b.saida.recusados} ${b.saida.recusados === 1 ? "grupo recusado" : "grupos recusados"} com quarto vago (reputação caiu)`);
   if (b.saida.caros) avisos.push(`${b.saida.caros} ${b.saida.caros === 1 ? "grupo achou caro e foi embora" : "grupos acharam caro e foram embora"}`);
+  if (b.pedidos && (b.pedidos.atendidos || b.pedidos.ignorados)) avisos.push(`Pedidos: ${b.pedidos.atendidos} ${b.pedidos.atendidos === 1 ? "atendido" : "atendidos"}${b.pedidos.ignorados ? `, ${b.pedidos.ignorados} sem resposta` : ""}${b.pedidos.receita ? ` · serviço de quarto +${reais(b.pedidos.receita)}` : ""}${b.pedidos.custo ? ` · consertos ${reais(b.pedidos.custo)}` : ""}`);
   if (b.saida.semVaga) avisos.push(`${b.saida.semVaga} ${b.saida.semVaga === 1 ? "grupo ficou" : "grupos ficaram"} sem quarto`);
   const proxDia = ultimo ? "" : `${NOMES_DIA[diaSemana(estado.dia + 1)]}, dia ${estado.dia + 1}`;
   camada(`<div class="folha">

@@ -236,20 +236,97 @@
       "metas": [
         {
           "estrelas": 1,
-          "caixa": 10000,
+          "caixa": 10500,
           "rep": 3.3
         },
         {
           "estrelas": 2,
-          "caixa": 13000,
-          "rep": 3.7
+          "caixa": 13500,
+          "rep": 3.8
         },
         {
           "estrelas": 3,
-          "caixa": 16000,
-          "rep": 4.0
+          "caixa": 16500,
+          "rep": 4.2
         }
       ]
     }
-  ]
+  ],
+  "pedidos": {
+    "momentos": [
+      "Tarde",
+      "Fim de tarde",
+      "Noite"
+    ],
+    "atendimentos": 2,
+    "chance": 0.24,
+    "tipos": {
+      "toalha": {
+        "txt": "Pediu toalhas extras",
+        "bomTxt": "Toalhas chegaram na hora",
+        "ruimTxt": "Pedimos toalhas e ninguém trouxe",
+        "bom": 2,
+        "ruim": -10,
+        "perfis": {
+          "familia": 3,
+          "casal": 1,
+          "surf": 2,
+          "turma": 1.2
+        }
+      },
+      "ar": {
+        "txt": "O ar-condicionado parou",
+        "bomTxt": "Consertaram o ar rapidinho",
+        "ruimTxt": "O ar-condicionado ficou quebrado",
+        "bom": 2,
+        "ruim": -14,
+        "custo": 40,
+        "perfis": {
+          "familia": 1,
+          "casal": 1,
+          "surf": 1,
+          "turma": 1
+        }
+      },
+      "servico": {
+        "txt": "Quer jantar no quarto",
+        "bomTxt": "Jantar no quarto caprichado",
+        "ruimTxt": "Pedimos jantar e ninguém respondeu",
+        "bom": 2,
+        "ruim": -3,
+        "receita": 70,
+        "perfis": {
+          "familia": 1,
+          "casal": 3,
+          "surf": 0.4,
+          "turma": 2.4
+        }
+      },
+      "dica": {
+        "txt": "Pediu dica de passeio",
+        "txtPerfil": {
+          "surf": "Quer saber a previsão das ondas"
+        },
+        "bomTxt": "Dica de passeio ótima",
+        "ruimTxt": "Ninguém deu uma dica da região",
+        "bom": 4,
+        "ruim": -4,
+        "perfis": {
+          "familia": 1.5,
+          "casal": 1.5,
+          "surf": 2.2,
+          "turma": 1
+        }
+      },
+      "barulho": {
+        "txt": "Reclamou do barulho",
+        "bomTxt": "Os vizinhos baixaram o som",
+        "ruimTxt": "Reclamamos do barulho e nada mudou",
+        "bom": 0,
+        "ruim": -6,
+        "vizinho": -4,
+        "vizinhoTxt": "Pediram para fazermos silêncio"
+      }
+    }
+  }
 }
